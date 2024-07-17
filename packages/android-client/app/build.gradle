@@ -9,11 +9,11 @@ ext {
 }
 
 android {
-    namespace 'com.mobilewhep.client'
+    namespace 'com.swmansion.whepclient'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.mobilewhep.client"
+        applicationId "com.swmansion.whepclient"
         minSdk 24
         targetSdk 34
         versionCode 1

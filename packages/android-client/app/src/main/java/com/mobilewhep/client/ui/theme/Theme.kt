@@ -1,4 +1,4 @@
-package com.mobilewhep.client.ui.theme
+package com.swmansion.whepclient.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
