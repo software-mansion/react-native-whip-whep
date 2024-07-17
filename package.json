@@ -3,7 +3,7 @@
   "workspaces": [
     "packages/*"
   ],
-  "packageManager": "yarn@3.6.4",
+  "packageManager": "yarn@4.3.1",
   "devDependencies": {
     "@react-native/eslint-config": "^0.74.85",
     "eslint": "8.x",
