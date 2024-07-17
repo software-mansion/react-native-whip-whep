@@ -1,9 +1,9 @@
 {
-  "name": "mobilewhepclient",
+  "name": "react-native-whep",
   "version": "1.0.0",
   "main": "expo/AppEntry.js",
   "author": "Software Mansion (https://swmansion.com)",
-  "license": "Apache-2.0",
+  "license": "UNKNOWN",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
