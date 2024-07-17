@@ -1,0 +1,8 @@
+{
+  "name": "ios-client",
+  "packageManager": "yarn@3.6.4",
+  "scripts": {
+    "lint": "swift-format format -i -r ./**/**/*.swift --configuration swift-format-config.json",
+    "lint:check": "swift-format lint -r -s ./**/**/*.swift --configuration swift-format-config.json"
+  }
+}
