@@ -1,4 +1,4 @@
-package com.mobilewhep.client.ui.theme
+package com.swmansion.whepclient.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

@@ -1,4 +1,4 @@
-package com.mobilewhep.client
+package com.swmansion.whepclient
 
 import org.junit.Assert.*
 import org.junit.Test
