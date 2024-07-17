@@ -8975,20 +8975,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"mobilewhepclient@workspace:packages/react-native-client":
-  version: 0.0.0-use.local
-  resolution: "mobilewhepclient@workspace:packages/react-native-client"
-  dependencies:
-    "@babel/core": ^7.20.0
-    "@types/react": ~18.2.45
-    expo: ~51.0.20
-    expo-module-scripts: ^3.5.2
-    react: 18.2.0
-    react-native: 0.74.3
-    typescript: ^5.1.3
-  languageName: unknown
-  linkType: soft
-
 "ms@npm:2.0.0":
   version: 2.0.0
   resolution: "ms@npm:2.0.0"
@@ -9986,6 +9972,20 @@ __metadata:
   checksum: 9d6d111d8990dc98bc5402c1266a808b0459b5d54830bbea24c12d908b536df7883f268a7868cfaedde3dd9d4e0d574db456f84d2e6df9c4526f99bb4b5344d8
   languageName: node
   linkType: hard
+
+"react-native-client@workspace:packages/react-native-client":
+  version: 0.0.0-use.local
+  resolution: "react-native-client@workspace:packages/react-native-client"
+  dependencies:
+    "@babel/core": ^7.20.0
+    "@types/react": ~18.2.45
+    expo: ~51.0.20
+    expo-module-scripts: ^3.5.2
+    react: 18.2.0
+    react-native: 0.74.3
+    typescript: ^5.1.3
+  languageName: unknown
+  linkType: soft
 
 "react-native@npm:0.74.3":
   version: 0.74.3
