@@ -5,14 +5,14 @@ import PackageDescription
 
 let package = Package(
     name: "MobileWhepClient",
-        platforms: [
+    platforms: [
         .iOS(.v13)
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "MobileWhepClient",
-            targets: ["MobileWhepClient"]),
+            targets: ["MobileWhepClient"])
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
