@@ -16,8 +16,19 @@ struct ContentView: View {
                 .foregroundStyle(.tint)
             Text("Hello, world!")
             Button("List Devices") {
-                listDevices()
-            }
+                        Task {
+                            let whipClient = WHIPClient()
+                            let url = URL(string: "http://192.168.1.23:8829/whip/")!
+                            let token = "example"
+
+                            do {
+                                try await whipClient.publish(url: url, token: token)
+                                listDevices()
+                            } catch {
+                                print("Wystąpił błąd podczas publikacji: \(error)")
+                            }
+                        }
+                    }
         }
         .padding()
     }
