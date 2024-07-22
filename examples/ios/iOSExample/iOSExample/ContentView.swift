@@ -11,24 +11,26 @@ import AVFoundation
 struct ContentView: View {
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-            Button("List Devices") {
-                        Task {
-                            let whipClient = WHIPClient()
-                            let url = URL(string: "http://192.168.1.23:8829/whip/")!
-                            let token = "example"
-
-                            do {
-                                try await whipClient.publish(url: url, token: token)
-                                listDevices()
-                            } catch {
-                                print("Wystąpił błąd podczas publikacji: \(error)")
-                            }
-                        }
-                    }
+            let whipClient = WHIPClient()
+            CameraPreview(whipClient: whipClient) // Dodajemy uchwyt kamery do naszego UI.
+                            .frame(height: 300) // Określamy wysokość podglądu kamery.
+                            .cornerRadius(12)
+                            .padding()
+                            
+//            Button("List Devices") {
+//                        Task {
+//                            let whipClient = WHIPClient()
+//                            let url = URL(string: "http://192.168.83.130:8829/whip/")!
+//                            let token = "example"
+//
+//                            do {
+//                                try await whipClient.publish(url: url, token: token)
+//                                listDevices()
+//                            } catch {
+//                                print("Wystąpił błąd podczas publikacji: \(error)")
+//                            }
+//                        }
+//                    }
         }
         .padding()
     }

@@ -15,6 +15,8 @@
 		7C35C0A92C49385A00EE0290 /* Configurations.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0A82C49385A00EE0290 /* Configurations.swift */; };
 		7C35C0AB2C49388C00EE0290 /* WHIPNetworking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0AA2C49388C00EE0290 /* WHIPNetworking.swift */; };
 		7C35C0AD2C494E5700EE0290 /* WebRTCManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0AC2C494E5700EE0290 /* WebRTCManager.swift */; };
+		7C35C0B12C4A978C00EE0290 /* MediaCapture.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0B02C4A978C00EE0290 /* MediaCapture.swift */; };
+		7C35C0B32C4AA53C00EE0290 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0B22C4AA53C00EE0290 /* CameraViewController.swift */; };
 		D7104E067D8CCCDF6F6C7FCC /* Pods_iOSExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 036772B4FE38434CF26457E5 /* Pods_iOSExample.framework */; };
 /* End PBXBuildFile section */
 
@@ -32,6 +34,8 @@
 		7C35C0A82C49385A00EE0290 /* Configurations.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configurations.swift; sourceTree = "<group>"; };
 		7C35C0AA2C49388C00EE0290 /* WHIPNetworking.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WHIPNetworking.swift; sourceTree = "<group>"; };
 		7C35C0AC2C494E5700EE0290 /* WebRTCManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCManager.swift; sourceTree = "<group>"; };
+		7C35C0B02C4A978C00EE0290 /* MediaCapture.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCapture.swift; sourceTree = "<group>"; };
+		7C35C0B22C4AA53C00EE0290 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +53,8 @@
 		7C35C0892C4927BA00EE0290 = {
 			isa = PBXGroup;
 			children = (
+				7C35C0B22C4AA53C00EE0290 /* CameraViewController.swift */,
+				7C35C0B02C4A978C00EE0290 /* MediaCapture.swift */,
 				7C35C0942C4927BA00EE0290 /* iOSExample */,
 				7C35C0932C4927BA00EE0290 /* Products */,
 				85A703D4B180FB98D7750618 /* Pods */,
@@ -222,7 +228,9 @@
 				7C35C0A92C49385A00EE0290 /* Configurations.swift in Sources */,
 				7C35C0A52C49378000EE0290 /* WHIPClient.swift in Sources */,
 				7C35C0AB2C49388C00EE0290 /* WHIPNetworking.swift in Sources */,
+				7C35C0B12C4A978C00EE0290 /* MediaCapture.swift in Sources */,
 				7C35C0AD2C494E5700EE0290 /* WebRTCManager.swift in Sources */,
+				7C35C0B32C4AA53C00EE0290 /* CameraViewController.swift in Sources */,
 				7C35C0982C4927BA00EE0290 /* ContentView.swift in Sources */,
 				7C35C0962C4927BA00EE0290 /* iOSExampleApp.swift in Sources */,
 			);
