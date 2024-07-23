@@ -2,7 +2,95 @@ import Foundation
 import WebRTC
 import AVFoundation
 
-class WHIPClient: NSObject, ObservableObject {
+class WHEPClient: NSObject, ObservableObject, RTCPeerConnectionDelegate {
+    func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCSignalingState) {
+        
+    }
+    
+    func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
+        
+    }
+    
+    func peerConnection(_ peerConnection: RTCPeerConnection, didRemove stream: RTCMediaStream) {
+        
+    }
+    
+    func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
+        
+    }
+    
+    func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
+//        switch newState {
+//        case .checking:
+//            print("ICE is checking paths, this might take a moment.")
+//        case .connected:
+//            print("ICE has found a viable connection.")
+//        case .failed:
+//            print("No viable ICE paths found, consider a retry or using TURN.")
+//        case .disconnected:
+//            print("ICE connection was disconnected, attempting to reconnect or refresh.")
+//        case .new:
+//            print("The ICE agent is gathering addresses or is waiting to be given remote candidates through calls")
+//        case .completed:
+//            print("The ICE agent has finished gathering candidates, has checked all pairs against one another, and has found a connection for all components.")
+//        case .closed:
+//            print("The ICE agent for this RTCPeerConnection has shut down and is no longer handling requests.")
+//        default:
+//            break
+//        }
+    }
+    
+    func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceGatheringState) {
+        
+    }
+    
+    func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
+        print("Nowy kandydat ICE:", candidate);
+
+        guard candidate.sdpMLineIndex == 0 else {
+            return
+        }
+
+        self.candidates.append(candidate)
+
+        if candidate.sdp.isEmpty {
+            self.endOfCandidates = true
+        }
+
+        if iceTrickleTimer == nil && !restartIce! {
+            print("here")
+            schedulePatch()
+        }
+    }
+    
+    func peerConnection(_ peerConnection: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {
+        
+    }
+    
+    func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
+        
+    }
+    
+    func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCPeerConnectionState) {
+        switch stateChanged {
+        case .connected:
+            print("Connection is fully connected")
+            fetchConnectionStats()
+        case .disconnected:
+            print("One or more transports has disconnected unexpectedly")
+        case .failed:
+            print("One or more transports has encountered an error")
+        case .closed:
+            print("Connection has been closed")
+        case .new:
+            print("New connection")
+        case .connecting:
+            print("Connecting")
+        default:
+            print("Some other state: \(stateChanged.rawValue)")
+        }
+    }
+    
     var iceUsername: String?
     var icePassword: String?
     var candidates: [RTCIceCandidate] = []
@@ -33,31 +121,16 @@ class WHIPClient: NSObject, ObservableObject {
         return answer
     }
     
-    func publish(url: URL, token: String?, captureSession: AVCaptureSession) async throws {
+    func view(pc: RTCPeerConnection, url: URL, token: String?) async throws {
         guard self.pc == nil else {
             throw NSError(domain: "WHIPClient", code: 0, userInfo: [NSLocalizedDescriptionKey: "Already publishing"])
         }
-        
-        let configuration = RTCConfiguration()
-        let constraints = RTCMediaConstraints(mandatoryConstraints: ["OfferToReceiveAudio": "true", "OfferToReceiveVideo": "true"], optionalConstraints: nil)
-        let peerFactory = RTCPeerConnectionFactory()
-        self.pc = peerFactory.peerConnection(with: configuration, constraints: constraints, delegate: self)
+        self.pc = pc
         self.token = token
+        let constraints = RTCMediaConstraints(mandatoryConstraints: ["OfferToReceiveAudio": "true", "OfferToReceiveVideo": "true"], optionalConstraints: nil)
+
         
-//        var audioTrack: RTCAudioTrack? = nil;
-//        let (videoTrack, _) = startCaptureLocalMedia(captureSession: captureSession, peerFactory: peerFactory)
-//        print("video track", videoTrack?.trackId)
-//            
-//            if let videoTrack = videoTrack {
-//               self.pc?.add(videoTrack, streamIds: ["stream0"])
-//            }
-        
-        if let videoTrack = createLocalVideoTrack(factory: peerFactory) {
-            pc?.add(videoTrack, streamIds: ["stream-\(arc4random())"])
-            videoTrack.isEnabled = true
-        }
-        
-        let offer = try await pc!.offer(for: constraints)
+        let offer = try await pc.offer(for: constraints)
         print(offer)
         
         var headers = ["Content-Type": "application/sdp"]
@@ -101,7 +174,7 @@ class WHIPClient: NSObject, ObservableObject {
         }
         print(answerSDP)
         
-        try await pc?.setLocalDescription(offer)
+        try await pc.setLocalDescription(offer)
         if let iceUsername = extractFromSDP(sdp: offer.sdp, pattern: "a=ice-ufrag:(.*)\r\n") {
             print("ICE Username: \(iceUsername)")
         } else {
@@ -115,7 +188,7 @@ class WHIPClient: NSObject, ObservableObject {
         }
         
         let remoteDescription = RTCSessionDescription(type: .answer, sdp: answerSDP)
-        try await pc?.setRemoteDescription(remoteDescription)
+        try await pc.setRemoteDescription(remoteDescription)
         
 //        guard let etag = httpResponse.allHeaderFields["etag"] as? String else {
 //            throw NSError(domain: "HTTPError", code: httpResponse.statusCode, userInfo: [NSLocalizedDescriptionKey: "Response missing etag header"])
@@ -256,7 +329,7 @@ class WHIPClient: NSObject, ObservableObject {
 //                if let newRemoteDescription = RTCSessionDescription(type: remoteDescription.type, sdp: modifiedSDP) {
 //                    do {
 //                        try pc!.setRemoteDescription(newRemoteDescription)
-//                        
+//
 //                        // After updating, clean flags and trigger patch if needed
 //                        if self.restartIce == restartIce {
 //                            self.restartIce = nil
@@ -440,101 +513,11 @@ class WHIPClient: NSObject, ObservableObject {
         print("Address: \(candidateStats.values["ip"])")
         print("Port: \(candidateStats.values["port"])")
     }
-}
-
-extension WHIPClient: RTCPeerConnectionDelegate {
-    func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
-        print("New stream added")
-        print(stream.videoTracks)
-        print(stream.streamId)
-    }
-    
-    func peerConnection(_ peerConnection: RTCPeerConnection, didRemove stream: RTCMediaStream) {
-        
-    }
-    
-    func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
-        
-    }
-    
-    func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
-        print("Nowy kandydat ICE:", candidate);
-
-        guard candidate.sdpMLineIndex == 0 else {
-            return
-        }
-
-        self.candidates.append(candidate)
-
-        if candidate.sdp.isEmpty {
-            self.endOfCandidates = true
-        }
-
-        if iceTrickleTimer == nil && !restartIce! {
-            print("here")
-            schedulePatch()
-        }
-    }
-    
-    func peerConnection(_ peerConnection: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {
-        
-    }
-    
-    func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
-        
-    }
-    
-    func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCSignalingState) {
-        
-    }
-    
-    func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
-        
-    }
-    
-    func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceGatheringState) {
-        
-    }
-    
-    func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCPeerConnectionState) {
-        switch stateChanged {
-        case .connected:
-            print("Connection is fully connected")
-            fetchConnectionStats()
-        case .disconnected:
-            print("One or more transports has disconnected unexpectedly")
-        case .failed:
-            print("One or more transports has encountered an error")
-        case .closed:
-            print("Connection has been closed")
-        case .new:
-            print("New connection")
-        case .connecting:
-            print("Connecting")
-        default:
-            print("Some other state: \(stateChanged.rawValue)")
-        }
-    }
     
     struct MediaObject {
         var mid: String
         var kind: String
         var candidates: [RTCIceCandidate]
     }
-
 }
 
-
-extension String {
-    func matchingStrings(regex: String) -> [[String]] {
-        guard let regex = try? NSRegularExpression(pattern: regex, options: []) else { return [] }
-        let matches = regex.matches(in: self, options: [], range: NSRange(self.startIndex..., in: self))
-        return matches.map { match in
-            (0..<match.numberOfRanges).map {
-                let rangeBounds = match.range(at: $0)
-                guard let range = Range(rangeBounds, in: self) else { return "" }
-                return String(self[range])
-            }
-        }
-    }
-}

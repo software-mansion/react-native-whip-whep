@@ -41,7 +41,6 @@ class CameraViewController: UIViewController {
         Task {
             let url = URL(string: "http://192.168.83.130:8829/whip/")!
             let token = "example"
-            print("reached task")
 
             do {
                 try await whipClient.publish(url: url, token: token, captureSession: captureSession)
@@ -60,7 +59,7 @@ class CameraViewController: UIViewController {
     }
     
     private func setupCamera() {
-        DispatchQueue.global(qos: .userInitiated).async { // Rozpoczęcie konfiguracji w tle
+        DispatchQueue.global(qos: .userInitiated).async {
             self.captureSession = AVCaptureSession()
             guard let videoCaptureDevice = AVCaptureDevice.default(for: .video) else { return }
             let videoInput: AVCaptureDeviceInput

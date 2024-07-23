@@ -7,55 +7,61 @@
 
 import SwiftUI
 import AVFoundation
+import WebRTC
 
 struct ContentView: View {
+    @State private var videoTrack: RTCVideoTrack?
+
     var body: some View {
         VStack {
-            let whipClient = WHIPClient()
-            CameraPreview(whipClient: whipClient) // Dodajemy uchwyt kamery do naszego UI.
-                            .frame(height: 300) // Określamy wysokość podglądu kamery.
-                            .cornerRadius(12)
-                            .padding()
-                            
-//            Button("List Devices") {
-//                        Task {
-//                            let whipClient = WHIPClient()
-//                            let url = URL(string: "http://192.168.83.130:8829/whip/")!
-//                            let token = "example"
+                    Text("kotki")
+                }
+                .onAppear {
+                    Task {
+                        await startReceivingVideo()
+
+                    }
+                }
+//        VStack {
+//            let whipClient = WHIPClient()
 //
-//                            do {
-//                                try await whipClient.publish(url: url, token: token)
-//                                listDevices()
-//                            } catch {
-//                                print("Wystąpił błąd podczas publikacji: \(error)")
-//                            }
-//                        }
-//                    }
-        }
+//            CameraPreview(whipClient: whipClient)
+//                            .frame(height: 300)
+//                            .cornerRadius(12)
+//                            .padding()
+//                            
+////            Button("List Devices") {
+////                        Task {
+////                            let whipClient = WHIPClient()
+////                            let url = URL(string: "http://192.168.83.130:8829/whip/")!
+////                            let token = "example"
+////
+////                            do {
+////                                try await whipClient.publish(url: url, token: token)
+////                                listDevices()
+////                            } catch {
+////                                print("Wystąpił błąd podczas publikacji: \(error)")
+////                            }
+////                        }
+////                    }
+//        }
         .padding()
+        
     }
     
-    func listDevices() {
-        let audioDevices = AVCaptureDevice.DiscoverySession(
-            deviceTypes: [AVCaptureDevice.DeviceType.microphone],
-            mediaType: .audio,
-            position: .unspecified
-        ).devices
-        print("Available audio devices:")
-        for device in audioDevices {
-            print(device.localizedName)
-        }
-        
-        let videoDevices = AVCaptureDevice.DiscoverySession(
-            deviceTypes: [.builtInWideAngleCamera, .builtInTelephotoCamera, .builtInUltraWideCamera, .builtInDualCamera, .builtInDualWideCamera, .builtInTripleCamera, .builtInLiDARDepthCamera, .builtInTrueDepthCamera, .builtInWideAngleCamera],
-            mediaType: .video,
-            position: .unspecified
-        ).devices
-        print("Available video devices:")
-        for device in videoDevices {
-            print(device.localizedName)
-        }
+    
+    func startReceivingVideo() async {
+        let whepClient = WHEPClient()
+        let url = URL(string: "http://192.168.83.130:8829/whep/")!
+        let token = "example"
+        let configuration = RTCConfiguration()
+        configuration.iceServers = [RTCIceServer(urlStrings: ["stun:stun.l.google.com:19302"])]
+        let constraints = RTCMediaConstraints(mandatoryConstraints: ["OfferToReceiveAudio": "true", "OfferToReceiveVideo": "true"], optionalConstraints: nil)
+        let peerFactory = RTCPeerConnectionFactory()
+        let pc = peerFactory.peerConnection(with: configuration, constraints: constraints, delegate: whepClient)
+        try? await whepClient.view(pc: pc!, url: url, token: token)
     }
+    
 }
 
 #Preview {
