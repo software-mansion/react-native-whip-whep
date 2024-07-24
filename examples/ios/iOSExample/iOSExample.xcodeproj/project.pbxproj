@@ -17,6 +17,10 @@
 		7C36CD862C4FAEA400A8C141 /* WHEPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C36CD852C4FAEA400A8C141 /* WHEPClient.swift */; };
 		7C36CD882C4FB9CA00A8C141 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C36CD872C4FB9CA00A8C141 /* ViewController.swift */; };
 		7CFD45AE2C4FC8ED00D6A404 /* VideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45AD2C4FC8ED00D6A404 /* VideoView.swift */; };
+		7CFD45B02C4FF45200D6A404 /* WHEPPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45AF2C4FF45200D6A404 /* WHEPPlayer.swift */; };
+		7CFD45B22C50E6D700D6A404 /* ConnectionOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45B12C50E6D700D6A404 /* ConnectionOptions.swift */; };
+		7CFD45B42C50FCC600D6A404 /* WebRTCVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45B32C50FCC600D6A404 /* WebRTCVideoView.swift */; };
+		7CFD45B82C51056900D6A404 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CFD45B72C51056900D6A404 /* CoreAudio.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +38,11 @@
 		7C36CD852C4FAEA400A8C141 /* WHEPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WHEPClient.swift; sourceTree = "<group>"; };
 		7C36CD872C4FB9CA00A8C141 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		7CFD45AD2C4FC8ED00D6A404 /* VideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoView.swift; sourceTree = "<group>"; };
+		7CFD45AF2C4FF45200D6A404 /* WHEPPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WHEPPlayer.swift; sourceTree = "<group>"; };
+		7CFD45B12C50E6D700D6A404 /* ConnectionOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionOptions.swift; sourceTree = "<group>"; };
+		7CFD45B32C50FCC600D6A404 /* WebRTCVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCVideoView.swift; sourceTree = "<group>"; };
+		7CFD45B52C51055F00D6A404 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		7CFD45B72C51056900D6A404 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,6 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7CFD45B82C51056900D6A404 /* CoreAudio.framework in Frameworks */,
 				613BDDCBF786FE4479F3A300 /* Pods_iOSExample.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -51,6 +61,8 @@
 		7BBE4CB1CAFEAB0D02A41607 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				7CFD45B72C51056900D6A404 /* CoreAudio.framework */,
+				7CFD45B52C51055F00D6A404 /* AudioUnit.framework */,
 				26CF7FBA61E02A2C8145311D /* Pods_iOSExample.framework */,
 			);
 			name = Frameworks;
@@ -80,6 +92,7 @@
 		7C35C0942C4927BA00EE0290 /* iOSExample */ = {
 			isa = PBXGroup;
 			children = (
+				7CFD45AF2C4FF45200D6A404 /* WHEPPlayer.swift */,
 				7C35C0A32C49280C00EE0290 /* Info.plist */,
 				7C35C0952C4927BA00EE0290 /* iOSExampleApp.swift */,
 				7C35C0972C4927BA00EE0290 /* ContentView.swift */,
@@ -87,6 +100,8 @@
 				7C35C09B2C4927BB00EE0290 /* Preview Content */,
 				7C35C0A42C49378000EE0290 /* WHIPClient.swift */,
 				7C36CD852C4FAEA400A8C141 /* WHEPClient.swift */,
+				7CFD45B12C50E6D700D6A404 /* ConnectionOptions.swift */,
+				7CFD45B32C50FCC600D6A404 /* WebRTCVideoView.swift */,
 			);
 			path = iOSExample;
 			sourceTree = "<group>";
@@ -223,10 +238,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				7C36CD882C4FB9CA00A8C141 /* ViewController.swift in Sources */,
+				7CFD45B22C50E6D700D6A404 /* ConnectionOptions.swift in Sources */,
 				7CFD45AE2C4FC8ED00D6A404 /* VideoView.swift in Sources */,
 				7C36CD862C4FAEA400A8C141 /* WHEPClient.swift in Sources */,
 				7C35C0A52C49378000EE0290 /* WHIPClient.swift in Sources */,
+				7CFD45B02C4FF45200D6A404 /* WHEPPlayer.swift in Sources */,
 				7C35C0B32C4AA53C00EE0290 /* CameraViewController.swift in Sources */,
+				7CFD45B42C50FCC600D6A404 /* WebRTCVideoView.swift in Sources */,
 				7C35C0982C4927BA00EE0290 /* ContentView.swift in Sources */,
 				7C35C0962C4927BA00EE0290 /* iOSExampleApp.swift in Sources */,
 			);
@@ -292,7 +310,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -349,7 +367,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				OTHER_LDFLAGS = "$(inherited)";
+				OTHER_LDFLAGS = "";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;

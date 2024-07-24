@@ -10,18 +10,29 @@ import AVFoundation
 import WebRTC
 
 struct ContentView: View {
-    @State private var videoTrack: RTCVideoTrack?
+    //@State private var videoTrack: RTCVideoTrack?
+    @StateObject var player = WHEPPlayer(connectionOptions: ConnectionOptions(serverUrl: URL(string: "http://192.168.83.105:8829")!, whepEndpoint: "/whep", authToken: "example"))
 
     var body: some View {
         VStack {
+            if let videoTrack = player.videoTrack {
+                            WebRTCVideoView(videoTrack: videoTrack)
+                                .frame(width: 300, height: 300)
+                        } else {
+                            Text("Ładowanie strumienia...")
+                        }
                     Text("kotki")
                 }
                 .onAppear {
                     Task {
-                        await startReceivingVideo()
+                        //await startReceivingVideo()
+                        Task {
+                            try await player.connect()
+                        }
 
                     }
                 }
+        
 //        VStack {
 //            let whipClient = WHIPClient()
 //
@@ -29,38 +40,27 @@ struct ContentView: View {
 //                            .frame(height: 300)
 //                            .cornerRadius(12)
 //                            .padding()
-//                            
-////            Button("List Devices") {
-////                        Task {
-////                            let whipClient = WHIPClient()
-////                            let url = URL(string: "http://192.168.83.130:8829/whip/")!
-////                            let token = "example"
-////
-////                            do {
-////                                try await whipClient.publish(url: url, token: token)
-////                                listDevices()
-////                            } catch {
-////                                print("Wystąpił błąd podczas publikacji: \(error)")
-////                            }
-////                        }
-////                    }
-//        }
+//
         .padding()
         
     }
     
     
-    func startReceivingVideo() async {
-        let whepClient = WHEPClient()
-        let url = URL(string: "http://192.168.83.130:8829/whep/")!
-        let token = "example"
-        let configuration = RTCConfiguration()
-        configuration.iceServers = [RTCIceServer(urlStrings: ["stun:stun.l.google.com:19302"])]
-        let constraints = RTCMediaConstraints(mandatoryConstraints: ["OfferToReceiveAudio": "true", "OfferToReceiveVideo": "true"], optionalConstraints: nil)
-        let peerFactory = RTCPeerConnectionFactory()
-        let pc = peerFactory.peerConnection(with: configuration, constraints: constraints, delegate: whepClient)
-        try? await whepClient.view(pc: pc!, url: url, token: token)
-    }
+//    func startReceivingVideo() async {
+//        let whepClient = WHEPClient()
+//        let url = URL(string: "http://192.168.83.130:8829/whep/")!
+//        let token = "example"
+//        let configuration = RTCConfiguration()
+//        configuration.iceServers = [RTCIceServer(urlStrings: ["stun:stun.l.google.com:19302"])]
+//        let constraints = RTCMediaConstraints(mandatoryConstraints: ["OfferToReceiveAudio": "true", "OfferToReceiveVideo": "true"], optionalConstraints: nil)
+//        let peerFactory = RTCPeerConnectionFactory()
+//        let pc = peerFactory.peerConnection(with: configuration, constraints: constraints, delegate: whepClient)
+//        do {
+//            try await whepClient.view(pc: pc!, url: url, token: token)
+//        } catch {
+//            print("Wystąpił błąd: \(error)")
+//        }
+//    }
     
 }
 

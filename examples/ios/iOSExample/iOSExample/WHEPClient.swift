@@ -20,24 +20,24 @@ class WHEPClient: NSObject, ObservableObject, RTCPeerConnectionDelegate {
     }
     
     func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
-//        switch newState {
-//        case .checking:
-//            print("ICE is checking paths, this might take a moment.")
-//        case .connected:
-//            print("ICE has found a viable connection.")
-//        case .failed:
-//            print("No viable ICE paths found, consider a retry or using TURN.")
-//        case .disconnected:
-//            print("ICE connection was disconnected, attempting to reconnect or refresh.")
-//        case .new:
-//            print("The ICE agent is gathering addresses or is waiting to be given remote candidates through calls")
-//        case .completed:
-//            print("The ICE agent has finished gathering candidates, has checked all pairs against one another, and has found a connection for all components.")
-//        case .closed:
-//            print("The ICE agent for this RTCPeerConnection has shut down and is no longer handling requests.")
-//        default:
-//            break
-//        }
+        switch newState {
+        case .checking:
+            print("ICE is checking paths, this might take a moment.")
+        case .connected:
+            print("ICE has found a viable connection.")
+        case .failed:
+            print("No viable ICE paths found, consider a retry or using TURN.")
+        case .disconnected:
+            print("ICE connection was disconnected, attempting to reconnect or refresh.")
+        case .new:
+            print("The ICE agent is gathering addresses or is waiting to be given remote candidates through calls")
+        case .completed:
+            print("The ICE agent has finished gathering candidates, has checked all pairs against one another, and has found a connection for all components.")
+        case .closed:
+            print("The ICE agent for this RTCPeerConnection has shut down and is no longer handling requests.")
+        default:
+            break
+        }
     }
     
     func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceGatheringState) {
@@ -51,7 +51,9 @@ class WHEPClient: NSObject, ObservableObject, RTCPeerConnectionDelegate {
             return
         }
 
-        self.candidates.append(candidate)
+        if !self.candidates.contains(candidate) {
+            self.candidates.append(candidate)
+        }
 
         if candidate.sdp.isEmpty {
             self.endOfCandidates = true
