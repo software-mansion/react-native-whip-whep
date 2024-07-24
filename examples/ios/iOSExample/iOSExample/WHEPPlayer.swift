@@ -57,7 +57,7 @@ class WHEPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
         request.httpBody = sdpOffer.data(using: .utf8)
         request.addValue("application/sdp", forHTTPHeaderField: "Accept")
         request.addValue("application/sdp", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer \(connectionOptions.authToken)", forHTTPHeaderField: "Authorization")
+        request.addValue("Bearer \(connectionOptions.authToken ?? "")", forHTTPHeaderField: "Authorization")
 
 
         let (data, response) = try await URLSession.shared.data(for: request)
@@ -100,7 +100,6 @@ class WHEPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
         }
         
         let url = connectionOptions.serverUrl.appendingPathComponent(patchEndpoint)
-        print(url)
         var request = URLRequest(url: url)
         request.httpMethod = "PATCH"
         request.httpBody = jsonData
@@ -108,7 +107,7 @@ class WHEPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
         
         let (_, response) = try await URLSession.shared.data(for: request)
         
-        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 200 else {
+        guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 204 else {
             throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Response was not successful"])
         }
     }

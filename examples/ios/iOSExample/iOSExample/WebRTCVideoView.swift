@@ -12,6 +12,5 @@ struct WebRTCVideoView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: RTCMTLVideoView, context: Context) {
-        // Miejsce na aktualizacje, jeśli będą potrzebne
     }
 }
