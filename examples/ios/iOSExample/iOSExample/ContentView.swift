@@ -3,15 +3,16 @@ import AVFoundation
 import WebRTC
 
 struct ContentView: View {
-    @StateObject var player = WHEPPlayer(connectionOptions: ConnectionOptions(serverUrl: URL(string: "http://192.168.83.105:8829")!, whepEndpoint: "/whep", authToken: "example"))
-    @StateObject var whipPlayer = WHIPPlayer(connectionOptions: ConnectionOptions(serverUrl: URL(string: "http://192.168.83.105:8829")!, whepEndpoint: "/whip", authToken: "example"))
+    @StateObject var player = WHEPPlayer(connectionOptions: ConnectionOptions(serverUrl: URL(string: "http://192.168.83.51:8829")!, whepEndpoint: "/whep", authToken: "example"))
+    @StateObject var whipPlayer = WHIPPlayer(connectionOptions: ConnectionOptions(serverUrl: URL(string: "http://192.168.83.51:8829")!, whepEndpoint: "/whip", authToken: "example"))
+    
 
     var body: some View {
         VStack {
             Text("WHEP:")
             if let videoTrack = player.videoTrack {
                     WebRTCVideoView(videoTrack: videoTrack)
-                        .frame(width: 300, height: 300)
+                        .frame(width: 150, height: 150)
                 } else {
                     Text("Ładowanie strumienia...")
                 }
@@ -21,9 +22,18 @@ struct ContentView: View {
                 }
             }
             Text("WHIP:")
+            if whipPlayer.videoTrack != nil {
+                CameraPreview(videoTrack: whipPlayer.videoTrack)
+                    .frame(width: 150, height: 150)
+                    .cornerRadius(8)
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.blue, lineWidth: 2))
+            }else {
+                Text("Ładowanie podglądu...")
+            }
+            
             Button("Connect WHIP") {
                 Task {
-                    whipPlayer.setupLocalMedia()
+                    //whipPlayer.setupLocalMedia()
                     try await whipPlayer.connect()
                 }
             }

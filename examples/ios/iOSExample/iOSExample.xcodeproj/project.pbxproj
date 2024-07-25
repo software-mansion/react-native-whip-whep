@@ -19,6 +19,7 @@
 		7CFD45B42C50FCC600D6A404 /* WebRTCVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45B32C50FCC600D6A404 /* WebRTCVideoView.swift */; };
 		7CFD45B82C51056900D6A404 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CFD45B72C51056900D6A404 /* CoreAudio.framework */; };
 		7CFD45BA2C51119300D6A404 /* WHIPPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45B92C51119300D6A404 /* WHIPPlayer.swift */; };
+		7CFD45BC2C52493400D6A404 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45BB2C52493400D6A404 /* CameraPreview.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +40,7 @@
 		7CFD45B52C51055F00D6A404 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		7CFD45B72C51056900D6A404 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		7CFD45B92C51119300D6A404 /* WHIPPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WHIPPlayer.swift; sourceTree = "<group>"; };
+		7CFD45BB2C52493400D6A404 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 				7CFD45B12C50E6D700D6A404 /* ConnectionOptions.swift */,
 				7CFD45B32C50FCC600D6A404 /* WebRTCVideoView.swift */,
 				7CFD45B92C51119300D6A404 /* WHIPPlayer.swift */,
+				7CFD45BB2C52493400D6A404 /* CameraPreview.swift */,
 			);
 			path = iOSExample;
 			sourceTree = "<group>";
@@ -234,6 +237,7 @@
 				7CFD45BA2C51119300D6A404 /* WHIPPlayer.swift in Sources */,
 				7CFD45B22C50E6D700D6A404 /* ConnectionOptions.swift in Sources */,
 				7C35C0A52C49378000EE0290 /* WHIPClient.swift in Sources */,
+				7CFD45BC2C52493400D6A404 /* CameraPreview.swift in Sources */,
 				7CFD45B02C4FF45200D6A404 /* WHEPPlayer.swift in Sources */,
 				7C35C0B32C4AA53C00EE0290 /* CameraViewController.swift in Sources */,
 				7CFD45B42C50FCC600D6A404 /* WebRTCVideoView.swift in Sources */,

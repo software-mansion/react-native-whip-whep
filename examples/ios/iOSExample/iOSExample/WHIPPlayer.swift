@@ -1,13 +1,13 @@
 import WebRTC
 
-class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate, RTCVideoCapturerDelegate{
+class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
     var patchEndpoint: String?
     var peerConnectionFactory: RTCPeerConnectionFactory?
     var peerConnection: RTCPeerConnection?
     var iceCandidates: [RTCIceCandidate] = []
     var connectionOptions: ConnectionOptions
     @Published var videoTrack: RTCVideoTrack?
-    private weak var delegate: WHEPPlayerListener?
+    
 
     
     init(connectionOptions: ConnectionOptions) {
@@ -33,6 +33,7 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate, RTCVide
         peerConnection = self.peerConnectionFactory!.peerConnection(with: config,
                                                                     constraints: constraints,
                                                                    delegate: self)!
+        setupLocalMedia()
         
         
     }
@@ -155,27 +156,37 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate, RTCVide
         let audioDevice = AVCaptureDevice.default(for: .audio)
         
         guard let videoDevice = selectVideoDevice() else {
-                print("Could not access any video device")
-                return
-            }
+            print("Could not access any video device")
+            return
+        }
+        
         print(videoDevice)
-        let videoCapturer = RTCCameraVideoCapturer(delegate: self)
         let videoSource = peerConnectionFactory!.videoSource()
+        videoSource.adaptOutputFormat(toWidth: 640, height: 480, fps: 30)
+        let videoCapturer = RTCCameraVideoCapturer(delegate: videoSource)
+        
         let videoTrack = peerConnectionFactory!.videoTrack(with: videoSource, trackId: "video0")
         videoTrack.isEnabled = true
         
-        videoCapturer.startCapture(with: videoDevice, format: videoDevice.activeFormat, fps: 30)
+        videoCapturer.startCapture(with: videoDevice, format: videoDevice.activeFormat, fps: 30) { error in
+            if let error = error {
+                print("Error starting the video capture: \(error)")
+            } else {
+                print("Video capturing started")
+            }
+        }
 
         let mediaStream = self.peerConnectionFactory!.mediaStream(withStreamId: "stream0")
         mediaStream.addVideoTrack(videoTrack)
         print(mediaStream)
+        print("Video track:", videoTrack)
         self.peerConnection!.add(videoTrack, streamIds: ["stream0"])
 
-        let audioSource = self.peerConnectionFactory!.audioSource(with: nil)
-        let audioTrack = self.peerConnectionFactory!.audioTrack(with: audioSource, trackId: "audio0")
-        
-        //mediaStream.addAudioTrack(audioTrack)
-        self.peerConnection!.add(audioTrack, streamIds: ["stream1"])
+//        let audioSource = self.peerConnectionFactory!.audioSource(with: nil)
+//        let audioTrack = self.peerConnectionFactory!.audioTrack(with: audioSource, trackId: "audio0")
+//        
+//        //mediaStream.addAudioTrack(audioTrack)
+//        self.peerConnection!.add(audioTrack, streamIds: ["stream1"])
     }
     
     func selectVideoDevice() -> AVCaptureDevice? {
@@ -189,6 +200,15 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate, RTCVide
         }
         return nil
     }
+    
+    private func createDataChannel() -> RTCDataChannel? {
+        let config = RTCDataChannelConfiguration()
+        guard let dataChannel = self.peerConnection!.dataChannel(forLabel: "WebRTCData", configuration: config) else {
+            debugPrint("Warning: Couldn't create data channel.")
+            return nil
+        }
+        return dataChannel
+    }
 
     
     func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCSignalingState) {
@@ -200,7 +220,9 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate, RTCVide
         DispatchQueue.main.async {
             if let track = stream.videoTracks.first {
                 self.videoTrack = track
-                self.delegate?.onTrackAdded(track: track)
+                print("Video track received and set.")
+            } else {
+                print("No video track available in the stream.")
             }
         }
     }
@@ -256,7 +278,51 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate, RTCVide
         print("Did open data channel: \(dataChannel)")
     }
     
-    func capturer(_ capturer: RTCVideoCapturer, didCapture frame: RTCVideoFrame) {
-        print("Frame captured")
+    func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCPeerConnectionState) {
+        switch stateChanged {
+        case .connected:
+            print("Connection is fully connected")
+            fetchConnectionStats()
+        case .disconnected:
+            print("One or more transports has disconnected unexpectedly")
+        case .failed:
+            print("One or more transports has encountered an error")
+        case .closed:
+            print("Connection has been closed")
+        case .new:
+            print("New connection")
+        case .connecting:
+            print("Connecting")
+        default:
+            print("Some other state: \(stateChanged.rawValue)")
+        }
+    }
+    
+    func fetchConnectionStats() {
+        peerConnection?.statistics { report in
+            for stats in report.statistics.values {
+                if stats.type == "candidate-pair" && stats.values["state"] as! String == "succeeded" {
+                    print("Active Candidate Pair:")
+                    print("Local Candidate ID: \(stats.values["localCandidateId"] )")
+                    print("Remote Candidate ID: \(stats.values["remoteCandidateId"] )")
+                    self.printCandidateDetails(stats.values["localCandidateId"] as? String, in: report)
+                    self.printCandidateDetails(stats.values["remoteCandidateId"] as? String, in: report)
+                }
+            }
+        }
+    }
+
+    func printCandidateDetails(_ candidateId: String?, in report: RTCStatisticsReport) {
+        guard let candidateId = candidateId,
+              let candidateStats = report.statistics[candidateId] else {
+            print("Candidate details not found.")
+            return
+        }
+        
+        print("Candidate ID: \(candidateId)")
+        print("Type: \(candidateStats.values["candidateType"] )")
+        print("Protocol: \(candidateStats.values["protocol"] )")
+        print("Address: \(candidateStats.values["ip"])")
+        print("Port: \(candidateStats.values["port"])")
     }
 }
