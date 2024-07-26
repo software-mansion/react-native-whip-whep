@@ -1,6 +1,4 @@
 import SwiftUI
-import AVFoundation
-import WebRTC
 
 struct ContentView: View {
     @StateObject var player = WHEPPlayer(connectionOptions: ConnectionOptions(serverUrl: URL(string: "http://192.168.83.180:8829")!, whepEndpoint: "/whep", authToken: "example"))
@@ -14,7 +12,7 @@ struct ContentView: View {
                     WebRTCVideoView(videoTrack: videoTrack)
                         .frame(width: 150, height: 150)
                 } else {
-                    Text("Ładowanie strumienia...")
+                    Text("Stream loading...")
                 }
             Button("Connect WHEP") {
                 Task {
@@ -28,28 +26,16 @@ struct ContentView: View {
                     .cornerRadius(8)
                     .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.blue, lineWidth: 2))
             }else {
-                Text("Ładowanie podglądu...")
+                Text("Preview loading...")
             }
             
             Button("Connect WHIP") {
                 Task {
-                    //whipPlayer.setupLocalMedia()
                     try await whipPlayer.connect()
                 }
             }
-            
         }
-        
-//        VStack {
-//            let whipClient = WHIPClient()
-//
-//            CameraPreview(whipClient: whipClient)
-//                            .frame(height: 300)
-//                            .cornerRadius(12)
-//                            .padding()
-//
         .padding()
-        
     }
     
 }

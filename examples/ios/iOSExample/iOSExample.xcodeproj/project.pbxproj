@@ -12,11 +12,9 @@
 		7C35C0982C4927BA00EE0290 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0972C4927BA00EE0290 /* ContentView.swift */; };
 		7C35C09A2C4927BB00EE0290 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C35C0992C4927BB00EE0290 /* Assets.xcassets */; };
 		7C35C09D2C4927BB00EE0290 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C35C09C2C4927BB00EE0290 /* Preview Assets.xcassets */; };
-		7C35C0A52C49378000EE0290 /* WHIPClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0A42C49378000EE0290 /* WHIPClient.swift */; };
-		7C35C0B32C4AA53C00EE0290 /* CameraViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0B22C4AA53C00EE0290 /* CameraViewController.swift */; };
+		7C9D91CD2C539BEC000DF490 /* WebRTCVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9D91CC2C539BEC000DF490 /* WebRTCVideoView.swift */; };
 		7CFD45B02C4FF45200D6A404 /* WHEPPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45AF2C4FF45200D6A404 /* WHEPPlayer.swift */; };
 		7CFD45B22C50E6D700D6A404 /* ConnectionOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45B12C50E6D700D6A404 /* ConnectionOptions.swift */; };
-		7CFD45B42C50FCC600D6A404 /* WebRTCVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45B32C50FCC600D6A404 /* WebRTCVideoView.swift */; };
 		7CFD45B82C51056900D6A404 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CFD45B72C51056900D6A404 /* CoreAudio.framework */; };
 		7CFD45BA2C51119300D6A404 /* WHIPPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45B92C51119300D6A404 /* WHIPPlayer.swift */; };
 		7CFD45BC2C52493400D6A404 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45BB2C52493400D6A404 /* CameraPreview.swift */; };
@@ -32,11 +30,9 @@
 		7C35C0992C4927BB00EE0290 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7C35C09C2C4927BB00EE0290 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		7C35C0A32C49280C00EE0290 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		7C35C0A42C49378000EE0290 /* WHIPClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WHIPClient.swift; sourceTree = "<group>"; };
-		7C35C0B22C4AA53C00EE0290 /* CameraViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraViewController.swift; sourceTree = "<group>"; };
+		7C9D91CC2C539BEC000DF490 /* WebRTCVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCVideoView.swift; sourceTree = "<group>"; };
 		7CFD45AF2C4FF45200D6A404 /* WHEPPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WHEPPlayer.swift; sourceTree = "<group>"; };
 		7CFD45B12C50E6D700D6A404 /* ConnectionOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionOptions.swift; sourceTree = "<group>"; };
-		7CFD45B32C50FCC600D6A404 /* WebRTCVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCVideoView.swift; sourceTree = "<group>"; };
 		7CFD45B52C51055F00D6A404 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		7CFD45B72C51056900D6A404 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		7CFD45B92C51119300D6A404 /* WHIPPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WHIPPlayer.swift; sourceTree = "<group>"; };
@@ -69,7 +65,6 @@
 		7C35C0892C4927BA00EE0290 = {
 			isa = PBXGroup;
 			children = (
-				7C35C0B22C4AA53C00EE0290 /* CameraViewController.swift */,
 				7C35C0942C4927BA00EE0290 /* iOSExample */,
 				7C35C0932C4927BA00EE0290 /* Products */,
 				85A703D4B180FB98D7750618 /* Pods */,
@@ -94,11 +89,10 @@
 				7C35C0972C4927BA00EE0290 /* ContentView.swift */,
 				7C35C0992C4927BB00EE0290 /* Assets.xcassets */,
 				7C35C09B2C4927BB00EE0290 /* Preview Content */,
-				7C35C0A42C49378000EE0290 /* WHIPClient.swift */,
 				7CFD45B12C50E6D700D6A404 /* ConnectionOptions.swift */,
-				7CFD45B32C50FCC600D6A404 /* WebRTCVideoView.swift */,
 				7CFD45B92C51119300D6A404 /* WHIPPlayer.swift */,
 				7CFD45BB2C52493400D6A404 /* CameraPreview.swift */,
+				7C9D91CC2C539BEC000DF490 /* WebRTCVideoView.swift */,
 			);
 			path = iOSExample;
 			sourceTree = "<group>";
@@ -236,13 +230,11 @@
 			files = (
 				7CFD45BA2C51119300D6A404 /* WHIPPlayer.swift in Sources */,
 				7CFD45B22C50E6D700D6A404 /* ConnectionOptions.swift in Sources */,
-				7C35C0A52C49378000EE0290 /* WHIPClient.swift in Sources */,
 				7CFD45BC2C52493400D6A404 /* CameraPreview.swift in Sources */,
 				7CFD45B02C4FF45200D6A404 /* WHEPPlayer.swift in Sources */,
-				7C35C0B32C4AA53C00EE0290 /* CameraViewController.swift in Sources */,
-				7CFD45B42C50FCC600D6A404 /* WebRTCVideoView.swift in Sources */,
 				7C35C0982C4927BA00EE0290 /* ContentView.swift in Sources */,
 				7C35C0962C4927BA00EE0290 /* iOSExampleApp.swift in Sources */,
+				7C9D91CD2C539BEC000DF490 /* WebRTCVideoView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

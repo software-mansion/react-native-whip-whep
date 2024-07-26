@@ -1,5 +1,34 @@
 import WebRTC
 
+extension RTCPeerConnection {
+  // currently `Membrane RTC Engine` can't handle track of diretion `sendRecv` therefore
+  // we need to change all `sendRecv` to `sendOnly`.
+  func enforceSendOnlyDirection() {
+    self.transceivers.forEach { transceiver in
+      if transceiver.direction == .sendRecv {
+        transceiver.setDirection(.sendOnly, error: nil)
+      }
+    }
+  }
+}
+
+extension RTCRtpEncodingParameters {
+  static func create(rid: String, active: Bool, scaleResolutionDownBy: NSNumber) -> RTCRtpEncodingParameters {
+    let encoding = RTCRtpEncodingParameters()
+    encoding.rid = rid
+    encoding.isActive = active
+    encoding.scaleResolutionDownBy = scaleResolutionDownBy
+    return encoding
+  }
+  
+
+  static func create(active: Bool) -> RTCRtpEncodingParameters {
+    let encoding = RTCRtpEncodingParameters()
+    encoding.isActive = active
+    return encoding
+  }
+}
+
 class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
     var patchEndpoint: String?
     var peerConnectionFactory: RTCPeerConnectionFactory?
@@ -7,9 +36,9 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
     var iceCandidates: [RTCIceCandidate] = []
     var connectionOptions: ConnectionOptions
     @Published var videoTrack: RTCVideoTrack?
-
+    var videoCapturer: RTCCameraVideoCapturer?
+    var videoSource: RTCVideoSource?
     
-
     
     init(connectionOptions: ConnectionOptions) {
         self.connectionOptions = connectionOptions
@@ -35,8 +64,6 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
                                                                     constraints: constraints,
                                                                    delegate: self)!
         setupLocalMedia()
-        
-        
     }
     
     func sendSdpOffer(sdpOffer: String) async throws -> String {
@@ -48,7 +75,6 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
         request.addValue("application/sdp", forHTTPHeaderField: "Accept")
         request.addValue("application/sdp", forHTTPHeaderField: "Content-Type")
         request.addValue("Bearer \(connectionOptions.authToken ?? "")", forHTTPHeaderField: "Authorization")
-
 
         let (data, response) = try await URLSession.shared.data(for: request)
         
@@ -103,13 +129,6 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
     }
     
     func connect() async throws {
-        var error: NSError?
-        let videoTransceiver = peerConnection!.addTransceiver(of: .video)!
-        videoTransceiver.setDirection(.sendOnly, error: &error)
-
-        let audioTransceiver = peerConnection!.addTransceiver(of: .audio)!
-        audioTransceiver.setDirection(.sendOnly, error: &error)
-
         let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
         let offer = try await peerConnection!.offer(for: constraints)
         try await peerConnection!.setLocalDescription(offer)
@@ -130,12 +149,6 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
 
         let remoteDescription = RTCSessionDescription(type: .answer, sdp: sdpAnswer)
         try await peerConnection!.setRemoteDescription(remoteDescription)
-        
-//        let string = "Twój tekst tutaj"
-//        if let data = string.data(using: .utf8) {
-//           sendData(data)
-//        }
-
     }
     
     func release() {
@@ -143,66 +156,65 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
     }
     
     func setupLocalMedia() {
-            // Request access to the camera and microphone
-            switch AVCaptureDevice.authorizationStatus(for: .video) {
-            case .authorized:
-                self.setupVideoAndAudioDevices()
-            case .notDetermined:
-                AVCaptureDevice.requestAccess(for: .video) { granted in
-                    if granted {
-                        self.setupVideoAndAudioDevices()
-                    }
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
+        case .authorized:
+            self.setupVideoAndAudioDevices()
+        case .notDetermined:
+            AVCaptureDevice.requestAccess(for: .video) { granted in
+                if granted {
+                    self.setupVideoAndAudioDevices()
                 }
-            default:
-                print("Access denied")
             }
+        default:
+            print("Access denied")
         }
+    }
 
     private func setupVideoAndAudioDevices() {
-        //slet audioDevice = AVCaptureDevice.default(for: .audio)
-        
+        _ = AVCaptureDevice.default(for: .audio)
         guard let videoDevice = selectVideoDevice() else {
             print("Could not access any video device")
             return
         }
         
-        print(videoDevice)
         let videoSource = peerConnectionFactory!.videoSource()
-        print(videoSource)
-        videoSource.adaptOutputFormat(toWidth: 150, height: 150, fps: 30)
+        self.videoSource = videoSource
         let videoCapturer = RTCCameraVideoCapturer(delegate: videoSource)
+        self.videoCapturer = videoCapturer
+        let videoTrackId = UUID().uuidString
         
+        let videoTrack = peerConnectionFactory!.videoTrack(with: videoSource, trackId: videoTrackId)
+        videoTrack.isEnabled = true
         
-        
-        
-        DispatchQueue.main.async {
-            videoCapturer.startCapture(with: videoDevice, format: videoDevice.activeFormat, fps: 30) { error in
-                if let error = error {
-                    print("Error starting the video capture: \(error)")
-                } else {
-                    print("Video capturing started")
-                    print(videoCapturer.delegate)
-                }
+        videoCapturer.startCapture(with: videoDevice, format: videoDevice.activeFormat, fps: 30) { error in
+            if let error = error {
+                print("Error starting the video capture: \(error)")
+            } else {
+                print("Video capturing started")
             }
         }
         
-        let videoTrack = peerConnectionFactory!.videoTrack(with: videoSource, trackId: "video0")
-        videoTrack.isEnabled = true
-        DispatchQueue.main.async {
-            self.videoTrack = videoTrack
-        }
-        //self.peerConnection!.add(videoTrack, streamIds: ["stream0"])
-
-        
+        let audioTrackId = UUID().uuidString
         let audioSource = self.peerConnectionFactory!.audioSource(with: nil)
-        let audioTrack = self.peerConnectionFactory!.audioTrack(with: audioSource, trackId: "audio0")
-        //self.peerConnection!.add(audioTrack, streamIds: ["stream1"])
+        let audioTrack = self.peerConnectionFactory!.audioTrack(with: audioSource, trackId: audioTrackId)
 
-        let mediaStream = self.peerConnectionFactory!.mediaStream(withStreamId: "stream0")
-        mediaStream.addVideoTrack(videoTrack)
-        mediaStream.addAudioTrack(audioTrack)
+        let sendEncodings = [RTCRtpEncodingParameters.create(active: true)]
+        let localStreamId = UUID().uuidString
+          
+
+        let transceiverInit = RTCRtpTransceiverInit()
+        transceiverInit.direction = RTCRtpTransceiverDirection.sendOnly
+        transceiverInit.streamIds = [localStreamId]
+        transceiverInit.sendEncodings = sendEncodings
+        peerConnection?.addTransceiver(with: videoTrack, init: transceiverInit)
         
-        //let transceiver = peerConnection!.add(mediaStream.videoTracks.first!, streamIds: ["stream0"])
+        let audioTransceiverInit = RTCRtpTransceiverInit()
+        audioTransceiverInit.direction = RTCRtpTransceiverDirection.sendOnly
+        audioTransceiverInit.streamIds = [localStreamId]
+        peerConnection?.addTransceiver(with: audioTrack, init: audioTransceiverInit)
+        peerConnection?.enforceSendOnlyDirection()
+        
+        self.videoTrack = videoTrack
 
     }
     
@@ -291,7 +303,6 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
         switch stateChanged {
         case .connected:
             print("Connection is fully connected")
-            fetchConnectionStats()
         case .disconnected:
             print("One or more transports has disconnected unexpectedly")
         case .failed:
@@ -305,33 +316,5 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
         default:
             print("Some other state: \(stateChanged.rawValue)")
         }
-    }
-    
-    func fetchConnectionStats() {
-        peerConnection?.statistics { report in
-            for stats in report.statistics.values {
-                if stats.type == "candidate-pair" && stats.values["state"] as! String == "succeeded" {
-                    print("Active Candidate Pair:")
-                    print("Local Candidate ID: \(stats.values["localCandidateId"] )")
-                    print("Remote Candidate ID: \(stats.values["remoteCandidateId"] )")
-                    self.printCandidateDetails(stats.values["localCandidateId"] as? String, in: report)
-                    self.printCandidateDetails(stats.values["remoteCandidateId"] as? String, in: report)
-                }
-            }
-        }
-    }
-
-    func printCandidateDetails(_ candidateId: String?, in report: RTCStatisticsReport) {
-        guard let candidateId = candidateId,
-              let candidateStats = report.statistics[candidateId] else {
-            print("Candidate details not found.")
-            return
-        }
-        
-        print("Candidate ID: \(candidateId)")
-        print("Type: \(candidateStats.values["candidateType"] )")
-        print("Protocol: \(candidateStats.values["protocol"] )")
-        print("Address: \(candidateStats.values["ip"])")
-        print("Port: \(candidateStats.values["port"])")
     }
 }

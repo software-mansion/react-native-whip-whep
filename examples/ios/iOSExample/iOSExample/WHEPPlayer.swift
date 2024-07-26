@@ -37,8 +37,6 @@ class WHEPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
         peerConnection = self.peerConnectionFactory!.peerConnection(with: config,
                                                                     constraints: constraints,
                                                                    delegate: self)!
-        
-        
     }
     
     func addTrackListener(delegate: WHEPPlayerListener) {
