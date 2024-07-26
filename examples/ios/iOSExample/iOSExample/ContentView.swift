@@ -3,8 +3,8 @@ import AVFoundation
 import WebRTC
 
 struct ContentView: View {
-    @StateObject var player = WHEPPlayer(connectionOptions: ConnectionOptions(serverUrl: URL(string: "http://192.168.83.51:8829")!, whepEndpoint: "/whep", authToken: "example"))
-    @StateObject var whipPlayer = WHIPPlayer(connectionOptions: ConnectionOptions(serverUrl: URL(string: "http://192.168.83.51:8829")!, whepEndpoint: "/whip", authToken: "example"))
+    @StateObject var player = WHEPPlayer(connectionOptions: ConnectionOptions(serverUrl: URL(string: "http://192.168.83.180:8829")!, whepEndpoint: "/whep", authToken: "example"))
+    @StateObject var whipPlayer = WHIPPlayer(connectionOptions: ConnectionOptions(serverUrl: URL(string: "http://192.168.83.180:8829")!, whepEndpoint: "/whip", authToken: "example"))
     
 
     var body: some View {

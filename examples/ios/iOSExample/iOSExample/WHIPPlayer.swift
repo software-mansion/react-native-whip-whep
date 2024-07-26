@@ -7,6 +7,7 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
     var iceCandidates: [RTCIceCandidate] = []
     var connectionOptions: ConnectionOptions
     @Published var videoTrack: RTCVideoTrack?
+
     
 
     
@@ -129,6 +130,11 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
 
         let remoteDescription = RTCSessionDescription(type: .answer, sdp: sdpAnswer)
         try await peerConnection!.setRemoteDescription(remoteDescription)
+        
+//        let string = "Twój tekst tutaj"
+//        if let data = string.data(using: .utf8) {
+//           sendData(data)
+//        }
 
     }
     
@@ -153,7 +159,7 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
         }
 
     private func setupVideoAndAudioDevices() {
-        let audioDevice = AVCaptureDevice.default(for: .audio)
+        //slet audioDevice = AVCaptureDevice.default(for: .audio)
         
         guard let videoDevice = selectVideoDevice() else {
             print("Could not access any video device")
@@ -162,31 +168,42 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
         
         print(videoDevice)
         let videoSource = peerConnectionFactory!.videoSource()
-        videoSource.adaptOutputFormat(toWidth: 640, height: 480, fps: 30)
+        print(videoSource)
+        videoSource.adaptOutputFormat(toWidth: 150, height: 150, fps: 30)
         let videoCapturer = RTCCameraVideoCapturer(delegate: videoSource)
+        
+        
+        
+        
+        DispatchQueue.main.async {
+            videoCapturer.startCapture(with: videoDevice, format: videoDevice.activeFormat, fps: 30) { error in
+                if let error = error {
+                    print("Error starting the video capture: \(error)")
+                } else {
+                    print("Video capturing started")
+                    print(videoCapturer.delegate)
+                }
+            }
+        }
         
         let videoTrack = peerConnectionFactory!.videoTrack(with: videoSource, trackId: "video0")
         videoTrack.isEnabled = true
-        
-        videoCapturer.startCapture(with: videoDevice, format: videoDevice.activeFormat, fps: 30) { error in
-            if let error = error {
-                print("Error starting the video capture: \(error)")
-            } else {
-                print("Video capturing started")
-            }
+        DispatchQueue.main.async {
+            self.videoTrack = videoTrack
         }
+        //self.peerConnection!.add(videoTrack, streamIds: ["stream0"])
+
+        
+        let audioSource = self.peerConnectionFactory!.audioSource(with: nil)
+        let audioTrack = self.peerConnectionFactory!.audioTrack(with: audioSource, trackId: "audio0")
+        //self.peerConnection!.add(audioTrack, streamIds: ["stream1"])
 
         let mediaStream = self.peerConnectionFactory!.mediaStream(withStreamId: "stream0")
         mediaStream.addVideoTrack(videoTrack)
-        print(mediaStream)
-        print("Video track:", videoTrack)
-        self.peerConnection!.add(videoTrack, streamIds: ["stream0"])
+        mediaStream.addAudioTrack(audioTrack)
+        
+        //let transceiver = peerConnection!.add(mediaStream.videoTracks.first!, streamIds: ["stream0"])
 
-//        let audioSource = self.peerConnectionFactory!.audioSource(with: nil)
-//        let audioTrack = self.peerConnectionFactory!.audioTrack(with: audioSource, trackId: "audio0")
-//        
-//        //mediaStream.addAudioTrack(audioTrack)
-//        self.peerConnection!.add(audioTrack, streamIds: ["stream1"])
     }
     
     func selectVideoDevice() -> AVCaptureDevice? {
@@ -199,15 +216,6 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
             return device
         }
         return nil
-    }
-    
-    private func createDataChannel() -> RTCDataChannel? {
-        let config = RTCDataChannelConfiguration()
-        guard let dataChannel = self.peerConnection!.dataChannel(forLabel: "WebRTCData", configuration: config) else {
-            debugPrint("Warning: Couldn't create data channel.")
-            return nil
-        }
-        return dataChannel
     }
 
     
@@ -276,6 +284,7 @@ class WHIPPlayer: NSObject, ObservableObject, RTCPeerConnectionDelegate{
     
     func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
         print("Did open data channel: \(dataChannel)")
+        
     }
     
     func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCPeerConnectionState) {
