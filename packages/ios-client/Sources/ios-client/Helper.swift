@@ -1,5 +1,23 @@
 import WebRTC
 
+enum AVCaptureDeviceError: Error {
+    case AudioDeviceNotAvailable(description: String)
+    case VideoDeviceNotAvailable(description: String)
+}
+
+enum AttributeNotFoundError: Error {
+    case LocationNotFound(description: String)
+    case PatchEndpointNotFound(description: String)
+    case UFragNotFound(description: String)
+    case ResponseNotFound(description: String)
+}
+
+enum SessionNetworkError: Error {
+    case CandidateSendingError(description: String)
+    case ConnectionError(description: String)
+    case ConfigurationError(description: String)
+}
+
 extension RTCPeerConnection {
   // currently `Membrane RTC Engine` can't handle track of diretion `sendRecv` therefore
   // we need to change all `sendRecv` to `sendOnly`.
@@ -40,33 +58,39 @@ class Helper: NSObject {
         if let token = authToken {
             request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
-
-        let (data, response) = try await URLSession.shared.data(for: request)
+        
+        var data: Data?
+        var response: URLResponse?
+        do{
+            (data, response) = try await URLSession.shared.data(for: request)
+        }catch{
+            throw SessionNetworkError.ConnectionError(description: "Network error. Check if the server is up and running, the token and the server url is correct")
+        }
         
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 201 else {
             let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
-            throw NSError(domain: "HTTPError", code: statusCode, userInfo: nil)
+            throw SessionNetworkError.ConnectionError(description: "Network error. Check if the server is up and running, the token and the server url is correct")
         }
 
-        let responseString = String(data: data, encoding: .utf8)
+        let responseString = String(data: data!, encoding: .utf8)
         var location: String? = nil
         if let foundLocation = httpResponse.allHeaderFields["Location"] as? String {
             location = foundLocation
             print("Location: \(foundLocation)")
         }
         
-        return (responseString!, location)
+        return (responseString ?? "", location)
     }
         
     static func sendCandidate(candidate: RTCIceCandidate, patchEndpoint: String?, serverUrl: URL) async throws {
         guard patchEndpoint != nil else {
-            throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Patch endpoint is nil"])
+            throw AttributeNotFoundError.PatchEndpointNotFound(description: "Patch endpoint not found. Make sure the SDP answer is correct.")
         }
         
         let splitSdp = candidate.sdp.split(separator: " ")
         guard let ufragIndex = splitSdp.firstIndex(of: "ufrag") else {
-            throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Unable to find 'ufrag' in SDP"])
+            throw AttributeNotFoundError.UFragNotFound(description: "ufrag not found. Make sure the SDP answer is correct.")
         }
         let ufrag = String(splitSdp[ufragIndex + 1])
         
@@ -93,35 +117,7 @@ class Helper: NSObject {
         let (_, response) = try await URLSession.shared.data(for: request)
         
         guard let httpResponse = response as? HTTPURLResponse, httpResponse.statusCode == 204 else {
-            throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Response was not successful"])
+            throw SessionNetworkError.CandidateSendingError(description: "Candidate sending error - response was not successful.")
         }
     }
-    
-//    func connect(peerConnection: RTCPeerConnection, iceCandidates: [RTCIceCandidate], patchEndpoint: String?, connectionOptions: ConnectionOptions) async throws {
-//        var error: NSError?
-//        let videoTransceiver = peerConnection.addTransceiver(of: .video)!
-//        videoTransceiver.setDirection(.recvOnly, error: &error)
-//
-//        let audioTransceiver = peerConnection.addTransceiver(of: .audio)!
-//        audioTransceiver.setDirection(.recvOnly, error: &error)
-//
-//        let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
-//        let offer = try await peerConnection.offer(for: constraints)
-//        try await peerConnection.setLocalDescription(offer)
-//
-//        let sdpAnswer = try await Helper.sendSdpOffer(sdpOffer: offer.sdp, connectionOptions: connectionOptions)
-//        
-//        for candidate in iceCandidates {
-//            do {
-//                try await Helper.sendCandidate(candidate: candidate, patchEndpoint: patchEndpoint!, connectionOptions: connectionOptions)
-//            } catch {
-//                print("Error sending ICE candidate: \(error)")
-//            }
-//        }
-//
-//        let remoteDescription = RTCSessionDescription(type: .answer, sdp: sdpAnswer)
-//        try await peerConnection.setRemoteDescription(remoteDescription)
-//    }
-    
-    
 }

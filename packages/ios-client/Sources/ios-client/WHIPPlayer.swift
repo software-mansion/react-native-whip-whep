@@ -59,20 +59,76 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         peerConnection = self.peerConnectionFactory!.peerConnection(with: config,
                                                                     constraints: constraints,
                                                                    delegate: self)!
-        
-        setupVideoAndAudioDevices()
+        do {
+            try setupVideoAndAudioDevices()
+        } catch let error as AVCaptureDeviceError {
+            switch error {
+            case .AudioDeviceNotAvailable(let description),
+                 .VideoDeviceNotAvailable(let description):
+                print(description)
+            }
+        } catch {
+            print("Unexpected error: \(error)")
+        }
     }
     
     func sendSdpOffer(sdpOffer: String) async throws -> String {
-        let response =  try await Helper.sendSdpOffer(sdpOffer: sdpOffer, serverUrl: self.serverUrl, authToken: self.authToken)
+        var response: (responseString: String, location: String?)?
+        do {
+            response = try await Helper.sendSdpOffer(sdpOffer: sdpOffer,
+                                                         serverUrl: self.serverUrl,
+                                                         authToken: self.authToken)
+        } catch let error as AttributeNotFoundError {
+            switch error {
+            case .LocationNotFound(let description),
+                    .ResponseNotFound(let description),
+                    .UFragNotFound(let description),
+                    .PatchEndpointNotFound(let description):
+                print(description)
+            }
+        }  catch let error as SessionNetworkError {
+            switch error {
+            case .CandidateSendingError(let description),
+                    .ConnectionError(let description):
+                print(description)
+            }
+        }catch {
+            print("Unexpected error: \(error)")
+        }
+        guard let response = response else {
+            throw AttributeNotFoundError.ResponseNotFound(description: "Response to SDP offer not found. Check if the network request was successful.")
+        }
+        
         if let location = response.location {
             self.patchEndpoint = location
+        }else{
+            throw AttributeNotFoundError.LocationNotFound(description: "Location attribute not found. Check if the SDP answer contains location parameter.")
         }
+        
         return response.responseString
     }
 
     func sendCandidate(candidate: RTCIceCandidate) async throws {
-        try await Helper.sendCandidate(candidate: candidate, patchEndpoint: self.patchEndpoint, serverUrl: self.serverUrl)
+        do{
+            try await Helper.sendCandidate(candidate: candidate, patchEndpoint: self.patchEndpoint, serverUrl: self.serverUrl)
+        } catch let error as AttributeNotFoundError{
+            switch error {
+            case .LocationNotFound(let description),
+                    .PatchEndpointNotFound(let description),
+                    .ResponseNotFound(let description),
+                    .UFragNotFound(let description):
+                print(description)
+            }
+        } catch let error as SessionNetworkError {
+            switch error {
+            case .CandidateSendingError(let description),
+                    .ConnectionError(let description):
+                print(description)
+            }
+        }
+        catch {
+            print("Unexpected error: \(error)")
+        }
     }
     
     public func connect() async throws {
@@ -96,14 +152,12 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         peerConnection.close()
     }
     
-    private func setupVideoAndAudioDevices() {
+    private func setupVideoAndAudioDevices() throws{
         guard let audioDevice = self.audioDevice else{
-            print("Could not access any audio device")
-            return
+            throw AVCaptureDeviceError.AudioDeviceNotAvailable(description: "Audio device not found. Check if it can be accessed and passed to the constructor.")
         }
         guard let videoDevice = self.videoDevice else {
-            print("Could not access any video device")
-            return
+            throw AVCaptureDeviceError.VideoDeviceNotAvailable(description: "Video device not found. Check if it can be accessed and passed to the constructor.")
         }
         
         let videoSource = peerConnectionFactory!.videoSource()
