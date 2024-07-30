@@ -29,18 +29,17 @@ extension RTCRtpEncodingParameters {
   }
 }
 
-@available(macOS 15.0, *)
+@available(macOS 12.0, *)
 class Helper: NSObject {
-    static func sendSdpOffer(sdpOffer: String, connectionOptions: ConnectionOptions) async throws -> (responseString: String, location: String?) {
-        let fullURL = connectionOptions.serverUrl.appendingPathComponent(connectionOptions.whepEndpoint)
-        print(fullURL)
-        var request = URLRequest(url: fullURL)
+    static func sendSdpOffer(sdpOffer: String, serverUrl: URL, authToken: String?) async throws -> (responseString: String, location: String?) {
+        var request = URLRequest(url: serverUrl)
         request.httpMethod = "POST"
         request.httpBody = sdpOffer.data(using: .utf8)
         request.addValue("application/sdp", forHTTPHeaderField: "Accept")
         request.addValue("application/sdp", forHTTPHeaderField: "Content-Type")
-        request.addValue("Bearer \(connectionOptions.authToken ?? "")", forHTTPHeaderField: "Authorization")
-
+        if let token = authToken {
+            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
 
         let (data, response) = try await URLSession.shared.data(for: request)
         
@@ -60,8 +59,8 @@ class Helper: NSObject {
         return (responseString!, location)
     }
         
-    static func sendCandidate(candidate: RTCIceCandidate, patchEndpoint: String?, connectionOptions: ConnectionOptions) async throws {
-        guard let patchEndpoint = patchEndpoint else {
+    static func sendCandidate(candidate: RTCIceCandidate, patchEndpoint: String?, serverUrl: URL) async throws {
+        guard patchEndpoint != nil else {
             throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "Patch endpoint is nil"])
         }
         
@@ -82,8 +81,7 @@ class Helper: NSObject {
             throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "JSON serialization error"])
         }
 
-        let url = connectionOptions.serverUrl.appendingPathComponent(patchEndpoint)
-        var request = URLRequest(url: url)
+        var request = URLRequest(url: serverUrl)
         request.httpMethod = "PATCH"
         request.httpBody = jsonData
         request.setValue("application/trickle-ice-sdpfrag", forHTTPHeaderField: "Content-Type")

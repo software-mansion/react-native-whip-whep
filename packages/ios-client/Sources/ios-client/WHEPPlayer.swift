@@ -4,7 +4,7 @@ protocol WHEPPlayerListener: AnyObject {
     func onTrackAdded(track: RTCVideoTrack)
 }
 
-internal protocol WHEPPlayer {
+protocol WHEPPlayer {
     var patchEndpoint: String? {get set}
     var peerConnectionFactory: RTCPeerConnectionFactory? {get set}
     var peerConnection: RTCPeerConnection? {get set}
@@ -18,9 +18,12 @@ internal protocol WHEPPlayer {
     func release(peerConnection: RTCPeerConnection)
 }
 
-@available(macOS 15.0, *)
+
+@available(macOS 12.0, *)
 public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
-    var connectionOptions: ConnectionOptions
+    var serverUrl: URL
+    var authToken: String?
+    var configurationOptions: ConfigurationOptions?
     var patchEndpoint: String?
     var peerConnectionFactory: RTCPeerConnectionFactory?
     var peerConnection: RTCPeerConnection?
@@ -28,8 +31,10 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
     @Published var videoTrack: RTCVideoTrack?
     var delegate: WHEPPlayerListener?
     
-    init(connectionOptions: ConnectionOptions) {
-        self.connectionOptions = connectionOptions
+    init(serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions?) {
+        self.serverUrl = serverUrl
+        self.authToken = authToken
+        self.configurationOptions = configurationOptions
         super.init()
         let encoderFactory = RTCDefaultVideoEncoderFactory()
         let decoderFactory = RTCDefaultVideoDecoderFactory()
@@ -54,7 +59,7 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
     }
     
     func sendSdpOffer(sdpOffer: String) async throws -> String {
-        let response =  try await Helper.sendSdpOffer(sdpOffer: sdpOffer, connectionOptions: connectionOptions)
+        let response =  try await Helper.sendSdpOffer(sdpOffer: sdpOffer, serverUrl: self.serverUrl, authToken: self.authToken)
         if let location = response.location {
             self.patchEndpoint = location
         }
@@ -62,7 +67,7 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
     }
 
     func sendCandidate(candidate: RTCIceCandidate) async throws {
-        try await Helper.sendCandidate(candidate: candidate, patchEndpoint: patchEndpoint, connectionOptions: connectionOptions)
+        try await Helper.sendCandidate(candidate: candidate, patchEndpoint: patchEndpoint, serverUrl: self.serverUrl)
     }
     
     func connect() async throws{
@@ -132,7 +137,7 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
-        if let patchEndpoint = patchEndpoint {
+        if patchEndpoint != nil {
             Task { [weak self] in
                 try await self?.sendCandidate(candidate: candidate)
             }
