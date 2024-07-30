@@ -31,7 +31,7 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
     @Published public var videoTrack: RTCVideoTrack?
     var delegate: WHEPPlayerListener?
     
-    public init(serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions?) {
+    public init(serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions? = nil) {
         self.serverUrl = serverUrl
         self.authToken = authToken
         self.configurationOptions = configurationOptions

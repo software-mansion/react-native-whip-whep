@@ -1,9 +1,11 @@
 import SwiftUI
+import AVFoundation
 import MobileWhepClient
 
 struct ContentView: View {
-    @StateObject var player = WHEPClientPlayer(serverUrl: URL(string: "http://192.168.83.40:8829/whep")!,authToken: "example", configurationOptions: nil)
-    @StateObject var whipPlayer = WHIPPlayer(connectionOptions: ConnectionOptions(serverUrl: URL(string: "http://192.168.83.40:8829")!, whepEndpoint: "/whip", authToken: "example"))
+    @StateObject var player = WHEPClientPlayer(serverUrl: URL(string: "http://192.168.83.40:8829/whep")!,authToken: "example")
+    
+    @StateObject var whipPlayer = WHIPClientPlayer(serverUrl: URL(string: "http://192.168.83.40:8829/whip")!,authToken: "example", audioDevice: AVCaptureDevice.default(for: .audio), videoDevice: AVCaptureDevice.default(for: .video))
     
     var body: some View {
         VStack {
