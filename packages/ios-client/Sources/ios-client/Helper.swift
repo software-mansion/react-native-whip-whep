@@ -15,7 +15,6 @@ enum AttributeNotFoundError: Error {
 enum SessionNetworkError: Error {
     case CandidateSendingError(description: String)
     case ConnectionError(description: String)
-    case ConfigurationError(description: String)
 }
 
 extension RTCPeerConnection {
