@@ -42,7 +42,8 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
             encoderFactory: encoderFactory,
             decoderFactory: decoderFactory)
         
-        let stunServer = RTCIceServer(urlStrings: ["stun:stun.l.google.com:19302"])
+        let stunServerUrl = configurationOptions?.stunServerUrl ?? "stun:stun.l.google.com:19302"
+        let stunServer = RTCIceServer(urlStrings: [stunServerUrl])
         let iceServers = [stunServer]
         
         let config = RTCConfiguration()
