@@ -81,7 +81,11 @@ class Helper: NSObject {
             throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "JSON serialization error"])
         }
 
-        var request = URLRequest(url: serverUrl)
+        var components = URLComponents(string: serverUrl.absoluteString)
+        components?.path = ""
+        components?.path = patchEndpoint!
+        let url = components?.url
+        var request = URLRequest(url: url!)
         request.httpMethod = "PATCH"
         request.httpBody = jsonData
         request.setValue("application/trickle-ice-sdpfrag", forHTTPHeaderField: "Content-Type")

@@ -20,7 +20,7 @@ protocol WHEPPlayer {
 
 
 @available(macOS 12.0, *)
-public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
+public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, ObservableObject {
     var serverUrl: URL
     var authToken: String?
     var configurationOptions: ConfigurationOptions?
@@ -28,10 +28,10 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
     var peerConnectionFactory: RTCPeerConnectionFactory?
     var peerConnection: RTCPeerConnection?
     var iceCandidates: [RTCIceCandidate] = []
-    @Published var videoTrack: RTCVideoTrack?
+    @Published public var videoTrack: RTCVideoTrack?
     var delegate: WHEPPlayerListener?
     
-    init(serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions?) {
+    public init(serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions?) {
         self.serverUrl = serverUrl
         self.authToken = authToken
         self.configurationOptions = configurationOptions
@@ -68,10 +68,10 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
     }
 
     func sendCandidate(candidate: RTCIceCandidate) async throws {
-        try await Helper.sendCandidate(candidate: candidate, patchEndpoint: patchEndpoint, serverUrl: self.serverUrl)
+        try await Helper.sendCandidate(candidate: candidate, patchEndpoint: self.patchEndpoint, serverUrl: self.serverUrl)
     }
     
-    func connect() async throws{
+    public func connect() async throws{
         var error: NSError?
         let videoTransceiver = peerConnection!.addTransceiver(of: .video)!
         videoTransceiver.setDirection(.recvOnly, error: &error)
@@ -97,7 +97,7 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
         try await peerConnection!.setRemoteDescription(remoteDescription)
     }
     
-    func release(peerConnection: RTCPeerConnection) {
+    public func release(peerConnection: RTCPeerConnection) {
         peerConnection.close()
     }
     
@@ -130,7 +130,24 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
-        
+        switch newState {
+        case .checking:
+            print("ICE is checking paths, this might take a moment.")
+        case .connected:
+            print("ICE has found a viable connection.")
+        case .failed:
+            print("No viable ICE paths found, consider a retry or using TURN.")
+        case .disconnected:
+            print("ICE connection was disconnected, attempting to reconnect or refresh.")
+        case .new:
+            print("The ICE agent is gathering addresses or is waiting to be given remote candidates through calls")
+        case .completed:
+            print("The ICE agent has finished gathering candidates, has checked all pairs against one another, and has found a connection for all components.")
+        case .closed:
+            print("The ICE agent for this RTCPeerConnection has shut down and is no longer handling requests.")
+        default:
+            break
+        }
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceGatheringState) {
@@ -138,7 +155,7 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
     }
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
-        if patchEndpoint != nil {
+        if self.patchEndpoint != nil {
             Task { [weak self] in
                 try await self?.sendCandidate(candidate: candidate)
             }
@@ -153,6 +170,25 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
     
     public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
         
+    }
+    
+    public func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCPeerConnectionState) {
+        switch stateChanged {
+        case .connected:
+            print("Connection is fully connected")
+        case .disconnected:
+            print("One or more transports has disconnected unexpectedly")
+        case .failed:
+            print("One or more transports has encountered an error")
+        case .closed:
+            print("Connection has been closed")
+        case .new:
+            print("New connection")
+        case .connecting:
+            print("Connecting")
+        default:
+            print("Some other state: \(stateChanged.rawValue)")
+        }
     }
     
     

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,6 +12,8 @@
 		7C35C0982C4927BA00EE0290 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0972C4927BA00EE0290 /* ContentView.swift */; };
 		7C35C09A2C4927BB00EE0290 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C35C0992C4927BB00EE0290 /* Assets.xcassets */; };
 		7C35C09D2C4927BB00EE0290 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C35C09C2C4927BB00EE0290 /* Preview Assets.xcassets */; };
+		7C75AD8A2C58DA740011DB76 /* MobileWhepClient in Frameworks */ = {isa = PBXBuildFile; productRef = 7C75AD892C58DA740011DB76 /* MobileWhepClient */; };
+		7C75AD8C2C58DCBF0011DB76 /* MobileWhepClient in Frameworks */ = {isa = PBXBuildFile; productRef = 7C75AD8B2C58DCBF0011DB76 /* MobileWhepClient */; };
 		7C9D91CD2C539BEC000DF490 /* WebRTCVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9D91CC2C539BEC000DF490 /* WebRTCVideoView.swift */; };
 		7CFD45B02C4FF45200D6A404 /* WHEPPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45AF2C4FF45200D6A404 /* WHEPPlayer.swift */; };
 		7CFD45B22C50E6D700D6A404 /* ConnectionOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45B12C50E6D700D6A404 /* ConnectionOptions.swift */; };
@@ -46,6 +48,8 @@
 			files = (
 				7CFD45B82C51056900D6A404 /* CoreAudio.framework in Frameworks */,
 				613BDDCBF786FE4479F3A300 /* Pods_iOSExample.framework in Frameworks */,
+				7C75AD8A2C58DA740011DB76 /* MobileWhepClient in Frameworks */,
+				7C75AD8C2C58DCBF0011DB76 /* MobileWhepClient in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -125,13 +129,16 @@
 				7C35C08E2C4927BA00EE0290 /* Sources */,
 				7C35C08F2C4927BA00EE0290 /* Frameworks */,
 				7C35C0902C4927BA00EE0290 /* Resources */,
-				83249B7ABDE958868E63EC9D /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = iOSExample;
+			packageProductDependencies = (
+				7C75AD892C58DA740011DB76 /* MobileWhepClient */,
+				7C75AD8B2C58DCBF0011DB76 /* MobileWhepClient */,
+			);
 			productName = iOSExample;
 			productReference = 7C35C0922C4927BA00EE0290 /* iOSExample.app */;
 			productType = "com.apple.product-type.application";
@@ -160,6 +167,9 @@
 				Base,
 			);
 			mainGroup = 7C35C0892C4927BA00EE0290;
+			packageReferences = (
+				7C75AD882C58DA740011DB76 /* XCLocalSwiftPackageReference "../../../packages/ios-client" */,
+			);
 			productRefGroup = 7C35C0932C4927BA00EE0290 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -182,23 +192,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		83249B7ABDE958868E63EC9D /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-iOSExample/Pods-iOSExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-iOSExample/Pods-iOSExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iOSExample/Pods-iOSExample-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		8ABECDF7E3CDB62BF00B3C33 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -448,6 +441,24 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		7C75AD882C58DA740011DB76 /* XCLocalSwiftPackageReference "../../../packages/ios-client" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../../packages/ios-client";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7C75AD892C58DA740011DB76 /* MobileWhepClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MobileWhepClient;
+		};
+		7C75AD8B2C58DCBF0011DB76 /* MobileWhepClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MobileWhepClient;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7C35C08A2C4927BA00EE0290 /* Project object */;
 }

@@ -1,5 +1,5 @@
 import Foundation
 
-struct ConfigurationOptions {
+public struct ConfigurationOptions {
     let stunServerUrl: String?
 }
