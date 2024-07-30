@@ -1,0 +1,22 @@
+name: iOS - Lint
+on:
+  pull_request:
+    paths:
+      - packages/ios-client/**
+
+jobs:
+  ios_build_and_lint:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install deps 📡
+        run: brew install swift-format xcbeautify
+
+      - name: Run formatter 🎨
+        run: swift-format format -i -r ./**/**/*.swift --configuration swift-format-config.json
+        working-directory: ./packages/ios-client
+
+      - name: Run lint 👀
+        run: swift-format lint -r -s ./**/**/*.swift --configuration swift-format-config.json
+        working-directory: ./packages/ios-client
