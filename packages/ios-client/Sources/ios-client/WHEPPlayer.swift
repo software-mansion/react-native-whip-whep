@@ -189,14 +189,14 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
 
     /**
     Closes the established Peer Connection.
-     
+
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
     of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
-    public func release() throws{
+    public func release() throws {
         if peerConnection == nil {
             throw SessionNetworkError.ConfigurationError(
-                description: "Failed to establish RTCPeerConnection. Check initial configuration")
+                description: "Failed to close RTCPeerConnection. Check initial configuration")
         }
         peerConnection?.close()
     }

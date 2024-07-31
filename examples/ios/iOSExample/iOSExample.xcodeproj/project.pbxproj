@@ -17,7 +17,6 @@
 		7C75AD902C5A24990011DB76 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C75AD8F2C5A24990011DB76 /* CameraPreview.swift */; };
 		7C9D91CD2C539BEC000DF490 /* WebRTCVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9D91CC2C539BEC000DF490 /* WebRTCVideoView.swift */; };
 		7CFD45B82C51056900D6A404 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CFD45B72C51056900D6A404 /* CoreAudio.framework */; };
-		7CFD45BA2C51119300D6A404 /* WHIPPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45B92C51119300D6A404 /* WHIPPlayer.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,7 +33,6 @@
 		7C9D91CC2C539BEC000DF490 /* WebRTCVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCVideoView.swift; sourceTree = "<group>"; };
 		7CFD45B52C51055F00D6A404 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		7CFD45B72C51056900D6A404 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
-		7CFD45B92C51119300D6A404 /* WHIPPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WHIPPlayer.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -89,7 +87,6 @@
 				7C75AD8F2C5A24990011DB76 /* CameraPreview.swift */,
 				7C35C0992C4927BB00EE0290 /* Assets.xcassets */,
 				7C35C09B2C4927BB00EE0290 /* Preview Content */,
-				7CFD45B92C51119300D6A404 /* WHIPPlayer.swift */,
 				7C9D91CC2C539BEC000DF490 /* WebRTCVideoView.swift */,
 			);
 			path = iOSExample;
@@ -216,7 +213,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				7C75AD902C5A24990011DB76 /* CameraPreview.swift in Sources */,
-				7CFD45BA2C51119300D6A404 /* WHIPPlayer.swift in Sources */,
 				7C35C0982C4927BA00EE0290 /* ContentView.swift in Sources */,
 				7C35C0962C4927BA00EE0290 /* iOSExampleApp.swift in Sources */,
 				7C9D91CD2C539BEC000DF490 /* WebRTCVideoView.swift in Sources */,

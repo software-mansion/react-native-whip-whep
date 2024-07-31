@@ -48,7 +48,7 @@ extension RTCRtpEncodingParameters {
 
 @available(macOS 12.0, *)
 class Helper: NSObject {
-    
+
     /**
     Sends an SDP offer to the WHIP/WHEP server and awaits a response.
 
@@ -108,7 +108,7 @@ class Helper: NSObject {
     - Parameter candidate: Represents a single ICE candidate.
     - Parameter patchEndpoint: And endpoint obtained from the SDP response that accepts PATCH requests.
     - Parameter serverUrl: URL address of the WHIP/WHEP server.
-     
+
     - Throws: `AttributeNotFoundError.PatchEndpointNotFound` if the patch endpoint has not been properly set up,
      `AttributeNotFoundError.UFragNotFound` if the SDP of the candidate does not contain the ufrag,
      `SessionNetworkError.CandidateSendingError` if the candidate could not be sent and
