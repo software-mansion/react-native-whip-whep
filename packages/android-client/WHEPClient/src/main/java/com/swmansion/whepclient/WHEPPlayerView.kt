@@ -27,7 +27,8 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-class WHEPPlayerView : TextureView,
+class WHEPPlayerView :
+  TextureView,
   SurfaceHolder.Callback,
   SurfaceTextureListener,
   VideoSink,

@@ -21,6 +21,7 @@ struct ContentView: View {
                     try await player.connect()
                 }
             }
+            
             Text("WHIP:")
             if whipPlayer.videoTrack != nil {
                 CameraPreview(videoTrack: whipPlayer.videoTrack)

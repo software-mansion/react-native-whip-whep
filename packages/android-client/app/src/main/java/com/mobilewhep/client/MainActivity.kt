@@ -59,16 +59,18 @@ fun PlayerView(modifier: Modifier = Modifier) {
     mutableStateOf(true)
   }
 
-  val whepPlayer = remember {
-    WHEPPlayer(
-      context,
-      ConnectionOptions(serverUrl = "http://192.168.0.31:8829/", whepEndpoint = "/whep")
-    )
-  }
+  val whepPlayer =
+    remember {
+      WHEPPlayer(
+        context,
+        ConnectionOptions(serverUrl = "http://192.168.0.31:8829/", whepEndpoint = "/whep")
+      )
+    }
 
-  var view: WHEPPlayerView? = remember {
-    null
-  }
+  var view: WHEPPlayerView? =
+    remember {
+      null
+    }
 
   DisposableEffect(Unit) {
     onDispose {
@@ -98,7 +100,8 @@ fun PlayerView(modifier: Modifier = Modifier) {
           view = this
         }
       },
-      modifier = modifier
+      modifier =
+        modifier
           .fillMaxWidth()
           .height(400.dp)
           .align(Alignment.Center)
@@ -113,11 +116,12 @@ fun PlayerView(modifier: Modifier = Modifier) {
     }
     if (isLoading) {
       CircularProgressIndicator(
-        modifier = Modifier
+        modifier =
+          Modifier
             .width(64.dp)
             .align(Alignment.Center),
         color = MaterialTheme.colorScheme.secondary,
-        trackColor = MaterialTheme.colorScheme.surfaceVariant,
+        trackColor = MaterialTheme.colorScheme.surfaceVariant
       )
     }
   }

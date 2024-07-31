@@ -5,19 +5,18 @@ protocol WHEPPlayerListener: AnyObject {
 }
 
 protocol WHEPPlayer {
-    var patchEndpoint: String? {get set}
-    var peerConnectionFactory: RTCPeerConnectionFactory? {get set}
-    var peerConnection: RTCPeerConnection? {get set}
-    var iceCandidates: [RTCIceCandidate] {get set}
-    var videoTrack: RTCVideoTrack? {get set}
-    var delegate: WHEPPlayerListener? {get set}
-    
+    var patchEndpoint: String? { get set }
+    var peerConnectionFactory: RTCPeerConnectionFactory? { get set }
+    var peerConnection: RTCPeerConnection? { get set }
+    var iceCandidates: [RTCIceCandidate] { get set }
+    var videoTrack: RTCVideoTrack? { get set }
+    var delegate: WHEPPlayerListener? { get set }
+
     func sendSdpOffer(sdpOffer: String) async throws -> String
     func sendCandidate(candidate: RTCIceCandidate) async throws
     func connect() async throws
     func release(peerConnection: RTCPeerConnection)
 }
-
 
 @available(macOS 12.0, *)
 public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, ObservableObject {
@@ -30,7 +29,7 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
     var iceCandidates: [RTCIceCandidate] = []
     @Published public var videoTrack: RTCVideoTrack?
     var delegate: WHEPPlayerListener?
-    
+
     public init(serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions? = nil) {
         self.serverUrl = serverUrl
         self.authToken = authToken
@@ -41,93 +40,98 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         self.peerConnectionFactory = RTCPeerConnectionFactory(
             encoderFactory: encoderFactory,
             decoderFactory: decoderFactory)
-        
+
         let stunServerUrl = configurationOptions?.stunServerUrl ?? "stun:stun.l.google.com:19302"
         let stunServer = RTCIceServer(urlStrings: [stunServerUrl])
         let iceServers = [stunServer]
-        
+
         let config = RTCConfiguration()
         config.iceServers = iceServers
         config.sdpSemantics = .unifiedPlan
         config.continualGatheringPolicy = .gatherContinually
         config.candidateNetworkPolicy = .all
         config.tcpCandidatePolicy = .disabled
-        
+
         let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
-        peerConnection = self.peerConnectionFactory!.peerConnection(with: config,
-                                                                    constraints: constraints,
-                                                                   delegate: self)!
+        peerConnection = self.peerConnectionFactory!.peerConnection(
+            with: config,
+            constraints: constraints,
+            delegate: self)!
         if peerConnection == nil {
             print("Failed to establish RTCPeerConnection. Check initial configuration")
         }
     }
-    
+
     func sendSdpOffer(sdpOffer: String) async throws -> String {
         var response: (responseString: String, location: String?)?
         do {
-            response = try await Helper.sendSdpOffer(sdpOffer: sdpOffer,
-                                                         serverUrl: self.serverUrl,
-                                                         authToken: self.authToken)
+            response = try await Helper.sendSdpOffer(
+                sdpOffer: sdpOffer,
+                serverUrl: self.serverUrl,
+                authToken: self.authToken)
         } catch let error as AttributeNotFoundError {
             switch error {
             case .LocationNotFound(let description),
-                    .ResponseNotFound(let description),
-                    .UFragNotFound(let description),
-                    .PatchEndpointNotFound(let description):
-                print(description)
-            }
-        }  catch let error as SessionNetworkError {
-            switch error {
-            case .CandidateSendingError(let description),
-                    .ConnectionError(let description),
-                    .ConfigurationError(let description):
-                print(description)
-            }
-        }catch {
-            print("Unexpected error: \(error)")
-        }
-        guard let response = response else {
-            throw AttributeNotFoundError.ResponseNotFound(description: "Response to SDP offer not found. Check if the network request was successful.")
-        }
-        
-        if let location = response.location {
-            self.patchEndpoint = location
-        }else{
-            throw AttributeNotFoundError.LocationNotFound(description: "Location attribute not found. Check if the SDP answer contains location parameter.")
-        }
-        
-        return response.responseString
-    }
-
-    func sendCandidate(candidate: RTCIceCandidate) async throws {
-        do{
-            try await Helper.sendCandidate(candidate: candidate, patchEndpoint: self.patchEndpoint, serverUrl: self.serverUrl)
-        } catch let error as AttributeNotFoundError{
-            switch error {
-            case .LocationNotFound(let description),
-                    .PatchEndpointNotFound(let description),
-                    .ResponseNotFound(let description),
-                    .UFragNotFound(let description):
+                .ResponseNotFound(let description),
+                .UFragNotFound(let description),
+                .PatchEndpointNotFound(let description):
                 print(description)
             }
         } catch let error as SessionNetworkError {
             switch error {
             case .CandidateSendingError(let description),
-                    .ConnectionError(let description),
-                    .ConfigurationError(let description):
+                .ConnectionError(let description),
+                .ConfigurationError(let description):
                 print(description)
             }
+        } catch {
+            print("Unexpected error: \(error)")
         }
-        catch {
+        guard let response = response else {
+            throw AttributeNotFoundError.ResponseNotFound(
+                description: "Response to SDP offer not found. Check if the network request was successful.")
+        }
+
+        if let location = response.location {
+            self.patchEndpoint = location
+        } else {
+            throw AttributeNotFoundError.LocationNotFound(
+                description: "Location attribute not found. Check if the SDP answer contains location parameter.")
+        }
+
+        return response.responseString
+    }
+
+    func sendCandidate(candidate: RTCIceCandidate) async throws {
+        do {
+            try await Helper.sendCandidate(
+                candidate: candidate, patchEndpoint: self.patchEndpoint, serverUrl: self.serverUrl)
+        } catch let error as AttributeNotFoundError {
+            switch error {
+            case .LocationNotFound(let description),
+                .PatchEndpointNotFound(let description),
+                .ResponseNotFound(let description),
+                .UFragNotFound(let description):
+                print(description)
+            }
+        } catch let error as SessionNetworkError {
+            switch error {
+            case .CandidateSendingError(let description),
+                .ConnectionError(let description),
+                .ConfigurationError(let description):
+                print(description)
+            }
+        } catch {
             print("Unexpected error: \(error)")
         }
     }
-    
-    public func connect() async throws{
+
+    public func connect() async throws {
         if peerConnection == nil {
-            throw SessionNetworkError.ConfigurationError(description: "Failed to establish RTCPeerConnection. Check initial configuration")
+            throw SessionNetworkError.ConfigurationError(
+                description: "Failed to establish RTCPeerConnection. Check initial configuration")
         }
-        
+
         var error: NSError?
         let videoTransceiver = peerConnection!.addTransceiver(of: .video)!
         videoTransceiver.setDirection(.recvOnly, error: &error)
@@ -140,7 +144,7 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         try await peerConnection!.setLocalDescription(offer)
 
         let sdpAnswer = try await sendSdpOffer(sdpOffer: offer.sdp)
-        
+
         for candidate in iceCandidates {
             do {
                 try await sendCandidate(candidate: candidate)
@@ -152,22 +156,22 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         let remoteDescription = RTCSessionDescription(type: .answer, sdp: sdpAnswer)
         try await peerConnection!.setRemoteDescription(remoteDescription)
     }
-    
+
     public func release(peerConnection: RTCPeerConnection) {
         peerConnection.close()
     }
-    
+
     func addTrackListener(delegate: WHEPPlayerListener) {
         self.delegate = delegate
         if let track = videoTrack {
             delegate.onTrackAdded(track: track)
         }
     }
-    
+
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCSignalingState) {
-        
+
     }
-    
+
     public func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
         DispatchQueue.main.async {
             if let track = stream.videoTracks.first {
@@ -176,15 +180,15 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
             }
         }
     }
-    
+
     public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove stream: RTCMediaStream) {
-        
+
     }
-    
+
     public func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
-        
+
     }
-    
+
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
         switch newState {
         case .checking:
@@ -198,18 +202,20 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         case .new:
             print("The ICE agent is gathering addresses or is waiting to be given remote candidates through calls")
         case .completed:
-            print("The ICE agent has finished gathering candidates, has checked all pairs against one another, and has found a connection for all components.")
+            print(
+                "The ICE agent has finished gathering candidates, has checked all pairs against one another, and has found a connection for all components."
+            )
         case .closed:
             print("The ICE agent for this RTCPeerConnection has shut down and is no longer handling requests.")
         default:
             break
         }
     }
-    
+
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceGatheringState) {
-        
+
     }
-    
+
     public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
         if self.patchEndpoint != nil {
             Task { [weak self] in
@@ -219,15 +225,15 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
             iceCandidates.append(candidate)
         }
     }
-    
+
     public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {
-        
+
     }
-    
+
     public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
-        
+
     }
-    
+
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCPeerConnectionState) {
         switch stateChanged {
         case .connected:
@@ -246,6 +252,5 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
             print("Some other state: \(stateChanged.rawValue)")
         }
     }
-    
-    
+
 }
