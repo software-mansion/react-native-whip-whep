@@ -160,6 +160,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
     
     public func release(peerConnection: RTCPeerConnection) {
         peerConnection.close()
+        videoCapturer?.stopCapture()
     }
     
     private func setupVideoAndAudioDevices() throws{
