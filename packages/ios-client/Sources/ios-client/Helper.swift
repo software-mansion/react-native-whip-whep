@@ -48,6 +48,19 @@ extension RTCRtpEncodingParameters {
 
 @available(macOS 12.0, *)
 class Helper: NSObject {
+    
+    /**
+    Sends an SDP offer to the WHIP/WHEP server and awaits a response.
+
+    - Parameter sdpOffer: An offer to be sent to the WHIP/WHEP server.
+    - Parameter serverUrl: A URL address of the WHIP/WHEP server.
+    - Parameter authToken: An authorization token of the WHIP/WHEP  server.
+
+    - Throws: `SessionNetworkError.ConnectionError` if the  connection could not be established or the response code is incorrect,
+     for example due to server being down, wrong server URL or token.
+
+    - Returns: A tuple containing the response to the `sdpOffer` and the location which will later be set as a patch endpoint,
+    */
     static func sendSdpOffer(sdpOffer: String, serverUrl: URL, authToken: String?) async throws -> (
         responseString: String, location: String?
     ) {
@@ -89,6 +102,18 @@ class Helper: NSObject {
         return (responseString ?? "", location)
     }
 
+    /**
+    Sends an ICE candidate to WHIP/WHEP server in order to provide a streaming device.
+
+    - Parameter candidate: Represents a single ICE candidate.
+    - Parameter patchEndpoint: And endpoint obtained from the SDP response that accepts PATCH requests.
+    - Parameter serverUrl: URL address of the WHIP/WHEP server.
+     
+    - Throws: `AttributeNotFoundError.PatchEndpointNotFound` if the patch endpoint has not been properly set up,
+     `AttributeNotFoundError.UFragNotFound` if the SDP of the candidate does not contain the ufrag,
+     `SessionNetworkError.CandidateSendingError` if the candidate could not be sent and
+     `NSError` for when the candidate data dictionary could not be serialized to JSON.
+    */
     static func sendCandidate(candidate: RTCIceCandidate, patchEndpoint: String?, serverUrl: URL) async throws {
         guard patchEndpoint != nil else {
             throw AttributeNotFoundError.PatchEndpointNotFound(

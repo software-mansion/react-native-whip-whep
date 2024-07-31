@@ -12,7 +12,7 @@ protocol WHIPPlayer {
     func sendSdpOffer(sdpOffer: String) async throws -> String
     func sendCandidate(candidate: RTCIceCandidate) async throws
     func connect() async throws
-    func release(peerConnection: RTCPeerConnection)
+    func release() throws
 }
 
 public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerConnectionDelegate {
@@ -31,6 +31,17 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
     var audioDevice: AVCaptureDevice?
     var videoDevice: AVCaptureDevice?
 
+    /**
+    Initializes a `WHIPClientPlayer` object.
+
+    - Parameter serverUrl: A URL of the WHIP server.
+    - Parameter authToken: An authorization token of the WHIP server.
+    - Parameter configurationOptions: Additional configuration options, such as a STUN server URL.
+    - Parameter audioDevice: A device that will be used to stream audio.
+    - Parameter videoDevice: A device that will be used to stream video.
+
+    - Returns: A `WHIPClientPlayer` object.
+    */
     public init(
         serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions? = nil,
         audioDevice: AVCaptureDevice? = nil, videoDevice: AVCaptureDevice? = nil
@@ -80,6 +91,16 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         }
     }
 
+    /**
+    Sends an SDP offer to the WHIP server.
+
+    - Parameter sdpOffer: The offer to send to the server.
+
+    - Throws: `AttributeNotFoundError.ResponseNotFound` if there is no response to the offer or
+     `AttributeNotFoundError.LocationNotFound` if the response does not contain the location parameter.
+
+    - Returns: A SDP response.
+    */
     func sendSdpOffer(sdpOffer: String) async throws -> String {
         var response: (responseString: String, location: String?)?
         do {
@@ -120,6 +141,11 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         return response.responseString
     }
 
+    /**
+    Sends an ICE candidate to WHIP server in order to provide a streaming device.
+
+    - Parameter candidate: Represents a single ICE candidate.
+    */
     func sendCandidate(candidate: RTCIceCandidate) async throws {
         do {
             try await Helper.sendCandidate(
@@ -144,6 +170,12 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         }
     }
 
+    /**
+    Connects the client to the WHIP server using WebRTC Peer Connection.
+
+    - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
+        of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
+    */
     public func connect() async throws {
         if peerConnection == nil {
             throw SessionNetworkError.ConfigurationError(
@@ -166,11 +198,27 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         try await peerConnection!.setRemoteDescription(remoteDescription)
     }
 
-    public func release(peerConnection: RTCPeerConnection) {
-        peerConnection.close()
+    /**
+    Closes the established Peer Connection.
+     
+    - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
+    of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
+    */
+    public func release() throws{
+        if peerConnection == nil {
+            throw SessionNetworkError.ConfigurationError(
+                description: "Failed to establish RTCPeerConnection. Check initial configuration")
+        }
+        
+        peerConnection?.close()
         videoCapturer?.stopCapture()
     }
 
+    /**
+    Gets the video and audio devices, prepares them, starts capture and adds it to the Peer Connection.
+
+    - Throws: `AVCaptureDeviceError.AudioDeviceNotAvailable` if no audio device has been passed to the initializer and `AVCaptureDeviceError.VideoDeviceNotAvailable` if there is no video device.
+    */
     private func setupVideoAndAudioDevices() throws {
         guard let audioDevice = self.audioDevice else {
             throw AVCaptureDeviceError.AudioDeviceNotAvailable(
@@ -236,6 +284,9 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
 
     }
 
+    /**
+     Reacts to changes in the ICE Connection state and logs a message depending on the current state.
+    */
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
         switch newState {
         case .checking:
@@ -263,6 +314,9 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
 
     }
 
+    /**
+     Reacts to new candidate found and sends it to the WHIP server.
+    */
     public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
         if self.patchEndpoint != nil {
             Task { [weak self] in
@@ -280,7 +334,10 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
     public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
 
     }
-
+    
+    /**
+     Reacts to changes in the Peer Connection state and logs a message depending on the current state
+    */
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCPeerConnectionState) {
         switch stateChanged {
         case .connected:

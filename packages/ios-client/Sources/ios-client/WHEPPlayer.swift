@@ -15,7 +15,7 @@ protocol WHEPPlayer {
     func sendSdpOffer(sdpOffer: String) async throws -> String
     func sendCandidate(candidate: RTCIceCandidate) async throws
     func connect() async throws
-    func release(peerConnection: RTCPeerConnection)
+    func release() throws
 }
 
 @available(macOS 12.0, *)
@@ -30,6 +30,15 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
     @Published public var videoTrack: RTCVideoTrack?
     var delegate: WHEPPlayerListener?
 
+    /**
+    Initializes a `WHEPClientPlayer` object.
+
+    - Parameter serverUrl: A URL of the WHEP server.
+    - Parameter authToken: An authorization token of the WHEP server.
+    - Parameter configurationOptions: Additional configuration options, such as a STUN server URL.
+
+    - Returns: A `WHEPClientPlayer` object.
+    */
     public init(serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions? = nil) {
         self.serverUrl = serverUrl
         self.authToken = authToken
@@ -62,6 +71,16 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         }
     }
 
+    /**
+    Sends an SDP offer to the WHEP server.
+
+    - Parameter sdpOffer: The offer to send to the server.
+
+    - Throws: `AttributeNotFoundError.ResponseNotFound` if there is no response to the offer or
+     `AttributeNotFoundError.LocationNotFound` if the response does not contain the location parameter.
+
+    - Returns: A SDP response.
+    */
     func sendSdpOffer(sdpOffer: String) async throws -> String {
         var response: (responseString: String, location: String?)?
         do {
@@ -102,6 +121,11 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         return response.responseString
     }
 
+    /**
+    Sends an ICE candidate to WHEP server in order to provide a streaming device.
+
+    - Parameter candidate: Represents a single ICE candidate.
+    */
     func sendCandidate(candidate: RTCIceCandidate) async throws {
         do {
             try await Helper.sendCandidate(
@@ -126,6 +150,12 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         }
     }
 
+    /**
+    Connects the client to the WHEP server using WebRTC Peer Connection.
+
+    - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
+        of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
+    */
     public func connect() async throws {
         if peerConnection == nil {
             throw SessionNetworkError.ConfigurationError(
@@ -157,8 +187,18 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         try await peerConnection!.setRemoteDescription(remoteDescription)
     }
 
-    public func release(peerConnection: RTCPeerConnection) {
-        peerConnection.close()
+    /**
+    Closes the established Peer Connection.
+     
+    - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
+    of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
+    */
+    public func release() throws{
+        if peerConnection == nil {
+            throw SessionNetworkError.ConfigurationError(
+                description: "Failed to establish RTCPeerConnection. Check initial configuration")
+        }
+        peerConnection?.close()
     }
 
     func addTrackListener(delegate: WHEPPlayerListener) {
@@ -189,6 +229,9 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
 
     }
 
+    /**
+     Reacts to changes in the ICE Connection state and logs a message depending on the current state.
+    */
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
         switch newState {
         case .checking:
@@ -216,6 +259,9 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
 
     }
 
+    /**
+     Reacts to new candidate found and sends it to the WHIP server.
+    */
     public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
         if self.patchEndpoint != nil {
             Task { [weak self] in
@@ -234,6 +280,9 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
 
     }
 
+    /**
+     Reacts to changes in the Peer Connection state and logs a message depending on the current state
+    */
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCPeerConnectionState) {
         switch stateChanged {
         case .connected:
