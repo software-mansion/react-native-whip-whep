@@ -57,21 +57,77 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         peerConnection = self.peerConnectionFactory!.peerConnection(with: config,
                                                                     constraints: constraints,
                                                                    delegate: self)!
+        if peerConnection == nil {
+            print("Failed to establish RTCPeerConnection. Check initial configuration")
+        }
     }
     
     func sendSdpOffer(sdpOffer: String) async throws -> String {
-        let response =  try await Helper.sendSdpOffer(sdpOffer: sdpOffer, serverUrl: self.serverUrl, authToken: self.authToken)
+        var response: (responseString: String, location: String?)?
+        do {
+            response = try await Helper.sendSdpOffer(sdpOffer: sdpOffer,
+                                                         serverUrl: self.serverUrl,
+                                                         authToken: self.authToken)
+        } catch let error as AttributeNotFoundError {
+            switch error {
+            case .LocationNotFound(let description),
+                    .ResponseNotFound(let description),
+                    .UFragNotFound(let description),
+                    .PatchEndpointNotFound(let description):
+                print(description)
+            }
+        }  catch let error as SessionNetworkError {
+            switch error {
+            case .CandidateSendingError(let description),
+                    .ConnectionError(let description),
+                    .ConfigurationError(let description):
+                print(description)
+            }
+        }catch {
+            print("Unexpected error: \(error)")
+        }
+        guard let response = response else {
+            throw AttributeNotFoundError.ResponseNotFound(description: "Response to SDP offer not found. Check if the network request was successful.")
+        }
+        
         if let location = response.location {
             self.patchEndpoint = location
+        }else{
+            throw AttributeNotFoundError.LocationNotFound(description: "Location attribute not found. Check if the SDP answer contains location parameter.")
         }
+        
         return response.responseString
     }
 
     func sendCandidate(candidate: RTCIceCandidate) async throws {
-        try await Helper.sendCandidate(candidate: candidate, patchEndpoint: self.patchEndpoint, serverUrl: self.serverUrl)
+        do{
+            try await Helper.sendCandidate(candidate: candidate, patchEndpoint: self.patchEndpoint, serverUrl: self.serverUrl)
+        } catch let error as AttributeNotFoundError{
+            switch error {
+            case .LocationNotFound(let description),
+                    .PatchEndpointNotFound(let description),
+                    .ResponseNotFound(let description),
+                    .UFragNotFound(let description):
+                print(description)
+            }
+        } catch let error as SessionNetworkError {
+            switch error {
+            case .CandidateSendingError(let description),
+                    .ConnectionError(let description),
+                    .ConfigurationError(let description):
+                print(description)
+            }
+        }
+        catch {
+            print("Unexpected error: \(error)")
+        }
     }
     
     public func connect() async throws{
+        if peerConnection == nil {
+            throw SessionNetworkError.ConfigurationError(description: "Failed to establish RTCPeerConnection. Check initial configuration")
+        }
+        
         var error: NSError?
         let videoTransceiver = peerConnection!.addTransceiver(of: .video)!
         videoTransceiver.setDirection(.recvOnly, error: &error)

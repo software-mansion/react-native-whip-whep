@@ -56,9 +56,13 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         config.tcpCandidatePolicy = .disabled
         
         let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
-        peerConnection = self.peerConnectionFactory!.peerConnection(with: config,
+        peerConnection = self.peerConnectionFactory?.peerConnection(with: config,
                                                                     constraints: constraints,
-                                                                   delegate: self)!
+                                                                   delegate: self)
+        if peerConnection == nil {
+            print("Failed to establish RTCPeerConnection. Check initial configuration")
+        }
+        
         do {
             try setupVideoAndAudioDevices()
         } catch let error as AVCaptureDeviceError {
@@ -89,7 +93,8 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         }  catch let error as SessionNetworkError {
             switch error {
             case .CandidateSendingError(let description),
-                    .ConnectionError(let description):
+                    .ConnectionError(let description),
+                    .ConfigurationError(let description):
                 print(description)
             }
         }catch {
@@ -122,7 +127,8 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         } catch let error as SessionNetworkError {
             switch error {
             case .CandidateSendingError(let description),
-                    .ConnectionError(let description):
+                    .ConnectionError(let description),
+                    .ConfigurationError(let description):
                 print(description)
             }
         }
@@ -132,6 +138,10 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
     }
     
     public func connect() async throws {
+        if peerConnection == nil {
+            throw SessionNetworkError.ConfigurationError(description: "Failed to establish RTCPeerConnection. Check initial configuration")
+        }
+        
         let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
         let offer = try await peerConnection!.offer(for: constraints)
         try await peerConnection!.setLocalDescription(offer)
