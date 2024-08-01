@@ -1,6 +1,6 @@
 # iOSExample
 
-A simple example app showing the main functionalities of the WHIP/WHEP package. It consists of a viewtha, depending of whether WHIP or WHEP has been chosen, shows a camera preview or current media stream.
+A simple example app showing the main functionalities of the WHIP/WHEP package. It consists of a view that, depending of whether WHIP or WHEP has been chosen, shows a camera preview or current media stream.
 
 ## WHEP
 
