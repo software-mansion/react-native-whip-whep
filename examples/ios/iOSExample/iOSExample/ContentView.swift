@@ -39,7 +39,11 @@ struct ContentView: View {
                                     print(error)
                                 }
                             }
-                            try await whepPlayer.connect()
+                            do{
+                                try await whepPlayer.connect()
+                            }catch is SessionNetworkError{
+                                print("Session Network Error")
+                            }
                         }
                     }
                 case .whip:
@@ -64,8 +68,8 @@ struct ContentView: View {
                             }
                             do {
                                 try await whipPlayer.connect()
-                            } catch {
-                                print(error)
+                            }catch is SessionNetworkError{
+                                print("Session Network Error")
                             }
                             
                         }

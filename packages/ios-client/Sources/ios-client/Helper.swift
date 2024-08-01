@@ -1,18 +1,18 @@
 import WebRTC
 
-enum AVCaptureDeviceError: Error {
+public enum AVCaptureDeviceError: Error {
     case AudioDeviceNotAvailable(description: String)
     case VideoDeviceNotAvailable(description: String)
 }
 
-enum AttributeNotFoundError: Error {
+public enum AttributeNotFoundError: Error {
     case LocationNotFound(description: String)
     case PatchEndpointNotFound(description: String)
     case UFragNotFound(description: String)
     case ResponseNotFound(description: String)
 }
 
-enum SessionNetworkError: Error {
+public enum SessionNetworkError: Error {
     case CandidateSendingError(description: String)
     case ConnectionError(description: String)
     case ConfigurationError(description: String)
