@@ -9,8 +9,8 @@ struct ContentView: View {
     }
 
     @State private var selectedPlayerType = PlayerType.whep
-    @StateObject var whepPlayer = WHEPClientPlayer(serverUrl: URL(string: "http://192.168.1.23:8829/whep")!, authToken: "example")
-    @StateObject var whipPlayer = WHIPClientPlayer(serverUrl: URL(string: "http://192.168.1.23:8829/whip")!, authToken: "example", audioDevice: AVCaptureDevice.default(for: .audio), videoDevice: AVCaptureDevice.default(for: .video))
+    @StateObject var whepPlayer = WHEPClientPlayer(serverUrl: URL(string: ProcessInfo.processInfo.environment["WHEP_SERVER_URL"] ?? "")!, authToken: "example")
+    @StateObject var whipPlayer = WHIPClientPlayer(serverUrl: URL(string: ProcessInfo.processInfo.environment["WHIP_SERVER_URL"] ?? "")!, authToken: "example", audioDevice: AVCaptureDevice.default(for: .audio), videoDevice: AVCaptureDevice.default(for: .video))
     
     var body: some View {
         VStack {
