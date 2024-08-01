@@ -8,6 +8,8 @@ protocol WHIPPlayer {
     var videoTrack: RTCVideoTrack? { get set }
     var videoCapturer: RTCCameraVideoCapturer? { get set }
     var videoSource: RTCVideoSource? { get set }
+    var isConnected: Bool {get set}
+    var isConnectionSetUp: Bool {get set}
 
     func sendSdpOffer(sdpOffer: String) async throws -> String
     func sendCandidate(candidate: RTCIceCandidate) async throws
@@ -22,36 +24,18 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
     var patchEndpoint: String?
     var peerConnectionFactory: RTCPeerConnectionFactory?
     var peerConnection: RTCPeerConnection?
+    var isConnectionSetUp: Bool = false
 
     var iceCandidates: [RTCIceCandidate] = []
     @Published public var videoTrack: RTCVideoTrack?
+    @Published public var isConnected: Bool = false
 
     var videoCapturer: RTCCameraVideoCapturer?
     var videoSource: RTCVideoSource?
     var audioDevice: AVCaptureDevice?
     var videoDevice: AVCaptureDevice?
-
-    /**
-    Initializes a `WHIPClientPlayer` object.
-
-    - Parameter serverUrl: A URL of the WHIP server.
-    - Parameter authToken: An authorization token of the WHIP server.
-    - Parameter configurationOptions: Additional configuration options, such as a STUN server URL.
-    - Parameter audioDevice: A device that will be used to stream audio.
-    - Parameter videoDevice: A device that will be used to stream video.
-
-    - Returns: A `WHIPClientPlayer` object.
-    */
-    public init(
-        serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions? = nil,
-        audioDevice: AVCaptureDevice? = nil, videoDevice: AVCaptureDevice? = nil
-    ) {
-        self.serverUrl = serverUrl
-        self.authToken = authToken
-        self.configurationOptions = configurationOptions
-        self.audioDevice = audioDevice
-        self.videoDevice = videoDevice
-        super.init()
+    
+    func setupPeerConnection (){
         let encoderFactory = RTCDefaultVideoEncoderFactory()
         let decoderFactory = RTCDefaultVideoDecoderFactory()
         self.peerConnectionFactory = RTCPeerConnectionFactory(
@@ -74,10 +58,11 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
             with: config,
             constraints: constraints,
             delegate: self)
+        
         if peerConnection == nil {
             print("Failed to establish RTCPeerConnection. Check initial configuration")
         }
-
+        
         do {
             try setupVideoAndAudioDevices()
         } catch let error as AVCaptureDeviceError {
@@ -89,6 +74,32 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         } catch {
             print("Unexpected error: \(error)")
         }
+        
+        self.isConnectionSetUp = true
+    }
+
+    /**
+    Initializes a `WHIPClientPlayer` object.
+
+    - Parameter serverUrl: A URL of the WHIP server.
+    - Parameter authToken: An authorization token of the WHIP server.
+    - Parameter configurationOptions: Additional configuration options, such as a STUN server URL.
+    - Parameter audioDevice: A device that will be used to stream audio.
+    - Parameter videoDevice: A device that will be used to stream video.
+
+    - Returns: A `WHIPClientPlayer` object.
+    */
+    public init(
+        serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions? = nil,
+        audioDevice: AVCaptureDevice? = nil, videoDevice: AVCaptureDevice? = nil
+    ) {
+        self.serverUrl = serverUrl
+        self.authToken = authToken
+        self.configurationOptions = configurationOptions
+        self.audioDevice = audioDevice
+        self.videoDevice = videoDevice
+        super.init()
+        setupPeerConnection()
     }
 
     /**
@@ -108,6 +119,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
                 sdpOffer: sdpOffer,
                 serverUrl: self.serverUrl,
                 authToken: self.authToken)
+            
         } catch let error as AttributeNotFoundError {
             switch error {
             case .LocationNotFound(let description),
@@ -177,7 +189,9 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
     public func connect() async throws {
-        if peerConnection == nil {
+        if !self.isConnectionSetUp{
+            setupPeerConnection()
+        }else if self.isConnectionSetUp && self.peerConnection == nil {
             throw SessionNetworkError.ConfigurationError(
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")
         }
@@ -186,6 +200,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         let offer = try await peerConnection!.offer(for: constraints)
         try await peerConnection!.setLocalDescription(offer)
         let sdpAnswer = try await sendSdpOffer(sdpOffer: offer.sdp)
+        
 
         for candidate in iceCandidates {
             do {
@@ -195,7 +210,14 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
             }
         }
         let remoteDescription = RTCSessionDescription(type: .answer, sdp: sdpAnswer)
-        try await peerConnection!.setRemoteDescription(remoteDescription)
+        do{
+            try await peerConnection!.setRemoteDescription(remoteDescription)
+            DispatchQueue.main.async {
+                self.isConnected = true
+            }
+        } catch {
+            print("Unexpected error: \(error)")
+        }
     }
 
     /**
@@ -211,6 +233,13 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         }
 
         peerConnection?.close()
+        peerConnection = nil
+        DispatchQueue.main.async {
+            self.isConnected = false
+            self.isConnectionSetUp = false
+            self.videoCapturer?.stopCapture()
+
+        }
     }
 
     /**

@@ -80,16 +80,15 @@ class Helper: NSObject {
         } catch {
             throw SessionNetworkError.ConnectionError(
                 description:
-                    "Network error. Check if the server is up and running, the token and the server url is correct")
+                    "Network error. Check if the server is up and running and the token and the server url is correct.")
         }
-
         guard let httpResponse = response as? HTTPURLResponse,
             httpResponse.statusCode == 201
         else {
             let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
             throw SessionNetworkError.ConnectionError(
                 description:
-                    "Network error. Check if the server is up and running, the token and the server url is correct")
+                    "Network error. Check if the server is up and running and the token and the server url is correct.")
         }
 
         let responseString = String(data: data!, encoding: .utf8)

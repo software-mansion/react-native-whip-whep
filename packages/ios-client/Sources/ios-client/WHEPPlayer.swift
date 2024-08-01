@@ -11,6 +11,8 @@ protocol WHEPPlayer {
     var iceCandidates: [RTCIceCandidate] { get set }
     var videoTrack: RTCVideoTrack? { get set }
     var delegate: WHEPPlayerListener? { get set }
+    var isConnected: Bool {get set}
+    var isConnectionSetUp: Bool {get set}
 
     func sendSdpOffer(sdpOffer: String) async throws -> String
     func sendCandidate(candidate: RTCIceCandidate) async throws
@@ -27,23 +29,13 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
     var peerConnectionFactory: RTCPeerConnectionFactory?
     var peerConnection: RTCPeerConnection?
     var iceCandidates: [RTCIceCandidate] = []
+    var isConnectionSetUp: Bool = false
+
     @Published public var videoTrack: RTCVideoTrack?
+    @Published public var isConnected: Bool = false
     var delegate: WHEPPlayerListener?
-
-    /**
-    Initializes a `WHEPClientPlayer` object.
-
-    - Parameter serverUrl: A URL of the WHEP server.
-    - Parameter authToken: An authorization token of the WHEP server.
-    - Parameter configurationOptions: Additional configuration options, such as a STUN server URL.
-
-    - Returns: A `WHEPClientPlayer` object.
-    */
-    public init(serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions? = nil) {
-        self.serverUrl = serverUrl
-        self.authToken = authToken
-        self.configurationOptions = configurationOptions
-        super.init()
+    
+    func setupPeerConnection() {
         let encoderFactory = RTCDefaultVideoEncoderFactory()
         let decoderFactory = RTCDefaultVideoDecoderFactory()
         self.peerConnectionFactory = RTCPeerConnectionFactory(
@@ -69,6 +61,25 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         if peerConnection == nil {
             print("Failed to establish RTCPeerConnection. Check initial configuration")
         }
+        
+        self.isConnectionSetUp = true
+    }
+
+    /**
+    Initializes a `WHEPClientPlayer` object.
+
+    - Parameter serverUrl: A URL of the WHEP server.
+    - Parameter authToken: An authorization token of the WHEP server.
+    - Parameter configurationOptions: Additional configuration options, such as a STUN server URL.
+
+    - Returns: A `WHEPClientPlayer` object.
+    */
+    public init(serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions? = nil) {
+        self.serverUrl = serverUrl
+        self.authToken = authToken
+        self.configurationOptions = configurationOptions
+        super.init()
+        setupPeerConnection()
     }
 
     /**
@@ -157,7 +168,9 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
     public func connect() async throws {
-        if peerConnection == nil {
+        if !self.isConnectionSetUp{
+            setupPeerConnection()
+        }else if self.isConnectionSetUp && self.peerConnection == nil {
             throw SessionNetworkError.ConfigurationError(
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")
         }
@@ -184,7 +197,15 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         }
 
         let remoteDescription = RTCSessionDescription(type: .answer, sdp: sdpAnswer)
-        try await peerConnection!.setRemoteDescription(remoteDescription)
+        
+        do{
+            try await peerConnection!.setRemoteDescription(remoteDescription)
+            DispatchQueue.main.async {
+                self.isConnected = true
+            }
+        } catch {
+            print("Unexpected error: \(error)")
+        }
     }
 
     /**
@@ -199,6 +220,11 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
                 description: "Failed to close RTCPeerConnection. Check initial configuration")
         }
         peerConnection?.close()
+        peerConnection = nil
+        DispatchQueue.main.async {
+            self.isConnected = false
+            self.isConnectionSetUp = false
+        }
     }
 
     func addTrackListener(delegate: WHEPPlayerListener) {
