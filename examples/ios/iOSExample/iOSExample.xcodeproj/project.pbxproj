@@ -14,7 +14,7 @@
 		7C35C09D2C4927BB00EE0290 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C35C09C2C4927BB00EE0290 /* Preview Assets.xcassets */; };
 		7C75AD8A2C58DA740011DB76 /* MobileWhepClient in Frameworks */ = {isa = PBXBuildFile; productRef = 7C75AD892C58DA740011DB76 /* MobileWhepClient */; };
 		7C75AD8C2C58DCBF0011DB76 /* MobileWhepClient in Frameworks */ = {isa = PBXBuildFile; productRef = 7C75AD8B2C58DCBF0011DB76 /* MobileWhepClient */; };
-		7C75AD902C5A24990011DB76 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C75AD8F2C5A24990011DB76 /* CameraPreview.swift */; };
+		7C75AD942C5BD06C0011DB76 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C75AD932C5BD06C0011DB76 /* CameraPreview.swift */; };
 		7C9D91CD2C539BEC000DF490 /* WebRTCVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9D91CC2C539BEC000DF490 /* WebRTCVideoView.swift */; };
 		7CFD45B82C51056900D6A404 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CFD45B72C51056900D6A404 /* CoreAudio.framework */; };
 /* End PBXBuildFile section */
@@ -29,7 +29,7 @@
 		7C35C0992C4927BB00EE0290 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7C35C09C2C4927BB00EE0290 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		7C35C0A32C49280C00EE0290 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		7C75AD8F2C5A24990011DB76 /* CameraPreview.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CameraPreview.swift; path = ../../../../../../../.Trash/CameraPreview.swift; sourceTree = "<group>"; };
+		7C75AD932C5BD06C0011DB76 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
 		7C9D91CC2C539BEC000DF490 /* WebRTCVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCVideoView.swift; sourceTree = "<group>"; };
 		7CFD45B52C51055F00D6A404 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		7CFD45B72C51056900D6A404 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
@@ -84,10 +84,10 @@
 				7C35C0A32C49280C00EE0290 /* Info.plist */,
 				7C35C0952C4927BA00EE0290 /* iOSExampleApp.swift */,
 				7C35C0972C4927BA00EE0290 /* ContentView.swift */,
-				7C75AD8F2C5A24990011DB76 /* CameraPreview.swift */,
 				7C35C0992C4927BB00EE0290 /* Assets.xcassets */,
 				7C35C09B2C4927BB00EE0290 /* Preview Content */,
 				7C9D91CC2C539BEC000DF490 /* WebRTCVideoView.swift */,
+				7C75AD932C5BD06C0011DB76 /* CameraPreview.swift */,
 			);
 			path = iOSExample;
 			sourceTree = "<group>";
@@ -212,8 +212,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7C75AD902C5A24990011DB76 /* CameraPreview.swift in Sources */,
 				7C35C0982C4927BA00EE0290 /* ContentView.swift in Sources */,
+				7C75AD942C5BD06C0011DB76 /* CameraPreview.swift in Sources */,
 				7C35C0962C4927BA00EE0290 /* iOSExampleApp.swift in Sources */,
 				7C9D91CD2C539BEC000DF490 /* WebRTCVideoView.swift in Sources */,
 			);
