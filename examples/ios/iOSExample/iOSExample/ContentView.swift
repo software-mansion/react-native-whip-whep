@@ -32,16 +32,16 @@ struct ContentView: View {
                     }
                     Button("Connect WHEP") {
                         Task {
-                            if(whipPlayer.isConnected){
-                                do{
+                            if whipPlayer.isConnected {
+                                do {
                                     try whipPlayer.release()
-                                }catch {
+                                } catch {
                                     print(error)
                                 }
                             }
-                            do{
+                            do {
                                 try await whepPlayer.connect()
-                            }catch is SessionNetworkError{
+                            } catch is SessionNetworkError{
                                 print("Session Network Error")
                             }
                         }
@@ -53,22 +53,22 @@ struct ContentView: View {
                             .cornerRadius(8)
                             .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.blue, lineWidth: 2))
                             .padding([.top, .bottom], 50)
-                    }else {
+                    } else {
                         Text("Preview loading...")
                     }
                     
                     Button("Connect WHIP") {
                         Task {
-                            if(whepPlayer.isConnected){
-                                do{
+                            if whepPlayer.isConnected {
+                                do {
                                     try whepPlayer.release()
-                                }catch {
+                                } catch {
                                     print(error)
                                 }
                             }
                             do {
                                 try await whipPlayer.connect()
-                            }catch is SessionNetworkError{
+                            } catch is SessionNetworkError {
                                 print("Session Network Error")
                             }
                             
