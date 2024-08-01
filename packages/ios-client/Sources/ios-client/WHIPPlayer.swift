@@ -8,8 +8,8 @@ protocol WHIPPlayer {
     var videoTrack: RTCVideoTrack? { get set }
     var videoCapturer: RTCCameraVideoCapturer? { get set }
     var videoSource: RTCVideoSource? { get set }
-    var isConnected: Bool {get set}
-    var isConnectionSetUp: Bool {get set}
+    var isConnected: Bool { get set }
+    var isConnectionSetUp: Bool { get set }
 
     func sendSdpOffer(sdpOffer: String) async throws -> String
     func sendCandidate(candidate: RTCIceCandidate) async throws
@@ -34,8 +34,8 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
     var videoSource: RTCVideoSource?
     var audioDevice: AVCaptureDevice?
     var videoDevice: AVCaptureDevice?
-    
-    func setupPeerConnection (){
+
+    func setupPeerConnection() {
         let encoderFactory = RTCDefaultVideoEncoderFactory()
         let decoderFactory = RTCDefaultVideoDecoderFactory()
         self.peerConnectionFactory = RTCPeerConnectionFactory(
@@ -58,11 +58,11 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
             with: config,
             constraints: constraints,
             delegate: self)
-        
+
         if peerConnection == nil {
             print("Failed to establish RTCPeerConnection. Check initial configuration")
         }
-        
+
         do {
             try setupVideoAndAudioDevices()
         } catch let error as AVCaptureDeviceError {
@@ -74,7 +74,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         } catch {
             print("Unexpected error: \(error)")
         }
-        
+
         self.isConnectionSetUp = true
     }
 
@@ -119,7 +119,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
                 sdpOffer: sdpOffer,
                 serverUrl: self.serverUrl,
                 authToken: self.authToken)
-            
+
         } catch let error as AttributeNotFoundError {
             switch error {
             case .LocationNotFound(let description),
@@ -189,9 +189,9 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
     public func connect() async throws {
-        if !self.isConnectionSetUp{
+        if !self.isConnectionSetUp {
             setupPeerConnection()
-        }else if self.isConnectionSetUp && self.peerConnection == nil {
+        } else if self.isConnectionSetUp && self.peerConnection == nil {
             throw SessionNetworkError.ConfigurationError(
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")
         }
@@ -200,7 +200,6 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         let offer = try await peerConnection!.offer(for: constraints)
         try await peerConnection!.setLocalDescription(offer)
         let sdpAnswer = try await sendSdpOffer(sdpOffer: offer.sdp)
-        
 
         for candidate in iceCandidates {
             do {
@@ -210,7 +209,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
             }
         }
         let remoteDescription = RTCSessionDescription(type: .answer, sdp: sdpAnswer)
-        do{
+        do {
             try await peerConnection!.setRemoteDescription(remoteDescription)
             DispatchQueue.main.async {
                 self.isConnected = true

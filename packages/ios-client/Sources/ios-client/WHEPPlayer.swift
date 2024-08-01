@@ -11,8 +11,8 @@ protocol WHEPPlayer {
     var iceCandidates: [RTCIceCandidate] { get set }
     var videoTrack: RTCVideoTrack? { get set }
     var delegate: WHEPPlayerListener? { get set }
-    var isConnected: Bool {get set}
-    var isConnectionSetUp: Bool {get set}
+    var isConnected: Bool { get set }
+    var isConnectionSetUp: Bool { get set }
 
     func sendSdpOffer(sdpOffer: String) async throws -> String
     func sendCandidate(candidate: RTCIceCandidate) async throws
@@ -34,7 +34,7 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
     @Published public var videoTrack: RTCVideoTrack?
     @Published public var isConnected: Bool = false
     var delegate: WHEPPlayerListener?
-    
+
     func setupPeerConnection() {
         let encoderFactory = RTCDefaultVideoEncoderFactory()
         let decoderFactory = RTCDefaultVideoDecoderFactory()
@@ -61,7 +61,7 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         if peerConnection == nil {
             print("Failed to establish RTCPeerConnection. Check initial configuration")
         }
-        
+
         self.isConnectionSetUp = true
     }
 
@@ -168,9 +168,9 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
     public func connect() async throws {
-        if !self.isConnectionSetUp{
+        if !self.isConnectionSetUp {
             setupPeerConnection()
-        }else if self.isConnectionSetUp && self.peerConnection == nil {
+        } else if self.isConnectionSetUp && self.peerConnection == nil {
             throw SessionNetworkError.ConfigurationError(
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")
         }
@@ -197,8 +197,8 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         }
 
         let remoteDescription = RTCSessionDescription(type: .answer, sdp: sdpAnswer)
-        
-        do{
+
+        do {
             try await peerConnection!.setRemoteDescription(remoteDescription)
             DispatchQueue.main.async {
                 self.isConnected = true
