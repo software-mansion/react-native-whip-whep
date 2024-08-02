@@ -217,13 +217,6 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         }
     }
 
-    func addTrackListener(delegate: WHEPPlayerListener) {
-        self.delegate = delegate
-        if let track = videoTrack {
-            delegate.onTrackAdded(track: track)
-        }
-    }
-
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCSignalingState) {
         logger.debug("RTC signaling state changed: \(stateChanged.rawValue).")
     }
