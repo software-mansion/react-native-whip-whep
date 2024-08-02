@@ -18,6 +18,12 @@ public enum SessionNetworkError: Error {
     case ConfigurationError(description: String)
 }
 
+protocol RTCPeerConnectionFactoryType: AnyObject, RTCPeerConnectionDelegate {
+    var peerConnectionFactory: RTCPeerConnectionFactory? { get set }
+    var peerConnection: RTCPeerConnection? { get set }
+    var isConnectionSetUp: Bool { get set }
+}
+
 extension RTCPeerConnection {
     // currently `Membrane RTC Engine` can't handle track of diretion `sendRecv` therefore
     // we need to change all `sendRecv` to `sendOnly`.
@@ -48,6 +54,38 @@ extension RTCRtpEncodingParameters {
 
 @available(macOS 12.0, *)
 class Helper: NSObject {
+    
+    static func setupPeerConnection(player: RTCPeerConnectionFactoryType, configurationOptions: ConfigurationOptions? = nil) {
+        let encoderFactory = RTCDefaultVideoEncoderFactory()
+        let decoderFactory = RTCDefaultVideoDecoderFactory()
+        player.peerConnectionFactory = RTCPeerConnectionFactory(
+            encoderFactory: encoderFactory,
+            decoderFactory: decoderFactory)
+
+        
+        let stunServerUrl = configurationOptions?.stunServerUrl ?? "stun:stun.l.google.com:19302"
+        let stunServer = RTCIceServer(urlStrings: [stunServerUrl])
+        let iceServers = [stunServer]
+
+        let config = RTCConfiguration()
+        config.iceServers = iceServers
+        config.sdpSemantics = .unifiedPlan
+        config.continualGatheringPolicy = .gatherContinually
+        config.candidateNetworkPolicy = .all
+        config.tcpCandidatePolicy = .disabled
+
+        let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
+        player.peerConnection = player.peerConnectionFactory!.peerConnection(
+            with: config,
+            constraints: constraints,
+            delegate: player)
+            
+        if player.peerConnection! == nil {
+            print("Failed to establish RTCPeerConnection. Check initial configuration")
+        }
+        
+        player.isConnectionSetUp = true
+    }
 
     /**
     Sends an SDP offer to the WHIP/WHEP server and awaits a response.

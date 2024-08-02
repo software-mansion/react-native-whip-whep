@@ -24,7 +24,7 @@ protocol WHEPPlayer {
 }
 
 @available(macOS 12.0, *)
-public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
+public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, RTCPeerConnectionFactoryType {
     var serverUrl: URL
     var authToken: String?
     var configurationOptions: ConfigurationOptions?
@@ -54,37 +54,7 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
     public var delegate: WHEPPlayerListener?
     
     let logger = Logger()
-
-    func setupPeerConnection() {
-        let encoderFactory = RTCDefaultVideoEncoderFactory()
-        let decoderFactory = RTCDefaultVideoDecoderFactory()
-        self.peerConnectionFactory = RTCPeerConnectionFactory(
-            encoderFactory: encoderFactory,
-            decoderFactory: decoderFactory)
-
-        let stunServerUrl = configurationOptions?.stunServerUrl ?? "stun:stun.l.google.com:19302"
-        let stunServer = RTCIceServer(urlStrings: [stunServerUrl])
-        let iceServers = [stunServer]
-
-        let config = RTCConfiguration()
-        config.iceServers = iceServers
-        config.sdpSemantics = .unifiedPlan
-        config.continualGatheringPolicy = .gatherContinually
-        config.candidateNetworkPolicy = .all
-        config.tcpCandidatePolicy = .disabled
-
-        let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
-        peerConnection = self.peerConnectionFactory!.peerConnection(
-            with: config,
-            constraints: constraints,
-            delegate: self)!
-        if peerConnection == nil {
-            print("Failed to establish RTCPeerConnection. Check initial configuration")
-        }
-
-        self.isConnectionSetUp = true
-    }
-
+    
     /**
     Initializes a `WHEPClientPlayer` object.
 
@@ -99,7 +69,7 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
         self.authToken = authToken
         self.configurationOptions = configurationOptions
         super.init()
-        setupPeerConnection()
+        Helper.setupPeerConnection(player: self, configurationOptions: self.configurationOptions)
     }
 
     /**
@@ -189,7 +159,7 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
     */
     public func connect() async throws {
         if !self.isConnectionSetUp {
-            setupPeerConnection()
+            Helper.setupPeerConnection(player: self, configurationOptions: self.configurationOptions)
         } else if self.isConnectionSetUp && self.peerConnection == nil {
             throw SessionNetworkError.ConfigurationError(
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")

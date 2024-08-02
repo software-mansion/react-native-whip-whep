@@ -18,7 +18,7 @@ protocol WHIPPlayer {
     func release() throws
 }
 
-public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerConnectionDelegate {
+public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerConnectionDelegate, RTCPeerConnectionFactoryType {
     var serverUrl: URL
     var authToken: String?
     var configurationOptions: ConfigurationOptions?
@@ -39,32 +39,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
     let logger = Logger()
 
     func setupPeerConnection() {
-        let encoderFactory = RTCDefaultVideoEncoderFactory()
-        let decoderFactory = RTCDefaultVideoDecoderFactory()
-        self.peerConnectionFactory = RTCPeerConnectionFactory(
-            encoderFactory: encoderFactory,
-            decoderFactory: decoderFactory)
-
-        let stunServerUrl = configurationOptions?.stunServerUrl ?? "stun:stun.l.google.com:19302"
-        let stunServer = RTCIceServer(urlStrings: [stunServerUrl])
-        let iceServers = [stunServer]
-
-        let config = RTCConfiguration()
-        config.iceServers = iceServers
-        config.sdpSemantics = .unifiedPlan
-        config.continualGatheringPolicy = .gatherContinually
-        config.candidateNetworkPolicy = .all
-        config.tcpCandidatePolicy = .disabled
-
-        let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
-        peerConnection = self.peerConnectionFactory?.peerConnection(
-            with: config,
-            constraints: constraints,
-            delegate: self)
-
-        if peerConnection == nil {
-            print("Failed to establish RTCPeerConnection. Check initial configuration")
-        }
+        Helper.setupPeerConnection(player: self, configurationOptions: self.configurationOptions)
 
         do {
             try setupVideoAndAudioDevices()
@@ -77,8 +52,6 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         } catch {
             print("Unexpected error: \(error)")
         }
-
-        self.isConnectionSetUp = true
     }
 
     /**
