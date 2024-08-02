@@ -1,6 +1,11 @@
 import WebRTC
 import os
 
+public protocol WHIPPlayerListener: AnyObject {
+    func onTrackAdded(track: RTCVideoTrack)
+    func onConnectionStatusChanged(isConnected: Bool)
+}
+
 protocol WHIPPlayer {
     var patchEndpoint: String? { get set }
     var peerConnectionFactory: RTCPeerConnectionFactory? { get set }
@@ -11,6 +16,7 @@ protocol WHIPPlayer {
     var videoSource: RTCVideoSource? { get set }
     var isConnected: Bool { get set }
     var isConnectionSetUp: Bool { get set }
+    var delegate: WHIPPlayerListener? { get set }
 
     func sendSdpOffer(sdpOffer: String) async throws -> String
     func sendCandidate(candidate: RTCIceCandidate) async throws
@@ -19,8 +25,8 @@ protocol WHIPPlayer {
 }
 
 public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerConnectionDelegate,
-    RTCPeerConnectionFactoryType
-{
+                               RTCPeerConnectionFactoryType {
+    
     var serverUrl: URL
     var authToken: String?
     var configurationOptions: ConfigurationOptions?
@@ -28,10 +34,22 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
     var peerConnectionFactory: RTCPeerConnectionFactory?
     var peerConnection: RTCPeerConnection?
     var isConnectionSetUp: Bool = false
+    public var delegate: WHIPPlayerListener?
 
     var iceCandidates: [RTCIceCandidate] = []
-    @Published public var videoTrack: RTCVideoTrack?
-    @Published public var isConnected: Bool = false
+    public var videoTrack: RTCVideoTrack? {
+        didSet {
+            if let track = videoTrack {
+                delegate?.onTrackAdded(track: track)
+            }
+        }
+    }
+    
+    public var isConnected: Bool = false {
+        didSet {
+            delegate?.onConnectionStatusChanged(isConnected: isConnected)
+        }
+    }
 
     var videoCapturer: RTCCameraVideoCapturer?
     var videoSource: RTCVideoSource?
@@ -248,6 +266,9 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
                 print("Error starting the video capture: \(error)")
             } else {
                 print("Video capturing started")
+                DispatchQueue.main.async {
+                    self.videoTrack = videoTrack
+                }
             }
         }
 

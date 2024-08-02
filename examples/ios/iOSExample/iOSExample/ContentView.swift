@@ -11,8 +11,7 @@ struct ContentView: View {
 
     @State private var selectedPlayerType = PlayerType.whep
     @StateObject var whepPlayerViewModel = WHEPPlayerViewModel(player: WHEPClientPlayer(serverUrl: URL(string: ProcessInfo.processInfo.environment["WHEP_SERVER_URL"] ?? "")!, authToken: "example"))
-
-    @StateObject var whipPlayer = WHIPClientPlayer(serverUrl: URL(string: ProcessInfo.processInfo.environment["WHIP_SERVER_URL"] ?? "")!, authToken: "example", audioDevice: AVCaptureDevice.default(for: .audio), videoDevice: AVCaptureDevice.default(for: .video))
+    @StateObject var whipPlayerViewModel = WHIPPlayerViewModel(player: WHIPClientPlayer(serverUrl: URL(string: ProcessInfo.processInfo.environment["WHIP_SERVER_URL"] ?? "")!, authToken: "example", audioDevice: AVCaptureDevice.default(for: .audio), videoDevice: AVCaptureDevice.default(for: .video)))
     
     var body: some View {
         VStack {
@@ -34,13 +33,6 @@ struct ContentView: View {
                     }
                     Button("Connect WHEP") {
                         Task {
-                            if whipPlayer.isConnected {
-                                do {
-                                    try whipPlayer.release()
-                                } catch {
-                                    print(error)
-                                }
-                            }
                             do {
                                 try await whepPlayerViewModel.connect()
                             } catch is SessionNetworkError{
@@ -49,8 +41,8 @@ struct ContentView: View {
                         }
                     }
                 case .whip:
-                    if whipPlayer.videoTrack != nil {
-                        CameraPreview(videoTrack: whipPlayer.videoTrack)
+                    if let videoTrack = whipPlayerViewModel.videoTrack  {
+                        CameraPreview(videoTrack: videoTrack)
                             .frame(width: 200, height: 200)
                             .cornerRadius(8)
                             .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.blue, lineWidth: 2))
@@ -62,7 +54,7 @@ struct ContentView: View {
                     Button("Connect WHIP") {
                         Task {
                             do {
-                                try await whipPlayer.connect()
+                                try await whipPlayerViewModel.connect()
                             } catch is SessionNetworkError {
                                 print("Session Network Error")
                             }
