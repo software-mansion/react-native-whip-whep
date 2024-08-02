@@ -18,7 +18,9 @@ protocol WHIPPlayer {
     func release() throws
 }
 
-public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerConnectionDelegate, RTCPeerConnectionFactoryType {
+public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerConnectionDelegate,
+    RTCPeerConnectionFactoryType
+{
     var serverUrl: URL
     var authToken: String?
     var configurationOptions: ConfigurationOptions?
@@ -35,7 +37,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
     var videoSource: RTCVideoSource?
     var audioDevice: AVCaptureDevice?
     var videoDevice: AVCaptureDevice?
-    
+
     let logger = Logger()
 
     func setupPeerConnection() {
@@ -301,9 +303,12 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         case .disconnected:
             logger.debug("ICE connection was disconnected, attempting to reconnect or refresh.")
         case .new:
-            logger.debug("The ICE agent is gathering addresses or is waiting to be given remote candidates through calls")
+            logger.debug(
+                "The ICE agent is gathering addresses or is waiting to be given remote candidates through calls")
         case .completed:
-            logger.debug("The ICE agent has finished gathering candidates, has checked all pairs against one another, and has found a connection for all components.")
+            logger.debug(
+                "The ICE agent has finished gathering candidates, has checked all pairs against one another, and has found a connection for all components."
+            )
         case .closed:
             logger.debug("The ICE agent for this RTCPeerConnection has shut down and is no longer handling requests.")
         default:

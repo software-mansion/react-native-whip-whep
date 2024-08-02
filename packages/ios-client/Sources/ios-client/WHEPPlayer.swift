@@ -52,9 +52,9 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         }
     }
     public var delegate: WHEPPlayerListener?
-    
+
     let logger = Logger()
-    
+
     /**
     Initializes a `WHEPClientPlayer` object.
 
@@ -253,9 +253,12 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
         case .disconnected:
             logger.debug("ICE connection was disconnected, attempting to reconnect or refresh.")
         case .new:
-            logger.debug("The ICE agent is gathering addresses or is waiting to be given remote candidates through calls")
+            logger.debug(
+                "The ICE agent is gathering addresses or is waiting to be given remote candidates through calls")
         case .completed:
-            logger.debug("The ICE agent has finished gathering candidates, has checked all pairs against one another, and has found a connection for all components.")
+            logger.debug(
+                "The ICE agent has finished gathering candidates, has checked all pairs against one another, and has found a connection for all components."
+            )
         case .closed:
             logger.debug("The ICE agent for this RTCPeerConnection has shut down and is no longer handling requests.")
         default:

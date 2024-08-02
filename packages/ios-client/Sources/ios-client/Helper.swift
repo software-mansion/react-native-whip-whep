@@ -54,15 +54,16 @@ extension RTCRtpEncodingParameters {
 
 @available(macOS 12.0, *)
 class Helper: NSObject {
-    
-    static func setupPeerConnection(player: RTCPeerConnectionFactoryType, configurationOptions: ConfigurationOptions? = nil) {
+
+    static func setupPeerConnection(
+        player: RTCPeerConnectionFactoryType, configurationOptions: ConfigurationOptions? = nil
+    ) {
         let encoderFactory = RTCDefaultVideoEncoderFactory()
         let decoderFactory = RTCDefaultVideoDecoderFactory()
         player.peerConnectionFactory = RTCPeerConnectionFactory(
             encoderFactory: encoderFactory,
             decoderFactory: decoderFactory)
 
-        
         let stunServerUrl = configurationOptions?.stunServerUrl ?? "stun:stun.l.google.com:19302"
         let stunServer = RTCIceServer(urlStrings: [stunServerUrl])
         let iceServers = [stunServer]
@@ -79,11 +80,11 @@ class Helper: NSObject {
             with: config,
             constraints: constraints,
             delegate: player)
-            
+
         if player.peerConnection! == nil {
             print("Failed to establish RTCPeerConnection. Check initial configuration")
         }
-        
+
         player.isConnectionSetUp = true
     }
 
