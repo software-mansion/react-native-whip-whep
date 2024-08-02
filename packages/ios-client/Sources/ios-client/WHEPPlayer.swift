@@ -1,8 +1,10 @@
 import WebRTC
 import os
 
-protocol WHEPPlayerListener: AnyObject {
+public protocol WHEPPlayerListener: AnyObject {
     func onTrackAdded(track: RTCVideoTrack)
+    func onTrackRemoved(track: RTCVideoTrack)
+    func onConnectionStatusChanged(isConnected: Bool)
 }
 
 protocol WHEPPlayer {
@@ -22,7 +24,7 @@ protocol WHEPPlayer {
 }
 
 @available(macOS 12.0, *)
-public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, ObservableObject {
+public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate {
     var serverUrl: URL
     var authToken: String?
     var configurationOptions: ConfigurationOptions?
@@ -32,9 +34,24 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
     var iceCandidates: [RTCIceCandidate] = []
     var isConnectionSetUp: Bool = false
 
-    @Published public var videoTrack: RTCVideoTrack?
-    @Published public var isConnected: Bool = false
-    var delegate: WHEPPlayerListener?
+    public var videoTrack: RTCVideoTrack? {
+        willSet {
+            if let track = videoTrack {
+                delegate?.onTrackRemoved(track: track)
+            }
+        }
+        didSet {
+            if let track = videoTrack {
+                delegate?.onTrackAdded(track: track)
+            }
+        }
+    }
+    public var isConnected: Bool = false {
+        didSet {
+            delegate?.onConnectionStatusChanged(isConnected: isConnected)
+        }
+    }
+    public var delegate: WHEPPlayerListener?
     
     let logger = Logger()
 
