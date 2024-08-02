@@ -1,4 +1,5 @@
 import WebRTC
+import os
 
 protocol WHEPPlayerListener: AnyObject {
     func onTrackAdded(track: RTCVideoTrack)
@@ -34,6 +35,8 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
     @Published public var videoTrack: RTCVideoTrack?
     @Published public var isConnected: Bool = false
     var delegate: WHEPPlayerListener?
+    
+    let logger = Logger()
 
     func setupPeerConnection() {
         let encoderFactory = RTCDefaultVideoEncoderFactory()
@@ -235,7 +238,7 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
     }
 
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCSignalingState) {
-
+        logger.debug("RTC signaling state changed: \(stateChanged.rawValue).")
     }
 
     public func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
@@ -245,14 +248,15 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
                 self.delegate?.onTrackAdded(track: track)
             }
         }
+        logger.debug("RTC media stream added: \(stream.description).")
     }
 
     public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove stream: RTCMediaStream) {
-
+        logger.debug("RTC media stream removed: \(stream.description).")
     }
 
     public func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
-
+        logger.debug("Peer connection negotiation needed.")
     }
 
     /**
@@ -261,28 +265,26 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
         switch newState {
         case .checking:
-            print("ICE is checking paths, this might take a moment.")
+            logger.debug("ICE is checking paths, this might take a moment.")
         case .connected:
-            print("ICE has found a viable connection.")
+            logger.debug("ICE has found a viable connection.")
         case .failed:
-            print("No viable ICE paths found, consider a retry or using TURN.")
+            logger.debug("No viable ICE paths found, consider a retry or using TURN.")
         case .disconnected:
-            print("ICE connection was disconnected, attempting to reconnect or refresh.")
+            logger.debug("ICE connection was disconnected, attempting to reconnect or refresh.")
         case .new:
-            print("The ICE agent is gathering addresses or is waiting to be given remote candidates through calls")
+            logger.debug("The ICE agent is gathering addresses or is waiting to be given remote candidates through calls")
         case .completed:
-            print(
-                "The ICE agent has finished gathering candidates, has checked all pairs against one another, and has found a connection for all components."
-            )
+            logger.debug("The ICE agent has finished gathering candidates, has checked all pairs against one another, and has found a connection for all components.")
         case .closed:
-            print("The ICE agent for this RTCPeerConnection has shut down and is no longer handling requests.")
+            logger.debug("The ICE agent for this RTCPeerConnection has shut down and is no longer handling requests.")
         default:
             break
         }
     }
 
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceGatheringState) {
-
+        logger.debug("RTC ICE gathering state changed: \(newState.rawValue).")
     }
 
     /**
@@ -299,11 +301,11 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
     }
 
     public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {
-
+        logger.debug("Removed candidate from candidates list.")
     }
 
     public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
-
+        logger.debug("RTC data channel opened: \(dataChannel.channelId)")
     }
 
     /**
@@ -312,20 +314,19 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCPeerConnectionState) {
         switch stateChanged {
         case .connected:
-            print("Connection is fully connected")
+            logger.debug("Connection is fully connected")
         case .disconnected:
-            print("One or more transports has disconnected unexpectedly")
+            logger.debug("One or more transports has disconnected unexpectedly")
         case .failed:
-            print("One or more transports has encountered an error")
+            logger.debug("One or more transports has encountered an error")
         case .closed:
-            print("Connection has been closed")
+            logger.debug("Connection has been closed")
         case .new:
-            print("New connection")
+            logger.debug("New connection")
         case .connecting:
-            print("Connecting")
+            logger.debug("Connecting")
         default:
-            print("Some other state: \(stateChanged.rawValue)")
+            logger.debug("Some other state: \(stateChanged.rawValue)")
         }
     }
-
 }
