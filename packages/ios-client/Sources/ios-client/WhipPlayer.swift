@@ -1,12 +1,12 @@
 import WebRTC
 import os
 
-public protocol WHIPPlayerListener: AnyObject {
+public protocol WhipPlayerListener: AnyObject {
     func onTrackAdded(track: RTCVideoTrack)
     func onConnectionStatusChanged(isConnected: Bool)
 }
 
-protocol WHIPPlayer {
+protocol WhipPlayer {
     var peerConnectionFactory: RTCPeerConnectionFactory? { get set }
     var peerConnection: RTCPeerConnection? { get set }
     var iceCandidates: [RTCIceCandidate] { get set }
@@ -15,13 +15,13 @@ protocol WHIPPlayer {
     var videoSource: RTCVideoSource? { get set }
     var isConnected: Bool { get set }
     var isConnectionSetUp: Bool { get set }
-    var delegate: WHIPPlayerListener? { get set }
+    var delegate: WhipPlayerListener? { get set }
 
     func connect() async throws
     func disconnect()
 }
 
-public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerConnectionDelegate,
+public class WhipClientPlayer: NSObject, WhipPlayer, ObservableObject, RTCPeerConnectionDelegate,
     RTCPeerConnectionFactoryType
 {
 
@@ -32,7 +32,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
     var peerConnectionFactory: RTCPeerConnectionFactory?
     var peerConnection: RTCPeerConnection?
     var isConnectionSetUp: Bool = false
-    public var delegate: WHIPPlayerListener?
+    public var delegate: WhipPlayerListener?
 
     var iceCandidates: [RTCIceCandidate] = []
     public var videoTrack: RTCVideoTrack? {
@@ -56,11 +56,11 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
 
     let logger = Logger()
 
-    func setupPeerConnection() {
-        Helper.setupPeerConnection(player: self, configurationOptions: self.configurationOptions)
+    func setUpPeerConnection() {
+        Helper.setUpPeerConnection(player: self, configurationOptions: self.configurationOptions)
 
         do {
-            try setupVideoAndAudioDevices()
+            try setUpVideoAndAudioDevices()
         } catch let error as AVCaptureDeviceError {
             switch error {
             case .AudioDeviceNotAvailable(let description),
@@ -73,7 +73,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
     }
 
     /**
-    Initializes a `WHIPClientPlayer` object.
+    Initializes a `WhipClientPlayer` object.
 
     - Parameter serverUrl: A URL of the WHIP server.
     - Parameter authToken: An authorization token of the WHIP server.
@@ -81,7 +81,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
     - Parameter audioDevice: A device that will be used to stream audio.
     - Parameter videoDevice: A device that will be used to stream video.
 
-    - Returns: A `WHIPClientPlayer` object.
+    - Returns: A `WhipClientPlayer` object.
     */
     public init(
         serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions? = nil,
@@ -93,7 +93,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
         self.audioDevice = audioDevice
         self.videoDevice = videoDevice
         super.init()
-        setupPeerConnection()
+        setUpPeerConnection()
     }
 
     /**
@@ -184,7 +184,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
     */
     public func connect() async throws {
         if !self.isConnectionSetUp {
-            setupPeerConnection()
+            setUpPeerConnection()
         } else if self.isConnectionSetUp && self.peerConnection == nil {
             throw SessionNetworkError.ConfigurationError(
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")
@@ -235,7 +235,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
 
     - Throws: `AVCaptureDeviceError.AudioDeviceNotAvailable` if no audio device has been passed to the initializer and `AVCaptureDeviceError.VideoDeviceNotAvailable` if there is no video device.
     */
-    private func setupVideoAndAudioDevices() throws {
+    private func setUpVideoAndAudioDevices() throws {
         guard let audioDevice = self.audioDevice else {
             throw AVCaptureDeviceError.AudioDeviceNotAvailable(
                 description: "Audio device not found. Check if it can be accessed and passed to the constructor.")

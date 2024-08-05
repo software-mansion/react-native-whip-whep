@@ -1,18 +1,18 @@
 import WebRTC
 import os
 
-public protocol WHEPPlayerListener: AnyObject {
+public protocol WhepPlayerListener: AnyObject {
     func onTrackAdded(track: RTCVideoTrack)
     func onTrackRemoved(track: RTCVideoTrack)
     func onConnectionStatusChanged(isConnected: Bool)
 }
 
-protocol WHEPPlayer {
+protocol WhepPlayer {
     var peerConnectionFactory: RTCPeerConnectionFactory? { get set }
     var peerConnection: RTCPeerConnection? { get set }
     var iceCandidates: [RTCIceCandidate] { get set }
     var videoTrack: RTCVideoTrack? { get set }
-    var delegate: WHEPPlayerListener? { get set }
+    var delegate: WhepPlayerListener? { get set }
     var isConnected: Bool { get set }
     var isConnectionSetUp: Bool { get set }
 
@@ -21,7 +21,7 @@ protocol WHEPPlayer {
 }
 
 @available(macOS 12.0, *)
-public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, RTCPeerConnectionFactoryType {
+public class WhepClientPlayer: NSObject, WhepPlayer, RTCPeerConnectionDelegate, RTCPeerConnectionFactoryType {
     var serverUrl: URL
     var authToken: String?
     var configurationOptions: ConfigurationOptions?
@@ -48,25 +48,25 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
             delegate?.onConnectionStatusChanged(isConnected: isConnected)
         }
     }
-    public var delegate: WHEPPlayerListener?
+    public var delegate: WhepPlayerListener?
 
     let logger = Logger()
 
     /**
-    Initializes a `WHEPClientPlayer` object.
+    Initializes a `WhepClientPlayer` object.
 
     - Parameter serverUrl: A URL of the WHEP server.
     - Parameter authToken: An authorization token of the WHEP server.
     - Parameter configurationOptions: Additional configuration options, such as a STUN server URL.
 
-    - Returns: A `WHEPClientPlayer` object.
+    - Returns: A `WhepClientPlayer` object.
     */
     public init(serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions? = nil) {
         self.serverUrl = serverUrl
         self.authToken = authToken
         self.configurationOptions = configurationOptions
         super.init()
-        Helper.setupPeerConnection(player: self, configurationOptions: self.configurationOptions)
+        Helper.setUpPeerConnection(player: self, configurationOptions: self.configurationOptions)
     }
 
     /**
@@ -156,7 +156,7 @@ public class WHEPClientPlayer: NSObject, WHEPPlayer, RTCPeerConnectionDelegate, 
     */
     public func connect() async throws {
         if !self.isConnectionSetUp {
-            Helper.setupPeerConnection(player: self, configurationOptions: self.configurationOptions)
+            Helper.setUpPeerConnection(player: self, configurationOptions: self.configurationOptions)
         } else if self.isConnectionSetUp && self.peerConnection == nil {
             throw SessionNetworkError.ConfigurationError(
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")

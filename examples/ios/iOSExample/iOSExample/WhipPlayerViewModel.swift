@@ -2,25 +2,19 @@ import Foundation
 import MobileWhepClient
 import WebRTC
 
-class WHEPPlayerViewModel: ObservableObject, WHEPPlayerListener {
+class WhipPlayerViewModel: ObservableObject, WhipPlayerListener {
     @Published var videoTrack: RTCVideoTrack?
     @Published var isConnected: Bool = false
     
-    var player: WHEPClientPlayer?
+    var player: WhipClientPlayer?
 
-    init(player: WHEPClientPlayer) {
+    init(player: WhipClientPlayer) {
         self.player = player
         player.delegate = self
     }
     
     func onTrackAdded(track: RTCVideoTrack) {
         videoTrack = track
-    }
-    
-    func onTrackRemoved(track: RTCVideoTrack) {
-        if videoTrack == track {
-            videoTrack = nil
-        }
     }
     
     func onConnectionStatusChanged(isConnected: Bool) {
@@ -35,4 +29,3 @@ class WHEPPlayerViewModel: ObservableObject, WHEPPlayerListener {
         player?.disconnect()
     }
 }
-

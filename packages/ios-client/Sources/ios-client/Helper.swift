@@ -55,7 +55,7 @@ extension RTCRtpEncodingParameters {
 @available(macOS 12.0, *)
 class Helper: NSObject {
 
-    static func setupPeerConnection(
+    static func setUpPeerConnection(
         player: RTCPeerConnectionFactoryType, configurationOptions: ConfigurationOptions? = nil
     ) {
         let encoderFactory = RTCDefaultVideoEncoderFactory()
