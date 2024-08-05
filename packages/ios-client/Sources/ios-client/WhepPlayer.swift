@@ -81,29 +81,10 @@ public class WhepClientPlayer: NSObject, WhepPlayer, RTCPeerConnectionDelegate, 
     */
     func sendSdpOffer(sdpOffer: String) async throws -> String {
         var response: (responseString: String, location: String?)?
-        do {
-            response = try await Helper.sendSdpOffer(
-                sdpOffer: sdpOffer,
-                serverUrl: self.serverUrl,
-                authToken: self.authToken)
-        } catch let error as AttributeNotFoundError {
-            switch error {
-            case .LocationNotFound(let description),
-                .ResponseNotFound(let description),
-                .UFragNotFound(let description),
-                .PatchEndpointNotFound(let description):
-                print(description)
-            }
-        } catch let error as SessionNetworkError {
-            switch error {
-            case .CandidateSendingError(let description),
-                .ConnectionError(let description),
-                .ConfigurationError(let description):
-                print(description)
-            }
-        } catch {
-            print("Unexpected error: \(error)")
-        }
+        response = try? await Helper.sendSdpOffer(
+            sdpOffer: sdpOffer,
+            serverUrl: self.serverUrl,
+            authToken: self.authToken)
         guard let response = response else {
             throw AttributeNotFoundError.ResponseNotFound(
                 description: "Response to SDP offer not found. Check if the network request was successful.")
@@ -125,27 +106,8 @@ public class WhepClientPlayer: NSObject, WhepPlayer, RTCPeerConnectionDelegate, 
     - Parameter candidate: Represents a single ICE candidate.
     */
     func sendCandidate(candidate: RTCIceCandidate) async throws {
-        do {
-            try await Helper.sendCandidate(
-                candidate: candidate, patchEndpoint: self.patchEndpoint, serverUrl: self.serverUrl)
-        } catch let error as AttributeNotFoundError {
-            switch error {
-            case .LocationNotFound(let description),
-                .PatchEndpointNotFound(let description),
-                .ResponseNotFound(let description),
-                .UFragNotFound(let description):
-                print(description)
-            }
-        } catch let error as SessionNetworkError {
-            switch error {
-            case .CandidateSendingError(let description),
-                .ConnectionError(let description),
-                .ConfigurationError(let description):
-                print(description)
-            }
-        } catch {
-            print("Unexpected error: \(error)")
-        }
+        try await Helper.sendCandidate(
+            candidate: candidate, patchEndpoint: self.patchEndpoint, serverUrl: self.serverUrl)
     }
 
     /**
@@ -176,23 +138,17 @@ public class WhepClientPlayer: NSObject, WhepPlayer, RTCPeerConnectionDelegate, 
         let sdpAnswer = try await sendSdpOffer(sdpOffer: offer.sdp)
 
         for candidate in iceCandidates {
-            do {
-                try await sendCandidate(candidate: candidate)
-            } catch {
-                print("Error sending ICE candidate: \(error)")
-            }
+            try await sendCandidate(candidate: candidate)
         }
 
         let remoteDescription = RTCSessionDescription(type: .answer, sdp: sdpAnswer)
 
-        do {
-            try await peerConnection!.setRemoteDescription(remoteDescription)
-            DispatchQueue.main.async {
-                self.isConnected = true
-            }
-        } catch {
-            print("Unexpected error: \(error)")
+        
+        try await peerConnection!.setRemoteDescription(remoteDescription)
+        DispatchQueue.main.async {
+            self.isConnected = true
         }
+        
     }
 
     /**
