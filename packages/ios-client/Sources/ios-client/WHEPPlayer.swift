@@ -8,7 +8,6 @@ public protocol WHEPPlayerListener: AnyObject {
 }
 
 protocol WHEPPlayer {
-    var patchEndpoint: String? { get set }
     var peerConnectionFactory: RTCPeerConnectionFactory? { get set }
     var peerConnection: RTCPeerConnection? { get set }
     var iceCandidates: [RTCIceCandidate] { get set }
@@ -17,8 +16,6 @@ protocol WHEPPlayer {
     var isConnected: Bool { get set }
     var isConnectionSetUp: Bool { get set }
 
-    func sendSdpOffer(sdpOffer: String) async throws -> String
-    func sendCandidate(candidate: RTCIceCandidate) async throws
     func connect() async throws
     func release() throws
 }
