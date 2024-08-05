@@ -2,13 +2,48 @@
 
 A simple example app showing the main functionalities of the WHIP/WHEP package. It consists of a view that, depending of whether WHIP or WHEP has been chosen, shows a camera preview or current media stream.
 
+## Initial configuration
+
+As stated in the package README file, for the server it is recommended to use the [ex_webrtc](https://github.com/elixir-webrtc/ex_webrtc/tree/9e1888185211c8da7128db7309584af8e863fafa/examples/whip_whep) server, as it is simple, easy to use and it was used during the package development. In order to run the server:
+- Clone the `ex_webrtc` repo
+- In the folder `examples/whip_whep/config` modify the file `config.exs` to use your IP address:
+  ```
+  config :whip_whep,
+  ip: <your IP address>,
+  port: 8829,
+  token: "example"
+  ```
+- From the `whip_whep` folder run commands `mix deps.get` and `mix run --no-halt` (running the commands requires Elixir installed on your device, for example using `brew install elixir`)
+
+To see the stream from your device, enter `http://<your IP address>:8829/index.html`. These instructions are available in the `ex_webrtc` repo as well.
+
+The server URLs are saved to environment variables. To use them, it is necessary to create a `.xcconfig` file, let's name it `ServerSettings.xcconfig` with the following content:
+```
+WHEP_SERVER_URL = <your WHEP server URL>
+WHIP_SERVER_URL = <your WHIP server URL>
+```
+When the URLs are defined, it is necessary to edit the `Info.plist` file, either through text editor:
+```
+<key>WhepServerUrl</key>
+<string>$(WHEP_SERVER_URL)</string>
+<key>WhipServerUrl</key>
+<string>$(WHIP_SERVER_URL)</string>
+```
+
+or directly using Xcode:
+
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/0d9b7079-e0ff-43dd-ac53-1202dc5ee1ee">
+ 
+The created configuration has to be added to target. After clicking on the `iOSExample` name in the project navigator on the left side of the editor window, there appears a `Info` tab with a `Configurations` section. The created `ServerSettings.xcconfig` file has to be added to both debug and release configurations:
+
+<img width="600" alt="image" src="https://github.com/user-attachments/assets/9c2dc234-4d1a-48cc-bdf6-75825dc0111e">
+
 ## WHEP
 
-In order to initialize a player, a `StateObject` instance of a `WHEPClientPlayer` has to be created using a server URL and its token, if necessary. One can provide here some optional configuration, such as STUN server address.
+In order to initialize a player, an instance of a `WhepClientPlayer` has to be created using a server URL and its token, if necessary. One can provide here some optional configuration, such as STUN server address.
 
 ```swift
- @StateObject var whepPlayer = WHEPClientPlayer(serverUrl: URL(string: "http://192.168.1.23:8829/whep")!,
-authToken: "example")
+var whepPlayer = WhepClientPlayer(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhepServerUrl"] as? String ?? "")")!, authToken: "example")
 ```
 
 After creating a player, all that has to be done is to invoke the `connect` method:
@@ -32,19 +67,21 @@ if let videoTrack = whepPlayer.videoTrack {
 
 ### Screenshots:
 
+An OBS player streaming media to the server URL:
+
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/2bba7323-c890-448e-90ef-f49a895020ee">
+
+An iOS device receiving the stream from the server:
+
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/68a98b2c-76e1-4b4b-8daf-8b84ed7a6b82">
 
 
 ## WHIP 
 
-To initialize a WHIP player, `audioDevice` and `videoDevice` should also be passed to `WHIPClientPlayer` constructor, as it has to be specified which devices will be used for the stream. Here, the default ones have been used. Remember to also check for the access to the camera and microphone, and request it and grant it if necessary.
+To initialize a WHIP player, `audioDevice` and `videoDevice` should also be passed to `WhipClientPlayer` constructor, as it has to be specified which devices will be used for the stream. Here, the default ones have been used. Remember to also check for the access to the camera and microphone, and request it and grant it if necessary.
 
 ```swift
-   @StateObject var whipPlayer = WHIPClientPlayer(serverUrl: URL(string: "http://192.168.1.23:8829/whip")!, 
-authToken: "example",
-audioDevice: AVCaptureDevice.default(for: .audio),
-videoDevice: AVCaptureDevice.default(for: .video))
+var whipPlayer = WhipClientPlayer(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, authToken: "example", audioDevice: AVCaptureDevice.default(for: .audio), videoDevice: AVCaptureDevice.default(for: .video))
 ```
 
 For the connection, the flow is the same as for the WHEP player:
@@ -58,5 +95,10 @@ do {
 
 ### Screenshots:
 
+An iOS device streaming back camera footage to the server:
+
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/2ce68d9e-c6e2-4780-9301-69971659ada5">
+
+Server website receiving the stream from the iOS device:
+
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/30a403fb-9998-4a1a-9644-555324f028b6">
