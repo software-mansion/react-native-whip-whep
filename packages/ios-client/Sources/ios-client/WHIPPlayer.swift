@@ -25,8 +25,9 @@ protocol WHIPPlayer {
 }
 
 public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerConnectionDelegate,
-                               RTCPeerConnectionFactoryType {
-    
+    RTCPeerConnectionFactoryType
+{
+
     var serverUrl: URL
     var authToken: String?
     var configurationOptions: ConfigurationOptions?
@@ -44,7 +45,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
             }
         }
     }
-    
+
     public var isConnected: Bool = false {
         didSet {
             delegate?.onConnectionStatusChanged(isConnected: isConnected)

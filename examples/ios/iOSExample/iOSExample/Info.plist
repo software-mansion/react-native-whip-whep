@@ -2,9 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>NSCameraUsageDescription</key>
-    <string>This application requires camera access to gather information about available video devices.</string>
-    <key>NSMicrophoneUsageDescription</key>
-    <string>This application requires microphone access to gather information about available audio devices.</string>
+	<key>WhepServerUrl</key>
+	<string>$(WHEP_SERVER_URL)</string>
+	<key>WhipServerUrl</key>
+	<string>$(WHIP_SERVER_URL)</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This application requires camera access to gather information about available video devices.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This application requires microphone access to gather information about available audio devices.</string>
 </dict>
 </plist>

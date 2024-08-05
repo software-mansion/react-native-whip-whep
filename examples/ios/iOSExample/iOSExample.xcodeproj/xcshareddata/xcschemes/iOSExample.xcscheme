@@ -50,18 +50,6 @@
             ReferencedContainer = "container:iOSExample.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <EnvironmentVariables>
-         <EnvironmentVariable
-            key = "WHIP_SERVER_URL"
-            value = "http://192.168.1.23:8829/whip"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-         <EnvironmentVariable
-            key = "WHEP_SERVER_URL"
-            value = "http://192.168.1.23:8829/whep"
-            isEnabled = "YES">
-         </EnvironmentVariable>
-      </EnvironmentVariables>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"

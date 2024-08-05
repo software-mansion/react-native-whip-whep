@@ -16,6 +16,7 @@
 		7C75AD942C5BD06C0011DB76 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C75AD932C5BD06C0011DB76 /* CameraPreview.swift */; };
 		7C75AD962C5CD7A00011DB76 /* WHEPPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C75AD952C5CD7A00011DB76 /* WHEPPlayerViewModel.swift */; };
 		7C75AD982C5CF15F0011DB76 /* WHIPPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C75AD972C5CF15F0011DB76 /* WHIPPlayerViewModel.swift */; };
+		7C75AD9E2C60B5B80011DB76 /* ServerSettings.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7C75AD9D2C60B5B80011DB76 /* ServerSettings.xcconfig */; };
 		7C9D91CD2C539BEC000DF490 /* WebRTCVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9D91CC2C539BEC000DF490 /* WebRTCVideoView.swift */; };
 		7CFD45B82C51056900D6A404 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CFD45B72C51056900D6A404 /* CoreAudio.framework */; };
 /* End PBXBuildFile section */
@@ -30,6 +31,7 @@
 		7C75AD932C5BD06C0011DB76 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
 		7C75AD952C5CD7A00011DB76 /* WHEPPlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WHEPPlayerViewModel.swift; sourceTree = "<group>"; };
 		7C75AD972C5CF15F0011DB76 /* WHIPPlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WHIPPlayerViewModel.swift; sourceTree = "<group>"; };
+		7C75AD9D2C60B5B80011DB76 /* ServerSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = ServerSettings.xcconfig; sourceTree = "<group>"; };
 		7C9D91CC2C539BEC000DF490 /* WebRTCVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCVideoView.swift; sourceTree = "<group>"; };
 		7CFD45B52C51055F00D6A404 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		7CFD45B72C51056900D6A404 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
@@ -87,6 +89,7 @@
 				7C75AD932C5BD06C0011DB76 /* CameraPreview.swift */,
 				7C75AD952C5CD7A00011DB76 /* WHEPPlayerViewModel.swift */,
 				7C75AD972C5CF15F0011DB76 /* WHIPPlayerViewModel.swift */,
+				7C75AD9D2C60B5B80011DB76 /* ServerSettings.xcconfig */,
 			);
 			path = iOSExample;
 			sourceTree = "<group>";
@@ -165,6 +168,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7C35C09D2C4927BB00EE0290 /* Preview Assets.xcassets in Resources */,
+				7C75AD9E2C60B5B80011DB76 /* ServerSettings.xcconfig in Resources */,
 				7C35C09A2C4927BB00EE0290 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -190,6 +194,7 @@
 /* Begin XCBuildConfiguration section */
 		7C35C09E2C4927BB00EE0290 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7C75AD9D2C60B5B80011DB76 /* ServerSettings.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -254,6 +259,7 @@
 		};
 		7C35C09F2C4927BB00EE0290 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7C75AD9D2C60B5B80011DB76 /* ServerSettings.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -311,6 +317,7 @@
 		};
 		7C35C0A12C4927BB00EE0290 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7C75AD9D2C60B5B80011DB76 /* ServerSettings.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -342,6 +349,7 @@
 		};
 		7C35C0A22C4927BB00EE0290 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7C75AD9D2C60B5B80011DB76 /* ServerSettings.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
