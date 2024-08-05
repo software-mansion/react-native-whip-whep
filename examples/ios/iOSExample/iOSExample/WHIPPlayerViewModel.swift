@@ -24,4 +24,8 @@ class WHIPPlayerViewModel: ObservableObject, WHIPPlayerListener {
     func connect() async throws {
         try await player?.connect()
     }
+    
+    func disconnect() {
+        player?.disconnect()
+    }
 }

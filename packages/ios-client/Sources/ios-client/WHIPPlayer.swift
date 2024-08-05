@@ -18,7 +18,7 @@ protocol WHIPPlayer {
     var delegate: WHIPPlayerListener? { get set }
 
     func connect() async throws
-    func closeConnection()
+    func disconnect()
 }
 
 public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerConnectionDelegate,
@@ -219,7 +219,7 @@ public class WHIPClientPlayer: NSObject, WHIPPlayer, ObservableObject, RTCPeerCo
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
     of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
-    public func closeConnection() {
+    public func disconnect() {
         peerConnection?.close()
         peerConnection = nil
         DispatchQueue.main.async {

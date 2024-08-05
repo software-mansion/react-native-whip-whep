@@ -30,5 +30,9 @@ class WHEPPlayerViewModel: ObservableObject, WHEPPlayerListener {
     func connect() async throws {
         try await player?.connect()
     }
+    
+    func disconnect() {
+        player?.disconnect()
+    }
 }
 
