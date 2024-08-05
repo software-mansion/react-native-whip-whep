@@ -143,12 +143,11 @@ public class WhepClientPlayer: NSObject, WhepPlayer, RTCPeerConnectionDelegate, 
 
         let remoteDescription = RTCSessionDescription(type: .answer, sdp: sdpAnswer)
 
-        
         try await peerConnection!.setRemoteDescription(remoteDescription)
         DispatchQueue.main.async {
             self.isConnected = true
         }
-        
+
     }
 
     /**

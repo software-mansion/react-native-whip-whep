@@ -160,12 +160,12 @@ public class WhipClientPlayer: NSObject, WhipPlayer, ObservableObject, RTCPeerCo
             try await sendCandidate(candidate: candidate)
         }
         let remoteDescription = RTCSessionDescription(type: .answer, sdp: sdpAnswer)
-        
+
         try await peerConnection!.setRemoteDescription(remoteDescription)
         DispatchQueue.main.async {
             self.isConnected = true
         }
-        
+
     }
 
     /**
