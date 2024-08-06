@@ -49,9 +49,9 @@ public class WhepClientPlayer: NSObject, WhepPlayer, RTCPeerConnectionDelegate, 
 
     - Returns: A `WhepClientPlayer` object.
     */
-    public init(serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions? = nil) {
+    public init(serverUrl: URL, configurationOptions: ConfigurationOptions? = nil) {
         self.serverUrl = serverUrl
-        self.authToken = authToken
+        self.authToken = configurationOptions?.authToken
         self.configurationOptions = configurationOptions
         super.init()
         Helper.setUpPeerConnection(player: self, configurationOptions: self.configurationOptions)

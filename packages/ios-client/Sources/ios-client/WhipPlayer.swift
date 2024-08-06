@@ -69,11 +69,11 @@ public class WhipClientPlayer: NSObject, WhipPlayer, ObservableObject, RTCPeerCo
     - Returns: A `WhipClientPlayer` object.
     */
     public init(
-        serverUrl: URL, authToken: String?, configurationOptions: ConfigurationOptions? = nil,
+        serverUrl: URL, configurationOptions: ConfigurationOptions? = nil,
         audioDevice: AVCaptureDevice? = nil, videoDevice: AVCaptureDevice? = nil
     ) {
         self.serverUrl = serverUrl
-        self.authToken = authToken
+        self.authToken = configurationOptions?.authToken
         self.configurationOptions = configurationOptions
         self.audioDevice = audioDevice
         self.videoDevice = videoDevice
