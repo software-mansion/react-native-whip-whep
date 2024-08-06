@@ -3,7 +3,6 @@ import os
 
 public protocol WhipPlayerListener: AnyObject {
     func onTrackAdded(track: RTCVideoTrack)
-    func onConnectionStatusChanged(isConnected: Bool)
 }
 
 protocol WhipPlayer {
@@ -27,17 +26,11 @@ public class WhipClientPlayer: NSObject, WhipPlayer, ObservableObject, RTCPeerCo
     public var delegate: WhipPlayerListener?
 
     var iceCandidates: [RTCIceCandidate] = []
-    public var videoTrack: RTCVideoTrack? {
+    var videoTrack: RTCVideoTrack? {
         didSet {
             if let track = videoTrack {
                 delegate?.onTrackAdded(track: track)
             }
-        }
-    }
-
-    public var isConnected: Bool = false {
-        didSet {
-            delegate?.onConnectionStatusChanged(isConnected: isConnected)
         }
     }
 
@@ -154,10 +147,6 @@ public class WhipClientPlayer: NSObject, WhipPlayer, ObservableObject, RTCPeerCo
         let remoteDescription = RTCSessionDescription(type: .answer, sdp: sdpAnswer)
 
         try await peerConnection!.setRemoteDescription(remoteDescription)
-        DispatchQueue.main.async {
-            self.isConnected = true
-        }
-
     }
 
     /**
@@ -170,7 +159,6 @@ public class WhipClientPlayer: NSObject, WhipPlayer, ObservableObject, RTCPeerCo
         peerConnection?.close()
         peerConnection = nil
         DispatchQueue.main.async {
-            self.isConnected = false
             self.isConnectionSetUp = false
             self.videoCapturer?.stopCapture()
             self.videoCapturer = nil

@@ -4,7 +4,6 @@ import WebRTC
 
 class WhepPlayerViewModel: ObservableObject, WhepPlayerListener {
     @Published var videoTrack: RTCVideoTrack?
-    @Published var isConnected: Bool = false
     
     var player: WhepClientPlayer?
 
@@ -21,10 +20,6 @@ class WhepPlayerViewModel: ObservableObject, WhepPlayerListener {
         if videoTrack == track {
             videoTrack = nil
         }
-    }
-    
-    func onConnectionStatusChanged(isConnected: Bool) {
-        self.isConnected = isConnected
     }
     
     func connect() async throws {

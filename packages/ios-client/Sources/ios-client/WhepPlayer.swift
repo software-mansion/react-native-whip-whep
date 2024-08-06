@@ -4,7 +4,6 @@ import os
 public protocol WhepPlayerListener: AnyObject {
     func onTrackAdded(track: RTCVideoTrack)
     func onTrackRemoved(track: RTCVideoTrack)
-    func onConnectionStatusChanged(isConnected: Bool)
 }
 
 protocol WhepPlayer {
@@ -25,7 +24,7 @@ public class WhepClientPlayer: NSObject, WhepPlayer, RTCPeerConnectionDelegate, 
     var iceCandidates: [RTCIceCandidate] = []
     var isConnectionSetUp: Bool = false
 
-    public var videoTrack: RTCVideoTrack? {
+    var videoTrack: RTCVideoTrack? {
         willSet {
             if let track = videoTrack {
                 delegate?.onTrackRemoved(track: track)
@@ -35,11 +34,6 @@ public class WhepClientPlayer: NSObject, WhepPlayer, RTCPeerConnectionDelegate, 
             if let track = videoTrack {
                 delegate?.onTrackAdded(track: track)
             }
-        }
-    }
-    public var isConnected: Bool = false {
-        didSet {
-            delegate?.onConnectionStatusChanged(isConnected: isConnected)
         }
     }
     public var delegate: WhepPlayerListener?
@@ -138,10 +132,6 @@ public class WhepClientPlayer: NSObject, WhepPlayer, RTCPeerConnectionDelegate, 
         let remoteDescription = RTCSessionDescription(type: .answer, sdp: sdpAnswer)
 
         try await peerConnection!.setRemoteDescription(remoteDescription)
-        DispatchQueue.main.async {
-            self.isConnected = true
-        }
-
     }
 
     /**
@@ -154,7 +144,6 @@ public class WhepClientPlayer: NSObject, WhepPlayer, RTCPeerConnectionDelegate, 
         peerConnection?.close()
         peerConnection = nil
         DispatchQueue.main.async {
-            self.isConnected = false
             self.isConnectionSetUp = false
             self.videoTrack = nil
         }
