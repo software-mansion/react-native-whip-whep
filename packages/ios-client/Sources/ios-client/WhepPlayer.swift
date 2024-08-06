@@ -8,14 +8,8 @@ public protocol WhepPlayerListener: AnyObject {
 }
 
 protocol WhepPlayer {
-    var peerConnectionFactory: RTCPeerConnectionFactory? { get set }
-    var peerConnection: RTCPeerConnection? { get set }
-    var iceCandidates: [RTCIceCandidate] { get set }
-    var videoTrack: RTCVideoTrack? { get set }
     var delegate: WhepPlayerListener? { get set }
-    var isConnected: Bool { get set }
-    var isConnectionSetUp: Bool { get set }
-
+    
     func connect() async throws
     func disconnect()
 }

@@ -7,16 +7,8 @@ public protocol WhipPlayerListener: AnyObject {
 }
 
 protocol WhipPlayer {
-    var peerConnectionFactory: RTCPeerConnectionFactory? { get set }
-    var peerConnection: RTCPeerConnection? { get set }
-    var iceCandidates: [RTCIceCandidate] { get set }
-    var videoTrack: RTCVideoTrack? { get set }
-    var videoCapturer: RTCCameraVideoCapturer? { get set }
-    var videoSource: RTCVideoSource? { get set }
-    var isConnected: Bool { get set }
-    var isConnectionSetUp: Bool { get set }
     var delegate: WhipPlayerListener? { get set }
-
+    
     func connect() async throws
     func disconnect()
 }
