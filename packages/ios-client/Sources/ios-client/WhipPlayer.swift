@@ -181,7 +181,9 @@ public class WhipClientPlayer: NSObject, WhipPlayer, ObservableObject, RTCPeerCo
             self.isConnected = false
             self.isConnectionSetUp = false
             self.videoCapturer?.stopCapture()
-
+            self.videoCapturer = nil
+            self.videoSource = nil
+            self.videoTrack = nil
         }
     }
 

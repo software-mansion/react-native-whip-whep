@@ -162,6 +162,7 @@ public class WhepClientPlayer: NSObject, WhepPlayer, RTCPeerConnectionDelegate, 
         DispatchQueue.main.async {
             self.isConnected = false
             self.isConnectionSetUp = false
+            self.videoTrack = nil
         }
     }
 
