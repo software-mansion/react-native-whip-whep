@@ -1,4 +1,4 @@
-package com.swmansion.whepclient
+package com.swmansion.androidexample
 
 import android.content.Context
 import android.util.Log
@@ -37,10 +37,8 @@ internal interface WHEPPlayerListener {
 
 internal const val TAG = "WHEPClient"
 
-class WHEPPlayer(
-  appContext: Context,
-  private val connectionOptions: ConnectionOptions
-) : PeerConnection.Observer {
+class WHEPPlayer(appContext: Context, private val connectionOptions: ConnectionOptions) :
+  PeerConnection.Observer {
   private val peerConnectionFactory: PeerConnectionFactory
   private val peerConnection: PeerConnection
   internal val eglBase = EglBase.create()
@@ -60,12 +58,11 @@ class WHEPPlayer(
   var onTrackAdded: (() -> Unit)? = null
 
   init {
-    val iceServers =
-      listOf(
-        PeerConnection.IceServer
-          .builder("stun:stun.l.google.com:19302")
-          .createIceServer()
-      )
+    val iceServers = listOf(
+      PeerConnection.IceServer
+        .builder("stun:stun.l.google.com:19302")
+        .createIceServer()
+    )
 
     val config = PeerConnection.RTCConfiguration(iceServers)
 
@@ -74,100 +71,78 @@ class WHEPPlayer(
     config.candidateNetworkPolicy = PeerConnection.CandidateNetworkPolicy.ALL
     config.tcpCandidatePolicy = PeerConnection.TcpCandidatePolicy.DISABLED
 
+
     PeerConnectionFactory.initialize(
       PeerConnectionFactory.InitializationOptions.builder(appContext).createInitializationOptions()
     )
 
-    peerConnectionFactory =
-      PeerConnectionFactory
-        .builder()
-        .setVideoDecoderFactory(DefaultVideoDecoderFactory(eglBase.eglBaseContext))
-        .createPeerConnectionFactory()
+    peerConnectionFactory = PeerConnectionFactory
+      .builder()
+      .setVideoDecoderFactory(DefaultVideoDecoderFactory(eglBase.eglBaseContext))
+      .createPeerConnectionFactory()
 
     peerConnection = peerConnectionFactory.createPeerConnection(config, this)!!
   }
 
-  private suspend fun sendSdpOffer(sdpOffer: String) =
-    suspendCoroutine { continuation ->
-      val request =
-        Request
-          .Builder()
-          .url(connectionOptions.serverUrl + connectionOptions.whepEndpoint)
-          .post(sdpOffer.toRequestBody())
-          .header("Accept", "application/sdp")
-          .header("Content-Type", "application/sdp")
-          .build()
+  private suspend fun sendSdpOffer(sdpOffer: String) = suspendCoroutine { continuation ->
+    val request = Request.Builder()
+      .url(connectionOptions.serverUrl + connectionOptions.whepEndpoint)
+      .post(sdpOffer.toRequestBody())
+      .header("Accept", "application/sdp")
+      .header("Content-Type", "application/sdp")
+      .build()
 
-      client.newCall(request).enqueue(
-        object : Callback {
-          override fun onFailure(
-            call: Call,
-            e: IOException
-          ) {
-            continuation.resumeWithException(e)
-            e.printStackTrace()
-          }
-
-          override fun onResponse(
-            call: Call,
-            response: Response
-          ) {
-            response.use {
-              patchEndpoint = response.headers["location"]
-              continuation.resume(response.body!!.string())
-            }
-          }
-        }
-      )
-    }
-
-  private suspend fun sendCandidate(candidate: IceCandidate) =
-    suspendCoroutine { continuation ->
-      if (patchEndpoint == null) return@suspendCoroutine
-
-      val splitSdp = candidate.sdp.split(" ")
-      val ufrag = splitSdp[splitSdp.indexOf("ufrag") + 1]
-
-      val jsonObject = JSONObject()
-      try {
-        jsonObject.put("candidate", candidate.sdp)
-        jsonObject.put("sdpMLineIndex", candidate.sdpMLineIndex)
-        jsonObject.put("sdpMid", candidate.sdpMid)
-        // TODO: is ufrag necessary or is it just elixir webrtc thing?
-        jsonObject.put("usernameFragment", ufrag)
-      } catch (e: JSONException) {
+    client.newCall(request).enqueue(object : Callback {
+      override fun onFailure(call: Call, e: IOException) {
+        continuation.resumeWithException(e)
         e.printStackTrace()
       }
 
-      val request =
-        Request
-          .Builder()
-          .url(connectionOptions.serverUrl + patchEndpoint!!)
-          .patch(jsonObject.toString().toRequestBody())
-          .header("Content-Type", "application/trickle-ice-sdpfrag")
-          .build()
-
-      client.newCall(request).enqueue(
-        object : Callback {
-          override fun onFailure(
-            call: Call,
-            e: IOException
-          ) {
-            continuation.resumeWithException(e)
-            e.printStackTrace()
-          }
-
-          override fun onResponse(
-            call: Call,
-            response: Response
-          ) {
-            response.use {
-              continuation.resume(Unit)
-            }
-          }
+      override fun onResponse(call: Call, response: Response) {
+        response.use {
+          patchEndpoint = response.headers["location"]
+          continuation.resume(response.body!!.string())
         }
-      )
+      }
+    })
+  }
+
+  private suspend fun sendCandidate(candidate: IceCandidate) = suspendCoroutine { continuation ->
+    if (patchEndpoint == null) return@suspendCoroutine
+
+    val splitSdp = candidate.sdp.split(" ")
+    val ufrag = splitSdp[splitSdp.indexOf("ufrag") + 1]
+
+    val jsonObject = JSONObject()
+    try {
+      jsonObject.put("candidate", candidate.sdp)
+      jsonObject.put("sdpMLineIndex", candidate.sdpMLineIndex)
+      jsonObject.put("sdpMid", candidate.sdpMid)
+      // TODO: is ufrag necessary or is it just elixir webrtc thing?
+      jsonObject.put("usernameFragment", ufrag)
+    } catch (e: JSONException) {
+      e.printStackTrace()
     }
+
+    val request = Request.Builder()
+      .url(connectionOptions.serverUrl + patchEndpoint!!)
+      .patch(jsonObject.toString().toRequestBody())
+      .header("Content-Type", "application/trickle-ice-sdpfrag")
+      .build()
+
+    client.newCall(request).enqueue(object : Callback {
+      override fun onFailure(call: Call, e: IOException) {
+        continuation.resumeWithException(e)
+        e.printStackTrace()
+      }
+
+      override fun onResponse(call: Call, response: Response) {
+        response.use {
+          continuation.resume(Unit)
+        }
+      }
+    })
+  }
 
   suspend fun connect() {
     peerConnection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO).direction =
@@ -185,11 +160,10 @@ class WHEPPlayer(
 
     iceCandidates.forEach { sendCandidate(it) }
 
-    val answer =
-      SessionDescription(
-        SessionDescription.Type.ANSWER,
-        sdp
-      )
+    val answer = SessionDescription(
+      SessionDescription.Type.ANSWER,
+      sdp
+    )
     peerConnection.setRemoteDescription(answer)
   }
 
@@ -226,6 +200,7 @@ class WHEPPlayer(
   }
 
   override fun onIceCandidatesRemoved(p0: Array<out IceCandidate>?) {
+
   }
 
   override fun onAddStream(p0: MediaStream?) {
@@ -244,10 +219,7 @@ class WHEPPlayer(
     Log.d(TAG, "onRenegotiationNeeded")
   }
 
-  override fun onAddTrack(
-    receiver: RtpReceiver?,
-    mediaStreams: Array<out MediaStream>?
-  ) {
+  override fun onAddTrack(receiver: RtpReceiver?, mediaStreams: Array<out MediaStream>?) {
     coroutineScope.launch(Dispatchers.Main) {
       val videoTrack = receiver?.track() as? VideoTrack?
       this@WHEPPlayer.videoTrack = videoTrack

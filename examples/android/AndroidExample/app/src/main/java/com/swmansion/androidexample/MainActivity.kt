@@ -1,4 +1,4 @@
-package com.mobilewhep.client
+package com.swmansion.androidexample
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -28,10 +28,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.swmansion.whepclient.ConnectionOptions
-import com.swmansion.whepclient.WHEPPlayer
-import com.swmansion.whepclient.WHEPPlayerView
-import com.swmansion.whepclient.ui.theme.MobileWhepClientTheme
+import com.swmansion.androidexample.ui.theme.AndroidExampleTheme
 import kotlinx.coroutines.launch
 import org.webrtc.RendererCommon
 
@@ -41,7 +38,7 @@ class MainActivity : ComponentActivity() {
 
     enableEdgeToEdge()
     setContent {
-      MobileWhepClientTheme {
+      AndroidExampleTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
           PlayerView(modifier = Modifier.padding(innerPadding))
         }
@@ -59,18 +56,16 @@ fun PlayerView(modifier: Modifier = Modifier) {
     mutableStateOf(true)
   }
 
-  val whepPlayer =
-    remember {
-      WHEPPlayer(
-        context,
-        ConnectionOptions(serverUrl = "http://192.168.0.31:8829/", whepEndpoint = "/whep")
-      )
-    }
+  val whepPlayer = remember {
+    WHEPPlayer(
+      context,
+      ConnectionOptions(serverUrl = "http://192.168.83.63:8829/", whepEndpoint = "/whep")
+    )
+  }
 
-  var view: WHEPPlayerView? =
-    remember {
-      null
-    }
+  var view: WHEPPlayerView? = remember {
+    null
+  }
 
   DisposableEffect(Unit) {
     onDispose {
@@ -100,11 +95,10 @@ fun PlayerView(modifier: Modifier = Modifier) {
           view = this
         }
       },
-      modifier =
-        modifier
-          .fillMaxWidth()
-          .height(400.dp)
-          .align(Alignment.Center)
+      modifier = modifier
+        .fillMaxWidth()
+        .height(400.dp)
+        .align(Alignment.Center)
     )
     if (shouldShowPlayBtn) {
       Button(onClick = { onPlayBtnClick() }, modifier = Modifier.align(Alignment.Center)) {
@@ -116,12 +110,11 @@ fun PlayerView(modifier: Modifier = Modifier) {
     }
     if (isLoading) {
       CircularProgressIndicator(
-        modifier =
-          Modifier
-            .width(64.dp)
-            .align(Alignment.Center),
+        modifier = Modifier
+          .width(64.dp)
+          .align(Alignment.Center),
         color = MaterialTheme.colorScheme.secondary,
-        trackColor = MaterialTheme.colorScheme.surfaceVariant
+        trackColor = MaterialTheme.colorScheme.surfaceVariant,
       )
     }
   }

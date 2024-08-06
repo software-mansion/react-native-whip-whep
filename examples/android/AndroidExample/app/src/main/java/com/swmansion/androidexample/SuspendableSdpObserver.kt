@@ -1,4 +1,5 @@
-package com.swmansion.whepclient
+package com.swmansion.androidexample
+
 
 import org.webrtc.MediaConstraints
 import org.webrtc.PeerConnection
