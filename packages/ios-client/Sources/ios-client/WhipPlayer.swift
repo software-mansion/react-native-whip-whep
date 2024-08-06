@@ -7,7 +7,7 @@ public protocol WhipPlayerListener: AnyObject {
 
 protocol WhipPlayer {
     var delegate: WhipPlayerListener? { get set }
-    
+
     func connect() async throws
     func disconnect()
 }

@@ -8,7 +8,7 @@ public protocol WhepPlayerListener: AnyObject {
 
 protocol WhepPlayer {
     var delegate: WhepPlayerListener? { get set }
-    
+
     func connect() async throws
     func disconnect()
 }
