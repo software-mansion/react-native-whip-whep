@@ -7,8 +7,8 @@ public class WhipClient: ClientBase {
     var audioDevice: AVCaptureDevice?
     var videoDevice: AVCaptureDevice?
 
-    func setUpPeerConnection() {
-        Helper.setUpPeerConnection(player: self, configurationOptions: self.configurationOptions)
+    override func setUpPeerConnection() {
+        super.setUpPeerConnection()
 
         do {
             try setUpVideoAndAudioDevices()

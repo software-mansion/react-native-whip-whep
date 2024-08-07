@@ -15,7 +15,7 @@ public class WhepClient: ClientBase {
     */
     override public init(serverUrl: URL, configurationOptions: ConfigurationOptions? = nil) {
         super.init(serverUrl: serverUrl, configurationOptions: configurationOptions)
-        Helper.setUpPeerConnection(player: self, configurationOptions: self.configurationOptions)
+        setUpPeerConnection()
     }
 
     /**
@@ -26,7 +26,7 @@ public class WhepClient: ClientBase {
     */
     public func connect() async throws {
         if !self.isConnectionSetUp {
-            Helper.setUpPeerConnection(player: self, configurationOptions: self.configurationOptions)
+            setUpPeerConnection()
         } else if self.isConnectionSetUp && self.peerConnection == nil {
             throw SessionNetworkError.ConfigurationError(
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")
