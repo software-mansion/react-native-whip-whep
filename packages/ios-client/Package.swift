@@ -15,7 +15,7 @@ let package = Package(
             targets: ["MobileWhepClient"])
     ],
     dependencies: [
-        .package(name: "WebRTC", url: "https://github.com/webrtc-sdk/Specs.git", .exact("114.5735.08"))
+        .package(name: "WebRTC", url: "https://github.com/webrtc-sdk/Specs.git", .exact("125.6422.04"))
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
