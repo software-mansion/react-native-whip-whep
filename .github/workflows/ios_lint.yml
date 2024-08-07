@@ -3,6 +3,7 @@ on:
   pull_request:
     paths:
       - packages/ios-client/**
+      - examples/ios/**
 
 jobs:
   ios_build_and_lint:
@@ -13,10 +14,18 @@ jobs:
       - name: Install deps 📡
         run: brew install swift-format xcbeautify
 
-      - name: Run formatter 🎨
+      - name: Run formatter on ios-client 🎨
         run: swift-format format -i -r ./**/**/*.swift --configuration swift-format-config.json
         working-directory: ./packages/ios-client
 
-      - name: Run lint 👀
+      - name: Run lint on ios-client 👀
         run: swift-format lint -r -s ./**/**/*.swift --configuration swift-format-config.json
         working-directory: ./packages/ios-client
+
+      - name: Run formatter on examples/ios 🎨
+        run: swift-format format -i -r ./**/**/*.swift --configuration swift-format-config.json
+        working-directory: ./examples/ios
+        
+      - name: Run lint on examples/ios 👀
+        run: swift-format lint -r -s ./**/**/*.swift --configuration swift-format-config.json
+        working-directory: ./examples/ios
