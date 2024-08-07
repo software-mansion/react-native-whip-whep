@@ -5,9 +5,9 @@ import WebRTC
 class WhepPlayerViewModel: ObservableObject, PlayerListener {
     @Published var videoTrack: RTCVideoTrack?
     
-    var player: WhepClientPlayer?
+    var player: WhepClient?
 
-    init(player: WhepClientPlayer) {
+    init(player: WhepClient) {
         self.player = player
         player.delegate = self
     }

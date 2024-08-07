@@ -1,7 +1,7 @@
 import WebRTC
 import os
 
-public class WhipClientPlayer: ClientPlayer {
+public class WhipClient: ClientBase {
     var videoCapturer: RTCCameraVideoCapturer?
     var videoSource: RTCVideoSource?
     var audioDevice: AVCaptureDevice?

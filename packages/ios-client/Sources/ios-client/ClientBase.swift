@@ -14,7 +14,7 @@ protocol Player {
     func disconnect()
 }
 
-public class ClientPlayer: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionFactoryType {
+public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionFactoryType {
     var serverUrl: URL
     var authToken: String?
     var configurationOptions: ConfigurationOptions?
