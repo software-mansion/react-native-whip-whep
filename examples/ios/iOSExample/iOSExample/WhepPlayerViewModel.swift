@@ -2,7 +2,7 @@ import Foundation
 import MobileWhepClient
 import WebRTC
 
-class WhepPlayerViewModel: ObservableObject, WhepPlayerListener {
+class WhepPlayerViewModel: ObservableObject, PlayerListener {
     @Published var videoTrack: RTCVideoTrack?
     
     var player: WhepClientPlayer?
