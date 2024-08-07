@@ -1,6 +1,9 @@
 package com.swmansion.androidexample
 
+import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -28,14 +31,26 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.swmansion.androidexample.ui.theme.AndroidExampleTheme
 import kotlinx.coroutines.launch
 import org.webrtc.RendererCommon
+import android.Manifest
 
 class MainActivity : ComponentActivity() {
+  private val PERMISSIONS_REQUEST_CODE = 101
+  private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+    if (!hasPermissions(this, REQUIRED_PERMISSIONS)) {
+      ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, PERMISSIONS_REQUEST_CODE)
+    } else {
+      setupContent()
+    }
+  }
 
+  private fun setupContent() {
     enableEdgeToEdge()
     setContent {
       AndroidExampleTheme {
@@ -44,6 +59,33 @@ class MainActivity : ComponentActivity() {
         }
       }
     }
+  }
+
+  override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    if (requestCode == PERMISSIONS_REQUEST_CODE) {
+      var allPermissionsGranted = true
+      for (result in grantResults) {
+        allPermissionsGranted = allPermissionsGranted and (result == PackageManager.PERMISSION_GRANTED)
+      }
+
+      if (allPermissionsGranted) {
+        setupContent()
+      } else {
+        Toast.makeText(this, "Permissions not granted.", Toast.LENGTH_SHORT).show()
+        finish()
+      }
+    }
+
+    super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+  }
+
+  private fun hasPermissions(context: Context, permissions: Array<String>): Boolean {
+    for (permission in permissions) {
+      if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+        return false
+      }
+    }
+    return true
   }
 }
 
@@ -59,18 +101,36 @@ fun PlayerView(modifier: Modifier = Modifier) {
   val whepPlayer = remember {
     WHEPPlayer(
       context,
-      ConnectionOptions(serverUrl = "http://192.168.83.63:8829/", whepEndpoint = "/whep")
+      ConnectionOptions(serverUrl = "http://192.168.1.23:8829/", whepEndpoint = "/whep")
     )
+  }
+
+  print(whepPlayer)
+
+  val whipPlayer = remember {
+    WHIPPlayer(
+      context,
+      ConnectionOptions(serverUrl = "http://192.168.1.23:8829/", whepEndpoint = "/whip")
+    )
+  }
+
+  print(whepPlayer)
+
+  var whipView: WHIPPlayerView? = remember {
+    null
   }
 
   var view: WHEPPlayerView? = remember {
     null
   }
 
+
   DisposableEffect(Unit) {
     onDispose {
       whepPlayer.release()
+      whipPlayer.release()
       view?.release()
+      whipView?.release()
     }
   }
 
@@ -97,8 +157,21 @@ fun PlayerView(modifier: Modifier = Modifier) {
       },
       modifier = modifier
         .fillMaxWidth()
-        .height(400.dp)
-        .align(Alignment.Center)
+        .height(200.dp)
+        .align(Alignment.TopCenter)
+    )
+
+    AndroidView(
+      factory = { ctx ->
+        WHIPPlayerView(ctx).apply {
+          player = whipPlayer
+          whipView = this
+        }
+      },
+      modifier = modifier
+        .fillMaxWidth()
+        .height(200.dp)
+        .align(Alignment.BottomCenter)
     )
     if (shouldShowPlayBtn) {
       Button(onClick = { onPlayBtnClick() }, modifier = Modifier.align(Alignment.Center)) {
