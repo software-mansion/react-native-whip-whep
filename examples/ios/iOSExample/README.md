@@ -17,17 +17,17 @@ As stated in the package README file, for the server it is recommended to use th
 
 To see the stream from your device, enter `http://<your IP address>:8829/index.html`. These instructions are available in the `ex_webrtc` repo as well.
 
-The server URLs are saved to environment variables. To use them, it is necessary to create a `.xcconfig` file, let's name it `ServerSettings.xcconfig` with the following content:
-```
-WHEP_SERVER_URL = <your WHEP server URL>
-WHIP_SERVER_URL = <your WHIP server URL>
-```
-When the URLs are defined, it is necessary to edit the `Info.plist` file, either through text editor:
+The server URLs are saved to environment variables. To use them, it is necessary to modify template file `ServerSettings.xcconfig` with your URLs.
+When the URLs are defined, it is required to edit the `Info.plist` file, either through text editor:
 ```
 <key>WhepServerUrl</key>
 <string>$(WHEP_SERVER_URL)</string>
 <key>WhipServerUrl</key>
 <string>$(WHIP_SERVER_URL)</string>
+<key>NSCameraUsageDescription</key>
+<string>This application requires camera access to gather information about available video devices.</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>This application requires microphone access to gather information about available audio devices.</string>
 ```
 
 or directly using Xcode:
