@@ -37,6 +37,9 @@ import com.swmansion.androidexample.ui.theme.AndroidExampleTheme
 import kotlinx.coroutines.launch
 import org.webrtc.RendererCommon
 import android.Manifest
+import android.util.Log
+import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Text
 
 class MainActivity : ComponentActivity() {
   private val PERMISSIONS_REQUEST_CODE = 101
@@ -97,24 +100,26 @@ fun PlayerView(modifier: Modifier = Modifier) {
   var shouldShowPlayBtn by remember {
     mutableStateOf(true)
   }
+  var shouldShowStreamBtn by remember {
+    mutableStateOf(true)
+  }
 
   val whepPlayer = remember {
     WHEPPlayer(
       context,
-      ConnectionOptions(serverUrl = "http://192.168.1.23:8829/", whepEndpoint = "/whep")
+      ConnectionOptions(serverUrl = "http://192.168.83.171:8829", whepEndpoint = "/whep", authToken = "example")
     )
   }
-
-  print(whepPlayer)
 
   val whipPlayer = remember {
     WHIPPlayer(
       context,
-      ConnectionOptions(serverUrl = "http://192.168.1.23:8829/", whepEndpoint = "/whip")
+      ConnectionOptions(serverUrl = "http://192.168.83.171:8829", whepEndpoint = "/whip", authToken = "example")
     )
   }
+  Log.d("PRINT", whepPlayer.toString())
+  Log.d("PRINT", whipPlayer.toString())
 
-  print(whepPlayer)
 
   var whipView: WHIPPlayerView? = remember {
     null
@@ -145,21 +150,47 @@ fun PlayerView(modifier: Modifier = Modifier) {
     }
   }
 
-  Box {
-    AndroidView(
-      factory = { ctx ->
-        WHEPPlayerView(ctx).apply {
-          player = whepPlayer
-          this.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
-          this.setEnableHardwareScaler(true)
-          view = this
+  fun onStreamBtnClick() {
+    shouldShowStreamBtn = false
+    coroutineScope.launch {
+      whipPlayer.connect()
+    }
+  }
+
+  Column(modifier = Modifier.fillMaxSize()) {
+
+    Box {
+      AndroidView(
+        factory = { ctx ->
+          WHEPPlayerView(ctx).apply {
+            player = whepPlayer
+            this.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
+            this.setEnableHardwareScaler(true)
+            view = this
+          }
+        },
+        modifier = modifier
+          .fillMaxWidth()
+          .height(200.dp)
+      )
+      if (shouldShowPlayBtn) {
+        Button(onClick = { onPlayBtnClick() }, modifier = Modifier.align(Alignment.Center)) {
+          Image(
+            painter = painterResource(id = android.R.drawable.ic_media_play),
+            contentDescription = "play"
+          )
         }
-      },
-      modifier = modifier
-        .fillMaxWidth()
-        .height(200.dp)
-        .align(Alignment.TopCenter)
-    )
+      }
+      if (isLoading) {
+        CircularProgressIndicator(
+          modifier = Modifier
+            .width(64.dp)
+            .align(Alignment.Center),
+          color = MaterialTheme.colorScheme.secondary,
+          trackColor = MaterialTheme.colorScheme.surfaceVariant,
+        )
+      }
+    }
 
     AndroidView(
       factory = { ctx ->
@@ -171,24 +202,11 @@ fun PlayerView(modifier: Modifier = Modifier) {
       modifier = modifier
         .fillMaxWidth()
         .height(200.dp)
-        .align(Alignment.BottomCenter)
     )
-    if (shouldShowPlayBtn) {
-      Button(onClick = { onPlayBtnClick() }, modifier = Modifier.align(Alignment.Center)) {
-        Image(
-          painter = painterResource(id = android.R.drawable.ic_media_play),
-          contentDescription = "play"
-        )
+    if (shouldShowStreamBtn) {
+      Button(onClick = { onStreamBtnClick() }) {
+        Text("Stream")
       }
-    }
-    if (isLoading) {
-      CircularProgressIndicator(
-        modifier = Modifier
-          .width(64.dp)
-          .align(Alignment.Center),
-        color = MaterialTheme.colorScheme.secondary,
-        trackColor = MaterialTheme.colorScheme.surfaceVariant,
-      )
     }
   }
 }
