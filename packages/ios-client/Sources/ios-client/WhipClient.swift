@@ -24,7 +24,7 @@ public class WhipClient: ClientBase {
     }
 
     /**
-    Initializes a `WhipClientPlayer` object.
+    Initializes a `WhipClient` object.
 
     - Parameter serverUrl: A URL of the WHIP server.
     - Parameter authToken: An authorization token of the WHIP server.
@@ -32,7 +32,7 @@ public class WhipClient: ClientBase {
     - Parameter audioDevice: A device that will be used to stream audio.
     - Parameter videoDevice: A device that will be used to stream video.
 
-    - Returns: A `WhipClientPlayer` object.
+    - Returns: A `WhipClient` object.
     */
     public init(
         serverUrl: URL, configurationOptions: ConfigurationOptions? = nil,
