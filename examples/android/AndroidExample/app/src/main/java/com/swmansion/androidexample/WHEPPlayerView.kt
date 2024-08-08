@@ -428,6 +428,7 @@ class WHEPPlayerView : TextureView,
   }
 
   override fun onTrackAdded(track: VideoTrack) {
+    Log.d("PLAYER", player.toString())
     init(player!!.eglBase.eglBaseContext, null)
     track.addSink(this)
   }

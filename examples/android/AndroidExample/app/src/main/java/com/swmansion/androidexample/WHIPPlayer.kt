@@ -104,6 +104,7 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
       .post(sdpOffer.toRequestBody())
       .header("Accept", "application/sdp")
       .header("Content-Type", "application/sdp")
+      .header("Authorization", "Bearer " + connectionOptions?.authToken)
       .build()
 
     client.newCall(request).enqueue(object : Callback {
@@ -168,7 +169,7 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
     val sdpOffer = peerConnection.createOffer(constraints).getOrThrow()
     peerConnection.setLocalDescription(sdpOffer).getOrThrow()
 
-    Log.d(TAG2, sdpOffer.description)
+    Log.d("SDPOFFER", sdpOffer.description)
 
     val sdp = sendSdpOffer(sdpOffer.description)
 
@@ -179,6 +180,7 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
       sdp
     )
     peerConnection.setRemoteDescription(answer)
+    Log.d("SDPANSWER", answer.toString())
   }
 
   fun release() {
@@ -226,7 +228,7 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
     peerConnection.addTransceiver(audioTrack, audioTransceiverInit)
 
     this.videoTrack = videoTrack
-    print(this.videoTrack)
+    Log.d("TRACK2", videoTrack.id())
   }
 
   override fun onSignalingChange(p0: PeerConnection.SignalingState?) {
@@ -279,6 +281,7 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
     coroutineScope.launch(Dispatchers.Main) {
       val videoTrack = receiver?.track() as? VideoTrack?
       this@WHIPPlayer.videoTrack = videoTrack
+      Log.d("TRACK", videoTrack!!.id())
       listeners.forEach { listener -> videoTrack?.let { listener.onTrackAdded(it) } }
     }
     onTrackAdded?.let { it() }
