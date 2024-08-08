@@ -22,6 +22,7 @@ import org.webrtc.CameraEnumerator
 import org.webrtc.CameraVideoCapturer
 import org.webrtc.DataChannel
 import org.webrtc.DefaultVideoDecoderFactory
+import org.webrtc.DefaultVideoEncoderFactory
 import org.webrtc.EglBase
 import org.webrtc.IceCandidate
 import org.webrtc.MediaConstraints
@@ -91,7 +92,7 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
 
     peerConnectionFactory = PeerConnectionFactory
       .builder()
-      .setVideoDecoderFactory(DefaultVideoDecoderFactory(eglBase.eglBaseContext))
+      .setVideoEncoderFactory(DefaultVideoEncoderFactory(eglBase.eglBaseContext, true, true))
       .createPeerConnectionFactory()
 
     peerConnection = peerConnectionFactory.createPeerConnection(config, this)!!
@@ -107,14 +108,19 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
       .header("Authorization", "Bearer " + connectionOptions?.authToken)
       .build()
 
+    Log.d(TAG2, request.headers.toString())
+    Log.d(TAG2, request.body.toString())
+
     client.newCall(request).enqueue(object : Callback {
       override fun onFailure(call: Call, e: IOException) {
+        Log.d(TAG2, e.toString())
         continuation.resumeWithException(e)
         e.printStackTrace()
       }
 
       override fun onResponse(call: Call, response: Response) {
         response.use {
+          Log.d(TAG2, response.headers.toString())
           patchEndpoint = response.headers["location"]
           continuation.resume(response.body!!.string())
         }
@@ -128,16 +134,15 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
     val splitSdp = candidate.sdp.split(" ")
     val ufrag = splitSdp[splitSdp.indexOf("ufrag") + 1]
 
+    Log.d(TAG2, ufrag)
+
     val jsonObject = JSONObject()
-    try {
-      jsonObject.put("candidate", candidate.sdp)
-      jsonObject.put("sdpMLineIndex", candidate.sdpMLineIndex)
-      jsonObject.put("sdpMid", candidate.sdpMid)
-      // TODO: is ufrag necessary or is it just elixir webrtc thing?
-      jsonObject.put("usernameFragment", ufrag)
-    } catch (e: JSONException) {
-      e.printStackTrace()
-    }
+
+    jsonObject.put("candidate", candidate.sdp)
+    jsonObject.put("sdpMLineIndex", candidate.sdpMLineIndex)
+    jsonObject.put("sdpMid", candidate.sdpMid)
+    // TODO: is ufrag necessary or is it just elixir webrtc thing?
+    jsonObject.put("usernameFragment", ufrag)
 
     val request = Request.Builder()
       .url(connectionOptions.serverUrl + patchEndpoint!!)
@@ -160,16 +165,11 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
   }
 
   suspend fun connect() {
-    peerConnection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO).direction =
-      RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
-    peerConnection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO).direction =
-      RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
-
     val constraints = MediaConstraints()
     val sdpOffer = peerConnection.createOffer(constraints).getOrThrow()
     peerConnection.setLocalDescription(sdpOffer).getOrThrow()
 
-    Log.d("SDPOFFER", sdpOffer.description)
+    Log.d(TAG2, sdpOffer.description)
 
     val sdp = sendSdpOffer(sdpOffer.description)
 
@@ -180,13 +180,21 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
       sdp
     )
     peerConnection.setRemoteDescription(answer)
-    Log.d("SDPANSWER", answer.toString())
+    Log.d(TAG2, answer.toString())
   }
 
   fun release() {
     peerConnection.dispose()
     peerConnectionFactory.dispose()
     eglBase.release()
+  }
+
+  fun PeerConnection.enforceSendOnlyDirection() {
+    transceivers.forEach { transceiver ->
+      if (transceiver.direction == RtpTransceiver.RtpTransceiverDirection.SEND_RECV) {
+        transceiver.direction = RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
+      }
+    }
   }
 
   private fun setUpVideoAndAudioDevices() {
@@ -204,7 +212,7 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
     val videoCapturer: CameraVideoCapturer? = deviceName?.let {
       cameraEnumerator.createCapturer(it, null)
     }
-    print(videoCapturer)
+
     val videoSource: VideoSource = peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
     val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
     videoCapturer?.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
@@ -213,8 +221,6 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
 
     this.videoSource = videoSource
     this.videoCapturer = videoCapturer
-
-    videoTrack.setEnabled(true)
 
     val audioTrackId = UUID.randomUUID().toString()
     val audioSource = this.peerConnectionFactory.createAudioSource(MediaConstraints())
@@ -227,8 +233,11 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
     val audioTransceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
     peerConnection.addTransceiver(audioTrack, audioTransceiverInit)
 
+    peerConnection.enforceSendOnlyDirection()
+    videoTrack.setEnabled(true)
     this.videoTrack = videoTrack
-    Log.d("TRACK2", videoTrack.id())
+
+    Log.d(TAG2, videoTrack.id())
   }
 
   override fun onSignalingChange(p0: PeerConnection.SignalingState?) {
@@ -278,6 +287,7 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
   }
 
   override fun onAddTrack(receiver: RtpReceiver?, mediaStreams: Array<out MediaStream>?) {
+    Log.d(TAG2, "Track added")
     coroutineScope.launch(Dispatchers.Main) {
       val videoTrack = receiver?.track() as? VideoTrack?
       this@WHIPPlayer.videoTrack = videoTrack
