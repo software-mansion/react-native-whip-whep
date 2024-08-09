@@ -1,4 +1,4 @@
-package com.swmansion.androidexample
+package com.swmansion.whipwhepdemo
 
 import org.junit.Test
 
