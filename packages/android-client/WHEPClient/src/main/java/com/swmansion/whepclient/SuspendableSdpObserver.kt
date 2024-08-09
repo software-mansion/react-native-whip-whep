@@ -1,6 +1,5 @@
 package com.swmansion.whepclient
 
-
 import org.webrtc.MediaConstraints
 import org.webrtc.PeerConnection
 import org.webrtc.SdpObserver

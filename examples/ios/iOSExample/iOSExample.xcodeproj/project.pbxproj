@@ -3,40 +3,38 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 60;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		613BDDCBF786FE4479F3A300 /* Pods_iOSExample.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 26CF7FBA61E02A2C8145311D /* Pods_iOSExample.framework */; };
 		7C35C0962C4927BA00EE0290 /* iOSExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0952C4927BA00EE0290 /* iOSExampleApp.swift */; };
 		7C35C0982C4927BA00EE0290 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0972C4927BA00EE0290 /* ContentView.swift */; };
 		7C35C09A2C4927BB00EE0290 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C35C0992C4927BB00EE0290 /* Assets.xcassets */; };
 		7C35C09D2C4927BB00EE0290 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C35C09C2C4927BB00EE0290 /* Preview Assets.xcassets */; };
+		7C75AD8A2C58DA740011DB76 /* MobileWhepClient in Frameworks */ = {isa = PBXBuildFile; productRef = 7C75AD892C58DA740011DB76 /* MobileWhepClient */; };
+		7C75AD8C2C58DCBF0011DB76 /* MobileWhepClient in Frameworks */ = {isa = PBXBuildFile; productRef = 7C75AD8B2C58DCBF0011DB76 /* MobileWhepClient */; };
+		7C75AD942C5BD06C0011DB76 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C75AD932C5BD06C0011DB76 /* CameraPreview.swift */; };
+		7C75AD962C5CD7A00011DB76 /* WhepPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C75AD952C5CD7A00011DB76 /* WhepPlayerViewModel.swift */; };
+		7C75AD982C5CF15F0011DB76 /* WhipPlayerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C75AD972C5CF15F0011DB76 /* WhipPlayerViewModel.swift */; };
 		7C9D91CD2C539BEC000DF490 /* WebRTCVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C9D91CC2C539BEC000DF490 /* WebRTCVideoView.swift */; };
-		7CFD45B02C4FF45200D6A404 /* WHEPPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45AF2C4FF45200D6A404 /* WHEPPlayer.swift */; };
-		7CFD45B22C50E6D700D6A404 /* ConnectionOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45B12C50E6D700D6A404 /* ConnectionOptions.swift */; };
+		7CBEEA042C65004C00B1DA4A /* ServerSettings.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7CBEEA032C65004C00B1DA4A /* ServerSettings.xcconfig */; };
 		7CFD45B82C51056900D6A404 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CFD45B72C51056900D6A404 /* CoreAudio.framework */; };
-		7CFD45BA2C51119300D6A404 /* WHIPPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45B92C51119300D6A404 /* WHIPPlayer.swift */; };
-		7CFD45BC2C52493400D6A404 /* CameraPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFD45BB2C52493400D6A404 /* CameraPreview.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		26CF7FBA61E02A2C8145311D /* Pods_iOSExample.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iOSExample.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		2BE47B301882948A5DC79903 /* Pods-iOSExample.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOSExample.debug.xcconfig"; path = "Target Support Files/Pods-iOSExample/Pods-iOSExample.debug.xcconfig"; sourceTree = "<group>"; };
-		46109ABB8B07A77A22AB3F5C /* Pods-iOSExample.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iOSExample.release.xcconfig"; path = "Target Support Files/Pods-iOSExample/Pods-iOSExample.release.xcconfig"; sourceTree = "<group>"; };
 		7C35C0922C4927BA00EE0290 /* iOSExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOSExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C35C0952C4927BA00EE0290 /* iOSExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSExampleApp.swift; sourceTree = "<group>"; };
 		7C35C0972C4927BA00EE0290 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7C35C0992C4927BB00EE0290 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7C35C09C2C4927BB00EE0290 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		7C35C0A32C49280C00EE0290 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		7C75AD932C5BD06C0011DB76 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
+		7C75AD952C5CD7A00011DB76 /* WhepPlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhepPlayerViewModel.swift; sourceTree = "<group>"; };
+		7C75AD972C5CF15F0011DB76 /* WhipPlayerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhipPlayerViewModel.swift; sourceTree = "<group>"; };
 		7C9D91CC2C539BEC000DF490 /* WebRTCVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCVideoView.swift; sourceTree = "<group>"; };
-		7CFD45AF2C4FF45200D6A404 /* WHEPPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WHEPPlayer.swift; sourceTree = "<group>"; };
-		7CFD45B12C50E6D700D6A404 /* ConnectionOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionOptions.swift; sourceTree = "<group>"; };
+		7CBEEA032C65004C00B1DA4A /* ServerSettings.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = ServerSettings.xcconfig; sourceTree = "<group>"; };
 		7CFD45B52C51055F00D6A404 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		7CFD45B72C51056900D6A404 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
-		7CFD45B92C51119300D6A404 /* WHIPPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WHIPPlayer.swift; sourceTree = "<group>"; };
-		7CFD45BB2C52493400D6A404 /* CameraPreview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraPreview.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,7 +43,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7CFD45B82C51056900D6A404 /* CoreAudio.framework in Frameworks */,
-				613BDDCBF786FE4479F3A300 /* Pods_iOSExample.framework in Frameworks */,
+				7C75AD8A2C58DA740011DB76 /* MobileWhepClient in Frameworks */,
+				7C75AD8C2C58DCBF0011DB76 /* MobileWhepClient in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -57,7 +56,6 @@
 			children = (
 				7CFD45B72C51056900D6A404 /* CoreAudio.framework */,
 				7CFD45B52C51055F00D6A404 /* AudioUnit.framework */,
-				26CF7FBA61E02A2C8145311D /* Pods_iOSExample.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -67,7 +65,6 @@
 			children = (
 				7C35C0942C4927BA00EE0290 /* iOSExample */,
 				7C35C0932C4927BA00EE0290 /* Products */,
-				85A703D4B180FB98D7750618 /* Pods */,
 				7BBE4CB1CAFEAB0D02A41607 /* Frameworks */,
 			);
 			sourceTree = "<group>";
@@ -83,16 +80,16 @@
 		7C35C0942C4927BA00EE0290 /* iOSExample */ = {
 			isa = PBXGroup;
 			children = (
-				7CFD45AF2C4FF45200D6A404 /* WHEPPlayer.swift */,
 				7C35C0A32C49280C00EE0290 /* Info.plist */,
 				7C35C0952C4927BA00EE0290 /* iOSExampleApp.swift */,
 				7C35C0972C4927BA00EE0290 /* ContentView.swift */,
 				7C35C0992C4927BB00EE0290 /* Assets.xcassets */,
 				7C35C09B2C4927BB00EE0290 /* Preview Content */,
-				7CFD45B12C50E6D700D6A404 /* ConnectionOptions.swift */,
-				7CFD45B92C51119300D6A404 /* WHIPPlayer.swift */,
-				7CFD45BB2C52493400D6A404 /* CameraPreview.swift */,
 				7C9D91CC2C539BEC000DF490 /* WebRTCVideoView.swift */,
+				7C75AD932C5BD06C0011DB76 /* CameraPreview.swift */,
+				7C75AD952C5CD7A00011DB76 /* WhepPlayerViewModel.swift */,
+				7C75AD972C5CF15F0011DB76 /* WhipPlayerViewModel.swift */,
+				7CBEEA032C65004C00B1DA4A /* ServerSettings.xcconfig */,
 			);
 			path = iOSExample;
 			sourceTree = "<group>";
@@ -105,15 +102,6 @@
 			path = "Preview Content";
 			sourceTree = "<group>";
 		};
-		85A703D4B180FB98D7750618 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				2BE47B301882948A5DC79903 /* Pods-iOSExample.debug.xcconfig */,
-				46109ABB8B07A77A22AB3F5C /* Pods-iOSExample.release.xcconfig */,
-			);
-			path = Pods;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -121,17 +109,19 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7C35C0A02C4927BB00EE0290 /* Build configuration list for PBXNativeTarget "iOSExample" */;
 			buildPhases = (
-				8ABECDF7E3CDB62BF00B3C33 /* [CP] Check Pods Manifest.lock */,
 				7C35C08E2C4927BA00EE0290 /* Sources */,
 				7C35C08F2C4927BA00EE0290 /* Frameworks */,
 				7C35C0902C4927BA00EE0290 /* Resources */,
-				83249B7ABDE958868E63EC9D /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
 			name = iOSExample;
+			packageProductDependencies = (
+				7C75AD892C58DA740011DB76 /* MobileWhepClient */,
+				7C75AD8B2C58DCBF0011DB76 /* MobileWhepClient */,
+			);
 			productName = iOSExample;
 			productReference = 7C35C0922C4927BA00EE0290 /* iOSExample.app */;
 			productType = "com.apple.product-type.application";
@@ -160,6 +150,9 @@
 				Base,
 			);
 			mainGroup = 7C35C0892C4927BA00EE0290;
+			packageReferences = (
+				7C75AD882C58DA740011DB76 /* XCLocalSwiftPackageReference "../../../packages/ios-client" */,
+			);
 			productRefGroup = 7C35C0932C4927BA00EE0290 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -175,66 +168,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				7C35C09D2C4927BB00EE0290 /* Preview Assets.xcassets in Resources */,
+				7CBEEA042C65004C00B1DA4A /* ServerSettings.xcconfig in Resources */,
 				7C35C09A2C4927BB00EE0290 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
-/* Begin PBXShellScriptBuildPhase section */
-		83249B7ABDE958868E63EC9D /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-iOSExample/Pods-iOSExample-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-iOSExample/Pods-iOSExample-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iOSExample/Pods-iOSExample-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		8ABECDF7E3CDB62BF00B3C33 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-iOSExample-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-/* End PBXShellScriptBuildPhase section */
-
 /* Begin PBXSourcesBuildPhase section */
 		7C35C08E2C4927BA00EE0290 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7CFD45BA2C51119300D6A404 /* WHIPPlayer.swift in Sources */,
-				7CFD45B22C50E6D700D6A404 /* ConnectionOptions.swift in Sources */,
-				7CFD45BC2C52493400D6A404 /* CameraPreview.swift in Sources */,
-				7CFD45B02C4FF45200D6A404 /* WHEPPlayer.swift in Sources */,
 				7C35C0982C4927BA00EE0290 /* ContentView.swift in Sources */,
+				7C75AD942C5BD06C0011DB76 /* CameraPreview.swift in Sources */,
 				7C35C0962C4927BA00EE0290 /* iOSExampleApp.swift in Sources */,
 				7C9D91CD2C539BEC000DF490 /* WebRTCVideoView.swift in Sources */,
+				7C75AD962C5CD7A00011DB76 /* WhepPlayerViewModel.swift in Sources */,
+				7C75AD982C5CF15F0011DB76 /* WhipPlayerViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -243,6 +194,7 @@
 /* Begin XCBuildConfiguration section */
 		7C35C09E2C4927BB00EE0290 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7CBEEA032C65004C00B1DA4A /* ServerSettings.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -307,6 +259,7 @@
 		};
 		7C35C09F2C4927BB00EE0290 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 7CBEEA032C65004C00B1DA4A /* ServerSettings.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
@@ -364,7 +317,7 @@
 		};
 		7C35C0A12C4927BB00EE0290 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 2BE47B301882948A5DC79903 /* Pods-iOSExample.debug.xcconfig */;
+			baseConfigurationReference = 7CBEEA032C65004C00B1DA4A /* ServerSettings.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -396,7 +349,7 @@
 		};
 		7C35C0A22C4927BB00EE0290 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 46109ABB8B07A77A22AB3F5C /* Pods-iOSExample.release.xcconfig */;
+			baseConfigurationReference = 7CBEEA032C65004C00B1DA4A /* ServerSettings.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -448,6 +401,24 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		7C75AD882C58DA740011DB76 /* XCLocalSwiftPackageReference "../../../packages/ios-client" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../../../packages/ios-client";
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		7C75AD892C58DA740011DB76 /* MobileWhepClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MobileWhepClient;
+		};
+		7C75AD8B2C58DCBF0011DB76 /* MobileWhepClient */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = MobileWhepClient;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 7C35C08A2C4927BA00EE0290 /* Project object */;
 }

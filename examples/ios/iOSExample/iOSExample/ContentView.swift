@@ -1,45 +1,76 @@
 import SwiftUI
+import AVFoundation
+import MobileWhepClient
+import WebRTC
 
 struct ContentView: View {
-    @StateObject var player = WHEPPlayer(connectionOptions: ConnectionOptions(serverUrl: URL(string: "http://192.168.83.180:8829")!, whepEndpoint: "/whep", authToken: "example"))
-    @StateObject var whipPlayer = WHIPPlayer(connectionOptions: ConnectionOptions(serverUrl: URL(string: "http://192.168.83.180:8829")!, whepEndpoint: "/whip", authToken: "example"))
-    
+    enum PlayerType {
+        case whep
+        case whip
+    }
 
+    @State private var selectedPlayerType = PlayerType.whep
+    @StateObject var whepPlayerViewModel = WhepPlayerViewModel(player: WhepClient(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhepServerUrl"] as? String ?? "")")!, configurationOptions: ConfigurationOptions(authToken: "example")))
+    @StateObject var whipPlayerViewModel = WhipPlayerViewModel(player: WhipClient(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, configurationOptions: ConfigurationOptions(authToken: "example"), audioDevice: AVCaptureDevice.default(for: .audio), videoDevice: AVCaptureDevice.default(for: .video)))
+    
     var body: some View {
         VStack {
-            Text("WHEP:")
-            if let videoTrack = player.videoTrack {
-                    WebRTCVideoView(videoTrack: videoTrack)
-                        .frame(width: 150, height: 150)
-                } else {
-                    Text("Stream loading...")
-                }
-            Button("Connect WHEP") {
-                Task {
-                    try await player.connect()
-                }
+            Picker("Choose Player", selection: $selectedPlayerType) {
+                Text("WHEP").tag(PlayerType.whep)
+                Text("WHIP").tag(PlayerType.whip)
             }
-            Text("WHIP:")
-            if whipPlayer.videoTrack != nil {
-                CameraPreview(videoTrack: whipPlayer.videoTrack)
-                    .frame(width: 150, height: 150)
-                    .cornerRadius(8)
-                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.blue, lineWidth: 2))
-            }else {
-                Text("Preview loading...")
+            .pickerStyle(SegmentedPickerStyle())
+            
+            VStack {
+                switch selectedPlayerType {
+                case .whep:
+                    if let videoTrack = whepPlayerViewModel.videoTrack {
+                        WebRTCVideoView(videoTrack: videoTrack)
+                            .frame(width: 200, height: 200)
+                    } else {
+                        Text("Stream loading...")
+                            .padding([.top, .bottom], 140)
+                    }
+                    Button("Connect WHEP") {
+                        Task {
+                            do {
+                                try await whepPlayerViewModel.connect()
+                            } catch is SessionNetworkError{
+                                print("Session Network Error")
+                            }
+                        }
+                    }
+                case .whip:
+                    if let videoTrack = whipPlayerViewModel.videoTrack  {
+                        CameraPreview(videoTrack: videoTrack)
+                            .frame(width: 200, height: 200)
+                            .cornerRadius(8)
+                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.blue, lineWidth: 2))
+                            .padding([.top, .bottom], 50)
+                    } else {
+                        Text("Preview loading...")
+                    }
+                    
+                    Button("Connect WHIP") {
+                        Task {
+                            do {
+                                try await whipPlayerViewModel.connect()
+                            } catch is SessionNetworkError {
+                                print("Session Network Error")
+                            }
+                            
+                        }
+                    }
+                }
             }
             
-            Button("Connect WHIP") {
-                Task {
-                    try await whipPlayer.connect()
-                }
-            }
         }
         .padding()
     }
-    
 }
 
-#Preview {
-    ContentView()
+struct ContentView_Previews: PreviewProvider {
+    static var previews: some View {
+        ContentView()
+    }
 }
