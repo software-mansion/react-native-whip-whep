@@ -1,5 +1,6 @@
 [versions]
 agp = "8.5.0"
+webrtc = "125.6422.03"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
@@ -13,6 +14,7 @@ appcompat = "1.6.1"
 material = "1.10.0"
 
 [libraries]
+webrtc = { module = "io.github.webrtc-sdk:android", version.ref = "webrtc" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

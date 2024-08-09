@@ -35,7 +35,7 @@ internal interface WHEPPlayerListener {
   fun onTrackAdded(track: VideoTrack)
 }
 
-internal const val TAG = "WHEPClient"
+internal const val WHEP_TAG = "WHEPClient"
 
 class WHEPPlayer(appContext: Context, private val connectionOptions: ConnectionOptions) :
   PeerConnection.Observer {
@@ -154,7 +154,7 @@ class WHEPPlayer(appContext: Context, private val connectionOptions: ConnectionO
     val sdpOffer = peerConnection.createOffer(constraints).getOrThrow()
     peerConnection.setLocalDescription(sdpOffer).getOrThrow()
 
-    Log.d(TAG, sdpOffer.description)
+    Log.d(WHEP_TAG, sdpOffer.description)
 
     val sdp = sendSdpOffer(sdpOffer.description)
 
@@ -174,19 +174,19 @@ class WHEPPlayer(appContext: Context, private val connectionOptions: ConnectionO
   }
 
   override fun onSignalingChange(p0: PeerConnection.SignalingState?) {
-    Log.d(TAG, "onSignalingChange: $p0")
+    Log.d(WHEP_TAG, "onSignalingChange: $p0")
   }
 
   override fun onIceConnectionChange(p0: PeerConnection.IceConnectionState?) {
-    Log.d(TAG, "onIceConnectionChange: $p0")
+    Log.d(WHEP_TAG, "onIceConnectionChange: $p0")
   }
 
   override fun onIceConnectionReceivingChange(p0: Boolean) {
-    Log.d(TAG, "onIceConnectionReceivingChange: $p0")
+    Log.d(WHEP_TAG, "onIceConnectionReceivingChange: $p0")
   }
 
   override fun onIceGatheringChange(p0: PeerConnection.IceGatheringState?) {
-    Log.d(TAG, "onIceGatheringChange: $p0")
+    Log.d(WHEP_TAG, "onIceGatheringChange: $p0")
   }
 
   override fun onIceCandidate(candidate: IceCandidate) {
@@ -204,19 +204,19 @@ class WHEPPlayer(appContext: Context, private val connectionOptions: ConnectionO
   }
 
   override fun onAddStream(p0: MediaStream?) {
-    Log.d(TAG, "onAddStream: $p0")
+    Log.d(WHEP_TAG, "onAddStream: $p0")
   }
 
   override fun onRemoveStream(p0: MediaStream?) {
-    Log.d(TAG, "onRemoveStream: $p0")
+    Log.d(WHEP_TAG, "onRemoveStream: $p0")
   }
 
   override fun onDataChannel(p0: DataChannel?) {
-    Log.d(TAG, "onDataChannel: $p0")
+    Log.d(WHEP_TAG, "onDataChannel: $p0")
   }
 
   override fun onRenegotiationNeeded() {
-    Log.d(TAG, "onRenegotiationNeeded")
+    Log.d(WHEP_TAG, "onRenegotiationNeeded")
   }
 
   override fun onAddTrack(receiver: RtpReceiver?, mediaStreams: Array<out MediaStream>?) {

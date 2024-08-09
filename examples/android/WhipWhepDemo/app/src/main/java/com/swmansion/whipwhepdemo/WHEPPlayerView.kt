@@ -215,7 +215,7 @@ class WHEPPlayerView : TextureView,
       videoLayoutMeasure.measure(widthSpec, heightSpec, rotatedFrameWidth, rotatedFrameHeight)
     setMeasuredDimension(size.x, size.y)
 
-    Log.d(TAG, "onMeasure() New size: ${size.x}x${size.y}")
+    Log.d(WHEP_TAG, "onMeasure() New size: ${size.x}x${size.y}")
   }
 
   override fun onLayout(
@@ -239,7 +239,7 @@ class WHEPPlayerView : TextureView,
     eglRenderer.setLayoutAspectRatio(aspectRatio)
     updateSurfaceSize()
 
-    Log.d(TAG, "onLayout() aspect ratio $aspectRatio")
+    Log.d(WHEP_TAG, "onLayout() aspect ratio $aspectRatio")
   }
 
   private fun updateSurfaceSize() {
@@ -275,7 +275,7 @@ class WHEPPlayerView : TextureView,
       }
 
       Log.d(
-        TAG,
+        WHEP_TAG,
         "updateSurfaceSize() " +
           "layout size: ${getWidth()} x ${getHeight()}, " +
           "frame size: $rotatedFrameWidth x $rotatedFrameHeight, " +
@@ -321,7 +321,7 @@ class WHEPPlayerView : TextureView,
     val yoff = (viewHeight - newHeight) / 2
 
     Log.d(
-      TAG,
+      WHEP_TAG,
       "video=$videoWidth x $videoHeight view=$viewWidth x $viewHeight" +
         " newView=$newWidth x $newHeight off=$xoff,$yoff"
     )
@@ -372,7 +372,7 @@ class WHEPPlayerView : TextureView,
   ) {
     ThreadUtils.checkIsOnMainThread()
 
-    Log.d(TAG, "surfaceChanged: size: $width x $height")
+    Log.d(WHEP_TAG, "surfaceChanged: size: $width x $height")
   }
 
   override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
@@ -404,7 +404,7 @@ class WHEPPlayerView : TextureView,
     videoHeight: Int,
     rotation: Int
   ) {
-    Log.d(TAG, "Resolution changed to $videoWidth x $videoHeight with rotation of $rotation")
+    Log.d(WHEP_TAG, "Resolution changed to $videoWidth x $videoHeight with rotation of $rotation")
     rendererEvents?.onFrameResolutionChanged(videoWidth, videoHeight, rotation)
 
     val rotatedWidth = if (rotation == 0 || rotation == 180) videoWidth else videoHeight

@@ -6,7 +6,6 @@ import android.graphics.SurfaceTexture
 import android.os.Looper
 import android.util.Log
 import android.view.Surface
-import android.view.SurfaceHolder
 import android.view.TextureView
 import org.webrtc.EglBase
 import org.webrtc.GlRectDrawer
@@ -90,7 +89,7 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
       videoLayoutMeasure.measure(widthSpec, heightSpec, rotatedFrameWidth, rotatedFrameHeight)
     setMeasuredDimension(size.x, size.y)
 
-    Log.d(TAG, "onMeasure() New size: ${size.x}x${size.y}")
+    Log.d(WHEP_TAG, "onMeasure() New size: ${size.x}x${size.y}")
   }
 
   override fun onLayout(
@@ -114,7 +113,7 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
     eglRenderer.setLayoutAspectRatio(aspectRatio)
     updateSurfaceSize()
 
-    Log.d(TAG, "onLayout() aspect ratio $aspectRatio")
+    Log.d(WHEP_TAG, "onLayout() aspect ratio $aspectRatio")
   }
 
   private fun updateSurfaceSize() {
@@ -150,7 +149,7 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
       }
 
       Log.d(
-        TAG,
+        WHEP_TAG,
         "updateSurfaceSize() " +
           "layout size: ${getWidth()} x ${getHeight()}, " +
           "frame size: $rotatedFrameWidth x $rotatedFrameHeight, " +
@@ -193,7 +192,7 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
     val yoff = (viewHeight - newHeight) / 2
 
     Log.d(
-      TAG,
+      WHEP_TAG,
       "video=$videoWidth x $videoHeight view=$viewWidth x $viewHeight" +
         " newView=$newWidth x $newHeight off=$xoff,$yoff"
     )
@@ -228,7 +227,7 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
   ) {
     ThreadUtils.checkIsOnMainThread()
 
-    Log.d(TAG, "surfaceChanged: size: $width x $height")
+    Log.d(WHEP_TAG, "surfaceChanged: size: $width x $height")
   }
 
   override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
@@ -251,7 +250,7 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
     videoHeight: Int,
     rotation: Int
   ) {
-    Log.d(TAG, "Resolution changed to $videoWidth x $videoHeight with rotation of $rotation")
+    Log.d(WHEP_TAG, "Resolution changed to $videoWidth x $videoHeight with rotation of $rotation")
     rendererEvents?.onFrameResolutionChanged(videoWidth, videoHeight, rotation)
 
     val rotatedWidth = if (rotation == 0 || rotation == 180) videoWidth else videoHeight

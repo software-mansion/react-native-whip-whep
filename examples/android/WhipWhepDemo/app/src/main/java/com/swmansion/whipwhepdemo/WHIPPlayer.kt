@@ -1,10 +1,7 @@
 package com.swmansion.whipwhepdemo
 
 import android.content.Context
-import android.content.pm.PackageManager
 import android.util.Log
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -14,20 +11,17 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
-import org.json.JSONException
 import org.json.JSONObject
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraEnumerator
 import org.webrtc.CameraVideoCapturer
 import org.webrtc.DataChannel
-import org.webrtc.DefaultVideoDecoderFactory
 import org.webrtc.DefaultVideoEncoderFactory
 import org.webrtc.EglBase
 import org.webrtc.IceCandidate
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStream
-import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnectionFactory
 import org.webrtc.RtpReceiver
@@ -47,7 +41,7 @@ internal interface WHIPPlayerListener {
   fun onTrackAdded(track: VideoTrack)
 }
 
-internal const val TAG2 = "WHIPClient"
+internal const val WHIP_TAG = "WHIPClient"
 
 class WHIPPlayer(private val appContext: Context, private val connectionOptions: ConnectionOptions) :
   PeerConnection.Observer {
@@ -108,19 +102,19 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
       .header("Authorization", "Bearer " + connectionOptions?.authToken)
       .build()
 
-    Log.d(TAG2, request.headers.toString())
-    Log.d(TAG2, request.body.toString())
+    Log.d(WHIP_TAG, request.headers.toString())
+    Log.d(WHIP_TAG, request.body.toString())
 
     client.newCall(request).enqueue(object : Callback {
       override fun onFailure(call: Call, e: IOException) {
-        Log.d(TAG2, e.toString())
+        Log.d(WHIP_TAG, e.toString())
         continuation.resumeWithException(e)
         e.printStackTrace()
       }
 
       override fun onResponse(call: Call, response: Response) {
         response.use {
-          Log.d(TAG2, response.headers.toString())
+          Log.d(WHIP_TAG, response.headers.toString())
           patchEndpoint = response.headers["location"]
           continuation.resume(response.body!!.string())
         }
@@ -134,7 +128,7 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
     val splitSdp = candidate.sdp.split(" ")
     val ufrag = splitSdp[splitSdp.indexOf("ufrag") + 1]
 
-    Log.d(TAG2, ufrag)
+    Log.d(WHIP_TAG, ufrag)
 
     val jsonObject = JSONObject()
 
@@ -169,7 +163,7 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
     val sdpOffer = peerConnection.createOffer(constraints).getOrThrow()
     peerConnection.setLocalDescription(sdpOffer).getOrThrow()
 
-    Log.d(TAG2, sdpOffer.description)
+    Log.d(WHIP_TAG, sdpOffer.description)
 
     val sdp = sendSdpOffer(sdpOffer.description)
 
@@ -180,7 +174,7 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
       sdp
     )
     peerConnection.setRemoteDescription(answer)
-    Log.d(TAG2, answer.toString())
+    Log.d(WHIP_TAG, answer.toString())
   }
 
   fun release() {
@@ -237,23 +231,23 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
     videoTrack.setEnabled(true)
     this.videoTrack = videoTrack
 
-    Log.d(TAG2, videoTrack.id())
+    Log.d(WHIP_TAG, videoTrack.id())
   }
 
   override fun onSignalingChange(p0: PeerConnection.SignalingState?) {
-    Log.d(TAG2, "onSignalingChange: $p0")
+    Log.d(WHIP_TAG, "onSignalingChange: $p0")
   }
 
   override fun onIceConnectionChange(p0: PeerConnection.IceConnectionState?) {
-    Log.d(TAG2, "onIceConnectionChange: $p0")
+    Log.d(WHIP_TAG, "onIceConnectionChange: $p0")
   }
 
   override fun onIceConnectionReceivingChange(p0: Boolean) {
-    Log.d(TAG2, "onIceConnectionReceivingChange: $p0")
+    Log.d(WHIP_TAG, "onIceConnectionReceivingChange: $p0")
   }
 
   override fun onIceGatheringChange(p0: PeerConnection.IceGatheringState?) {
-    Log.d(TAG2, "onIceGatheringChange: $p0")
+    Log.d(WHIP_TAG, "onIceGatheringChange: $p0")
   }
 
   override fun onIceCandidate(candidate: IceCandidate) {
@@ -271,23 +265,23 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
   }
 
   override fun onAddStream(p0: MediaStream?) {
-    Log.d(TAG2, "onAddStream: $p0")
+    Log.d(WHIP_TAG, "onAddStream: $p0")
   }
 
   override fun onRemoveStream(p0: MediaStream?) {
-    Log.d(TAG2, "onRemoveStream: $p0")
+    Log.d(WHIP_TAG, "onRemoveStream: $p0")
   }
 
   override fun onDataChannel(p0: DataChannel?) {
-    Log.d(TAG2, "onDataChannel: $p0")
+    Log.d(WHIP_TAG, "onDataChannel: $p0")
   }
 
   override fun onRenegotiationNeeded() {
-    Log.d(TAG2, "onRenegotiationNeeded")
+    Log.d(WHIP_TAG, "onRenegotiationNeeded")
   }
 
   override fun onAddTrack(receiver: RtpReceiver?, mediaStreams: Array<out MediaStream>?) {
-    Log.d(TAG2, "Track added")
+    Log.d(WHIP_TAG, "Track added")
     coroutineScope.launch(Dispatchers.Main) {
       val videoTrack = receiver?.track() as? VideoTrack?
       this@WHIPPlayer.videoTrack = videoTrack
