@@ -4,11 +4,12 @@ An implementation of WHIP and WHEP protocols for iOS. Provides basic methods for
 
 ## Components
 
-The repository consists of 4 components:
-- `WHEPPlayer` - a class that handles WHEP connection and receiving media stream
-- `WHIPPlayer` - a class that handles WHIP connection and sending media stream
-- `Helper` - provides methods that are shared by both players
-- `ConfigurationOptions` - a structure that holds optional initial connection configuration options, like STUN server URL.
+The repository consists of 5 components:
+- `WhepPlayer` - a class that handles WHEP connection and receiving media stream,
+- `WhipPlayer` - a class that handles WHIP connection and sending media stream,
+- `ClientBase` - provides methods that are shared by both players,
+- `ConfigurationOptions` - a structure that holds optional initial connection configuration options, like STUN server URL or authorization token,
+- `Errors` - contains all the errors that can be thrown by the package.
 
 ## Examples
 The `examples/ios` folder provides an example app that allows to stream media using phone's default video and audio devices and receive remote stream. 
