@@ -18,6 +18,14 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+
+        if(project.hasProperty("WHEP_SERVER_URL") && project.hasProperty("WHIP_SERVER_URL")) {
+          buildConfigField "String", "WHEP_SERVER_URL", "\"$WHEP_SERVER_URL\""
+          buildConfigField "String", "WHIP_SERVER_URL", "\"$WHIP_SERVER_URL\""
+        } else {
+          buildConfigField "String", "WHEP_SERVER_URL", "\"http://127.0.0.1:8829/whep\""
+          buildConfigField "String", "WHIP_SERVER_URL", "\"http://127.0.0.1:8829/whip\""
+        }
     }
 
     buildTypes {
@@ -35,6 +43,7 @@ android {
     }
     buildFeatures {
         compose true
+        buildConfig true
     }
     composeOptions {
         kotlinCompilerExtensionVersion '1.5.1'

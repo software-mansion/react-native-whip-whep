@@ -107,14 +107,14 @@ fun PlayerView(modifier: Modifier = Modifier) {
   val whepPlayer = remember {
     WHEPPlayer(
       context,
-      ConnectionOptions(serverUrl = "http://192.168.83.171:8829/whep", authToken = "example")
+      ConnectionOptions(serverUrl = BuildConfig.WHEP_SERVER_URL, authToken = "example")
     )
   }
 
   val whipPlayer = remember {
     WHIPPlayer(
       context,
-      ConnectionOptions(serverUrl = "http://192.168.83.171:8829/whip", authToken = "example")
+      ConnectionOptions(serverUrl = BuildConfig.WHIP_SERVER_URL, authToken = "example")
     )
   }
   Log.d("PRINT", whepPlayer.toString())
