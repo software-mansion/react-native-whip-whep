@@ -39,6 +39,8 @@ import org.webrtc.RendererCommon
 import android.Manifest
 import android.util.Log
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 
 class MainActivity : ComponentActivity() {
@@ -157,8 +159,13 @@ fun PlayerView(modifier: Modifier = Modifier) {
     }
   }
 
-  Column(modifier = Modifier.fillMaxSize()) {
-
+  @Composable
+  fun WHEPTab(
+    whepPlayer: WHEPPlayer,
+    onPlayBtnClick: () -> Unit,
+    shouldShowPlayBtn: Boolean,
+    isLoading: Boolean
+  ) {
     Box {
       AndroidView(
         factory = { ctx ->
@@ -166,13 +173,13 @@ fun PlayerView(modifier: Modifier = Modifier) {
             player = whepPlayer
             this.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
             this.setEnableHardwareScaler(true)
-            view = this
           }
         },
-        modifier = modifier
+        modifier = Modifier
           .fillMaxWidth()
           .height(200.dp)
       )
+
       if (shouldShowPlayBtn) {
         Button(onClick = { onPlayBtnClick() }, modifier = Modifier.align(Alignment.Center)) {
           Image(
@@ -181,6 +188,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
           )
         }
       }
+
       if (isLoading) {
         CircularProgressIndicator(
           modifier = Modifier
@@ -191,28 +199,95 @@ fun PlayerView(modifier: Modifier = Modifier) {
         )
       }
     }
+  }
 
-    AndroidView(
-      factory = { ctx ->
-        WHIPPlayerView(ctx).apply {
-          player = whipPlayer
-          whipView = this
-        }
-      },
-      modifier = modifier
-        .fillMaxWidth()
-        .height(200.dp)
-    )
-    if (shouldShowStreamBtn) {
-      Box(
+  @Composable
+  fun WHIPTab(
+    whipPlayer: WHIPPlayer,
+    onStreamBtnClick: () -> Unit,
+    shouldShowStreamBtn: Boolean
+  ) {
+    Column(
+      modifier = Modifier
+        .fillMaxSize(),
+      horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+      AndroidView(
+        factory = { ctx ->
+          WHIPPlayerView(ctx).apply {
+            player = whipPlayer
+          }
+        },
         modifier = Modifier
-          .align(Alignment.CenterHorizontally)
-          .padding(16.dp)
-      ) {
-        Button(onClick = { onStreamBtnClick() }) {
-          Text("Stream")
+          .fillMaxWidth()
+          .height(200.dp)
+      )
+
+      if (shouldShowStreamBtn) {
+        Box(
+          modifier = Modifier
+            .padding(16.dp)
+        ) {
+          Button(onClick = { onStreamBtnClick() }) {
+            Text("Stream")
+          }
         }
       }
     }
   }
+
+  @Composable
+  fun TabView(
+    whepPlayer: WHEPPlayer,
+    whipPlayer: WHIPPlayer,
+    onPlayBtnClick: () -> Unit,
+    onStreamBtnClick: () -> Unit,
+    shouldShowPlayBtn: Boolean,
+    isLoading: Boolean,
+    shouldShowStreamBtn: Boolean
+  ) {
+    val tabTitles = listOf("WHEP", "WHIP")
+    var selectedTabIndex by remember { mutableStateOf(0) }
+
+    Column(modifier = Modifier.fillMaxSize()) {
+      TabRow(selectedTabIndex = selectedTabIndex) {
+        tabTitles.forEachIndexed { index, title ->
+          Tab(
+            selected = selectedTabIndex == index,
+            onClick = { selectedTabIndex = index },
+            text = { Text(title) }
+          )
+        }
+      }
+
+      when (selectedTabIndex) {
+        0 -> WHEPTab(
+          whepPlayer = whepPlayer,
+          onPlayBtnClick = onPlayBtnClick,
+          shouldShowPlayBtn = shouldShowPlayBtn,
+          isLoading = isLoading
+        )
+        1 -> WHIPTab(
+          whipPlayer = whipPlayer,
+          onStreamBtnClick = onStreamBtnClick,
+          shouldShowStreamBtn = shouldShowStreamBtn
+        )
+      }
+    }
+  }
+  Box(modifier = Modifier
+    .fillMaxSize()
+    .padding(top = 50.dp)
+  ){
+    TabView(
+      whepPlayer = whepPlayer,
+      whipPlayer = whipPlayer,
+      onPlayBtnClick = ::onPlayBtnClick,
+      onStreamBtnClick = ::onStreamBtnClick,
+      shouldShowPlayBtn = shouldShowPlayBtn,
+      isLoading = isLoading,
+      shouldShowStreamBtn = shouldShowStreamBtn
+    )
+  }
+
 }
