@@ -188,6 +188,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
           )
         }
       }
+
       if (isLoading) {
         CircularProgressIndicator(
           modifier = Modifier
