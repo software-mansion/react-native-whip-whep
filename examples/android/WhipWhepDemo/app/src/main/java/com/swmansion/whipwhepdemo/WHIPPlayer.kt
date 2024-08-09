@@ -200,12 +200,15 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
     }
 
     val deviceName = cameraEnumerator.deviceNames.find {
-      cameraEnumerator.isFrontFacing(it)
+      true
     }
+
 
     val videoCapturer: CameraVideoCapturer? = deviceName?.let {
       cameraEnumerator.createCapturer(it, null)
     }
+
+    Log.d(WHIP_TAG, videoCapturer.toString())
 
     val videoSource: VideoSource = peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
     val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
