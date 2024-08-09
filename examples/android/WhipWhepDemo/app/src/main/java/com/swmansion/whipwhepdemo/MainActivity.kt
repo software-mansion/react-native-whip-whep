@@ -107,14 +107,14 @@ fun PlayerView(modifier: Modifier = Modifier) {
   val whepPlayer = remember {
     WHEPPlayer(
       context,
-      ConnectionOptions(serverUrl = "http://192.168.83.171:8829", whepEndpoint = "/whep", authToken = "example")
+      ConnectionOptions(serverUrl = "http://192.168.83.171:8829/whep", authToken = "example")
     )
   }
 
   val whipPlayer = remember {
     WHIPPlayer(
       context,
-      ConnectionOptions(serverUrl = "http://192.168.83.171:8829", whepEndpoint = "/whip", authToken = "example")
+      ConnectionOptions(serverUrl = "http://192.168.83.171:8829/whip", authToken = "example")
     )
   }
   Log.d("PRINT", whepPlayer.toString())
@@ -204,8 +204,14 @@ fun PlayerView(modifier: Modifier = Modifier) {
         .height(200.dp)
     )
     if (shouldShowStreamBtn) {
-      Button(onClick = { onStreamBtnClick() }) {
-        Text("Stream")
+      Box(
+        modifier = Modifier
+          .align(Alignment.CenterHorizontally)
+          .padding(16.dp)
+      ) {
+        Button(onClick = { onStreamBtnClick() }) {
+          Text("Stream")
+        }
       }
     }
   }

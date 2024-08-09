@@ -27,6 +27,8 @@ import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
 import org.webrtc.VideoTrack
 import java.io.IOException
+import java.net.URI
+import java.net.URL
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
@@ -86,7 +88,7 @@ class WHEPPlayer(appContext: Context, private val connectionOptions: ConnectionO
 
   private suspend fun sendSdpOffer(sdpOffer: String) = suspendCoroutine { continuation ->
     val request = Request.Builder()
-      .url(connectionOptions.serverUrl + connectionOptions.whepEndpoint)
+      .url(connectionOptions.serverUrl)
       .post(sdpOffer.toRequestBody())
       .header("Accept", "application/sdp")
       .header("Content-Type", "application/sdp")
@@ -124,8 +126,11 @@ class WHEPPlayer(appContext: Context, private val connectionOptions: ConnectionO
       e.printStackTrace()
     }
 
+    val serverUrl = URL(connectionOptions.serverUrl)
+    val requestURL = URI(serverUrl.protocol, null, serverUrl.host, serverUrl.port, patchEndpoint, null, null)
+
     val request = Request.Builder()
-      .url(connectionOptions.serverUrl + patchEndpoint!!)
+      .url(requestURL.toURL())
       .patch(jsonObject.toString().toRequestBody())
       .header("Content-Type", "application/trickle-ice-sdpfrag")
       .build()

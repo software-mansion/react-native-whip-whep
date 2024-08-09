@@ -32,6 +32,8 @@ import org.webrtc.VideoCapturer
 import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
 import java.io.IOException
+import java.net.URI
+import java.net.URL
 import java.util.UUID
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -98,7 +100,7 @@ class WHIPPlayer(
 
   private suspend fun sendSdpOffer(sdpOffer: String) = suspendCoroutine { continuation ->
     val request = Request.Builder()
-      .url(connectionOptions.serverUrl + connectionOptions.whepEndpoint)
+      .url(connectionOptions.serverUrl)
       .post(sdpOffer.toRequestBody())
       .header("Accept", "application/sdp")
       .header("Content-Type", "application/sdp")
@@ -141,8 +143,11 @@ class WHIPPlayer(
     // TODO: is ufrag necessary or is it just elixir webrtc thing?
     jsonObject.put("usernameFragment", ufrag)
 
+    val serverUrl = URL(connectionOptions.serverUrl)
+    val requestURL = URI(serverUrl.protocol, null, serverUrl.host, serverUrl.port, patchEndpoint, null, null)
+
     val request = Request.Builder()
-      .url(connectionOptions.serverUrl + patchEndpoint!!)
+      .url(requestURL.toURL())
       .patch(jsonObject.toString().toRequestBody())
       .header("Content-Type", "application/trickle-ice-sdpfrag")
       .build()
