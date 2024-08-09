@@ -43,7 +43,10 @@ internal interface WHIPPlayerListener {
 
 internal const val WHIP_TAG = "WHIPClient"
 
-class WHIPPlayer(private val appContext: Context, private val connectionOptions: ConnectionOptions) :
+class WHIPPlayer(
+  private val appContext: Context,
+  private val connectionOptions: ConnectionOptions
+) :
   PeerConnection.Observer {
   private val peerConnectionFactory: PeerConnectionFactory
   private val peerConnection: PeerConnection
@@ -210,7 +213,8 @@ class WHIPPlayer(private val appContext: Context, private val connectionOptions:
 
     Log.d(WHIP_TAG, videoCapturer.toString())
 
-    val videoSource: VideoSource = peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
+    val videoSource: VideoSource =
+      peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
     val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
     videoCapturer?.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
     videoCapturer?.startCapture(1024, 720, 30)
