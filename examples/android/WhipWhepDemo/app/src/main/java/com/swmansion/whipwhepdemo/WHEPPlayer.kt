@@ -142,6 +142,9 @@ class WHEPPlayer(
     val requestURL =
       URI(serverUrl.protocol, null, serverUrl.host, serverUrl.port, patchEndpoint, null, null)
 
+    val serverUrl = URL(connectionOptions.serverUrl)
+    val requestURL = URI(serverUrl.protocol, null, serverUrl.host, serverUrl.port, patchEndpoint, null, null)
+
     val request = Request.Builder()
       .url(requestURL.toURL())
       .patch(jsonObject.toString().toRequestBody())
