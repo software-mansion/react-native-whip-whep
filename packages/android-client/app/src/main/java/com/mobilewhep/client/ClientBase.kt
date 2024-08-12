@@ -29,17 +29,17 @@ import kotlin.coroutines.suspendCoroutine
 
 internal const val TAG = "ClientBase"
 
-class ClientBase(
-  private val appContext: Context,
+open class ClientBase(
+  val appContext: Context,
   private val serverUrl: String,
   private val connectionOptions: ConnectionOptions?
 ) : PeerConnection.Observer {
-  private var peerConnectionFactory: PeerConnectionFactory
-  private var peerConnection: PeerConnection
+  var peerConnectionFactory: PeerConnectionFactory
+  var peerConnection: PeerConnection
   internal val eglBase = EglBase.create()
 
   private var patchEndpoint: String? = null
-  private val iceCandidates = mutableListOf<IceCandidate>()
+  val iceCandidates = mutableListOf<IceCandidate>()
 
   private val client = OkHttpClient()
 
@@ -75,7 +75,7 @@ class ClientBase(
     peerConnection = peerConnectionFactory.createPeerConnection(config, this)!!
   }
 
-  private suspend fun sendSdpOffer(sdpOffer: String) = suspendCoroutine { continuation ->
+  suspend fun sendSdpOffer(sdpOffer: String) = suspendCoroutine { continuation ->
     val request = Request.Builder()
       .url(serverUrl)
       .post(sdpOffer.toRequestBody())
@@ -104,7 +104,7 @@ class ClientBase(
     })
   }
 
-  private suspend fun sendCandidate(candidate: IceCandidate) = suspendCoroutine { continuation ->
+  suspend fun sendCandidate(candidate: IceCandidate) = suspendCoroutine { continuation ->
     if (patchEndpoint == null) return@suspendCoroutine
 
     val splitSdp = candidate.sdp.split(" ")
