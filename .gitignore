@@ -134,5 +134,4 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
-/examples/android/WhipWhepDemo/.idea
 examples/ios/iOSExample/iOSExample/ServerSettings.xcconfig
