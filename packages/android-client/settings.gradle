@@ -20,5 +20,5 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "MobileWhepClient"
-include ':app'
+include ':MobileWhepClient'
 include ':WHEPClient'
