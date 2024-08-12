@@ -43,6 +43,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 
+
 class MainActivity : ComponentActivity() {
   private val PERMISSIONS_REQUEST_CODE = 101
   private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)

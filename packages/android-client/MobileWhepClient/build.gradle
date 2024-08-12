@@ -13,7 +13,6 @@ android {
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.swmansion.whepclient"
         minSdk 24
         targetSdk 34
         versionCode 1
@@ -65,8 +64,7 @@ dependencies {
     implementation libs.androidx.ui.graphics
     implementation libs.androidx.ui.tooling.preview
     implementation libs.androidx.material3
-  implementation project(':WHEPClient')
-  testImplementation libs.junit
+    testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core
     androidTestImplementation platform(libs.androidx.compose.bom)
