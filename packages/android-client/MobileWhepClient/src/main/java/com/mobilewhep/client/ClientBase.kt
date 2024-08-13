@@ -107,6 +107,23 @@ open class ClientBase(
         response.use {
           Log.d(TAG, response.headers.toString())
           patchEndpoint = response.headers["location"]
+
+          if (patchEndpoint == null) {
+            val exception =
+              AttributeNotFoundError.LocationNotFound("Location attribute not found. Check if the SDP answer contains location parameter.")
+            Log.d(TAG, exception.toString())
+            continuation.resumeWithException(exception)
+            return
+          }
+
+          if (response.body == null) {
+            val exception =
+              AttributeNotFoundError.ResponseNotFound("Response to SDP offer not found. Check if the network request was successful.")
+            Log.d(TAG, exception.toString())
+            continuation.resumeWithException(exception)
+            return
+          }
+
           continuation.resume(response.body!!.string())
         }
       }
@@ -114,12 +131,18 @@ open class ClientBase(
   }
 
   suspend fun sendCandidate(candidate: IceCandidate) = suspendCoroutine { continuation ->
-    if (patchEndpoint == null) return@suspendCoroutine
+    if (patchEndpoint == null) {
+      continuation.resumeWithException(AttributeNotFoundError.PatchEndpointNotFound("Patch endpoint not found. Make sure the SDP answer is correct."))
+      return@suspendCoroutine
+    }
 
     val splitSdp = candidate.sdp.split(" ")
     val ufrag = splitSdp[splitSdp.indexOf("ufrag") + 1]
 
-    Log.d(TAG, ufrag)
+    if (ufrag == null) {
+      continuation.resumeWithException(AttributeNotFoundError.UFragNotFound("ufrag not found. Make sure the SDP answer is correct."))
+      return@suspendCoroutine
+    }
 
     val jsonObject = JSONObject()
 
@@ -147,6 +170,10 @@ open class ClientBase(
 
       override fun onResponse(call: Call, response: Response) {
         response.use {
+          if (!it.isSuccessful) {
+            continuation.resumeWithException(SessionNetworkError.CandidateSendingError("Candidate sending error - response was not successful."))
+            return
+          }
           continuation.resume(Unit)
         }
       }
@@ -257,6 +284,7 @@ open class ClientBase(
   }
 
   override fun onAddTrack(receiver: RtpReceiver?, mediaStreams: Array<out MediaStream>?) {
+    Log.d(TAG, "onAddTrack called")
     coroutineScope.launch(Dispatchers.Main) {
       val videoTrack = receiver?.track() as? VideoTrack?
       this@ClientBase.videoTrack = videoTrack
