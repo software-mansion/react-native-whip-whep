@@ -43,6 +43,8 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import com.mobilewhep.client.WhepClient
+import com.mobilewhep.client.ConnectionOptions
+import com.mobilewhep.client.WhipClient
 
 
 class MainActivity : ComponentActivity() {
@@ -108,21 +110,29 @@ fun PlayerView(modifier: Modifier = Modifier) {
     mutableStateOf(true)
   }
 
-  val whepPlayer = remember {
-    WHEPPlayer(
-      context,
-      ConnectionOptions(serverUrl = BuildConfig.WHEP_SERVER_URL, authToken = "example")
-    )
+  val whepClient = remember {
+    WhepClient(appContext = context, serverUrl = BuildConfig.WHEP_SERVER_URL, connectionOptions = ConnectionOptions(authToken = "example"))
   }
 
-  val whipPlayer = remember {
-    WHIPPlayer(
-      context,
-      ConnectionOptions(serverUrl = BuildConfig.WHIP_SERVER_URL, authToken = "example")
-    )
+  val whipClient = remember {
+    WhipClient(appContext = context, serverUrl = BuildConfig.WHIP_SERVER_URL, connectionOptions = ConnectionOptions(authToken = "example"))
   }
-  Log.d("PRINT", whepPlayer.toString())
-  Log.d("PRINT", whipPlayer.toString())
+
+//  val whepPlayer = remember {
+//    WHEPPlayer(
+//      context,
+//      ConnectionOptions(serverUrl = BuildConfig.WHEP_SERVER_URL, authToken = "example")
+//    )
+//  }
+//
+//  val whipPlayer = remember {
+//    WHIPPlayer(
+//      context,
+//      ConnectionOptions(serverUrl = BuildConfig.WHIP_SERVER_URL, authToken = "example")
+//    )
+//  }
+//  Log.d("PRINT", whepPlayer.toString())
+//  Log.d("PRINT", whipPlayer.toString())
 
 
   var whipView: WHIPPlayerView? = remember {
@@ -136,8 +146,10 @@ fun PlayerView(modifier: Modifier = Modifier) {
 
   DisposableEffect(Unit) {
     onDispose {
-      whepPlayer.release()
-      whipPlayer.release()
+      whepClient.disconnect()
+      whipClient.disconnect()
+//      whepPlayer.release()
+//      whipPlayer.release()
       view?.release()
       whipView?.release()
     }
@@ -148,22 +160,22 @@ fun PlayerView(modifier: Modifier = Modifier) {
   fun onPlayBtnClick() {
     shouldShowPlayBtn = false
     isLoading = true
-    whepPlayer.onTrackAdded = { isLoading = false }
+    whepClient.onTrackAdded = { isLoading = false }
     coroutineScope.launch {
-      whepPlayer.connect()
+      whepClient.connect()
     }
   }
 
   fun onStreamBtnClick() {
     shouldShowStreamBtn = false
     coroutineScope.launch {
-      whipPlayer.connect()
+      whipClient.connect()
     }
   }
 
   @Composable
   fun WHEPTab(
-    whepPlayer: WHEPPlayer,
+    whepPlayer: WhepClient,
     onPlayBtnClick: () -> Unit,
     shouldShowPlayBtn: Boolean,
     isLoading: Boolean
@@ -172,7 +184,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
       AndroidView(
         factory = { ctx ->
           WHEPPlayerView(ctx).apply {
-            player = whepPlayer
+            player = whepClient
             this.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
             this.setEnableHardwareScaler(true)
           }
@@ -205,7 +217,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
 
   @Composable
   fun WHIPTab(
-    whipPlayer: WHIPPlayer,
+    whipPlayer: WhipClient,
     onStreamBtnClick: () -> Unit,
     shouldShowStreamBtn: Boolean
   ) {
@@ -217,7 +229,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
       AndroidView(
         factory = { ctx ->
           WHIPPlayerView(ctx).apply {
-            player = whipPlayer
+            player = whipClient
           }
         },
         modifier = Modifier
@@ -240,8 +252,8 @@ fun PlayerView(modifier: Modifier = Modifier) {
 
   @Composable
   fun TabView(
-    whepPlayer: WHEPPlayer,
-    whipPlayer: WHIPPlayer,
+    whepPlayer: WhepClient,
+    whipPlayer: WhipClient,
     onPlayBtnClick: () -> Unit,
     onStreamBtnClick: () -> Unit,
     shouldShowPlayBtn: Boolean,
@@ -264,13 +276,13 @@ fun PlayerView(modifier: Modifier = Modifier) {
 
       when (selectedTabIndex) {
         0 -> WHEPTab(
-          whepPlayer = whepPlayer,
+          whepPlayer = whepClient,
           onPlayBtnClick = onPlayBtnClick,
           shouldShowPlayBtn = shouldShowPlayBtn,
           isLoading = isLoading
         )
         1 -> WHIPTab(
-          whipPlayer = whipPlayer,
+          whipPlayer = whipClient,
           onStreamBtnClick = onStreamBtnClick,
           shouldShowStreamBtn = shouldShowStreamBtn
         )
@@ -282,8 +294,8 @@ fun PlayerView(modifier: Modifier = Modifier) {
     .padding(top = 50.dp)
   ){
     TabView(
-      whepPlayer = whepPlayer,
-      whipPlayer = whipPlayer,
+      whepPlayer = whepClient,
+      whipPlayer = whipClient,
       onPlayBtnClick = ::onPlayBtnClick,
       onStreamBtnClick = ::onStreamBtnClick,
       shouldShowPlayBtn = shouldShowPlayBtn,

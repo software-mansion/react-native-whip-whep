@@ -16,7 +16,7 @@ import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
 import java.util.UUID
 
-class WhipClient(appContext: Context, serverUrl: String, connectionOptions: ConnectionOptions?) :
+class WhipClient(appContext: Context, serverUrl: String, connectionOptions: ConnectionOptions? = null) :
   ClientBase(
     appContext, serverUrl,
     connectionOptions

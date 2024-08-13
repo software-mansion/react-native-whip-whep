@@ -7,6 +7,8 @@ import android.os.Looper
 import android.util.Log
 import android.view.Surface
 import android.view.TextureView
+import com.mobilewhep.client.ClientBaseListener
+import com.mobilewhep.client.WhipClient
 import org.webrtc.EglBase
 import org.webrtc.GlRectDrawer
 import org.webrtc.RendererCommon
@@ -23,8 +25,8 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink,
-  RendererCommon.RendererEvents, WHIPPlayerListener {
-  var player: WHIPPlayer? = null
+  RendererCommon.RendererEvents, ClientBaseListener {
+  var player: WhipClient? = null
     set(newPlayer) {
       newPlayer?.addTrackListener(this)
       field = newPlayer

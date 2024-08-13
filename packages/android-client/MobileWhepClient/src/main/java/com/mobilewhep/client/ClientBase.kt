@@ -20,6 +20,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
+import org.webrtc.RtpReceiver
 import java.io.IOException
 import java.net.URI
 import java.net.URL
@@ -29,6 +30,10 @@ import kotlin.coroutines.suspendCoroutine
 
 internal const val TAG = "ClientBase"
 
+interface ClientBaseListener {
+  fun onTrackAdded(track: VideoTrack)
+}
+
 open class ClientBase(
   val appContext: Context,
   private val serverUrl: String,
@@ -36,7 +41,7 @@ open class ClientBase(
 ) : PeerConnection.Observer {
   var peerConnectionFactory: PeerConnectionFactory
   var peerConnection: PeerConnection
-  internal val eglBase = EglBase.create()
+  val eglBase = EglBase.create()
 
   private var patchEndpoint: String? = null
   val iceCandidates = mutableListOf<IceCandidate>()
@@ -47,6 +52,8 @@ open class ClientBase(
     CoroutineScope(Dispatchers.Default)
 
   private var videoTrack: VideoTrack? = null
+  private var listeners = mutableListOf<ClientBaseListener>()
+  var onTrackAdded: (() -> Unit)? = null
 
   init {
     val iceServers = listOf(
@@ -245,6 +252,20 @@ open class ClientBase(
       PeerConnection.PeerConnectionState.CLOSED -> Log.d(TAG, "Connection has been closed")
       null -> Log.d(TAG, "Connection is null")
     }
+  }
+
+  override fun onAddTrack(receiver: RtpReceiver?, mediaStreams: Array<out MediaStream>?) {
+    coroutineScope.launch(Dispatchers.Main) {
+      val videoTrack = receiver?.track() as? VideoTrack?
+      this@ClientBase.videoTrack = videoTrack
+      listeners.forEach { listener -> videoTrack?.let { listener.onTrackAdded(it) } }
+    }
+    onTrackAdded?.let { it() }
+  }
+
+  fun addTrackListener(listener: ClientBaseListener) {
+    listeners.add(listener)
+    videoTrack?.let { listener.onTrackAdded(it) }
   }
 
 }

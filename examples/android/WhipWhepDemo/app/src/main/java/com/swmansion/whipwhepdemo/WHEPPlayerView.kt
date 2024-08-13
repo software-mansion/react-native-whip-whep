@@ -11,6 +11,8 @@ import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.TextureView
 import android.view.TextureView.SurfaceTextureListener
+import com.mobilewhep.client.ClientBaseListener
+import com.mobilewhep.client.WhepClient
 import org.webrtc.EglBase
 import org.webrtc.EglRenderer
 import org.webrtc.GlRectDrawer
@@ -33,8 +35,8 @@ class WHEPPlayerView :
   SurfaceTextureListener,
   VideoSink,
   RendererEvents,
-    WHEPPlayerListener {
-  var player: WHEPPlayer? = null
+    ClientBaseListener {
+  var player: WhepClient? = null
     set(newPlayer) {
       newPlayer?.addTrackListener(this)
       field = newPlayer
