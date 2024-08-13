@@ -52,7 +52,9 @@ class WhipClient(appContext: Context, serverUrl: String, connectionOptions: Conn
       peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
     val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
     videoCapturer?.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
+    Log.d(TAG, "Starting video capture")
     videoCapturer?.startCapture(1024, 720, 30)
+    Log.d(TAG, "Video capture started")
     val videoTrack: VideoTrack = peerConnectionFactory.createVideoTrack(videoTrackId, videoSource)
 
     this.videoSource = videoSource

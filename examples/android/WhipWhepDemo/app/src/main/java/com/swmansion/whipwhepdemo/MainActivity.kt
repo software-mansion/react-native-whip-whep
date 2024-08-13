@@ -118,23 +118,6 @@ fun PlayerView(modifier: Modifier = Modifier) {
     WhipClient(appContext = context, serverUrl = BuildConfig.WHIP_SERVER_URL, connectionOptions = ConnectionOptions(authToken = "example"))
   }
 
-//  val whepPlayer = remember {
-//    WHEPPlayer(
-//      context,
-//      ConnectionOptions(serverUrl = BuildConfig.WHEP_SERVER_URL, authToken = "example")
-//    )
-//  }
-//
-//  val whipPlayer = remember {
-//    WHIPPlayer(
-//      context,
-//      ConnectionOptions(serverUrl = BuildConfig.WHIP_SERVER_URL, authToken = "example")
-//    )
-//  }
-//  Log.d("PRINT", whepPlayer.toString())
-//  Log.d("PRINT", whipPlayer.toString())
-
-
   var whipView: WHIPPlayerView? = remember {
     null
   }
@@ -148,8 +131,6 @@ fun PlayerView(modifier: Modifier = Modifier) {
     onDispose {
       whepClient.disconnect()
       whipClient.disconnect()
-//      whepPlayer.release()
-//      whipPlayer.release()
       view?.release()
       whipView?.release()
     }
@@ -184,7 +165,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
       AndroidView(
         factory = { ctx ->
           WHEPPlayerView(ctx).apply {
-            player = whepClient
+            player = whepPlayer
             this.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
             this.setEnableHardwareScaler(true)
           }
@@ -229,7 +210,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
       AndroidView(
         factory = { ctx ->
           WHIPPlayerView(ctx).apply {
-            player = whipClient
+            player = whipPlayer
           }
         },
         modifier = Modifier
@@ -276,13 +257,13 @@ fun PlayerView(modifier: Modifier = Modifier) {
 
       when (selectedTabIndex) {
         0 -> WHEPTab(
-          whepPlayer = whepClient,
+          whepPlayer = whepPlayer,
           onPlayBtnClick = onPlayBtnClick,
           shouldShowPlayBtn = shouldShowPlayBtn,
           isLoading = isLoading
         )
         1 -> WHIPTab(
-          whipPlayer = whipClient,
+          whipPlayer = whipPlayer,
           onStreamBtnClick = onStreamBtnClick,
           shouldShowStreamBtn = shouldShowStreamBtn
         )

@@ -20,6 +20,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
+import org.webrtc.DefaultVideoEncoderFactory
 import org.webrtc.RtpReceiver
 import java.io.IOException
 import java.net.URI
@@ -77,6 +78,7 @@ open class ClientBase(
     peerConnectionFactory = PeerConnectionFactory
       .builder()
       .setVideoDecoderFactory(DefaultVideoDecoderFactory(eglBase.eglBaseContext))
+      .setVideoEncoderFactory(DefaultVideoEncoderFactory(eglBase.eglBaseContext, true, true))
       .createPeerConnectionFactory()
 
     peerConnection = peerConnectionFactory.createPeerConnection(config, this)!!

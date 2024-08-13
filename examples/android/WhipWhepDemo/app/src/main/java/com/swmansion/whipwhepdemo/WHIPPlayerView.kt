@@ -280,11 +280,12 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
   }
 
   override fun onFrame(p0: VideoFrame?) {
+    Log.d("ClientBase", "onFrame")
     eglRenderer.onFrame(p0)
   }
 
   override fun onTrackAdded(track: VideoTrack) {
-    Log.d("TRACK ADDED", track.id())
+    Log.d("ClientBase", track.id())
     track.addSink(this)
   }
 }
