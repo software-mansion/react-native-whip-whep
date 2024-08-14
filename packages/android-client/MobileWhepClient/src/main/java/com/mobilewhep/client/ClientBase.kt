@@ -23,6 +23,7 @@ import org.webrtc.PeerConnectionFactory
 import org.webrtc.RtpReceiver
 import org.webrtc.VideoTrack
 import java.io.IOException
+import java.net.ConnectException
 import java.net.URI
 import java.net.URL
 import kotlin.coroutines.resume
@@ -103,9 +104,14 @@ open class ClientBase(
             call: Call,
             e: IOException
           ) {
-            Log.d(TAG, e.toString())
-            continuation.resumeWithException(e)
-            e.printStackTrace()
+            if (e is ConnectException) {
+              Log.e(TAG, "Network error. Check if the server is up and running and the token and the server url is correct.", e)
+              continuation.resumeWithException(SessionNetworkError.ConnectionError("Network error. Check if the server is up and running and the token and the server url is correct."))
+            } else {
+              Log.d(TAG, e.toString())
+              continuation.resumeWithException(e)
+              e.printStackTrace()
+            }
           }
 
           override fun onResponse(
