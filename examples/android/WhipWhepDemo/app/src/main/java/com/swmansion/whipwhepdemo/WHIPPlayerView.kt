@@ -24,6 +24,8 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 
+const val WHIP_TAG = "WHIPView"
+
 class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink,
   RendererEvents, ClientBaseListener {
   var player: WhipClient? = null
@@ -92,7 +94,7 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
       videoLayoutMeasure.measure(widthSpec, heightSpec, rotatedFrameWidth, rotatedFrameHeight)
     setMeasuredDimension(size.x, size.y)
 
-    Log.d(WHEP_TAG, "onMeasure() New size: ${size.x}x${size.y}")
+    Log.d(WHIP_TAG, "onMeasure() New size: ${size.x}x${size.y}")
   }
 
   override fun onLayout(
@@ -116,7 +118,7 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
     eglRenderer.setLayoutAspectRatio(aspectRatio)
     updateSurfaceSize()
 
-    Log.d(WHEP_TAG, "onLayout() aspect ratio $aspectRatio")
+    Log.d(WHIP_TAG, "onLayout() aspect ratio $aspectRatio")
   }
 
   private fun updateSurfaceSize() {
@@ -152,7 +154,7 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
       }
 
       Log.d(
-        WHEP_TAG,
+        WHIP_TAG,
         "updateSurfaceSize() " +
           "layout size: ${getWidth()} x ${getHeight()}, " +
           "frame size: $rotatedFrameWidth x $rotatedFrameHeight, " +
@@ -195,7 +197,7 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
     val yoff = (viewHeight - newHeight) / 2
 
     Log.d(
-      WHEP_TAG,
+      WHIP_TAG,
       "video=$videoWidth x $videoHeight view=$viewWidth x $viewHeight" +
         " newView=$newWidth x $newHeight off=$xoff,$yoff"
     )
@@ -230,7 +232,7 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
   ) {
     ThreadUtils.checkIsOnMainThread()
 
-    Log.d(WHEP_TAG, "surfaceChanged: size: $width x $height")
+    Log.d(WHIP_TAG, "surfaceChanged: size: $width x $height")
   }
 
   override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
@@ -253,7 +255,7 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
     videoHeight: Int,
     rotation: Int
   ) {
-    Log.d(WHEP_TAG, "Resolution changed to $videoWidth x $videoHeight with rotation of $rotation")
+    Log.d(WHIP_TAG, "Resolution changed to $videoWidth x $videoHeight with rotation of $rotation")
     rendererEvents?.onFrameResolutionChanged(videoWidth, videoHeight, rotation)
 
     val rotatedWidth = if (rotation == 0 || rotation == 180) videoWidth else videoHeight

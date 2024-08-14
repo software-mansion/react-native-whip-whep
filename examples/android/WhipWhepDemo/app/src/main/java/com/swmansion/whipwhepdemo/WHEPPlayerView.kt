@@ -29,6 +29,8 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 
+const val WHEP_TAG = "WHEPView"
+
 class WHEPPlayerView :
   TextureView,
   SurfaceHolder.Callback,
@@ -431,7 +433,6 @@ class WHEPPlayerView :
   }
 
   override fun onTrackAdded(track: VideoTrack) {
-    Log.d("PLAYER", player.toString())
     init(player!!.eglBase.eglBaseContext, null)
     track.addSink(this)
   }

@@ -37,7 +37,6 @@ import com.swmansion.whipwhepdemo.ui.theme.WhipWhepDemoTheme
 import kotlinx.coroutines.launch
 import org.webrtc.RendererCommon
 import android.Manifest
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
