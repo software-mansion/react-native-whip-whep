@@ -7,21 +7,21 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import okhttp3.Call
 import okhttp3.Callback
-import org.webrtc.DataChannel
-import org.webrtc.DefaultVideoDecoderFactory
-import org.webrtc.EglBase
-import org.webrtc.IceCandidate
-import org.webrtc.MediaStream
-import org.webrtc.PeerConnection
-import org.webrtc.PeerConnectionFactory
-import org.webrtc.VideoTrack
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
+import org.webrtc.DataChannel
+import org.webrtc.DefaultVideoDecoderFactory
 import org.webrtc.DefaultVideoEncoderFactory
+import org.webrtc.EglBase
+import org.webrtc.IceCandidate
+import org.webrtc.MediaStream
+import org.webrtc.PeerConnection
+import org.webrtc.PeerConnectionFactory
 import org.webrtc.RtpReceiver
+import org.webrtc.VideoTrack
 import java.io.IOException
 import java.net.URI
 import java.net.URL
@@ -57,11 +57,12 @@ open class ClientBase(
   var onTrackAdded: (() -> Unit)? = null
 
   init {
-    val iceServers = listOf(
-      PeerConnection.IceServer
-        .builder(connectionOptions?.stunServerUrl ?: "stun:stun.l.google.com:19302")
-        .createIceServer()
-    )
+    val iceServers =
+      listOf(
+        PeerConnection.IceServer
+          .builder(connectionOptions?.stunServerUrl ?: "stun:stun.l.google.com:19302")
+          .createIceServer()
+      )
 
     val config = PeerConnection.RTCConfiguration(iceServers)
 
@@ -70,109 +71,137 @@ open class ClientBase(
     config.candidateNetworkPolicy = PeerConnection.CandidateNetworkPolicy.ALL
     config.tcpCandidatePolicy = PeerConnection.TcpCandidatePolicy.DISABLED
 
-
     PeerConnectionFactory.initialize(
       PeerConnectionFactory.InitializationOptions.builder(appContext).createInitializationOptions()
     )
 
-    peerConnectionFactory = PeerConnectionFactory
-      .builder()
-      .setVideoDecoderFactory(DefaultVideoDecoderFactory(eglBase.eglBaseContext))
-      .setVideoEncoderFactory(DefaultVideoEncoderFactory(eglBase.eglBaseContext, true, true))
-      .createPeerConnectionFactory()
+    peerConnectionFactory =
+      PeerConnectionFactory
+        .builder()
+        .setVideoDecoderFactory(DefaultVideoDecoderFactory(eglBase.eglBaseContext))
+        .setVideoEncoderFactory(DefaultVideoEncoderFactory(eglBase.eglBaseContext, true, true))
+        .createPeerConnectionFactory()
 
     peerConnection = peerConnectionFactory.createPeerConnection(config, this)!!
   }
 
-  suspend fun sendSdpOffer(sdpOffer: String) = suspendCoroutine { continuation ->
-    val request = Request.Builder()
-      .url(serverUrl)
-      .post(sdpOffer.toRequestBody())
-      .header("Accept", "application/sdp")
-      .header("Content-Type", "application/sdp")
-      .header("Authorization", "Bearer " + connectionOptions?.authToken)
-      .build()
+  suspend fun sendSdpOffer(sdpOffer: String) =
+    suspendCoroutine { continuation ->
+      val request =
+        Request
+          .Builder()
+          .url(serverUrl)
+          .post(sdpOffer.toRequestBody())
+          .header("Accept", "application/sdp")
+          .header("Content-Type", "application/sdp")
+          .header("Authorization", "Bearer " + connectionOptions?.authToken)
+          .build()
 
-    client.newCall(request).enqueue(object : Callback {
-      override fun onFailure(call: Call, e: IOException) {
-        Log.d(TAG, e.toString())
-        continuation.resumeWithException(e)
-        e.printStackTrace()
-      }
-
-      override fun onResponse(call: Call, response: Response) {
-        response.use {
-          patchEndpoint = response.headers["location"]
-
-          if (patchEndpoint == null) {
-            val exception =
-              AttributeNotFoundError.LocationNotFound("Location attribute not found. Check if the SDP answer contains location parameter.")
-            continuation.resumeWithException(exception)
-            return
+      client.newCall(request).enqueue(
+        object : Callback {
+          override fun onFailure(
+            call: Call,
+            e: IOException
+          ) {
+            Log.d(TAG, e.toString())
+            continuation.resumeWithException(e)
+            e.printStackTrace()
           }
 
-          if (response.body == null) {
-            val exception =
-              AttributeNotFoundError.ResponseNotFound("Response to SDP offer not found. Check if the network request was successful.")
-            continuation.resumeWithException(exception)
-            return
-          }
+          override fun onResponse(
+            call: Call,
+            response: Response
+          ) {
+            response.use {
+              patchEndpoint = response.headers["location"]
 
-          continuation.resume(response.body!!.string())
+              if (patchEndpoint == null) {
+                val exception =
+                  AttributeNotFoundError.LocationNotFound(
+                    "Location attribute not found. Check if the SDP answer contains location parameter."
+                  )
+                continuation.resumeWithException(exception)
+                return
+              }
+
+              if (response.body == null) {
+                val exception =
+                  AttributeNotFoundError.ResponseNotFound("Response to SDP offer not found. Check if the network request was successful.")
+                continuation.resumeWithException(exception)
+                return
+              }
+
+              continuation.resume(response.body!!.string())
+            }
+          }
         }
-      }
-    })
-  }
-
-  suspend fun sendCandidate(candidate: IceCandidate) = suspendCoroutine { continuation ->
-    if (patchEndpoint == null) {
-      continuation.resumeWithException(AttributeNotFoundError.PatchEndpointNotFound("Patch endpoint not found. Make sure the SDP answer is correct."))
-      return@suspendCoroutine
+      )
     }
 
-    val splitSdp = candidate.sdp.split(" ")
-    val ufrag = splitSdp[splitSdp.indexOf("ufrag") + 1]
-
-    if (ufrag == null) {
-      continuation.resumeWithException(AttributeNotFoundError.UFragNotFound("ufrag not found. Make sure the SDP answer is correct."))
-      return@suspendCoroutine
-    }
-
-    val jsonObject = JSONObject()
-
-    jsonObject.put("candidate", candidate.sdp)
-    jsonObject.put("sdpMLineIndex", candidate.sdpMLineIndex)
-    jsonObject.put("sdpMid", candidate.sdpMid)
-    // TODO: is ufrag necessary or is it just elixir webrtc thing?
-    jsonObject.put("usernameFragment", ufrag)
-
-    val serverUrl = URL(serverUrl)
-    val requestURL =
-      URI(serverUrl.protocol, null, serverUrl.host, serverUrl.port, patchEndpoint, null, null)
-
-    val request = Request.Builder()
-      .url(requestURL.toURL())
-      .patch(jsonObject.toString().toRequestBody())
-      .header("Content-Type", "application/trickle-ice-sdpfrag")
-      .build()
-
-    client.newCall(request).enqueue(object : Callback {
-      override fun onFailure(call: Call, e: IOException) {
-        continuation.resumeWithException(e)
-        e.printStackTrace()
+  suspend fun sendCandidate(candidate: IceCandidate) =
+    suspendCoroutine { continuation ->
+      if (patchEndpoint == null) {
+        continuation.resumeWithException(
+          AttributeNotFoundError.PatchEndpointNotFound("Patch endpoint not found. Make sure the SDP answer is correct.")
+        )
+        return@suspendCoroutine
       }
 
-      override fun onResponse(call: Call, response: Response) {
-        response.use {
-          if (!it.isSuccessful) {
-            continuation.resumeWithException(SessionNetworkError.CandidateSendingError("Candidate sending error - response was not successful."))
-            return
+      val splitSdp = candidate.sdp.split(" ")
+      val ufrag = splitSdp[splitSdp.indexOf("ufrag") + 1]
+
+      if (ufrag == null) {
+        continuation.resumeWithException(AttributeNotFoundError.UFragNotFound("ufrag not found. Make sure the SDP answer is correct."))
+        return@suspendCoroutine
+      }
+
+      val jsonObject = JSONObject()
+
+      jsonObject.put("candidate", candidate.sdp)
+      jsonObject.put("sdpMLineIndex", candidate.sdpMLineIndex)
+      jsonObject.put("sdpMid", candidate.sdpMid)
+      // TODO: is ufrag necessary or is it just elixir webrtc thing?
+      jsonObject.put("usernameFragment", ufrag)
+
+      val serverUrl = URL(serverUrl)
+      val requestURL =
+        URI(serverUrl.protocol, null, serverUrl.host, serverUrl.port, patchEndpoint, null, null)
+
+      val request =
+        Request
+          .Builder()
+          .url(requestURL.toURL())
+          .patch(jsonObject.toString().toRequestBody())
+          .header("Content-Type", "application/trickle-ice-sdpfrag")
+          .build()
+
+      client.newCall(request).enqueue(
+        object : Callback {
+          override fun onFailure(
+            call: Call,
+            e: IOException
+          ) {
+            continuation.resumeWithException(e)
+            e.printStackTrace()
           }
-          continuation.resume(Unit)
+
+          override fun onResponse(
+            call: Call,
+            response: Response
+          ) {
+            response.use {
+              if (!it.isSuccessful) {
+                continuation.resumeWithException(
+                  SessionNetworkError.CandidateSendingError("Candidate sending error - response was not successful.")
+                )
+                return
+              }
+              continuation.resume(Unit)
+            }
+          }
         }
-      }
-    })
-  }
+      )
+    }
 
   override fun onSignalingChange(p0: PeerConnection.SignalingState?) {
     Log.d(TAG, "RTC signaling state changed:: ${p0?.name}")
@@ -180,40 +209,47 @@ open class ClientBase(
 
   override fun onIceConnectionChange(p0: PeerConnection.IceConnectionState?) {
     when (p0) {
-      PeerConnection.IceConnectionState.NEW -> Log.d(
-        TAG,
-        "The ICE agent is gathering addresses or is waiting to be given remote candidates through calls"
-      )
+      PeerConnection.IceConnectionState.NEW ->
+        Log.d(
+          TAG,
+          "The ICE agent is gathering addresses or is waiting to be given remote candidates through calls"
+        )
 
-      PeerConnection.IceConnectionState.CHECKING -> Log.d(
-        TAG,
-        "ICE is checking paths, this might take a moment."
-      )
+      PeerConnection.IceConnectionState.CHECKING ->
+        Log.d(
+          TAG,
+          "ICE is checking paths, this might take a moment."
+        )
 
-      PeerConnection.IceConnectionState.CONNECTED -> Log.d(
-        TAG,
-        "ICE has found a viable connection."
-      )
+      PeerConnection.IceConnectionState.CONNECTED ->
+        Log.d(
+          TAG,
+          "ICE has found a viable connection."
+        )
 
-      PeerConnection.IceConnectionState.COMPLETED -> Log.d(
-        TAG,
-        "The ICE agent has finished gathering candidates, has checked all pairs against one another, and has found a connection for all components."
-      )
+      PeerConnection.IceConnectionState.COMPLETED ->
+        Log.d(
+          TAG,
+          "The ICE agent has finished gathering candidates, has checked all pairs against one another, and has found a connection for all components."
+        )
 
-      PeerConnection.IceConnectionState.FAILED -> Log.d(
-        TAG,
-        "No viable ICE paths found, consider a retry or using TURN."
-      )
+      PeerConnection.IceConnectionState.FAILED ->
+        Log.d(
+          TAG,
+          "No viable ICE paths found, consider a retry or using TURN."
+        )
 
-      PeerConnection.IceConnectionState.DISCONNECTED -> Log.d(
-        TAG,
-        "ICE connection was disconnected, attempting to reconnect or refresh."
-      )
+      PeerConnection.IceConnectionState.DISCONNECTED ->
+        Log.d(
+          TAG,
+          "ICE connection was disconnected, attempting to reconnect or refresh."
+        )
 
-      PeerConnection.IceConnectionState.CLOSED -> Log.d(
-        TAG,
-        "The ICE agent for this RTCPeerConnection has shut down and is no longer handling requests."
-      )
+      PeerConnection.IceConnectionState.CLOSED ->
+        Log.d(
+          TAG,
+          "The ICE agent for this RTCPeerConnection has shut down and is no longer handling requests."
+        )
 
       null -> Log.d(TAG, "The Peer Connection state is null.")
     }
@@ -262,22 +298,27 @@ open class ClientBase(
       PeerConnection.PeerConnectionState.NEW -> Log.d(TAG, "New connection")
       PeerConnection.PeerConnectionState.CONNECTING -> Log.d(TAG, "Connecting")
       PeerConnection.PeerConnectionState.CONNECTED -> Log.d(TAG, "Connection is fully connected")
-      PeerConnection.PeerConnectionState.DISCONNECTED -> Log.d(
-        TAG,
-        "One or more transports has disconnected unexpectedly"
-      )
+      PeerConnection.PeerConnectionState.DISCONNECTED ->
+        Log.d(
+          TAG,
+          "One or more transports has disconnected unexpectedly"
+        )
 
-      PeerConnection.PeerConnectionState.FAILED -> Log.d(
-        TAG,
-        "One or more transports has encountered an error"
-      )
+      PeerConnection.PeerConnectionState.FAILED ->
+        Log.d(
+          TAG,
+          "One or more transports has encountered an error"
+        )
 
       PeerConnection.PeerConnectionState.CLOSED -> Log.d(TAG, "Connection has been closed")
       null -> Log.d(TAG, "Connection is null")
     }
   }
 
-  override fun onAddTrack(receiver: RtpReceiver?, mediaStreams: Array<out MediaStream>?) {
+  override fun onAddTrack(
+    receiver: RtpReceiver?,
+    mediaStreams: Array<out MediaStream>?
+  ) {
     coroutineScope.launch(Dispatchers.Main) {
       val videoTrack = receiver?.track() as? VideoTrack?
       this@ClientBase.videoTrack = videoTrack
@@ -290,5 +331,4 @@ open class ClientBase(
     listeners.add(listener)
     videoTrack?.let { listener.onTrackAdded(it) }
   }
-
 }
