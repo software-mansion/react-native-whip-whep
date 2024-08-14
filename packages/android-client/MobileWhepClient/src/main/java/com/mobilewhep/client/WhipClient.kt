@@ -31,6 +31,12 @@ class WhipClient(
     setUpVideoAndAudioDevices()
   }
 
+  /**
+   * Gets the video and audio devices, prepares them, starts capture and adds it to the Peer Connection.
+   *
+   * @throws CaptureDeviceError.VideoDeviceNotAvailable if there is no video device.
+   *
+   */
   private fun setUpVideoAndAudioDevices() {
     if (videoDevice == null) {
       Log.d(TAG, "Video device not found. Check if it can be accessed and passed to the constructor.")
@@ -73,6 +79,14 @@ class WhipClient(
     this.videoTrack = videoTrack
   }
 
+  /**
+   * Connects the client to the WHIP server using WebRTC Peer Connection.
+   *
+   * @throws SessionNetworkError.ConfigurationError if the stunServerUrl parameter
+   *  of the initial configuration is incorrect, which leads to peerConnection being nil
+   *  or in any other case where there has been an error in creating the peerConnection
+   *
+   */
   suspend fun connect() {
     val constraints = MediaConstraints()
     val sdpOffer = peerConnection.createOffer(constraints).getOrThrow()
@@ -90,6 +104,14 @@ class WhipClient(
     peerConnection.setRemoteDescription(answer)
   }
 
+  /**
+   * Closes the established Peer Connection.
+   *
+   * @throws SessionNetworkError.ConfigurationError if the stunServerUrl parameter
+   *  of the initial configuration is incorrect, which leads to peerConnection being nil
+   *  or in any other case where there has been an error in creating the peerConnection
+   *
+   */
   public fun disconnect() {
     peerConnection.dispose()
     peerConnectionFactory.dispose()

@@ -15,6 +15,14 @@ class WhepClient(
     serverUrl,
     connectionOptions
   ) {
+  /**
+   * Connects the client to the WHEP server using WebRTC Peer Connection.
+   *
+   * @throws SessionNetworkError.ConfigurationError if the stunServerUrl parameter
+   *  of the initial configuration is incorrect, which leads to peerConnection being nil
+   *  or in any other case where there has been an error in creating the peerConnection
+   *
+   */
   public suspend fun connect() {
     peerConnection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO).direction =
       RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
@@ -37,6 +45,14 @@ class WhepClient(
     peerConnection.setRemoteDescription(answer)
   }
 
+  /**
+   * Closes the established Peer Connection.
+   *
+   * @throws SessionNetworkError.ConfigurationError if the stunServerUrl parameter
+   *  of the initial configuration is incorrect, which leads to peerConnection being nil
+   *  or in any other case where there has been an error in creating the peerConnection
+   *
+   */
   public fun disconnect() {
     peerConnection.dispose()
     peerConnectionFactory.dispose()

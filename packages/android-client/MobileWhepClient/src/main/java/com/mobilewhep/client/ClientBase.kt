@@ -60,11 +60,15 @@ open class ClientBase(
   private var listeners = mutableListOf<ClientBaseListener>()
   var onTrackAdded: (() -> Unit)? = null
 
-  private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
+  private val REQUIRED_PERMISSIONS =
+    arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
 
   init {
     if (!hasPermissions(appContext, REQUIRED_PERMISSIONS)) {
-      Log.d(TAG, "Permissions for camera and audio recording have not been granted. Please check your application settings.")
+      Log.d(
+        TAG,
+        "Permissions for camera and audio recording have not been granted. Please check your application settings."
+      )
       throw PermissionError.PermissionsNotGrantedError(
         "Permissions for camera and audio recording have not been granted. Please check your application settings."
       )
@@ -102,6 +106,18 @@ open class ClientBase(
     }
   }
 
+  /**
+   * Sends an SDP offer to the WHIP/WHEP server.
+   *
+   * @param sdpOffer - The offer to send to the server.
+   *
+   * @throws AttributeNotFoundError.ResponseNotFound if there is no response to the offer
+   * @throws AttributeNotFoundError.LocationNotFound if the response does not contain the location parameter
+   * @throws SessionNetworkError.ConnectionError if the  connection could not be established or the response code is incorrect,
+   * for example due to server being down, wrong server URL or token.
+   *
+   * @return A SDP response.
+   */
   suspend fun sendSdpOffer(sdpOffer: String) =
     suspendCoroutine { continuation ->
       val request =
@@ -121,7 +137,11 @@ open class ClientBase(
             e: IOException
           ) {
             if (e is ConnectException) {
-              Log.e(TAG, "Network error. Check if the server is up and running and the token and the server url is correct.", e)
+              Log.e(
+                TAG,
+                "Network error. Check if the server is up and running and the token and the server url is correct.",
+                e
+              )
               continuation.resumeWithException(
                 SessionNetworkError.ConnectionError(
                   "Network error. Check if the server is up and running and the token and the server url is correct."
@@ -164,6 +184,15 @@ open class ClientBase(
       )
     }
 
+  /**
+   * Sends an ICE candidate to WHIP/WHEP server in order to provide a streaming device.
+   *
+   * @param candidate - Represents a single ICE candidate.
+   *
+   * @throws AttributeNotFoundError.PatchEndpointNotFound if the patch endpoint has not been properly set up
+   * @throws AttributeNotFoundError.UFragNotFound if the SDP of the candidate does not contain the ufrag
+   * @throws SessionNetworkError.CandidateSendingError` if the candidate could not be sent
+   */
   suspend fun sendCandidate(candidate: IceCandidate) =
     suspendCoroutine { continuation ->
       if (patchEndpoint == null) {
@@ -234,7 +263,11 @@ open class ClientBase(
     permissions: Array<String>
   ): Boolean {
     for (permission in permissions) {
-      if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+      if (ContextCompat.checkSelfPermission(
+          context,
+          permission
+        ) != PackageManager.PERMISSION_GRANTED
+      ) {
         return false
       }
     }
@@ -245,6 +278,9 @@ open class ClientBase(
     Log.d(TAG, "RTC signaling state changed:: ${p0?.name}")
   }
 
+  /**
+   Reacts to changes in the ICE Connection state and logs a message depending on the current state.
+   */
   override fun onIceConnectionChange(p0: PeerConnection.IceConnectionState?) {
     when (p0) {
       PeerConnection.IceConnectionState.NEW ->
@@ -301,6 +337,9 @@ open class ClientBase(
     Log.d(TAG, "RTC ICE gathering state changed: ${p0?.name}")
   }
 
+  /**
+   Reacts to new candidate found and sends it to the WHIP/WHEP server.
+   */
   override fun onIceCandidate(candidate: IceCandidate) {
     if (patchEndpoint == null) {
       iceCandidates.add(candidate)
@@ -331,6 +370,9 @@ open class ClientBase(
     Log.d(TAG, "Peer connection negotiation needed.")
   }
 
+  /**
+   Reacts to changes in the Peer Connection state and logs a message depending on the current state
+   */
   override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {
     when (newState) {
       PeerConnection.PeerConnectionState.NEW -> Log.d(TAG, "New connection")
