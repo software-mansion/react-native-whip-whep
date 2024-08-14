@@ -25,10 +25,11 @@ import kotlin.math.max
 import kotlin.math.roundToInt
 
 class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink,
-  RendererCommon.RendererEvents, ClientBaseListener {
+  RendererEvents, ClientBaseListener {
   var player: WhipClient? = null
     set(newPlayer) {
       newPlayer?.addTrackListener(this)
+      newPlayer?.videoTrack?.addSink(this)
       field = newPlayer
     }
 
@@ -55,7 +56,7 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
     surfaceTextureListener = this
   }
 
-  internal fun init(sharedContext: EglBase.Context, rendererEvents: RendererCommon.RendererEvents?, drawer: RendererCommon.GlDrawer? = GlRectDrawer()) {
+  private fun init(sharedContext: EglBase.Context, rendererEvents: RendererEvents?, drawer: RendererCommon.GlDrawer? = GlRectDrawer()) {
     this.rendererEvents = rendererEvents
     rotatedFrameWidth = 0
     rotatedFrameHeight = 0
@@ -280,12 +281,10 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
   }
 
   override fun onFrame(p0: VideoFrame?) {
-    Log.d("ClientBase", "onFrame")
     eglRenderer.onFrame(p0)
   }
 
   override fun onTrackAdded(track: VideoTrack) {
-    Log.d("ClientBase", track.id())
     track.addSink(this)
   }
 }
