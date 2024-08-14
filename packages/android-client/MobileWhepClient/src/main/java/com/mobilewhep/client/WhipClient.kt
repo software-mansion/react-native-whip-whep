@@ -16,9 +16,13 @@ import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
 import java.util.UUID
 
-class WhipClient(appContext: Context, serverUrl: String, connectionOptions: ConnectionOptions? = null) :
-  ClientBase(
-    appContext, serverUrl,
+class WhipClient(
+  appContext: Context,
+  serverUrl: String,
+  connectionOptions: ConnectionOptions? = null
+) : ClientBase(
+    appContext,
+    serverUrl,
     connectionOptions
   ) {
   var videoTrack: VideoTrack? = null
@@ -26,24 +30,27 @@ class WhipClient(appContext: Context, serverUrl: String, connectionOptions: Conn
   private var videoSource: VideoSource? = null
 
   init {
-      setUpVideoAndAudioDevices()
+    setUpVideoAndAudioDevices()
   }
 
   private fun setUpVideoAndAudioDevices() {
     val videoTrackId = UUID.randomUUID().toString()
-    val cameraEnumerator: CameraEnumerator = if (Camera2Enumerator.isSupported(appContext)) {
-      Camera2Enumerator(appContext)
-    } else {
-      Camera1Enumerator(false)
-    }
+    val cameraEnumerator: CameraEnumerator =
+      if (Camera2Enumerator.isSupported(appContext)) {
+        Camera2Enumerator(appContext)
+      } else {
+        Camera1Enumerator(false)
+      }
 
-    val deviceName = cameraEnumerator.deviceNames.find {
-      true
-    }
+    val deviceName =
+      cameraEnumerator.deviceNames.find {
+        true
+      }
 
-    val videoCapturer: CameraVideoCapturer? = deviceName?.let {
-      cameraEnumerator.createCapturer(it, null)
-    }
+    val videoCapturer: CameraVideoCapturer? =
+      deviceName?.let {
+        cameraEnumerator.createCapturer(it, null)
+      }
 
     val videoSource: VideoSource =
       peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
@@ -82,10 +89,11 @@ class WhipClient(appContext: Context, serverUrl: String, connectionOptions: Conn
 
     iceCandidates.forEach { sendCandidate(it) }
 
-    val answer = SessionDescription(
-      SessionDescription.Type.ANSWER,
-      sdp
-    )
+    val answer =
+      SessionDescription(
+        SessionDescription.Type.ANSWER,
+        sdp
+      )
     peerConnection.setRemoteDescription(answer)
   }
 
