@@ -47,3 +47,11 @@ sealed class SessionNetworkError(
     description: String
   ) : SessionNetworkError(description)
 }
+
+sealed class PermissionError(
+  val description: String
+) : Throwable() {
+  class PermissionsNotGrantedError(
+    description: String
+  ) : PermissionError(description)
+}

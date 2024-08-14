@@ -1,7 +1,10 @@
 package com.mobilewhep.client
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -57,7 +60,15 @@ open class ClientBase(
   private var listeners = mutableListOf<ClientBaseListener>()
   var onTrackAdded: (() -> Unit)? = null
 
+  private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
+
   init {
+    if (!hasPermissions(appContext, REQUIRED_PERMISSIONS)) {
+      Log.d(TAG, "Permissions for camera and audio recording have not been granted. Please check your application settings.")
+      throw PermissionError.PermissionsNotGrantedError(
+        "Permissions for camera and audio recording have not been granted. Please check your application settings."
+      )
+    }
     val iceServers =
       listOf(
         PeerConnection.IceServer
@@ -217,6 +228,18 @@ open class ClientBase(
         }
       )
     }
+
+  private fun hasPermissions(
+    context: Context,
+    permissions: Array<String>
+  ): Boolean {
+    for (permission in permissions) {
+      if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+        return false
+      }
+    }
+    return true
+  }
 
   override fun onSignalingChange(p0: PeerConnection.SignalingState?) {
     Log.d(TAG, "RTC signaling state changed:: ${p0?.name}")
