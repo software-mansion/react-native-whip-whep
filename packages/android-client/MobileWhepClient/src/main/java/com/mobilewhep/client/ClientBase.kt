@@ -93,9 +93,6 @@ open class ClientBase(
       .header("Authorization", "Bearer " + connectionOptions?.authToken)
       .build()
 
-    Log.d(TAG, request.headers.toString())
-    Log.d(TAG, request.body.toString())
-
     client.newCall(request).enqueue(object : Callback {
       override fun onFailure(call: Call, e: IOException) {
         Log.d(TAG, e.toString())
@@ -105,13 +102,11 @@ open class ClientBase(
 
       override fun onResponse(call: Call, response: Response) {
         response.use {
-          Log.d(TAG, response.headers.toString())
           patchEndpoint = response.headers["location"]
 
           if (patchEndpoint == null) {
             val exception =
               AttributeNotFoundError.LocationNotFound("Location attribute not found. Check if the SDP answer contains location parameter.")
-            Log.d(TAG, exception.toString())
             continuation.resumeWithException(exception)
             return
           }
@@ -119,7 +114,6 @@ open class ClientBase(
           if (response.body == null) {
             val exception =
               AttributeNotFoundError.ResponseNotFound("Response to SDP offer not found. Check if the network request was successful.")
-            Log.d(TAG, exception.toString())
             continuation.resumeWithException(exception)
             return
           }
@@ -284,7 +278,6 @@ open class ClientBase(
   }
 
   override fun onAddTrack(receiver: RtpReceiver?, mediaStreams: Array<out MediaStream>?) {
-    Log.d(TAG, "onAddTrack called")
     coroutineScope.launch(Dispatchers.Main) {
       val videoTrack = receiver?.track() as? VideoTrack?
       this@ClientBase.videoTrack = videoTrack

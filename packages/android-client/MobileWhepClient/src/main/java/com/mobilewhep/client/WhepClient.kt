@@ -24,8 +24,6 @@ class WhepClient(appContext: Context, serverUrl: String, connectionOptions: Conn
     val sdpOffer = peerConnection.createOffer(constraints).getOrThrow()
     peerConnection.setLocalDescription(sdpOffer).getOrThrow()
 
-    Log.d(TAG, sdpOffer.description)
-
     val sdp = sendSdpOffer(sdpOffer.description)
 
     iceCandidates.forEach { sendCandidate(it) }

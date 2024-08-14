@@ -21,7 +21,7 @@ class WhipClient(appContext: Context, serverUrl: String, connectionOptions: Conn
     appContext, serverUrl,
     connectionOptions
   ) {
-  private var videoTrack: VideoTrack? = null
+  var videoTrack: VideoTrack? = null
   private var videoCapturer: VideoCapturer? = null
   private var videoSource: VideoSource? = null
 
@@ -41,12 +41,9 @@ class WhipClient(appContext: Context, serverUrl: String, connectionOptions: Conn
       true
     }
 
-
     val videoCapturer: CameraVideoCapturer? = deviceName?.let {
       cameraEnumerator.createCapturer(it, null)
     }
-
-    Log.d(TAG, videoCapturer.toString())
 
     val videoSource: VideoSource =
       peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
@@ -74,16 +71,12 @@ class WhipClient(appContext: Context, serverUrl: String, connectionOptions: Conn
     peerConnection.enforceSendOnlyDirection()
     videoTrack.setEnabled(true)
     this.videoTrack = videoTrack
-
-    Log.d(TAG, videoTrack.id())
   }
 
   suspend fun connect() {
     val constraints = MediaConstraints()
     val sdpOffer = peerConnection.createOffer(constraints).getOrThrow()
     peerConnection.setLocalDescription(sdpOffer).getOrThrow()
-
-    Log.d(TAG, sdpOffer.description)
 
     val sdp = sendSdpOffer(sdpOffer.description)
 
@@ -94,7 +87,6 @@ class WhipClient(appContext: Context, serverUrl: String, connectionOptions: Conn
       sdp
     )
     peerConnection.setRemoteDescription(answer)
-    Log.d(TAG, answer.toString())
   }
 
   public fun disconnect() {
