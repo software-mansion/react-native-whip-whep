@@ -43,7 +43,11 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import com.mobilewhep.client.WhepClient
 import com.mobilewhep.client.ConnectionOptions
+import com.mobilewhep.client.VideoDevice
 import com.mobilewhep.client.WhipClient
+import org.webrtc.Camera1Enumerator
+import org.webrtc.Camera2Enumerator
+import org.webrtc.CameraEnumerator
 
 
 class MainActivity : ComponentActivity() {
@@ -100,6 +104,17 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun PlayerView(modifier: Modifier = Modifier) {
   val context = LocalContext.current
+  val cameraEnumerator: CameraEnumerator =
+    if (Camera2Enumerator.isSupported(context)) {
+      Camera2Enumerator(context)
+    } else {
+      Camera1Enumerator(false)
+    }
+
+  val deviceName =
+    cameraEnumerator.deviceNames.find {
+      true
+    }
 
   var isLoading by remember { mutableStateOf(false) }
   var shouldShowPlayBtn by remember {
@@ -114,7 +129,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
   }
 
   val whipClient = remember {
-    WhipClient(appContext = context, serverUrl = BuildConfig.WHIP_SERVER_URL, connectionOptions = ConnectionOptions(authToken = "example"))
+    WhipClient(appContext = context, serverUrl = BuildConfig.WHIP_SERVER_URL, connectionOptions = ConnectionOptions(authToken = "example"), videoDevice = deviceName?.let { VideoDevice(cameraEnumerator= cameraEnumerator, deviceName = it) })
   }
 
   var whipView: WHIPPlayerView? = remember {
