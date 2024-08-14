@@ -140,7 +140,6 @@ fun PlayerView(modifier: Modifier = Modifier) {
     null
   }
 
-
   DisposableEffect(Unit) {
     onDispose {
       whepClient.disconnect()

@@ -2,7 +2,6 @@ package com.mobilewhep.client
 
 import android.content.Context
 import android.util.Log
-import org.webrtc.CameraEnumerator
 import org.webrtc.CameraVideoCapturer
 import org.webrtc.MediaConstraints
 import org.webrtc.PeerConnection
@@ -33,7 +32,7 @@ class WhipClient(
   }
 
   private fun setUpVideoAndAudioDevices() {
-    if(videoDevice == null){
+    if (videoDevice == null) {
       Log.d(TAG, "Video device not found. Check if it can be accessed and passed to the constructor.")
       throw CaptureDeviceError.VideoDeviceNotAvailable("Video device not found. Check if it can be accessed and passed to the constructor.")
     }
@@ -43,7 +42,7 @@ class WhipClient(
 
     val videoCapturer: CameraVideoCapturer? =
       deviceName.let {
-          videoDevice!!.cameraEnumerator!!.createCapturer(it, null)
+        videoDevice!!.cameraEnumerator!!.createCapturer(it, null)
       }
 
     val videoSource: VideoSource =

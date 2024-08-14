@@ -83,7 +83,12 @@ open class ClientBase(
         .setVideoEncoderFactory(DefaultVideoEncoderFactory(eglBase.eglBaseContext, true, true))
         .createPeerConnectionFactory()
 
-    peerConnection = peerConnectionFactory.createPeerConnection(config, this)!!
+    try {
+      peerConnection = peerConnectionFactory.createPeerConnection(config, this)!!
+    } catch (e: NullPointerException) {
+      Log.d(TAG, "Failed to establish RTCPeerConnection. Check initial configuration")
+      throw SessionNetworkError.ConfigurationError("Failed to establish RTCPeerConnection. Check initial configuration")
+    }
   }
 
   suspend fun sendSdpOffer(sdpOffer: String) =
@@ -106,7 +111,11 @@ open class ClientBase(
           ) {
             if (e is ConnectException) {
               Log.e(TAG, "Network error. Check if the server is up and running and the token and the server url is correct.", e)
-              continuation.resumeWithException(SessionNetworkError.ConnectionError("Network error. Check if the server is up and running and the token and the server url is correct."))
+              continuation.resumeWithException(
+                SessionNetworkError.ConnectionError(
+                  "Network error. Check if the server is up and running and the token and the server url is correct."
+                )
+              )
             } else {
               Log.d(TAG, e.toString())
               continuation.resumeWithException(e)
