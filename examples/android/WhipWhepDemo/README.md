@@ -30,7 +30,7 @@ In order to initialize a player, an instance of a `WhepClient` has to be created
 
 ```kotlin
 val whepClient = remember {
-  WhepClient(appContext = context, serverUrl = BuildConfig.WHEP_SERVER_URL, connectionOptions = ConnectionOptions(authToken = "example"))
+  WhepClient(appContext = context, serverUrl = context.getString(R.string.WHEP_SERVER_URL), connectionOptions = ConnectionOptions(authToken = "example"))
 }
 ```
 
@@ -44,7 +44,6 @@ And display the stream using EGL:
 
 ```kotlin
 override fun onTrackAdded(track: VideoTrack) {
-  init(player!!.eglBase.eglBaseContext, null)
   track.addSink(this)
 }
 ```
@@ -65,7 +64,7 @@ To initialize a WHIP client, `videoDevice` should also be passed to `WhipClient`
 
 ```kotlin
 val whipClient = remember {
-  WhipClient(appContext = context, serverUrl = BuildConfig.WHIP_SERVER_URL, connectionOptions = ConnectionOptions(authToken = "example"), videoDevice = deviceName?.let { VideoDevice(cameraEnumerator= cameraEnumerator, deviceName = it) })
+  WhipClient(appContext = context, serverUrl = context.getString(R.string.WHIP_SERVER_URL), connectionOptions = ConnectionOptions(authToken = "example"), videoDevice = deviceName?.let { VideoDevice(cameraEnumerator= cameraEnumerator, deviceName = it) })
 }
 ```
 

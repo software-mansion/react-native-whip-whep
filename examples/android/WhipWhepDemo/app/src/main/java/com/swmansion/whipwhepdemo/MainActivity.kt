@@ -132,11 +132,11 @@ fun PlayerView(modifier: Modifier = Modifier) {
     WhipClient(appContext = context, serverUrl = context.getString(R.string.WHIP_SERVER_URL), connectionOptions = ConnectionOptions(authToken = "example"), videoDevice = deviceName?.let { VideoDevice(cameraEnumerator= cameraEnumerator, deviceName = it) })
   }
 
-  var whipView: WHIPPlayerView? = remember {
+  var whipView: ClientView? = remember {
     null
   }
 
-  var view: WHEPPlayerView? = remember {
+  var view: ClientView? = remember {
     null
   }
 
@@ -177,7 +177,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
     Box {
       AndroidView(
         factory = { ctx ->
-          WHEPPlayerView(ctx).apply {
+          ClientView(ctx).apply {
             player = whepPlayer
             this.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
             this.setEnableHardwareScaler(true)
@@ -222,7 +222,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
     ) {
       AndroidView(
         factory = { ctx ->
-          WHIPPlayerView(ctx).apply {
+          ClientView(ctx).apply {
             player = whipPlayer
           }
         },

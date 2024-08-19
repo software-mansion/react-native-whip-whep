@@ -23,7 +23,7 @@ class WhipClient(
     serverUrl,
     connectionOptions
   ) {
-  var videoTrack: VideoTrack? = null
+  override var videoTrack: VideoTrack? = null
   private var videoCapturer: VideoCapturer? = null
   private var videoSource: VideoSource? = null
 

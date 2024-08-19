@@ -56,7 +56,7 @@ open class ClientBase(
   private val coroutineScope: CoroutineScope =
     CoroutineScope(Dispatchers.Default)
 
-  private var videoTrack: VideoTrack? = null
+  open var videoTrack: VideoTrack? = null
   private var listeners = mutableListOf<ClientBaseListener>()
   var onTrackAdded: (() -> Unit)? = null
 
