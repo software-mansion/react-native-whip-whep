@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -77,7 +76,7 @@ class MainActivity : ComponentActivity() {
   override fun onRequestPermissionsResult(
     requestCode: Int,
     permissions: Array<String>,
-    grantResults: IntArray,
+    grantResults: IntArray
   ) {
     if (requestCode == PERMISSIONS_REQUEST_CODE) {
       var allPermissionsGranted = true
@@ -98,7 +97,7 @@ class MainActivity : ComponentActivity() {
 
   private fun hasPermissions(
     context: Context,
-    permissions: Array<String>,
+    permissions: Array<String>
   ): Boolean {
     for (permission in permissions) {
       if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
@@ -137,7 +136,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
       WhepClient(
         appContext = context,
         serverUrl = context.getString(R.string.WHEP_SERVER_URL),
-        connectionOptions = ConnectionOptions(authToken = "example"),
+        connectionOptions = ConnectionOptions(authToken = "example")
       )
     }
 
@@ -147,13 +146,13 @@ fun PlayerView(modifier: Modifier = Modifier) {
         appContext = context,
         serverUrl =
           context.getString(
-            R.string.WHIP_SERVER_URL,
+            R.string.WHIP_SERVER_URL
           ),
         connectionOptions = ConnectionOptions(authToken = "example"),
         videoDevice =
           deviceName?.let {
             VideoDevice(cameraEnumerator = cameraEnumerator, deviceName = it)
-          },
+          }
       )
     }
 
@@ -199,7 +198,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
     whepPlayer: WhepClient,
     onPlayBtnClick: () -> Unit,
     shouldShowPlayBtn: Boolean,
-    isLoading: Boolean,
+    isLoading: Boolean
   ) {
     Box {
       AndroidView(
@@ -213,14 +212,14 @@ fun PlayerView(modifier: Modifier = Modifier) {
         modifier =
           Modifier
             .fillMaxWidth()
-            .height(200.dp),
+            .height(200.dp)
       )
 
       if (shouldShowPlayBtn) {
         Button(onClick = { onPlayBtnClick() }, modifier = Modifier.align(Alignment.Center)) {
           Image(
             painter = painterResource(id = android.R.drawable.ic_media_play),
-            contentDescription = "play",
+            contentDescription = "play"
           )
         }
       }
@@ -242,13 +241,13 @@ fun PlayerView(modifier: Modifier = Modifier) {
   fun WHIPTab(
     whipPlayer: WhipClient,
     onStreamBtnClick: () -> Unit,
-    shouldShowStreamBtn: Boolean,
+    shouldShowStreamBtn: Boolean
   ) {
     Column(
       modifier =
         Modifier
           .fillMaxSize(),
-      horizontalAlignment = Alignment.CenterHorizontally,
+      horizontalAlignment = Alignment.CenterHorizontally
     ) {
       AndroidView(
         factory = { ctx ->
@@ -259,14 +258,14 @@ fun PlayerView(modifier: Modifier = Modifier) {
         modifier =
           Modifier
             .fillMaxWidth()
-            .height(200.dp),
+            .height(200.dp)
       )
 
       if (shouldShowStreamBtn) {
         Box(
           modifier =
             Modifier
-              .padding(16.dp),
+              .padding(16.dp)
         ) {
           Button(onClick = { onStreamBtnClick() }) {
             Text("Stream")
@@ -284,7 +283,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
     onStreamBtnClick: () -> Unit,
     shouldShowPlayBtn: Boolean,
     isLoading: Boolean,
-    shouldShowStreamBtn: Boolean,
+    shouldShowStreamBtn: Boolean
   ) {
     val tabTitles = listOf("WHEP", "WHIP")
     var selectedTabIndex by remember { mutableStateOf(0) }
@@ -295,7 +294,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
           Tab(
             selected = selectedTabIndex == index,
             onClick = { selectedTabIndex = index },
-            text = { Text(title) },
+            text = { Text(title) }
           )
         }
       }
@@ -306,13 +305,13 @@ fun PlayerView(modifier: Modifier = Modifier) {
             whepPlayer = whepPlayer,
             onPlayBtnClick = onPlayBtnClick,
             shouldShowPlayBtn = shouldShowPlayBtn,
-            isLoading = isLoading,
+            isLoading = isLoading
           )
         1 ->
           WHIPTab(
             whipPlayer = whipPlayer,
             onStreamBtnClick = onStreamBtnClick,
-            shouldShowStreamBtn = shouldShowStreamBtn,
+            shouldShowStreamBtn = shouldShowStreamBtn
           )
       }
     }
@@ -321,7 +320,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
     modifier =
       Modifier
         .fillMaxSize()
-        .padding(top = 50.dp),
+        .padding(top = 50.dp)
   ) {
     TabView(
       whepPlayer = whepClient,
@@ -330,7 +329,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
       onStreamBtnClick = ::onStreamBtnClick,
       shouldShowPlayBtn = shouldShowPlayBtn,
       isLoading = isLoading,
-      shouldShowStreamBtn = shouldShowStreamBtn,
+      shouldShowStreamBtn = shouldShowStreamBtn
     )
   }
 }
