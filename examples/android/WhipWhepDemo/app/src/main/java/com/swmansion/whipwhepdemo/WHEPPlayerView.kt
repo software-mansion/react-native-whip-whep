@@ -33,7 +33,7 @@ class WHEPPlayerView :
   SurfaceTextureListener,
   VideoSink,
   RendererEvents,
-    WHEPPlayerListener {
+  WHEPPlayerListener {
   var player: WHEPPlayer? = null
     set(newPlayer) {
       newPlayer?.addTrackListener(this)

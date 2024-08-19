@@ -48,8 +48,7 @@ internal const val WHIP_TAG = "WHIPClient"
 class WHIPPlayer(
   private val appContext: Context,
   private val connectionOptions: ConnectionOptions
-) :
-  PeerConnection.Observer {
+) : PeerConnection.Observer {
   private val peerConnectionFactory: PeerConnectionFactory
   private val peerConnection: PeerConnection
   internal val eglBase = EglBase.create()
@@ -71,11 +70,12 @@ class WHIPPlayer(
   var onTrackAdded: (() -> Unit)? = null
 
   init {
-    val iceServers = listOf(
-      PeerConnection.IceServer
-        .builder("stun:stun.l.google.com:19302")
-        .createIceServer()
-    )
+    val iceServers =
+      listOf(
+        PeerConnection.IceServer
+          .builder("stun:stun.l.google.com:19302")
+          .createIceServer()
+      )
 
     val config = PeerConnection.RTCConfiguration(iceServers)
 
@@ -84,87 +84,109 @@ class WHIPPlayer(
     config.candidateNetworkPolicy = PeerConnection.CandidateNetworkPolicy.ALL
     config.tcpCandidatePolicy = PeerConnection.TcpCandidatePolicy.DISABLED
 
-
     PeerConnectionFactory.initialize(
       PeerConnectionFactory.InitializationOptions.builder(appContext).createInitializationOptions()
     )
 
-    peerConnectionFactory = PeerConnectionFactory
-      .builder()
-      .setVideoEncoderFactory(DefaultVideoEncoderFactory(eglBase.eglBaseContext, true, true))
-      .createPeerConnectionFactory()
+    peerConnectionFactory =
+      PeerConnectionFactory
+        .builder()
+        .setVideoEncoderFactory(DefaultVideoEncoderFactory(eglBase.eglBaseContext, true, true))
+        .createPeerConnectionFactory()
 
     peerConnection = peerConnectionFactory.createPeerConnection(config, this)!!
     setUpVideoAndAudioDevices()
   }
 
-  private suspend fun sendSdpOffer(sdpOffer: String) = suspendCoroutine { continuation ->
-    val request = Request.Builder()
-      .url(connectionOptions.serverUrl)
-      .post(sdpOffer.toRequestBody())
-      .header("Accept", "application/sdp")
-      .header("Content-Type", "application/sdp")
-      .header("Authorization", "Bearer " + connectionOptions?.authToken)
-      .build()
+  private suspend fun sendSdpOffer(sdpOffer: String) =
+    suspendCoroutine { continuation ->
+      val request =
+        Request
+          .Builder()
+          .url(connectionOptions.serverUrl)
+          .post(sdpOffer.toRequestBody())
+          .header("Accept", "application/sdp")
+          .header("Content-Type", "application/sdp")
+          .header("Authorization", "Bearer " + connectionOptions?.authToken)
+          .build()
 
-    Log.d(WHIP_TAG, request.headers.toString())
-    Log.d(WHIP_TAG, request.body.toString())
+      Log.d(WHIP_TAG, request.headers.toString())
+      Log.d(WHIP_TAG, request.body.toString())
 
-    client.newCall(request).enqueue(object : Callback {
-      override fun onFailure(call: Call, e: IOException) {
-        Log.d(WHIP_TAG, e.toString())
-        continuation.resumeWithException(e)
-        e.printStackTrace()
-      }
+      client.newCall(request).enqueue(
+        object : Callback {
+          override fun onFailure(
+            call: Call,
+            e: IOException
+          ) {
+            Log.d(WHIP_TAG, e.toString())
+            continuation.resumeWithException(e)
+            e.printStackTrace()
+          }
 
-      override fun onResponse(call: Call, response: Response) {
-        response.use {
-          Log.d(WHIP_TAG, response.headers.toString())
-          patchEndpoint = response.headers["location"]
-          continuation.resume(response.body!!.string())
+          override fun onResponse(
+            call: Call,
+            response: Response
+          ) {
+            response.use {
+              Log.d(WHIP_TAG, response.headers.toString())
+              patchEndpoint = response.headers["location"]
+              continuation.resume(response.body!!.string())
+            }
+          }
         }
-      }
-    })
-  }
+      )
+    }
 
-  private suspend fun sendCandidate(candidate: IceCandidate) = suspendCoroutine { continuation ->
-    if (patchEndpoint == null) return@suspendCoroutine
+  private suspend fun sendCandidate(candidate: IceCandidate) =
+    suspendCoroutine { continuation ->
+      if (patchEndpoint == null) return@suspendCoroutine
 
-    val splitSdp = candidate.sdp.split(" ")
-    val ufrag = splitSdp[splitSdp.indexOf("ufrag") + 1]
+      val splitSdp = candidate.sdp.split(" ")
+      val ufrag = splitSdp[splitSdp.indexOf("ufrag") + 1]
 
-    Log.d(WHIP_TAG, ufrag)
+      Log.d(WHIP_TAG, ufrag)
 
-    val jsonObject = JSONObject()
+      val jsonObject = JSONObject()
 
-    jsonObject.put("candidate", candidate.sdp)
-    jsonObject.put("sdpMLineIndex", candidate.sdpMLineIndex)
-    jsonObject.put("sdpMid", candidate.sdpMid)
-    // TODO: is ufrag necessary or is it just elixir webrtc thing?
-    jsonObject.put("usernameFragment", ufrag)
+      jsonObject.put("candidate", candidate.sdp)
+      jsonObject.put("sdpMLineIndex", candidate.sdpMLineIndex)
+      jsonObject.put("sdpMid", candidate.sdpMid)
+      // TODO: is ufrag necessary or is it just elixir webrtc thing?
+      jsonObject.put("usernameFragment", ufrag)
 
-    val serverUrl = URL(connectionOptions.serverUrl)
-    val requestURL = URI(serverUrl.protocol, null, serverUrl.host, serverUrl.port, patchEndpoint, null, null)
+      val serverUrl = URL(connectionOptions.serverUrl)
+      val requestURL = URI(serverUrl.protocol, null, serverUrl.host, serverUrl.port, patchEndpoint, null, null)
 
-    val request = Request.Builder()
-      .url(requestURL.toURL())
-      .patch(jsonObject.toString().toRequestBody())
-      .header("Content-Type", "application/trickle-ice-sdpfrag")
-      .build()
+      val request =
+        Request
+          .Builder()
+          .url(requestURL.toURL())
+          .patch(jsonObject.toString().toRequestBody())
+          .header("Content-Type", "application/trickle-ice-sdpfrag")
+          .build()
 
-    client.newCall(request).enqueue(object : Callback {
-      override fun onFailure(call: Call, e: IOException) {
-        continuation.resumeWithException(e)
-        e.printStackTrace()
-      }
+      client.newCall(request).enqueue(
+        object : Callback {
+          override fun onFailure(
+            call: Call,
+            e: IOException
+          ) {
+            continuation.resumeWithException(e)
+            e.printStackTrace()
+          }
 
-      override fun onResponse(call: Call, response: Response) {
-        response.use {
-          continuation.resume(Unit)
+          override fun onResponse(
+            call: Call,
+            response: Response
+          ) {
+            response.use {
+              continuation.resume(Unit)
+            }
+          }
         }
-      }
-    })
-  }
+      )
+    }
 
   suspend fun connect() {
     val constraints = MediaConstraints()
@@ -177,10 +199,11 @@ class WHIPPlayer(
 
     iceCandidates.forEach { sendCandidate(it) }
 
-    val answer = SessionDescription(
-      SessionDescription.Type.ANSWER,
-      sdp
-    )
+    val answer =
+      SessionDescription(
+        SessionDescription.Type.ANSWER,
+        sdp
+      )
     peerConnection.setRemoteDescription(answer)
     Log.d(WHIP_TAG, answer.toString())
   }
@@ -201,20 +224,22 @@ class WHIPPlayer(
 
   private fun setUpVideoAndAudioDevices() {
     val videoTrackId = UUID.randomUUID().toString()
-    val cameraEnumerator: CameraEnumerator = if (Camera2Enumerator.isSupported(appContext)) {
-      Camera2Enumerator(appContext)
-    } else {
-      Camera1Enumerator(false)
-    }
+    val cameraEnumerator: CameraEnumerator =
+      if (Camera2Enumerator.isSupported(appContext)) {
+        Camera2Enumerator(appContext)
+      } else {
+        Camera1Enumerator(false)
+      }
 
-    val deviceName = cameraEnumerator.deviceNames.find {
-      true
-    }
+    val deviceName =
+      cameraEnumerator.deviceNames.find {
+        true
+      }
 
-
-    val videoCapturer: CameraVideoCapturer? = deviceName?.let {
-      cameraEnumerator.createCapturer(it, null)
-    }
+    val videoCapturer: CameraVideoCapturer? =
+      deviceName?.let {
+        cameraEnumerator.createCapturer(it, null)
+      }
 
     Log.d(WHIP_TAG, videoCapturer.toString())
 
@@ -273,7 +298,6 @@ class WHIPPlayer(
   }
 
   override fun onIceCandidatesRemoved(p0: Array<out IceCandidate>?) {
-
   }
 
   override fun onAddStream(p0: MediaStream?) {
@@ -292,7 +316,10 @@ class WHIPPlayer(
     Log.d(WHIP_TAG, "onRenegotiationNeeded")
   }
 
-  override fun onAddTrack(receiver: RtpReceiver?, mediaStreams: Array<out MediaStream>?) {
+  override fun onAddTrack(
+    receiver: RtpReceiver?,
+    mediaStreams: Array<out MediaStream>?
+  ) {
     Log.d(WHIP_TAG, "Track added")
     coroutineScope.launch(Dispatchers.Main) {
       val videoTrack = receiver?.track() as? VideoTrack?

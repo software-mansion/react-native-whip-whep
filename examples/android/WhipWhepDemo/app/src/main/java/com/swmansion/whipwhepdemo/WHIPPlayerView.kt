@@ -22,8 +22,12 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink,
-  RendererCommon.RendererEvents, WHIPPlayerListener {
+class WHIPPlayerView :
+  TextureView,
+  TextureView.SurfaceTextureListener,
+  VideoSink,
+  RendererCommon.RendererEvents,
+  WHIPPlayerListener {
   var player: WHIPPlayer? = null
     set(newPlayer) {
       newPlayer?.addTrackListener(this)
@@ -53,12 +57,17 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
     surfaceTextureListener = this
   }
 
-  internal fun init(sharedContext: EglBase.Context, rendererEvents: RendererCommon.RendererEvents?, drawer: RendererCommon.GlDrawer? = GlRectDrawer()) {
+  internal fun init(
+    sharedContext: EglBase.Context,
+    rendererEvents: RendererCommon.RendererEvents?,
+    drawer: RendererCommon.GlDrawer? = GlRectDrawer()
+  ) {
     this.rendererEvents = rendererEvents
     rotatedFrameWidth = 0
     rotatedFrameHeight = 0
     eglRenderer.init(sharedContext, this, EglBase.CONFIG_PLAIN, drawer)
   }
+
   fun release() {
     eglRenderer.release()
   }
@@ -272,7 +281,6 @@ class WHIPPlayerView: TextureView, TextureView.SurfaceTextureListener, VideoSink
       post(r)
     }
   }
-
 
   override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
   }
