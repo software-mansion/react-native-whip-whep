@@ -304,7 +304,8 @@ open class ClientBase(
       PeerConnection.IceConnectionState.COMPLETED ->
         Log.d(
           TAG,
-          "The ICE agent has finished gathering candidates, has checked all pairs against one another, and has found a connection for all components."
+          "The ICE agent has finished gathering candidates, has checked all pairs against one another, " +
+            "and has found a connection for all components."
         )
 
       PeerConnection.IceConnectionState.FAILED ->
