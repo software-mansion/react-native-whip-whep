@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		7C35C0962C4927BA00EE0290 /* iOSExampleApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0952C4927BA00EE0290 /* iOSExampleApp.swift */; };
+		7C35C0962C4927BA00EE0290 /* WhipWhepDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0952C4927BA00EE0290 /* WhipWhepDemoApp.swift */; };
 		7C35C0982C4927BA00EE0290 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0972C4927BA00EE0290 /* ContentView.swift */; };
 		7C35C09A2C4927BB00EE0290 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C35C0992C4927BB00EE0290 /* Assets.xcassets */; };
 		7C35C09D2C4927BB00EE0290 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C35C09C2C4927BB00EE0290 /* Preview Assets.xcassets */; };
@@ -22,8 +22,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		7C35C0922C4927BA00EE0290 /* iOSExample.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iOSExample.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		7C35C0952C4927BA00EE0290 /* iOSExampleApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSExampleApp.swift; sourceTree = "<group>"; };
+		7C35C0922C4927BA00EE0290 /* WhipWhepDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WhipWhepDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		7C35C0952C4927BA00EE0290 /* WhipWhepDemoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhipWhepDemoApp.swift; sourceTree = "<group>"; };
 		7C35C0972C4927BA00EE0290 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7C35C0992C4927BB00EE0290 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7C35C09C2C4927BB00EE0290 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -63,7 +63,7 @@
 		7C35C0892C4927BA00EE0290 = {
 			isa = PBXGroup;
 			children = (
-				7C35C0942C4927BA00EE0290 /* iOSExample */,
+				7C35C0942C4927BA00EE0290 /* WhipWhepDemo */,
 				7C35C0932C4927BA00EE0290 /* Products */,
 				7BBE4CB1CAFEAB0D02A41607 /* Frameworks */,
 			);
@@ -72,16 +72,16 @@
 		7C35C0932C4927BA00EE0290 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7C35C0922C4927BA00EE0290 /* iOSExample.app */,
+				7C35C0922C4927BA00EE0290 /* WhipWhepDemo.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		7C35C0942C4927BA00EE0290 /* iOSExample */ = {
+		7C35C0942C4927BA00EE0290 /* WhipWhepDemo */ = {
 			isa = PBXGroup;
 			children = (
 				7C35C0A32C49280C00EE0290 /* Info.plist */,
-				7C35C0952C4927BA00EE0290 /* iOSExampleApp.swift */,
+				7C35C0952C4927BA00EE0290 /* WhipWhepDemoApp.swift */,
 				7C35C0972C4927BA00EE0290 /* ContentView.swift */,
 				7C35C0992C4927BB00EE0290 /* Assets.xcassets */,
 				7C35C09B2C4927BB00EE0290 /* Preview Content */,
@@ -91,7 +91,7 @@
 				7C75AD972C5CF15F0011DB76 /* WhipPlayerViewModel.swift */,
 				7CBEEA032C65004C00B1DA4A /* ServerSettings.xcconfig */,
 			);
-			path = iOSExample;
+			path = WhipWhepDemo;
 			sourceTree = "<group>";
 		};
 		7C35C09B2C4927BB00EE0290 /* Preview Content */ = {
@@ -105,9 +105,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		7C35C0912C4927BA00EE0290 /* iOSExample */ = {
+		7C35C0912C4927BA00EE0290 /* WhipWhepDemo */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7C35C0A02C4927BB00EE0290 /* Build configuration list for PBXNativeTarget "iOSExample" */;
+			buildConfigurationList = 7C35C0A02C4927BB00EE0290 /* Build configuration list for PBXNativeTarget "WhipWhepDemo" */;
 			buildPhases = (
 				7C35C08E2C4927BA00EE0290 /* Sources */,
 				7C35C08F2C4927BA00EE0290 /* Frameworks */,
@@ -117,13 +117,13 @@
 			);
 			dependencies = (
 			);
-			name = iOSExample;
+			name = WhipWhepDemo;
 			packageProductDependencies = (
 				7C75AD892C58DA740011DB76 /* MobileWhepClient */,
 				7C75AD8B2C58DCBF0011DB76 /* MobileWhepClient */,
 			);
 			productName = iOSExample;
-			productReference = 7C35C0922C4927BA00EE0290 /* iOSExample.app */;
+			productReference = 7C35C0922C4927BA00EE0290 /* WhipWhepDemo.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -141,7 +141,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 7C35C08D2C4927BA00EE0290 /* Build configuration list for PBXProject "iOSExample" */;
+			buildConfigurationList = 7C35C08D2C4927BA00EE0290 /* Build configuration list for PBXProject "WhipWhepDemo" */;
 			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -157,7 +157,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				7C35C0912C4927BA00EE0290 /* iOSExample */,
+				7C35C0912C4927BA00EE0290 /* WhipWhepDemo */,
 			);
 		};
 /* End PBXProject section */
@@ -182,7 +182,7 @@
 			files = (
 				7C35C0982C4927BA00EE0290 /* ContentView.swift in Sources */,
 				7C75AD942C5BD06C0011DB76 /* CameraPreview.swift in Sources */,
-				7C35C0962C4927BA00EE0290 /* iOSExampleApp.swift in Sources */,
+				7C35C0962C4927BA00EE0290 /* WhipWhepDemoApp.swift in Sources */,
 				7C9D91CD2C539BEC000DF490 /* WebRTCVideoView.swift in Sources */,
 				7C75AD962C5CD7A00011DB76 /* WhepPlayerViewModel.swift in Sources */,
 				7C75AD982C5CF15F0011DB76 /* WhipPlayerViewModel.swift in Sources */,
@@ -323,12 +323,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"iOSExample/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"WhipWhepDemo/Preview Content\"";
 				DEVELOPMENT_TEAM = 6XJJBF5VW2;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = iOSExample/Info.plist;
+				INFOPLIST_FILE = WhipWhepDemo/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -339,7 +339,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.softwaremansion.iOSExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.softwaremansion.WhipWhepDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -355,12 +355,12 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_ASSET_PATHS = "\"iOSExample/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"WhipWhepDemo/Preview Content\"";
 				DEVELOPMENT_TEAM = 6XJJBF5VW2;
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = iOSExample/Info.plist;
+				INFOPLIST_FILE = WhipWhepDemo/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -371,7 +371,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.softwaremansion.iOSExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.softwaremansion.WhipWhepDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -382,7 +382,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		7C35C08D2C4927BA00EE0290 /* Build configuration list for PBXProject "iOSExample" */ = {
+		7C35C08D2C4927BA00EE0290 /* Build configuration list for PBXProject "WhipWhepDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7C35C09E2C4927BB00EE0290 /* Debug */,
@@ -391,7 +391,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		7C35C0A02C4927BB00EE0290 /* Build configuration list for PBXNativeTarget "iOSExample" */ = {
+		7C35C0A02C4927BB00EE0290 /* Build configuration list for PBXNativeTarget "WhipWhepDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				7C35C0A12C4927BB00EE0290 /* Debug */,
