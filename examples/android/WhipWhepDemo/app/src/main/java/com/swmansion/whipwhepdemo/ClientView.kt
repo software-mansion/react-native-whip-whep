@@ -13,8 +13,6 @@ import android.view.TextureView
 import android.view.TextureView.SurfaceTextureListener
 import com.mobilewhep.client.ClientBase
 import com.mobilewhep.client.ClientBaseListener
-import com.mobilewhep.client.WhepClient
-import com.mobilewhep.client.WhipClient
 import org.webrtc.EglBase
 import org.webrtc.EglRenderer
 import org.webrtc.GlRectDrawer
@@ -94,7 +92,7 @@ class ClientView :
     sharedContext: EglBase.Context?,
     rendererEvents: RendererEvents?,
     configAttributes: IntArray? = EglBase.CONFIG_PLAIN,
-    drawer: RendererCommon.GlDrawer? = GlRectDrawer()
+    drawer: RendererCommon.GlDrawer? = GlRectDrawer(),
   ) {
     ThreadUtils.checkIsOnMainThread()
 
@@ -126,7 +124,7 @@ class ClientView :
   fun addFrameListener(
     listener: EglRenderer.FrameListener?,
     scale: Float,
-    drawerParam: RendererCommon.GlDrawer?
+    drawerParam: RendererCommon.GlDrawer?,
   ) {
     eglRenderer.addFrameListener(listener, scale, drawerParam)
   }
@@ -142,7 +140,7 @@ class ClientView :
    */
   fun addFrameListener(
     listener: EglRenderer.FrameListener?,
-    scale: Float
+    scale: Float,
   ) {
     eglRenderer.addFrameListener(listener, scale)
   }
@@ -183,13 +181,13 @@ class ClientView :
 
   fun setScalingType(
     scalingTypeMatchOrientation: ScalingType?,
-    scalingTypeMismatchOrientation: ScalingType?
+    scalingTypeMismatchOrientation: ScalingType?,
   ) {
     ThreadUtils.checkIsOnMainThread()
 
     videoLayoutMeasure.setScalingType(
       scalingTypeMatchOrientation,
-      scalingTypeMismatchOrientation
+      scalingTypeMismatchOrientation,
     )
 
     requestLayout()
@@ -215,7 +213,7 @@ class ClientView :
   // View layout interface.
   override fun onMeasure(
     widthSpec: Int,
-    heightSpec: Int
+    heightSpec: Int,
   ) {
     ThreadUtils.checkIsOnMainThread()
 
@@ -231,7 +229,7 @@ class ClientView :
     left: Int,
     top: Int,
     right: Int,
-    bottom: Int
+    bottom: Int,
   ) {
     ThreadUtils.checkIsOnMainThread()
 
@@ -288,7 +286,7 @@ class ClientView :
           "layout size: ${getWidth()} x ${getHeight()}, " +
           "frame size: $rotatedFrameWidth x $rotatedFrameHeight, " +
           "requested surface size: $width x $height, " +
-          "old surface size: $surfaceWidth x $surfaceHeight"
+          "old surface size: $surfaceWidth x $surfaceHeight",
       )
 
       if (ceil(width).roundToInt() != surfaceWidth || ceil(height).roundToInt() != surfaceHeight) {
@@ -307,7 +305,7 @@ class ClientView :
    */
   private fun adjustAspectRatio(
     videoWidth: Float,
-    videoHeight: Float
+    videoHeight: Float,
   ) {
     val viewWidth = width
     val viewHeight = height
@@ -331,7 +329,7 @@ class ClientView :
     Log.d(
       TAG,
       "video=$videoWidth x $videoHeight view=$viewWidth x $viewHeight" +
-        " newView=$newWidth x $newHeight off=$xoff,$yoff"
+        " newView=$newWidth x $newHeight off=$xoff,$yoff",
     )
 
     val txform = Matrix()
@@ -356,7 +354,7 @@ class ClientView :
     holder: SurfaceHolder,
     format: Int,
     width: Int,
-    height: Int
+    height: Int,
   ) {
   }
 
@@ -364,7 +362,7 @@ class ClientView :
   override fun onSurfaceTextureAvailable(
     surface: SurfaceTexture,
     i: Int,
-    i1: Int
+    i1: Int,
   ) {
     ThreadUtils.checkIsOnMainThread()
     player?.eglBase?.eglBaseContext?.let {
@@ -379,7 +377,7 @@ class ClientView :
   override fun onSurfaceTextureSizeChanged(
     surface: SurfaceTexture,
     width: Int,
-    height: Int
+    height: Int,
   ) {
     ThreadUtils.checkIsOnMainThread()
 
@@ -413,7 +411,7 @@ class ClientView :
   override fun onFrameResolutionChanged(
     videoWidth: Int,
     videoHeight: Int,
-    rotation: Int
+    rotation: Int,
   ) {
     Log.d(TAG, "Resolution changed to $videoWidth x $videoHeight with rotation of $rotation")
     rendererEvents?.onFrameResolutionChanged(videoWidth, videoHeight, rotation)
