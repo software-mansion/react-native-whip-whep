@@ -7,6 +7,9 @@ android {
     namespace 'com.swmansion.whipwhepdemo'
     compileSdk 34
 
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file("local.properties").newDataInputStream())
+
     defaultConfig {
         applicationId "com.swmansion.whipwhepdemo"
         minSdk 24
@@ -19,13 +22,8 @@ android {
             useSupportLibrary true
         }
 
-        if(project.hasProperty("WHEP_SERVER_URL") && project.hasProperty("WHIP_SERVER_URL")) {
-          buildConfigField "String", "WHEP_SERVER_URL", "\"$WHEP_SERVER_URL\""
-          buildConfigField "String", "WHIP_SERVER_URL", "\"$WHIP_SERVER_URL\""
-        } else {
-          buildConfigField "String", "WHEP_SERVER_URL", "\"http://127.0.0.1:8829/whep\""
-          buildConfigField "String", "WHIP_SERVER_URL", "\"http://127.0.0.1:8829/whip\""
-        }
+        resValue "string", "WHEP_SERVER_URL", properties.getProperty("WHEP_SERVER_URL", "")
+        resValue "string", "WHIP_SERVER_URL", properties.getProperty("WHIP_SERVER_URL", "")
     }
 
     buildTypes {

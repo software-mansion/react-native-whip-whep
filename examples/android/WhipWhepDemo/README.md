@@ -5,6 +5,7 @@ A simple example app showing the main functionalities of the WHIP/WHEP package. 
 ## Initial configuration
 
 As stated in the package README file, for the server it is recommended to use the [ex_webrtc](https://github.com/elixir-webrtc/ex_webrtc/tree/9e1888185211c8da7128db7309584af8e863fafa/examples/whip_whep) server, as it is simple, easy to use and it was used during the package development. In order to run the server:
+
 - Clone the `ex_webrtc` repo
 - In the folder `examples/whip_whep/config` modify the file `config.exs` to use your IP address:
   ```
@@ -16,18 +17,17 @@ As stated in the package README file, for the server it is recommended to use th
 - From the `whip_whep` folder run commands `mix deps.get` and `mix run --no-halt` (running the commands requires Elixir installed on your device, for example using `brew install elixir`)
 
 To see the stream from your device, enter `http://<your IP address>:8829/index.html`. These instructions are available in the `ex_webrtc` repo as well.
-The server URLs are saved to environment variables. To use them, it is necessary to modify `gradle.properties` file and add the URLs to the bottom of the file:
+The server URLs are saved to environment variables. To use them, it is necessary to modify `local.properties` file and add the URLs to the bottom of the file:
 
 ```
 WHEP_SERVER_URL=<your WHEP server URL>
 WHIP_SERVER_URL=<your WHIP server URL>
 ```
 
-The file is gitignored, but as it is still tracked, in order not to see the changes to it in the working tree, run `git update-index --assume-unchanged gradle.properties`
-
 ## WHEP
 
 In order to initialize a player, an instance of a `WhepClient` has to be created using a server URL and application context. One can provide here some optional configuration, such as authorization token or STUN server address if necessary.
+
 ```kotlin
 val whepClient = remember {
   WhepClient(appContext = context, serverUrl = BuildConfig.WHEP_SERVER_URL, connectionOptions = ConnectionOptions(authToken = "example"))
@@ -59,7 +59,7 @@ An Android device receiving the stream from the server:
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/05e76005-066f-4286-9ab1-f39edeb58c07">
 
-## WHIP 
+## WHIP
 
 To initialize a WHIP client, `videoDevice` should also be passed to `WhipClient` constructor, as it has to be specified which device will be used for the stream. Remember to also check for the access to the camera and microphone, and request it and grant it if necessary.
 
@@ -70,6 +70,7 @@ val whipClient = remember {
 ```
 
 For the connection, the flow is the same as for the WHEP player:
+
 ```swift
 whipClient.connect()
 ```
