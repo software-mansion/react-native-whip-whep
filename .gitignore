@@ -135,4 +135,3 @@ dist
 .yarn/install-state.gz
 .pnp.*
 examples/ios/iOSExample/iOSExample/ServerSettings.xcconfig
-examples/android/WhipWhepDemo/gradle.properties
