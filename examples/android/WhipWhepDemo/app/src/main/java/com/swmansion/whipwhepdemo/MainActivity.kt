@@ -1,14 +1,17 @@
 package com.swmansion.whipwhepdemo
 
+import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +21,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -36,16 +42,11 @@ import androidx.core.content.ContextCompat
 import com.swmansion.whipwhepdemo.ui.theme.WhipWhepDemoTheme
 import kotlinx.coroutines.launch
 import org.webrtc.RendererCommon
-import android.Manifest
-import android.util.Log
-import androidx.compose.foundation.layout.Column
-import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
-import androidx.compose.material3.Text
 
 class MainActivity : ComponentActivity() {
   private val PERMISSIONS_REQUEST_CODE = 101
   private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
+
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     if (!hasPermissions(this, REQUIRED_PERMISSIONS)) {
@@ -66,7 +67,11 @@ class MainActivity : ComponentActivity() {
     }
   }
 
-  override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+  override fun onRequestPermissionsResult(
+    requestCode: Int,
+    permissions: Array<String>,
+    grantResults: IntArray
+  ) {
     if (requestCode == PERMISSIONS_REQUEST_CODE) {
       var allPermissionsGranted = true
       for (result in grantResults) {
@@ -84,7 +89,10 @@ class MainActivity : ComponentActivity() {
     super.onRequestPermissionsResult(requestCode, permissions, grantResults)
   }
 
-  private fun hasPermissions(context: Context, permissions: Array<String>): Boolean {
+  private fun hasPermissions(
+    context: Context,
+    permissions: Array<String>
+  ): Boolean {
     for (permission in permissions) {
       if (ContextCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
         return false
@@ -106,31 +114,33 @@ fun PlayerView(modifier: Modifier = Modifier) {
     mutableStateOf(true)
   }
 
-  val whepPlayer = remember {
-    WHEPPlayer(
-      context,
-      ConnectionOptions(serverUrl = BuildConfig.WHEP_SERVER_URL, authToken = "example")
-    )
-  }
+  val whepPlayer =
+    remember {
+      WHEPPlayer(
+        context,
+        ConnectionOptions(serverUrl = BuildConfig.WHEP_SERVER_URL, authToken = "example")
+      )
+    }
 
-  val whipPlayer = remember {
-    WHIPPlayer(
-      context,
-      ConnectionOptions(serverUrl = BuildConfig.WHIP_SERVER_URL, authToken = "example")
-    )
-  }
+  val whipPlayer =
+    remember {
+      WHIPPlayer(
+        context,
+        ConnectionOptions(serverUrl = BuildConfig.WHIP_SERVER_URL, authToken = "example")
+      )
+    }
   Log.d("PRINT", whepPlayer.toString())
   Log.d("PRINT", whipPlayer.toString())
 
+  var whipView: WHIPPlayerView? =
+    remember {
+      null
+    }
 
-  var whipView: WHIPPlayerView? = remember {
-    null
-  }
-
-  var view: WHEPPlayerView? = remember {
-    null
-  }
-
+  var view: WHEPPlayerView? =
+    remember {
+      null
+    }
 
   DisposableEffect(Unit) {
     onDispose {
@@ -175,9 +185,10 @@ fun PlayerView(modifier: Modifier = Modifier) {
             this.setEnableHardwareScaler(true)
           }
         },
-        modifier = Modifier
-          .fillMaxWidth()
-          .height(200.dp)
+        modifier =
+          Modifier
+            .fillMaxWidth()
+            .height(200.dp)
       )
 
       if (shouldShowPlayBtn) {
@@ -191,11 +202,12 @@ fun PlayerView(modifier: Modifier = Modifier) {
 
       if (isLoading) {
         CircularProgressIndicator(
-          modifier = Modifier
-            .width(64.dp)
-            .align(Alignment.Center),
+          modifier =
+            Modifier
+              .width(64.dp)
+              .align(Alignment.Center),
           color = MaterialTheme.colorScheme.secondary,
-          trackColor = MaterialTheme.colorScheme.surfaceVariant,
+          trackColor = MaterialTheme.colorScheme.surfaceVariant
         )
       }
     }
@@ -208,8 +220,9 @@ fun PlayerView(modifier: Modifier = Modifier) {
     shouldShowStreamBtn: Boolean
   ) {
     Column(
-      modifier = Modifier
-        .fillMaxSize(),
+      modifier =
+        Modifier
+          .fillMaxSize(),
       horizontalAlignment = Alignment.CenterHorizontally
     ) {
       AndroidView(
@@ -218,15 +231,17 @@ fun PlayerView(modifier: Modifier = Modifier) {
             player = whipPlayer
           }
         },
-        modifier = Modifier
-          .fillMaxWidth()
-          .height(200.dp)
+        modifier =
+          Modifier
+            .fillMaxWidth()
+            .height(200.dp)
       )
 
       if (shouldShowStreamBtn) {
         Box(
-          modifier = Modifier
-            .padding(16.dp)
+          modifier =
+            Modifier
+              .padding(16.dp)
         ) {
           Button(onClick = { onStreamBtnClick() }) {
             Text("Stream")
@@ -261,24 +276,28 @@ fun PlayerView(modifier: Modifier = Modifier) {
       }
 
       when (selectedTabIndex) {
-        0 -> WHEPTab(
-          whepPlayer = whepPlayer,
-          onPlayBtnClick = onPlayBtnClick,
-          shouldShowPlayBtn = shouldShowPlayBtn,
-          isLoading = isLoading
-        )
-        1 -> WHIPTab(
-          whipPlayer = whipPlayer,
-          onStreamBtnClick = onStreamBtnClick,
-          shouldShowStreamBtn = shouldShowStreamBtn
-        )
+        0 ->
+          WHEPTab(
+            whepPlayer = whepPlayer,
+            onPlayBtnClick = onPlayBtnClick,
+            shouldShowPlayBtn = shouldShowPlayBtn,
+            isLoading = isLoading
+          )
+        1 ->
+          WHIPTab(
+            whipPlayer = whipPlayer,
+            onStreamBtnClick = onStreamBtnClick,
+            shouldShowStreamBtn = shouldShowStreamBtn
+          )
       }
     }
   }
-  Box(modifier = Modifier
-    .fillMaxSize()
-    .padding(top = 50.dp)
-  ){
+  Box(
+    modifier =
+      Modifier
+        .fillMaxSize()
+        .padding(top = 50.dp)
+  ) {
     TabView(
       whepPlayer = whepPlayer,
       whipPlayer = whipPlayer,
@@ -289,5 +308,4 @@ fun PlayerView(modifier: Modifier = Modifier) {
       shouldShowStreamBtn = shouldShowStreamBtn
     )
   }
-
 }
