@@ -5,6 +5,7 @@ A simple example app showing the main functionalities of the WHIP/WHEP package. 
 ## Initial configuration
 
 As stated in the package README file, for the server it is recommended to use the [ex_webrtc](https://github.com/elixir-webrtc/ex_webrtc/tree/9e1888185211c8da7128db7309584af8e863fafa/examples/whip_whep) server, as it is simple, easy to use and it was used during the package development. In order to run the server:
+
 - Clone the `ex_webrtc` repo
 - In the folder `examples/whip_whep/config` modify the file `config.exs` to use your IP address:
   ```
@@ -19,6 +20,7 @@ To see the stream from your device, enter `http://<your IP address>:8829/index.h
 
 The server URLs are saved to environment variables. To use them, it is necessary to modify template file `ServerSettings.xcconfig` with your URLs.
 When the URLs are defined, it is required to edit the `Info.plist` file, either through text editor:
+
 ```
 <key>WhepServerUrl</key>
 <string>$(WHEP_SERVER_URL)</string>
@@ -40,10 +42,10 @@ The created configuration has to be added to target. After clicking on the `iOSE
 
 ## WHEP
 
-In order to initialize a player, an instance of a `WhepClientPlayer` has to be created using a server URL. One can provide here some optional configuration, such as authorization token or STUN server address if necessary.
+In order to initialize a player, an instance of a `WhepClient` has to be created using a server URL. One can provide here some optional configuration, such as authorization token or STUN server address if necessary.
 
 ```swift
-var whepPlayer = WhepClientPlayer(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhepServerUrl"] as? String ?? "")")!)
+var whepPlayer = WhepClient(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhepServerUrl"] as? String ?? "")")!)
 ```
 
 After creating a player, all that has to be done is to invoke the `connect` method:
@@ -75,16 +77,16 @@ An iOS device receiving the stream from the server:
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/68a98b2c-76e1-4b4b-8daf-8b84ed7a6b82">
 
+## WHIP
 
-## WHIP 
-
-To initialize a WHIP player, `audioDevice` and `videoDevice` should also be passed to `WhipClientPlayer` constructor, as it has to be specified which devices will be used for the stream. Here, the default ones have been used. Remember to also check for the access to the camera and microphone, and request it and grant it if necessary.
+To initialize a WHIP player, `audioDevice` and `videoDevice` should also be passed to `WhipClient` constructor, as it has to be specified which devices will be used for the stream. Here, the default ones have been used. Remember to also check for the access to the camera and microphone, and request it and grant it if necessary.
 
 ```swift
-var whipPlayer = WhipClientPlayer(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, audioDevice: AVCaptureDevice.default(for: .audio), videoDevice: AVCaptureDevice.default(for: .video))
+var whipPlayer = WhipClient(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, audioDevice: AVCaptureDevice.default(for: .audio), videoDevice: AVCaptureDevice.default(for: .video))
 ```
 
 For the connection, the flow is the same as for the WHEP player:
+
 ```swift
 do {
     try await whipPlayer.connect()
