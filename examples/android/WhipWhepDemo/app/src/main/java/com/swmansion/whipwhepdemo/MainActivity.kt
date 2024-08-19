@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -231,7 +232,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
               .width(64.dp)
               .align(Alignment.Center),
           color = MaterialTheme.colorScheme.secondary,
-          trackColor = MaterialTheme.colorScheme.surfaceVariant,
+          trackColor = MaterialTheme.colorScheme.surfaceVariant
         )
       }
     }
