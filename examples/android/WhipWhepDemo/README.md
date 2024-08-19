@@ -78,7 +78,7 @@ val whipClient = remember {
             deviceName = it
         )
     }
-)
+  )
 }
 ```
 
