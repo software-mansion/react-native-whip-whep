@@ -3,10 +3,6 @@ package com.mobilewhep.client
 sealed class CaptureDeviceError(
   val description: String
 ) : Throwable() {
-  class AudioDeviceNotAvailable(
-    description: String
-  ) : CaptureDeviceError(description)
-
   class VideoDeviceNotAvailable(
     description: String
   ) : CaptureDeviceError(description)
