@@ -16,9 +16,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "7C35C0912C4927BA00EE0290"
-               BuildableName = "iOSExample.app"
-               BlueprintName = "iOSExample"
-               ReferencedContainer = "container:iOSExample.xcodeproj">
+               BuildableName = "WhipWhepDemo.app"
+               BlueprintName = "WhipWhepDemo"
+               ReferencedContainer = "container:WhipWhepDemo.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7C35C0912C4927BA00EE0290"
-            BuildableName = "iOSExample.app"
-            BlueprintName = "iOSExample"
-            ReferencedContainer = "container:iOSExample.xcodeproj">
+            BuildableName = "WhipWhepDemo.app"
+            BlueprintName = "WhipWhepDemo"
+            ReferencedContainer = "container:WhipWhepDemo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "7C35C0912C4927BA00EE0290"
-            BuildableName = "iOSExample.app"
-            BlueprintName = "iOSExample"
-            ReferencedContainer = "container:iOSExample.xcodeproj">
+            BuildableName = "WhipWhepDemo.app"
+            BlueprintName = "WhipWhepDemo"
+            ReferencedContainer = "container:WhipWhepDemo.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>

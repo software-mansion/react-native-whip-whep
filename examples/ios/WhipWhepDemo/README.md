@@ -1,4 +1,4 @@
-# iOSExample
+# WhipWhepDemo
 
 A simple example app showing the main functionalities of the WHIP/WHEP package. It consists of a view that, depending of whether WHIP or WHEP has been chosen, shows a camera preview or current media stream.
 
@@ -36,7 +36,7 @@ or directly using Xcode:
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/0d9b7079-e0ff-43dd-ac53-1202dc5ee1ee">
  
-The created configuration has to be added to target. After clicking on the `iOSExample` name in the project navigator on the left side of the editor window, there appears a `Info` tab with a `Configurations` section. The created `ServerSettings.xcconfig` file has to be added to both debug and release configurations:
+The created configuration has to be added to target. After clicking on the `WhipWhepDemo` name in the project navigator on the left side of the editor window, there appears a `Info` tab with a `Configurations` section. The created `ServerSettings.xcconfig` file has to be added to both debug and release configurations:
 
 <img width="600" alt="image" src="https://github.com/user-attachments/assets/9c2dc234-4d1a-48cc-bdf6-75825dc0111e">
 
