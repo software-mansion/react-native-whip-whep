@@ -1,13 +1,20 @@
 package com.swmansion.whipwhepdemo
 
 import android.content.Context
+import android.content.res.Resources
 import android.graphics.Matrix
 import android.graphics.SurfaceTexture
 import android.os.Looper
+import android.util.AttributeSet
 import android.util.Log
 import android.view.Surface
+import android.view.SurfaceHolder
 import android.view.TextureView
+import android.view.TextureView.SurfaceTextureListener
+import com.mobilewhep.client.ClientBase
+import com.mobilewhep.client.ClientBaseListener
 import org.webrtc.EglBase
+import org.webrtc.EglRenderer
 import org.webrtc.GlRectDrawer
 import org.webrtc.RendererCommon
 import org.webrtc.RendererCommon.RendererEvents
@@ -22,18 +29,24 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-class WHIPPlayerView :
+const val TAG = "ClientView"
+
+class ClientView :
   TextureView,
-  TextureView.SurfaceTextureListener,
+  SurfaceHolder.Callback,
+  SurfaceTextureListener,
   VideoSink,
-  RendererCommon.RendererEvents,
-  WHIPPlayerListener {
-  var player: WHIPPlayer? = null
+  RendererEvents,
+  ClientBaseListener {
+  var player: ClientBase? = null
     set(newPlayer) {
       newPlayer?.addTrackListener(this)
+      newPlayer?.videoTrack?.addSink(this)
       field = newPlayer
     }
 
+  // Cached resource name.
+  private val resourceName: String
   private val videoLayoutMeasure = RendererCommon.VideoLayoutMeasure()
   private val eglRenderer: SurfaceEglRenderer
 
@@ -53,25 +66,93 @@ class WHIPPlayerView :
    * Standard View constructor. In order to render something, you must first call init().
    */
   constructor(context: Context) : super(context) {
-    eglRenderer = SurfaceEglRenderer("WHIPPlayerView")
+    resourceName = getResourceName()
+    eglRenderer = SurfaceEglRenderer(resourceName)
     surfaceTextureListener = this
   }
 
+  /**
+   * Standard View constructor. In order to render something, you must first call init().
+   */
+  constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+    resourceName = getResourceName()
+    eglRenderer = SurfaceEglRenderer(resourceName)
+
+    surfaceTextureListener = this
+  }
+
+  /**
+   * Initialize this class, sharing resources with `sharedContext`. The custom `drawer` will be used
+   * for drawing frames on the EGLSurface. This class is responsible for calling release() on
+   * `drawer`. It is allowed to call init() to reinitialize the renderer after a previous
+   * init()/release() cycle.
+   */
+  @JvmOverloads
   internal fun init(
-    sharedContext: EglBase.Context,
-    rendererEvents: RendererCommon.RendererEvents?,
+    sharedContext: EglBase.Context?,
+    rendererEvents: RendererEvents?,
+    configAttributes: IntArray? = EglBase.CONFIG_PLAIN,
     drawer: RendererCommon.GlDrawer? = GlRectDrawer()
   ) {
+    ThreadUtils.checkIsOnMainThread()
+
     this.rendererEvents = rendererEvents
     rotatedFrameWidth = 0
     rotatedFrameHeight = 0
-    eglRenderer.init(sharedContext, this, EglBase.CONFIG_PLAIN, drawer)
+    eglRenderer.init(sharedContext, this, configAttributes, drawer)
   }
 
+  /**
+   * Block until any pending frame is returned and all GL resources released, even if an interrupt
+   * occurs. If an interrupt occurs during release(), the interrupt flag will be set. This function
+   * should be called before the Activity is destroyed and the EGLContext is still valid. If you
+   * don't call this function, the GL resources might leak.
+   */
   fun release() {
     eglRenderer.release()
   }
 
+  /**
+   * Register a callback to be invoked when a new video frame has been received.
+   *
+   * @param listener The callback to be invoked. The callback will be invoked on the render thread.
+   * It should be lightweight and must not call removeFrameListener.
+   * @param scale    The scale of the Bitmap passed to the callback, or 0 if no Bitmap is
+   * required.
+   * @param drawer   Custom drawer to use for this frame listener.
+   */
+  fun addFrameListener(
+    listener: EglRenderer.FrameListener?,
+    scale: Float,
+    drawerParam: RendererCommon.GlDrawer?
+  ) {
+    eglRenderer.addFrameListener(listener, scale, drawerParam)
+  }
+
+  /**
+   * Register a callback to be invoked when a new video frame has been received. This version uses
+   * the drawer of the EglRenderer that was passed in init.
+   *
+   * @param listener The callback to be invoked. The callback will be invoked on the render thread.
+   * It should be lightweight and must not call removeFrameListener.
+   * @param scale    The scale of the Bitmap passed to the callback, or 0 if no Bitmap is
+   * required.
+   */
+  fun addFrameListener(
+    listener: EglRenderer.FrameListener?,
+    scale: Float
+  ) {
+    eglRenderer.addFrameListener(listener, scale)
+  }
+
+  fun removeFrameListener(listener: EglRenderer.FrameListener?) {
+    eglRenderer.removeFrameListener(listener)
+  }
+
+  /**
+   * Enables fixed size for the surface. This provides better performance but might be buggy on some
+   * devices. By default this is turned off.
+   */
   fun setEnableHardwareScaler(enabled: Boolean) {
     ThreadUtils.checkIsOnMainThread()
 
@@ -79,6 +160,16 @@ class WHIPPlayerView :
     updateSurfaceSize()
   }
 
+  /**
+   * Set if the video stream should be mirrored or not.
+   */
+  fun setMirror(mirror: Boolean) {
+    eglRenderer.setMirror(mirror)
+  }
+
+  /**
+   * Set how the video will fill the allowed layout area.
+   */
   fun setScalingType(scalingType: ScalingType?) {
     ThreadUtils.checkIsOnMainThread()
 
@@ -88,6 +179,38 @@ class WHIPPlayerView :
     requestLayout()
   }
 
+  fun setScalingType(
+    scalingTypeMatchOrientation: ScalingType?,
+    scalingTypeMismatchOrientation: ScalingType?
+  ) {
+    ThreadUtils.checkIsOnMainThread()
+
+    videoLayoutMeasure.setScalingType(
+      scalingTypeMatchOrientation,
+      scalingTypeMismatchOrientation
+    )
+
+    requestLayout()
+  }
+
+  fun setFpsReduction(fps: Float) {
+    eglRenderer.setFpsReduction(fps)
+  }
+
+  fun disableFpsReduction() {
+    eglRenderer.disableFpsReduction()
+  }
+
+  fun pauseVideo() {
+    eglRenderer.pauseVideo()
+  }
+
+  // VideoSink interface.
+  override fun onFrame(frame: VideoFrame) {
+    eglRenderer.onFrame(frame)
+  }
+
+  // View layout interface.
   override fun onMeasure(
     widthSpec: Int,
     heightSpec: Int
@@ -98,7 +221,7 @@ class WHIPPlayerView :
       videoLayoutMeasure.measure(widthSpec, heightSpec, rotatedFrameWidth, rotatedFrameHeight)
     setMeasuredDimension(size.x, size.y)
 
-    Log.d(WHEP_TAG, "onMeasure() New size: ${size.x}x${size.y}")
+    Log.d(TAG, "onMeasure() New size: ${size.x}x${size.y}")
   }
 
   override fun onLayout(
@@ -122,7 +245,7 @@ class WHIPPlayerView :
     eglRenderer.setLayoutAspectRatio(aspectRatio)
     updateSurfaceSize()
 
-    Log.d(WHEP_TAG, "onLayout() aspect ratio $aspectRatio")
+    Log.d(TAG, "onLayout() aspect ratio $aspectRatio")
   }
 
   private fun updateSurfaceSize() {
@@ -158,7 +281,7 @@ class WHIPPlayerView :
       }
 
       Log.d(
-        WHEP_TAG,
+        TAG,
         "updateSurfaceSize() " +
           "layout size: ${getWidth()} x ${getHeight()}, " +
           "frame size: $rotatedFrameWidth x $rotatedFrameHeight, " +
@@ -177,6 +300,9 @@ class WHIPPlayerView :
     }
   }
 
+  /**
+   * Sets the TextureView transform to preserve the aspect ratio of the video.
+   */
   private fun adjustAspectRatio(
     videoWidth: Float,
     videoHeight: Float
@@ -201,7 +327,7 @@ class WHIPPlayerView :
     val yoff = (viewHeight - newHeight) / 2
 
     Log.d(
-      WHEP_TAG,
+      TAG,
       "video=$videoWidth x $videoHeight view=$viewWidth x $viewHeight" +
         " newView=$newWidth x $newHeight off=$xoff,$yoff"
     )
@@ -213,11 +339,30 @@ class WHIPPlayerView :
     setTransform(txform)
   }
 
+  // SurfaceHolder.Callback interface.
+  override fun surfaceCreated(holder: SurfaceHolder) {
+    ThreadUtils.checkIsOnMainThread()
+
+    surfaceHeight = 0
+    surfaceWidth = surfaceHeight
+    updateSurfaceSize()
+  }
+
+  override fun surfaceDestroyed(holder: SurfaceHolder) {}
+
+  override fun surfaceChanged(
+    holder: SurfaceHolder,
+    format: Int,
+    width: Int,
+    height: Int
+  ) {
+  }
+
   // TextureView.SurfaceTextureListener implementation
   override fun onSurfaceTextureAvailable(
     surface: SurfaceTexture,
-    width: Int,
-    height: Int
+    i: Int,
+    i1: Int
   ) {
     ThreadUtils.checkIsOnMainThread()
     player?.eglBase?.eglBaseContext?.let {
@@ -236,7 +381,7 @@ class WHIPPlayerView :
   ) {
     ThreadUtils.checkIsOnMainThread()
 
-    Log.d(WHEP_TAG, "surfaceChanged: size: $width x $height")
+    Log.d(TAG, "surfaceChanged: size: $width x $height")
   }
 
   override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
@@ -250,6 +395,15 @@ class WHIPPlayerView :
     return true
   }
 
+  override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {}
+
+  private fun getResourceName(): String =
+    try {
+      resources.getResourceEntryName(id)
+    } catch (e: Resources.NotFoundException) {
+      ""
+    }
+
   override fun onFirstFrameRendered() {
     rendererEvents?.onFirstFrameRendered()
   }
@@ -259,7 +413,7 @@ class WHIPPlayerView :
     videoHeight: Int,
     rotation: Int
   ) {
-    Log.d(WHEP_TAG, "Resolution changed to $videoWidth x $videoHeight with rotation of $rotation")
+    Log.d(TAG, "Resolution changed to $videoWidth x $videoHeight with rotation of $rotation")
     rendererEvents?.onFrameResolutionChanged(videoWidth, videoHeight, rotation)
 
     val rotatedWidth = if (rotation == 0 || rotation == 180) videoWidth else videoHeight
@@ -282,15 +436,7 @@ class WHIPPlayerView :
     }
   }
 
-  override fun onSurfaceTextureUpdated(surface: SurfaceTexture) {
-  }
-
-  override fun onFrame(p0: VideoFrame?) {
-    eglRenderer.onFrame(p0)
-  }
-
   override fun onTrackAdded(track: VideoTrack) {
-    Log.d("TRACK ADDED", track.id())
     track.addSink(this)
   }
 }

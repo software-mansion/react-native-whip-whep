@@ -1,4 +1,4 @@
-package com.swmansion.whipwhepdemo
+package com.mobilewhep.client
 
 import org.webrtc.MediaConstraints
 import org.webrtc.PeerConnection
