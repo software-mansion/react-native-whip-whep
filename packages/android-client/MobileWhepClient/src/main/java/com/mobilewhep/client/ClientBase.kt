@@ -46,7 +46,7 @@ open class ClientBase(
 ) : PeerConnection.Observer {
   protected var peerConnectionFactory: PeerConnectionFactory
   protected var peerConnection: PeerConnection
-  protected val eglBase = EglBase.create()
+  val eglBase = EglBase.create()
 
   private var patchEndpoint: String? = null
   val iceCandidates = mutableListOf<IceCandidate>()

@@ -2,6 +2,9 @@ package com.mobilewhep.client
 
 import android.content.Context
 import android.util.Log
+import org.webrtc.Camera1Enumerator
+import org.webrtc.Camera2Enumerator
+import org.webrtc.CameraEnumerator
 import org.webrtc.CameraVideoCapturer
 import org.webrtc.MediaConstraints
 import org.webrtc.PeerConnection
@@ -17,7 +20,7 @@ class WhipClient(
   appContext: Context,
   serverUrl: String,
   configurationOptions: ConfigurationOptions? = null,
-  private var videoDevice: VideoDevice? = null
+  private var videoDevice: String? = null
 ) : ClientBase(
     appContext,
     serverUrl,
@@ -44,20 +47,23 @@ class WhipClient(
     }
     val videoTrackId = UUID.randomUUID().toString()
 
-    val deviceName = videoDevice!!.deviceName
+    val cameraEnumerator: CameraEnumerator =
+      if (Camera2Enumerator.isSupported(appContext)) {
+        Camera2Enumerator(appContext)
+      } else {
+        Camera1Enumerator(false)
+      }
 
     val videoCapturer: CameraVideoCapturer? =
-      deviceName.let {
-        videoDevice!!.cameraEnumerator!!.createCapturer(it, null)
+      videoDevice.let {
+        cameraEnumerator.createCapturer(it, null)
       }
 
     val videoSource: VideoSource =
       peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
     val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
-    videoCapturer?.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
-    Log.d(TAG, "Starting video capture")
-    videoCapturer?.startCapture(1024, 720, 30)
-    Log.d(TAG, "Video capture started")
+    videoCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
+    videoCapturer.startCapture(1024, 720, 30)
     val videoTrack: VideoTrack = peerConnectionFactory.createVideoTrack(videoTrackId, videoSource)
 
     this.videoSource = videoSource
