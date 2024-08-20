@@ -148,7 +148,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
             R.string.WHIP_SERVER_URL
           ),
         configurationOptions = ConfigurationOptions(authToken = "example"),
-        videoDevice = deviceName,
+        videoDevice = deviceName
       )
     }
 
