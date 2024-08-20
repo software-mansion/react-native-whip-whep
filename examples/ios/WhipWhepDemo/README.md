@@ -42,10 +42,10 @@ The created configuration has to be added to target. After clicking on the `Whip
 
 ## WHEP
 
-In order to initialize a player, an instance of a `WhepClientPlayer` has to be created using a server URL. One can provide here some optional configuration, such as authorization token or STUN server address if necessary.
+In order to initialize a player, an instance of a `WhepClient` has to be created using a server URL. One can provide here some optional configuration, such as authorization token or STUN server address if necessary.
 
 ```swift
-var whepPlayer = WhepClientPlayer(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhepServerUrl"] as? String ?? "")")!)
+var whepPlayer = WhepClient(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhepServerUrl"] as? String ?? "")")!)
 ```
 
 After creating a player, all that has to be done is to invoke the `connect` method:
@@ -79,10 +79,10 @@ An iOS device receiving the stream from the server:
 
 ## WHIP
 
-To initialize a WHIP player, `audioDevice` and `videoDevice` should also be passed to `WhipClientPlayer` constructor, as it has to be specified which devices will be used for the stream. Here, the default ones have been used. Remember to also check for the access to the camera and microphone, and request it and grant it if necessary.
+To initialize a WHIP player, `audioDevice` and `videoDevice` should also be passed to `WhipClient` constructor, as it has to be specified which devices will be used for the stream. Here, the default ones have been used. Remember to also check for the access to the camera and microphone, and request it and grant it if necessary.
 
 ```swift
-var whipPlayer = WhipClientPlayer(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, audioDevice: AVCaptureDevice.default(for: .audio), videoDevice: AVCaptureDevice.default(for: .video))
+var whipPlayer = WhipClient(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, audioDevice: AVCaptureDevice.default(for: .audio), videoDevice: AVCaptureDevice.default(for: .video))
 ```
 
 For the connection, the flow is the same as for the WHEP player:

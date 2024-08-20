@@ -112,7 +112,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
     }
 
     /**
-    Sends an SDP offer to the WHIP server.
+    Sends an SDP offer to the WHIP/WHEP server.
 
     - Parameter sdpOffer: The offer to send to the server.
 
@@ -167,7 +167,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
     }
 
     /**
-    Sends an ICE candidate to WHIP server in order to provide a streaming device.
+    Sends an ICE candidate to WHIP/WHEP server in order to provide a streaming device.
 
     - Parameter candidate: Represents a single ICE candidate.
 
@@ -272,7 +272,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
     }
 
     /**
-     Reacts to new candidate found and sends it to the WHIP server.
+     Reacts to new candidate found and sends it to the WHIP/WHEP server.
     */
     public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
         if self.patchEndpoint != nil {
