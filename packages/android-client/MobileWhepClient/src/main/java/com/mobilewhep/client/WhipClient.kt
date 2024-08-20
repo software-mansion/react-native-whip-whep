@@ -116,6 +116,9 @@ class WhipClient(
     peerConnection.dispose()
     peerConnectionFactory.dispose()
     eglBase.release()
+    videoCapturer?.stopCapture()
+    videoCapturer?.dispose()
+    videoSource?.dispose()
   }
 
   fun PeerConnection.enforceSendOnlyDirection() {
