@@ -8,8 +8,7 @@ public class WhepClient: ClientBase {
     Initializes a `WhepClient` object.
 
     - Parameter serverUrl: A URL of the WHEP server.
-    - Parameter authToken: An authorization token of the WHEP server.
-    - Parameter configurationOptions: Additional configuration options, such as a STUN server URL.
+    - Parameter configurationOptions: Additional configuration options, such as a STUN server URL or authorization token.
 
     - Returns: A `WhepClient` object.
     */
