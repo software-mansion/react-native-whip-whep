@@ -1,16 +1,16 @@
 package com.mobilewhep.client
 
 sealed class CaptureDeviceError(
-  val description: String
-) : Throwable() {
+  private val description: String
+) : Throwable(description) {
   class VideoDeviceNotAvailable(
     description: String
   ) : CaptureDeviceError(description)
 }
 
 sealed class AttributeNotFoundError(
-  val description: String
-) : Throwable() {
+  private val description: String
+) : Throwable(description) {
   class LocationNotFound(
     description: String
   ) : AttributeNotFoundError(description)
@@ -29,8 +29,8 @@ sealed class AttributeNotFoundError(
 }
 
 sealed class SessionNetworkError(
-  val description: String
-) : Throwable() {
+  private val description: String
+) : Throwable(description) {
   class CandidateSendingError(
     description: String
   ) : SessionNetworkError(description)
@@ -45,8 +45,8 @@ sealed class SessionNetworkError(
 }
 
 sealed class PermissionError(
-  val description: String
-) : Throwable() {
+  private val description: String
+) : Throwable(description) {
   class PermissionsNotGrantedError(
     description: String
   ) : PermissionError(description)

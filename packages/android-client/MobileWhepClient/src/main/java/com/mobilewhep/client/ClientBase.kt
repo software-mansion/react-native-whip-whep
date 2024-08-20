@@ -65,10 +65,6 @@ open class ClientBase(
 
   init {
     if (!hasPermissions(appContext, REQUIRED_PERMISSIONS)) {
-      Log.d(
-        TAG,
-        "Permissions for camera and audio recording have not been granted. Please check your application settings."
-      )
       throw PermissionError.PermissionsNotGrantedError(
         "Permissions for camera and audio recording have not been granted. Please check your application settings."
       )
@@ -101,7 +97,6 @@ open class ClientBase(
     try {
       peerConnection = peerConnectionFactory.createPeerConnection(config, this)!!
     } catch (e: NullPointerException) {
-      Log.d(TAG, "Failed to establish RTCPeerConnection. Check initial configuration")
       throw SessionNetworkError.ConfigurationError("Failed to establish RTCPeerConnection. Check initial configuration")
     }
   }
@@ -137,18 +132,13 @@ open class ClientBase(
             e: IOException
           ) {
             if (e is ConnectException) {
-              Log.e(
-                TAG,
-                "Network error. Check if the server is up and running and the token and the server url is correct.",
-                e
-              )
               continuation.resumeWithException(
                 SessionNetworkError.ConnectionError(
                   "Network error. Check if the server is up and running and the token and the server url is correct."
                 )
               )
             } else {
-              Log.d(TAG, e.toString())
+              Log.e(TAG, e.toString())
               continuation.resumeWithException(e)
               e.printStackTrace()
             }
