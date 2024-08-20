@@ -21,7 +21,8 @@ public class WhepClient: ClientBase {
     Connects the client to the WHEP server using WebRTC Peer Connection.
 
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
-        of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
+        of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection` or
+     `ConfigurationOptionsError.WrongCaptureDeviceConfiguration` if both `audioOnly` and `videoOnly` is set to true.
     */
     public func connect() async throws {
         if !self.isConnectionSetUp {
@@ -30,13 +31,22 @@ public class WhepClient: ClientBase {
             throw SessionNetworkError.ConfigurationError(
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")
         }
+        
+        if (configurationOptions != nil && configurationOptions!.audioOnly == true && configurationOptions?.videoOnly == true){
+            throw ConfigurationOptionsError.WrongCaptureDeviceConfiguration(description: "Wrong initial configuration. Either audioOnly or videoOnly should be set to false.")
+        }
 
         var error: NSError?
-        let videoTransceiver = peerConnection!.addTransceiver(of: .video)!
-        videoTransceiver.setDirection(.recvOnly, error: &error)
-
-        let audioTransceiver = peerConnection!.addTransceiver(of: .audio)!
-        audioTransceiver.setDirection(.recvOnly, error: &error)
+        
+        if((configurationOptions != nil) && !configurationOptions!.audioOnly){
+            let videoTransceiver = peerConnection!.addTransceiver(of: .video)!
+            videoTransceiver.setDirection(.recvOnly, error: &error)
+        }
+        
+        if((configurationOptions != nil) && !configurationOptions!.videoOnly){
+            let audioTransceiver = peerConnection!.addTransceiver(of: .audio)!
+            audioTransceiver.setDirection(.recvOnly, error: &error)
+        }
 
         let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
         let offer = try await peerConnection!.offer(for: constraints)

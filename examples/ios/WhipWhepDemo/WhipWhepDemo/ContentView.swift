@@ -11,7 +11,7 @@ struct ContentView: View {
 
     @State private var selectedPlayerType = PlayerType.whep
     @StateObject var whepPlayerViewModel = WhepPlayerViewModel(player: WhepClient(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhepServerUrl"] as? String ?? "")")!, configurationOptions: ConfigurationOptions(authToken: "example")))
-    @StateObject var whipPlayerViewModel = WhipPlayerViewModel(player: WhipClient(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, configurationOptions: ConfigurationOptions(authToken: "example"), audioDevice: AVCaptureDevice.default(for: .audio), videoDevice: AVCaptureDevice.default(for: .video)))
+    @StateObject var whipPlayerViewModel = WhipPlayerViewModel(player: WhipClient(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, configurationOptions: ConfigurationOptions(authToken: "example", videoOnly: true), audioDevice: AVCaptureDevice.default(for: .audio), videoDevice: AVCaptureDevice.default(for: .video)))
     
     var body: some View {
         VStack {
