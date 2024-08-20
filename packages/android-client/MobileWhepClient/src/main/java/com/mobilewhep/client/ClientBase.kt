@@ -42,7 +42,7 @@ interface ClientBaseListener {
 open class ClientBase(
   val appContext: Context,
   private val serverUrl: String,
-  private val connectionOptions: ConnectionOptions?
+  private val configurationOptions: ConfigurationOptions?
 ) : PeerConnection.Observer {
   var peerConnectionFactory: PeerConnectionFactory
   var peerConnection: PeerConnection
@@ -76,7 +76,7 @@ open class ClientBase(
     val iceServers =
       listOf(
         PeerConnection.IceServer
-          .builder(connectionOptions?.stunServerUrl ?: "stun:stun.l.google.com:19302")
+          .builder(configurationOptions?.stunServerUrl ?: "stun:stun.l.google.com:19302")
           .createIceServer()
       )
 
@@ -127,7 +127,7 @@ open class ClientBase(
           .post(sdpOffer.toRequestBody())
           .header("Accept", "application/sdp")
           .header("Content-Type", "application/sdp")
-          .header("Authorization", "Bearer " + connectionOptions?.authToken)
+          .header("Authorization", "Bearer " + configurationOptions?.authToken)
           .build()
 
       client.newCall(request).enqueue(

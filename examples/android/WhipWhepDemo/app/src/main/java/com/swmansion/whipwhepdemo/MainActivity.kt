@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.mobilewhep.client.ConnectionOptions
+import com.mobilewhep.client.ConfigurationOptions
 import com.mobilewhep.client.VideoDevice
 import com.mobilewhep.client.WhepClient
 import com.mobilewhep.client.WhipClient
@@ -136,7 +136,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
       WhepClient(
         appContext = context,
         serverUrl = context.getString(R.string.WHEP_SERVER_URL),
-        connectionOptions = ConnectionOptions(authToken = "example")
+        configurationOptions = ConfigurationOptions(authToken = "example")
       )
     }
 
@@ -148,7 +148,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
           context.getString(
             R.string.WHIP_SERVER_URL
           ),
-        connectionOptions = ConnectionOptions(authToken = "example"),
+        configurationOptions = ConfigurationOptions(authToken = "example"),
         videoDevice =
           deviceName?.let {
             VideoDevice(cameraEnumerator = cameraEnumerator, deviceName = it)

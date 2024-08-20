@@ -1,6 +1,6 @@
 package com.mobilewhep.client
 
-data class ConnectionOptions(
+data class ConfigurationOptions(
   val authToken: String? = null,
   val stunServerUrl: String? = null
 )

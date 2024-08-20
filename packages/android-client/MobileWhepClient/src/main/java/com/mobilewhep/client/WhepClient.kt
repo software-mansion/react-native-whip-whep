@@ -9,11 +9,11 @@ import org.webrtc.SessionDescription
 class WhepClient(
   appContext: Context,
   serverUrl: String,
-  connectionOptions: ConnectionOptions? = null
+  configurationOptions: ConfigurationOptions? = null
 ) : ClientBase(
     appContext,
     serverUrl,
-    connectionOptions
+    configurationOptions
   ) {
   /**
    * Connects the client to the WHEP server using WebRTC Peer Connection.

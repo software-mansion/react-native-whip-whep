@@ -16,12 +16,12 @@ import java.util.UUID
 class WhipClient(
   appContext: Context,
   serverUrl: String,
-  connectionOptions: ConnectionOptions? = null,
+  configurationOptions: ConfigurationOptions? = null,
   private var videoDevice: VideoDevice? = null
 ) : ClientBase(
     appContext,
     serverUrl,
-    connectionOptions
+    configurationOptions
   ) {
   override var videoTrack: VideoTrack? = null
   private var videoCapturer: VideoCapturer? = null

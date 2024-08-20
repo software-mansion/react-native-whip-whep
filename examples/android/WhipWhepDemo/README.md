@@ -33,7 +33,7 @@ val whepClient = remember {
   WhepClient(
     appContext = context,
     serverUrl = context.getString(R.string.WHEP_SERVER_URL),
-    connectionOptions = ConnectionOptions(authToken = "example")
+    configurationOptions = ConfigurationOptions(authToken = "example")
   )
 }
 ```
@@ -71,7 +71,7 @@ val whipClient = remember {
   WhipClient(
     appContext = context,
     serverUrl = context.getString(R.string.WHIP_SERVER_URL),
-    connectionOptions = ConnectionOptions(authToken = "example"),
+    configurationOptions = ConfigurationOptions(authToken = "example"),
     videoDevice = deviceName?.let {
         VideoDevice(
             cameraEnumerator = cameraEnumerator,
