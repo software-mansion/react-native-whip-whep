@@ -49,7 +49,7 @@ open class ClientBase(
   val eglBase = EglBase.create()
 
   private var patchEndpoint: String? = null
-  val iceCandidates = mutableListOf<IceCandidate>()
+  protected val iceCandidates = mutableListOf<IceCandidate>()
 
   private val client = OkHttpClient()
 
