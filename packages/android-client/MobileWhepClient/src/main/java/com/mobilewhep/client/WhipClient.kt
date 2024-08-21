@@ -18,7 +18,7 @@ import java.util.UUID
 class WhipClient(
   appContext: Context,
   serverUrl: String,
-  configurationOptions: ConfigurationOptions? = null,
+  var configurationOptions: ConfigurationOptions? = null,
   private var videoDevice: String? = null
 ) : ClientBase(
     appContext,
@@ -61,7 +61,17 @@ class WhipClient(
       peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
     val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
     videoCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
-    videoCapturer.startCapture(1024, 720, 30)
+    try {
+      videoCapturer.startCapture(
+        configurationOptions?.videoSize?.width ?: VideoSize.HD.width,
+        configurationOptions?.videoSize?.height ?: VideoSize.HD.height,
+        configurationOptions?.videoSize?.frameRate ?: VideoSize.HD.frameRate
+      )
+    } catch (e: Exception) {
+      throw CaptureDeviceError.VideoSizeNotSupported(
+        "VideoSize ${configurationOptions?.videoSize} is not supported by this device. Consider switching to another preset."
+      )
+    }
     val videoTrack: VideoTrack = peerConnectionFactory.createVideoTrack(videoTrackId, videoSource)
 
     this.videoSource = videoSource
