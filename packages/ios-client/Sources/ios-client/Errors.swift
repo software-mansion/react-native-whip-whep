@@ -1,4 +1,4 @@
-public enum AVCaptureDeviceError: Error {
+public enum CaptureDeviceError: Error {
     case VideoDeviceNotAvailable(description: String)
 }
 

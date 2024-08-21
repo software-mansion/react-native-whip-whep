@@ -11,7 +11,7 @@ public class WhipClient: ClientBase {
 
         do {
             try setUpVideoAndAudioDevices()
-        } catch let error as AVCaptureDeviceError {
+        } catch let error as CaptureDeviceError {
             switch error {
             case .VideoDeviceNotAvailable(let description):
                 print(description)
@@ -91,7 +91,7 @@ public class WhipClient: ClientBase {
     */
     private func setUpVideoAndAudioDevices() throws {
         guard let videoDevice = self.videoDevice else {
-            throw AVCaptureDeviceError.VideoDeviceNotAvailable(
+            throw CaptureDeviceError.VideoDeviceNotAvailable(
                 description: "Video device not found. Check if it can be accessed and passed to the constructor.")
         }
 
