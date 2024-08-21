@@ -51,3 +51,11 @@ sealed class PermissionError(
     description: String
   ) : PermissionError(description)
 }
+
+sealed class ConfigurationOptionsError(
+  private val description: String
+) : Throwable(description) {
+  class WrongCaptureDeviceConfiguration(
+    description: String
+  ) : ConfigurationOptionsError(description)
+}
