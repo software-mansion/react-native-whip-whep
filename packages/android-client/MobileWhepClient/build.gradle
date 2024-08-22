@@ -74,5 +74,6 @@ dependencies {
   debugImplementation libs.androidx.ui.test.manifest
   api libs.webrtc
   implementation libs.okhttp
+  implementation 'com.google.code.gson:gson:2.9.0'
 
 }
