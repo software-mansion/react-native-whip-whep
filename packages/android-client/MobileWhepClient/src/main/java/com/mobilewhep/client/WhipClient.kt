@@ -38,7 +38,6 @@ class WhipClient(
    * Gets the video and audio devices, prepares them, starts capture and adds it to the Peer Connection.
    *
    * @throws CaptureDeviceError.VideoDeviceNotAvailable if there is no video device.
-   * @throws ConfigurationOptionsError.WrongCaptureDeviceConfiguration if both audioOnly and videoOnly is set to true.
    */
   private fun setUpVideoAndAudioDevices() {
     if (videoDevice == null) {

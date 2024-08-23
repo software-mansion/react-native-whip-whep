@@ -22,8 +22,6 @@ class WhepClient(
    * @throws SessionNetworkError.ConfigurationError if the stunServerUrl parameter
    *  of the initial configuration is incorrect, which leads to peerConnection being nil
    *  or in any other case where there has been an error in creating the peerConnection
-   * @throws ConfigurationOptionsError.WrongCaptureDeviceConfiguration if both audioOnly
-   * and `videoOnly is set to true.
    */
   public suspend fun connect() {
     var audioEnabled = configurationOptions?.audioEnabled ?: true
