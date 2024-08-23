@@ -4,7 +4,6 @@ import os
 public class WhipClient: ClientBase {
     var videoCapturer: RTCCameraVideoCapturer?
     var videoSource: RTCVideoSource?
-    var audioDevice: AVCaptureDevice?
     var videoDevice: AVCaptureDevice?
 
     override func setUpPeerConnection() {
@@ -12,10 +11,9 @@ public class WhipClient: ClientBase {
 
         do {
             try setUpVideoAndAudioDevices()
-        } catch let error as AVCaptureDeviceError {
+        } catch let error as CaptureDeviceError {
             switch error {
-            case .AudioDeviceNotAvailable(let description),
-                .VideoDeviceNotAvailable(let description):
+            case .VideoDeviceNotAvailable(let description):
                 print(description)
             }
         } catch {
@@ -28,16 +26,14 @@ public class WhipClient: ClientBase {
 
     - Parameter serverUrl: A URL of the WHIP server.
     - Parameter configurationOptions: Additional configuration options, such as a STUN server URL or authorization token.
-    - Parameter audioDevice: A device that will be used to stream audio.
     - Parameter videoDevice: A device that will be used to stream video.
 
     - Returns: A `WhipClient` object.
     */
     public init(
         serverUrl: URL, configurationOptions: ConfigurationOptions? = nil,
-        audioDevice: AVCaptureDevice? = nil, videoDevice: AVCaptureDevice? = nil
+        videoDevice: AVCaptureDevice? = nil
     ) {
-        self.audioDevice = audioDevice
         self.videoDevice = videoDevice
         super.init(serverUrl: serverUrl, configurationOptions: configurationOptions)
         setUpPeerConnection()
@@ -91,15 +87,11 @@ public class WhipClient: ClientBase {
     /**
     Gets the video and audio devices, prepares them, starts capture and adds it to the Peer Connection.
 
-    - Throws: `AVCaptureDeviceError.AudioDeviceNotAvailable` if no audio device has been passed to the initializer and `AVCaptureDeviceError.VideoDeviceNotAvailable` if there is no video device.
+    - Throws: `AVCaptureDeviceError.VideoDeviceNotAvailable` if there is no video device available.
     */
     private func setUpVideoAndAudioDevices() throws {
-        guard let audioDevice = self.audioDevice else {
-            throw AVCaptureDeviceError.AudioDeviceNotAvailable(
-                description: "Audio device not found. Check if it can be accessed and passed to the constructor.")
-        }
         guard let videoDevice = self.videoDevice else {
-            throw AVCaptureDeviceError.VideoDeviceNotAvailable(
+            throw CaptureDeviceError.VideoDeviceNotAvailable(
                 description: "Video device not found. Check if it can be accessed and passed to the constructor.")
         }
 
