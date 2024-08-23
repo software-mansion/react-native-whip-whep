@@ -4,7 +4,6 @@
 ///         - dimensions: Dimensions (width x height) of the captured video
 ///         - maxBandwidth: maximal bandwith the video track can use. Defaults to 0 which is unlimited.
 ///         - maxFps: maximal captured frames per second
-///         - simulcastConfig: Simulcast configuration used for the video track
 ///
 ///  Contains a set of useful presets.
 public struct VideoParameters {
@@ -108,15 +107,13 @@ public struct VideoParameters {
     public let dimensions: Dimensions
     public let maxBandwidth: TrackBandwidthLimit
     public let maxFps: Int
-    public let simulcastConfig: SimulcastConfig
 
     public init(
         dimensions: Dimensions, maxBandwidth: TrackBandwidthLimit = .BandwidthLimit(0),
-        maxFps: Int = 30, simulcastConfig: SimulcastConfig = SimulcastConfig()
+        maxFps: Int = 30
     ) {
         self.dimensions = dimensions
         self.maxBandwidth = maxBandwidth
         self.maxFps = maxFps
-        self.simulcastConfig = simulcastConfig
     }
 }
