@@ -15,7 +15,8 @@ public class WhipClient: ClientBase {
         } catch let error as AVCaptureDeviceError {
             switch error {
             case .AudioDeviceNotAvailable(let description),
-                .VideoDeviceNotAvailable(let description):
+                .VideoDeviceNotAvailable(let description),
+                .VideoSizeNotSupported(let description):
                 print(description)
             }
         } catch {
