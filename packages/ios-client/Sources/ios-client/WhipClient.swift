@@ -113,7 +113,8 @@ public class WhipClient: ClientBase {
         let videoTrack = peerConnectionFactory!.videoTrack(with: videoSource, trackId: videoTrackId)
         videoTrack.isEnabled = true
         if configurationOptions != nil && configurationOptions?.videoParameters != nil {
-            let (format, fps) = setVideoSize(device: videoDevice, videoParameters: (configurationOptions?.videoParameters)!)
+            let (format, fps) = setVideoSize(
+                device: videoDevice, videoParameters: (configurationOptions?.videoParameters)!)
 
             videoCapturer.startCapture(with: videoDevice, format: format, fps: fps) { error in
                 if let error = error {

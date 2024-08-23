@@ -64,11 +64,13 @@ class WhipClient(
     val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
     videoCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
 
-
-    if(configurationOptions != null && configurationOptions?.videoParameters != null){
-      val videoSize = setVideoSize(cameraEnumerator, videoDevice!!,
-        configurationOptions?.videoParameters!!
-      )
+    if (configurationOptions != null && configurationOptions?.videoParameters != null) {
+      val videoSize =
+        setVideoSize(
+          cameraEnumerator,
+          videoDevice!!,
+          configurationOptions?.videoParameters!!
+        )
       try {
         videoCapturer.startCapture(
           videoSize!!.width,
@@ -80,10 +82,13 @@ class WhipClient(
           "VideoSize ${configurationOptions?.videoParameters} is not supported by this device. Consider switching to another preset."
         )
       }
-    }  else{
-      val videoSize = setVideoSize(cameraEnumerator, videoDevice!!,
-        VideoParameters.presetHD43
-      )
+    } else {
+      val videoSize =
+        setVideoSize(
+          cameraEnumerator,
+          videoDevice!!,
+          VideoParameters.presetHD43
+        )
       try {
         videoCapturer.startCapture(
           videoSize!!.width,
@@ -168,7 +173,11 @@ class WhipClient(
     }
   }
 
-  private fun setVideoSize(enumerator: CameraEnumerator, deviceName: String, videoParameters: VideoParameters): Size? {
+  private fun setVideoSize(
+    enumerator: CameraEnumerator,
+    deviceName: String,
+    videoParameters: VideoParameters
+  ): Size? {
     val sizes =
       enumerator
         .getSupportedFormats(deviceName)

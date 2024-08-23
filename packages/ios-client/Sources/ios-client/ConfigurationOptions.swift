@@ -6,7 +6,8 @@ public struct ConfigurationOptions {
     let videoParameters: VideoParameters?
 
     public init(
-        authToken: String? = nil, stunServerUrl: String? = nil, videoParameters: VideoParameters? = VideoParameters.presetHD43
+        authToken: String? = nil, stunServerUrl: String? = nil,
+        videoParameters: VideoParameters? = VideoParameters.presetHD43
     ) {
         self.authToken = authToken
         self.stunServerUrl = stunServerUrl
