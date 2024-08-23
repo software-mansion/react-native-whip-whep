@@ -31,19 +31,29 @@ public class WhepClient: ClientBase {
             throw SessionNetworkError.ConfigurationError(
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")
         }
-        
-        if (configurationOptions != nil && configurationOptions!.audioOnly == true && configurationOptions?.videoOnly == true){
-            throw ConfigurationOptionsError.WrongCaptureDeviceConfiguration(description: "Wrong initial configuration. Either audioOnly or videoOnly should be set to false.")
+
+        var audioEnabled = true
+        var videoEnabled = true
+
+        if let configOptions = configurationOptions {
+            audioEnabled = configOptions.audioEnabled
+            videoEnabled = configOptions.videoEnabled
+
+            if !audioEnabled && !videoEnabled {
+                logger.warning(
+                    "Both audioEnabled and videoEnabled are set to false, what will result in no stream at all. Consider changing one of the options to true."
+                )
+            }
         }
 
         var error: NSError?
-        
-        if((configurationOptions != nil) && !configurationOptions!.audioOnly){
+
+        if videoEnabled {
             let videoTransceiver = peerConnection!.addTransceiver(of: .video)!
             videoTransceiver.setDirection(.recvOnly, error: &error)
         }
-        
-        if((configurationOptions != nil) && !configurationOptions!.videoOnly){
+
+        if audioEnabled {
             let audioTransceiver = peerConnection!.addTransceiver(of: .audio)!
             audioTransceiver.setDirection(.recvOnly, error: &error)
         }

@@ -88,24 +88,28 @@ public class WhipClient: ClientBase {
     Gets the video and audio devices, prepares them, starts capture and adds it to the Peer Connection.
 
     - Throws: `AVCaptureDeviceError.AudioDeviceNotAvailable` if no audio device has been passed to the initializer and `AVCaptureDeviceError.VideoDeviceNotAvailable` if there is no video device.
-     `ConfigurationOptionsError.WrongCaptureDeviceConfiguration` if both `audioOnly` and `videoOnly` is set to true.
     */
     private func setUpVideoAndAudioDevices() throws {
-        if (configurationOptions != nil && configurationOptions!.audioOnly == true && configurationOptions?.videoOnly == true){
-            throw ConfigurationOptionsError.WrongCaptureDeviceConfiguration(description: "Wrong initial configuration. Either audioOnly or videoOnly should be set to false.")
+        var audioEnabled = true
+        var videoEnabled = true
 
-    
-        guard let videoDevice = self.videoDevice else {
-            throw CaptureDeviceError.VideoDeviceNotAvailable(
-                description: "Video device not found. Check if it can be accessed and passed to the constructor.")
+        if let configOptions = configurationOptions {
+            audioEnabled = configOptions.audioEnabled
+            videoEnabled = configOptions.videoEnabled
+
+            if !audioEnabled && !videoEnabled {
+                logger.warning(
+                    "Both audioEnabled and videoEnabled are set to false, what will result in no stream at all. Consider changing one of the options to true."
+                )
+            }
         }
-        
+
         let sendEncodings = [RTCRtpEncodingParameters.create(active: true)]
         let localStreamId = UUID().uuidString
-        
-        if ((configurationOptions != nil) && !configurationOptions!.audioOnly) {
+
+        if videoEnabled {
             guard let videoDevice = self.videoDevice else {
-                throw AVCaptureDeviceError.VideoDeviceNotAvailable(
+                throw CaptureDeviceError.VideoDeviceNotAvailable(
                     description: "Video device not found. Check if it can be accessed and passed to the constructor.")
             }
 
@@ -128,23 +132,21 @@ public class WhipClient: ClientBase {
                     }
                 }
             }
-            
+
             let transceiverInit = RTCRtpTransceiverInit()
             transceiverInit.direction = RTCRtpTransceiverDirection.sendOnly
             transceiverInit.streamIds = [localStreamId]
             transceiverInit.sendEncodings = sendEncodings
             peerConnection?.addTransceiver(with: videoTrack, init: transceiverInit)
 
-            
             self.videoTrack = videoTrack
         }
-        
-        
-        if ((configurationOptions != nil) && !configurationOptions!.videoOnly) {
+
+        if audioEnabled {
             let audioTrackId = UUID().uuidString
             let audioSource = self.peerConnectionFactory!.audioSource(with: nil)
             let audioTrack = self.peerConnectionFactory!.audioTrack(with: audioSource, trackId: audioTrackId)
-            
+
             let audioTransceiverInit = RTCRtpTransceiverInit()
             audioTransceiverInit.direction = RTCRtpTransceiverDirection.sendOnly
             audioTransceiverInit.streamIds = [localStreamId]
@@ -152,7 +154,5 @@ public class WhipClient: ClientBase {
             peerConnection?.enforceSendOnlyDirection()
         }
 
-        }
     }
 }
-

@@ -14,7 +14,3 @@ public enum SessionNetworkError: Error {
     case ConnectionError(description: String)
     case ConfigurationError(description: String)
 }
-
-public enum ConfigurationOptionsError: Error {
-    case WrongCaptureDeviceConfiguration(description: String)
-}
