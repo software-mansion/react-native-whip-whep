@@ -1,6 +1,7 @@
 package com.mobilewhep.client
 
 import android.content.Context
+import android.util.Log
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStreamTrack
 import org.webrtc.RtpTransceiver
@@ -25,18 +26,22 @@ class WhepClient(
    * and `videoOnly is set to true.
    */
   public suspend fun connect() {
-    if (configurationOptions != null && configurationOptions.audioOnly == true && configurationOptions.videoOnly == true) {
-      throw ConfigurationOptionsError.WrongCaptureDeviceConfiguration(
-        "Wrong initial configuration. Either audioOnly or videoOnly should be set to false."
+    var audioEnabled = configurationOptions?.audioEnabled ?: true
+    var videoEnabled = configurationOptions?.videoEnabled ?: true
+
+    if (!audioEnabled && !videoEnabled) {
+      Log.d(
+        TAG,
+        "Both audioEnabled and videoEnabled is set to false, which will result in no stream at all. Consider changing one of the options to true."
       )
     }
 
-    if (configurationOptions != null && !configurationOptions.audioOnly!!) {
+    if (videoEnabled) {
       peerConnection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO).direction =
         RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
     }
 
-    if (configurationOptions != null && !configurationOptions.videoOnly!!) {
+    if (audioEnabled) {
       peerConnection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO).direction =
         RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
     }

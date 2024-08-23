@@ -1,6 +1,7 @@
 package com.mobilewhep.client
 
 import android.content.Context
+import android.util.Log
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraEnumerator
@@ -44,14 +45,19 @@ class WhipClient(
       throw CaptureDeviceError.VideoDeviceNotAvailable("Video device not found. Check if it can be accessed and passed to the constructor.")
     }
 
-    if (configurationOptions != null && configurationOptions.audioOnly!! && configurationOptions.videoOnly!!) {
-      throw ConfigurationOptionsError.WrongCaptureDeviceConfiguration(
-        "Wrong initial configuration. Either audioOnly or videoOnly should be set to false."
+    var audioEnabled = configurationOptions?.audioEnabled ?: true
+    var videoEnabled = configurationOptions?.videoEnabled ?: true
+
+    if (!audioEnabled && !videoEnabled) {
+      Log.d(
+        TAG,
+        "Both audioEnabled and videoEnabled is set to false, which will result in no stream at all. Consider changing one of the options to true."
       )
     }
+
     val direction = RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
 
-    if (configurationOptions != null && !configurationOptions.audioOnly!!) {
+    if (videoEnabled) {
       val videoTrackId = UUID.randomUUID().toString()
 
       val cameraEnumerator: CameraEnumerator =
@@ -83,7 +89,7 @@ class WhipClient(
       this.videoTrack = videoTrack
     }
 
-    if (configurationOptions != null && !configurationOptions.videoOnly!!) {
+    if (audioEnabled) {
       val audioTrackId = UUID.randomUUID().toString()
       val audioSource = this.peerConnectionFactory.createAudioSource(MediaConstraints())
       val audioTrack = this.peerConnectionFactory.createAudioTrack(audioTrackId, audioSource)
