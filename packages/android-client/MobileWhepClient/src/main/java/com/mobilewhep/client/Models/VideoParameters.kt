@@ -18,7 +18,7 @@ data class Dimensions(
  */
 public data class VideoParameters(
   val dimensions: Dimensions,
-  val maxBitrate: TrackBandwidthLimit,
+  val maxBitrate: BandwidthLimit,
   val maxFps: Int
 ) {
   companion object {
@@ -26,31 +26,31 @@ public data class VideoParameters(
     val presetQVGA43 =
       VideoParameters(
         dimensions = Dimensions(width = 240, height = 180),
-        maxBitrate = TrackBandwidthLimit.BandwidthLimit(90),
+        maxBitrate = 90,
         maxFps = 10
       )
     val presetVGA43 =
       VideoParameters(
         dimensions = Dimensions(width = 480, height = 360),
-        maxBitrate = TrackBandwidthLimit.BandwidthLimit(225),
+        maxBitrate = 225,
         maxFps = 20
       )
     val presetQHD43 =
       VideoParameters(
         dimensions = Dimensions(width = 720, height = 540),
-        maxBitrate = TrackBandwidthLimit.BandwidthLimit(450),
+        maxBitrate = 450,
         maxFps = 25
       )
     val presetHD43 =
       VideoParameters(
         dimensions = Dimensions(width = 960, height = 720),
-        maxBitrate = TrackBandwidthLimit.BandwidthLimit(1_500),
+        maxBitrate = 1_500,
         maxFps = 30
       )
     val presetFHD43 =
       VideoParameters(
         dimensions = Dimensions(width = 1440, height = 1080),
-        maxBitrate = TrackBandwidthLimit.BandwidthLimit(2_800),
+        maxBitrate = 2_800,
         maxFps = 30
       )
 
@@ -58,31 +58,31 @@ public data class VideoParameters(
     val presetQVGA169 =
       VideoParameters(
         dimensions = Dimensions(width = 320, height = 180),
-        maxBitrate = TrackBandwidthLimit.BandwidthLimit(120),
+        maxBitrate = 120,
         maxFps = 10
       )
     val presetVGA169 =
       VideoParameters(
         dimensions = Dimensions(width = 640, height = 360),
-        maxBitrate = TrackBandwidthLimit.BandwidthLimit(300),
+        maxBitrate = 300,
         maxFps = 20
       )
     val presetQHD169 =
       VideoParameters(
         dimensions = Dimensions(width = 960, height = 540),
-        maxBitrate = TrackBandwidthLimit.BandwidthLimit(600),
+        maxBitrate = 600,
         maxFps = 25
       )
     val presetHD169 =
       VideoParameters(
         dimensions = Dimensions(width = 1280, height = 720),
-        maxBitrate = TrackBandwidthLimit.BandwidthLimit(2_000),
+        maxBitrate = 2_000,
         maxFps = 30
       )
     val presetFHD169 =
       VideoParameters(
         dimensions = Dimensions(width = 1920, height = 1080),
-        maxBitrate = TrackBandwidthLimit.BandwidthLimit(3_000),
+        maxBitrate = 3_000,
         maxFps = 30
       )
 
@@ -90,31 +90,31 @@ public data class VideoParameters(
     val presetScreenShareVGA =
       VideoParameters(
         dimensions = Dimensions(width = 640, height = 360),
-        maxBitrate = TrackBandwidthLimit.BandwidthLimit(200),
+        maxBitrate = 200,
         maxFps = 3
       )
     val presetScreenShareHD5 =
       VideoParameters(
         dimensions = Dimensions(width = 1280, height = 720),
-        maxBitrate = TrackBandwidthLimit.BandwidthLimit(400),
+        maxBitrate = 400,
         maxFps = 5
       )
     val presetScreenShareHD15 =
       VideoParameters(
         dimensions = Dimensions(width = 1280, height = 720),
-        maxBitrate = TrackBandwidthLimit.BandwidthLimit(1_000),
+        maxBitrate = 1_000,
         maxFps = 15
       )
     val presetScreenShareFHD15 =
       VideoParameters(
         dimensions = Dimensions(width = 1920, height = 1080),
-        maxBitrate = TrackBandwidthLimit.BandwidthLimit(1_500),
+        maxBitrate = 1_500,
         maxFps = 15
       )
     val presetScreenShareFHD30 =
       VideoParameters(
         dimensions = Dimensions(width = 1920, height = 1080),
-        maxBitrate = TrackBandwidthLimit.BandwidthLimit(3_000),
+        maxBitrate = 3_000,
         maxFps = 30
       )
 
