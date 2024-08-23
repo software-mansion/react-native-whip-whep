@@ -13,15 +13,13 @@ data class Dimensions(
  * @property dimensions: specified width x height of the video
  * @property maxBitrate: specifies maximum bitrate of video stream
  * @property maxFps: specifies maximum frame rate of the video stream
- * @property simulcastConfig: specifies the simulcast configuration, by default it's turned off
  * <p>
  * Contains a set of useful presets.
  */
 public data class VideoParameters(
   val dimensions: Dimensions,
   val maxBitrate: TrackBandwidthLimit,
-  val maxFps: Int,
-  val simulcastConfig: SimulcastConfig = SimulcastConfig()
+  val maxFps: Int
 ) {
   companion object {
     // 4:3 aspect ratio
