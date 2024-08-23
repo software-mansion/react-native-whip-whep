@@ -79,10 +79,10 @@ An iOS device receiving the stream from the server:
 
 ## WHIP
 
-To initialize a WHIP player, `audioDevice` and `videoDevice` should also be passed to `WhipClient` constructor, as it has to be specified which devices will be used for the stream. Here, the default ones have been used. Remember to also check for the access to the camera and microphone, and request it and grant it if necessary.
+To initialize a WHIP player, `videoDevice` should also be passed to `WhipClient` constructor, as it has to be specified which device will be used for the stream. Here, the default one has been used. Remember to also check for the access to the camera and microphone, and request it and grant it if necessary.
 
 ```swift
-var whipPlayer = WhipClient(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, audioDevice: AVCaptureDevice.default(for: .audio), videoDevice: AVCaptureDevice.default(for: .video))
+var whipPlayer = WhipClient(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, videoDevice: AVCaptureDevice.default(for: .video))
 ```
 
 For the connection, the flow is the same as for the WHEP player:
