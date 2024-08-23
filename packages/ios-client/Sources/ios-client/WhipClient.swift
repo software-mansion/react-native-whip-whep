@@ -87,7 +87,7 @@ public class WhipClient: ClientBase {
     /**
     Gets the video and audio devices, prepares them, starts capture and adds it to the Peer Connection.
 
-    - Throws: `AVCaptureDeviceError.AudioDeviceNotAvailable` if no audio device has been passed to the initializer and `AVCaptureDeviceError.VideoDeviceNotAvailable` if there is no video device.
+    - Throws: `AVCaptureDeviceError.VideoDeviceNotAvailable` if there is no video device available.
     */
     private func setUpVideoAndAudioDevices() throws {
         var audioEnabled = true

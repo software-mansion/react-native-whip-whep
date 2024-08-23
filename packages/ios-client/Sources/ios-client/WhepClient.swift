@@ -21,9 +21,8 @@ public class WhepClient: ClientBase {
     Connects the client to the WHEP server using WebRTC Peer Connection.
 
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
-        of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection` or
-     `ConfigurationOptionsError.WrongCaptureDeviceConfiguration` if both `audioOnly` and `videoOnly` is set to true.
-    */
+        of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
+     */
     public func connect() async throws {
         if !self.isConnectionSetUp {
             setUpPeerConnection()
