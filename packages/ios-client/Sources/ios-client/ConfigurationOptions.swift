@@ -8,7 +8,8 @@ public struct ConfigurationOptions {
     let videoEnabled: Bool
 
     public init(
-        authToken: String? = nil, stunServerUrl: String? = nil, audioEnabled: Bool = true, videoEnabled: Bool = true, videoParameters: VideoParameters? = VideoParameters.presetHD43
+        authToken: String? = nil, stunServerUrl: String? = nil, audioEnabled: Bool = true, videoEnabled: Bool = true,
+        videoParameters: VideoParameters? = VideoParameters.presetHD43
     ) {
         self.authToken = authToken
         self.stunServerUrl = stunServerUrl

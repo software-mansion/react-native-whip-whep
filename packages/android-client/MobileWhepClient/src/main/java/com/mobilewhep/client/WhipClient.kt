@@ -46,8 +46,8 @@ class WhipClient(
       throw CaptureDeviceError.VideoDeviceNotAvailable("Video device not found. Check if it can be accessed and passed to the constructor.")
     }
 
-    var audioEnabled = configurationOptions?.audioEnabled ?: true
-    var videoEnabled = configurationOptions?.videoEnabled ?: true
+    val audioEnabled = configurationOptions?.audioEnabled ?: true
+    val videoEnabled = configurationOptions?.videoEnabled ?: true
 
     if (!audioEnabled && !videoEnabled) {
       Log.d(
@@ -78,22 +78,22 @@ class WhipClient(
         peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
       val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
       videoCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
-      if (configurationOptions != null && configurationOptions?.videoParameters != null) {
+      if (configurationOptions?.videoParameters != null) {
         val videoSize =
           setVideoSize(
             cameraEnumerator,
             videoDevice!!,
-            configurationOptions?.videoParameters!!
+            configurationOptions.videoParameters
           )
         try {
           videoCapturer.startCapture(
             videoSize!!.width,
             videoSize.height,
-            configurationOptions?.videoParameters!!.maxFps
+            configurationOptions.videoParameters.maxFps
           )
         } catch (e: Exception) {
           throw CaptureDeviceError.VideoSizeNotSupported(
-            "VideoSize ${configurationOptions?.videoParameters} is not supported by this device. Consider switching to another preset."
+            "VideoSize ${configurationOptions.videoParameters} is not supported by this device. Consider switching to another preset."
           )
         }
       } else {
@@ -111,7 +111,7 @@ class WhipClient(
           )
         } catch (e: Exception) {
           throw CaptureDeviceError.VideoSizeNotSupported(
-            "VideoSize ${configurationOptions?.videoParameters} is not supported by this device. Consider switching to another preset."
+            "VideoSize ${VideoParameters.presetHD43} is not supported by this device. Consider switching to another preset."
           )
         }
       }
@@ -181,7 +181,7 @@ class WhipClient(
     videoSource?.dispose()
   }
 
-  fun PeerConnection.enforceSendOnlyDirection() {
+  private fun PeerConnection.enforceSendOnlyDirection() {
     transceivers.forEach { transceiver ->
       if (transceiver.direction == RtpTransceiver.RtpTransceiverDirection.SEND_RECV) {
         transceiver.direction = RtpTransceiver.RtpTransceiverDirection.SEND_ONLY

@@ -104,7 +104,6 @@ public class WhipClient: ClientBase {
                 )
             }
         }
-        
 
         let sendEncodings = [RTCRtpEncodingParameters.create(active: true)]
         let localStreamId = UUID().uuidString
@@ -125,31 +124,31 @@ public class WhipClient: ClientBase {
             videoTrack.isEnabled = true
 
             if configurationOptions != nil && configurationOptions?.videoParameters != nil {
-            let (format, fps) = setVideoSize(
-                device: videoDevice, videoParameters: (configurationOptions?.videoParameters)!)
+                let (format, fps) = setVideoSize(
+                    device: videoDevice, videoParameters: (configurationOptions?.videoParameters)!)
 
-            videoCapturer.startCapture(with: videoDevice, format: format, fps: fps) { error in
-                if let error = error {
-                    print("Error starting the video capture: \(error)")
-                } else {
-                    print("Video capturing started")
-                    DispatchQueue.main.async {
-                        self.videoTrack = videoTrack
+                videoCapturer.startCapture(with: videoDevice, format: format, fps: fps) { error in
+                    if let error = error {
+                        print("Error starting the video capture: \(error)")
+                    } else {
+                        print("Video capturing started")
+                        DispatchQueue.main.async {
+                            self.videoTrack = videoTrack
+                        }
+                    }
+                }
+            } else {
+                videoCapturer.startCapture(with: videoDevice, format: videoDevice.activeFormat, fps: 30) { error in
+                    if let error = error {
+                        print("Error starting the video capture: \(error)")
+                    } else {
+                        print("Video capturing started")
+                        DispatchQueue.main.async {
+                            self.videoTrack = videoTrack
+                        }
                     }
                 }
             }
-        } else {
-            videoCapturer.startCapture(with: videoDevice, format: videoDevice.activeFormat, fps: 30) { error in
-                if let error = error {
-                    print("Error starting the video capture: \(error)")
-                } else {
-                    print("Video capturing started")
-                    DispatchQueue.main.async {
-                        self.videoTrack = videoTrack
-                    }
-                }
-            }
-        }
 
             let transceiverInit = RTCRtpTransceiverInit()
             transceiverInit.direction = RTCRtpTransceiverDirection.sendOnly
