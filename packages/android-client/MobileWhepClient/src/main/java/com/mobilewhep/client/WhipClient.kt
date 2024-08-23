@@ -1,6 +1,7 @@
 package com.mobilewhep.client
 
 import android.content.Context
+import android.util.Log
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraEnumerator
@@ -18,7 +19,7 @@ import java.util.UUID
 class WhipClient(
   appContext: Context,
   serverUrl: String,
-  configurationOptions: ConfigurationOptions? = null,
+  private val configurationOptions: ConfigurationOptions? = null,
   private var videoDevice: String? = null
 ) : ClientBase(
     appContext,
@@ -37,50 +38,67 @@ class WhipClient(
    * Gets the video and audio devices, prepares them, starts capture and adds it to the Peer Connection.
    *
    * @throws CaptureDeviceError.VideoDeviceNotAvailable if there is no video device.
-   *
    */
   private fun setUpVideoAndAudioDevices() {
     if (videoDevice == null) {
       throw CaptureDeviceError.VideoDeviceNotAvailable("Video device not found. Check if it can be accessed and passed to the constructor.")
     }
-    val videoTrackId = UUID.randomUUID().toString()
 
-    val cameraEnumerator: CameraEnumerator =
-      if (Camera2Enumerator.isSupported(appContext)) {
-        Camera2Enumerator(appContext)
-      } else {
-        Camera1Enumerator(false)
-      }
+    var audioEnabled = configurationOptions?.audioEnabled ?: true
+    var videoEnabled = configurationOptions?.videoEnabled ?: true
 
-    val videoCapturer: CameraVideoCapturer? =
-      videoDevice.let {
-        cameraEnumerator.createCapturer(it, null)
-      }
-
-    val videoSource: VideoSource =
-      peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
-    val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
-    videoCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
-    videoCapturer.startCapture(1024, 720, 30)
-    val videoTrack: VideoTrack = peerConnectionFactory.createVideoTrack(videoTrackId, videoSource)
-
-    this.videoSource = videoSource
-    this.videoCapturer = videoCapturer
-
-    val audioTrackId = UUID.randomUUID().toString()
-    val audioSource = this.peerConnectionFactory.createAudioSource(MediaConstraints())
-    val audioTrack = this.peerConnectionFactory.createAudioTrack(audioTrackId, audioSource)
+    if (!audioEnabled && !videoEnabled) {
+      Log.d(
+        TAG,
+        "Both audioEnabled and videoEnabled is set to false, which will result in no stream at all. " +
+          "Consider changing one of the options to true."
+      )
+    }
 
     val direction = RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
-    val transceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
-    peerConnection.addTransceiver(videoTrack, transceiverInit)
 
-    val audioTransceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
-    peerConnection.addTransceiver(audioTrack, audioTransceiverInit)
+    if (videoEnabled) {
+      val videoTrackId = UUID.randomUUID().toString()
+
+      val cameraEnumerator: CameraEnumerator =
+        if (Camera2Enumerator.isSupported(appContext)) {
+          Camera2Enumerator(appContext)
+        } else {
+          Camera1Enumerator(false)
+        }
+
+      val videoCapturer: CameraVideoCapturer? =
+        videoDevice.let {
+          cameraEnumerator.createCapturer(it, null)
+        }
+
+      val videoSource: VideoSource =
+        peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
+      val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
+      videoCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
+      videoCapturer.startCapture(1024, 720, 30)
+      val videoTrack: VideoTrack = peerConnectionFactory.createVideoTrack(videoTrackId, videoSource)
+
+      this.videoSource = videoSource
+      this.videoCapturer = videoCapturer
+
+      val transceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
+      peerConnection.addTransceiver(videoTrack, transceiverInit)
+
+      videoTrack.setEnabled(true)
+      this.videoTrack = videoTrack
+    }
+
+    if (audioEnabled) {
+      val audioTrackId = UUID.randomUUID().toString()
+      val audioSource = this.peerConnectionFactory.createAudioSource(MediaConstraints())
+      val audioTrack = this.peerConnectionFactory.createAudioTrack(audioTrackId, audioSource)
+
+      val audioTransceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
+      peerConnection.addTransceiver(audioTrack, audioTransceiverInit)
+    }
 
     peerConnection.enforceSendOnlyDirection()
-    videoTrack.setEnabled(true)
-    this.videoTrack = videoTrack
   }
 
   /**

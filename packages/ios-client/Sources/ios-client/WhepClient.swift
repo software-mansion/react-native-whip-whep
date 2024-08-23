@@ -22,7 +22,7 @@ public class WhepClient: ClientBase {
 
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
         of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
-    */
+     */
     public func connect() async throws {
         if !self.isConnectionSetUp {
             setUpPeerConnection()
@@ -31,12 +31,31 @@ public class WhepClient: ClientBase {
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")
         }
 
-        var error: NSError?
-        let videoTransceiver = peerConnection!.addTransceiver(of: .video)!
-        videoTransceiver.setDirection(.recvOnly, error: &error)
+        var audioEnabled = true
+        var videoEnabled = true
 
-        let audioTransceiver = peerConnection!.addTransceiver(of: .audio)!
-        audioTransceiver.setDirection(.recvOnly, error: &error)
+        if let configOptions = configurationOptions {
+            audioEnabled = configOptions.audioEnabled
+            videoEnabled = configOptions.videoEnabled
+
+            if !audioEnabled && !videoEnabled {
+                logger.warning(
+                    "Both audioEnabled and videoEnabled are set to false, what will result in no stream at all. Consider changing one of the options to true."
+                )
+            }
+        }
+
+        var error: NSError?
+
+        if videoEnabled {
+            let videoTransceiver = peerConnection!.addTransceiver(of: .video)!
+            videoTransceiver.setDirection(.recvOnly, error: &error)
+        }
+
+        if audioEnabled {
+            let audioTransceiver = peerConnection!.addTransceiver(of: .audio)!
+            audioTransceiver.setDirection(.recvOnly, error: &error)
+        }
 
         let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
         let offer = try await peerConnection!.offer(for: constraints)

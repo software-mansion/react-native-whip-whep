@@ -90,50 +90,69 @@ public class WhipClient: ClientBase {
     - Throws: `AVCaptureDeviceError.VideoDeviceNotAvailable` if there is no video device available.
     */
     private func setUpVideoAndAudioDevices() throws {
-        guard let videoDevice = self.videoDevice else {
-            throw CaptureDeviceError.VideoDeviceNotAvailable(
-                description: "Video device not found. Check if it can be accessed and passed to the constructor.")
-        }
+        var audioEnabled = true
+        var videoEnabled = true
 
-        let videoSource = peerConnectionFactory!.videoSource()
-        self.videoSource = videoSource
-        let videoCapturer = RTCCameraVideoCapturer(delegate: videoSource)
-        self.videoCapturer = videoCapturer
-        let videoTrackId = UUID().uuidString
+        if let configOptions = configurationOptions {
+            audioEnabled = configOptions.audioEnabled
+            videoEnabled = configOptions.videoEnabled
 
-        let videoTrack = peerConnectionFactory!.videoTrack(with: videoSource, trackId: videoTrackId)
-        videoTrack.isEnabled = true
-
-        videoCapturer.startCapture(with: videoDevice, format: videoDevice.activeFormat, fps: 30) { error in
-            if let error = error {
-                print("Error starting the video capture: \(error)")
-            } else {
-                print("Video capturing started")
-                DispatchQueue.main.async {
-                    self.videoTrack = videoTrack
-                }
+            if !audioEnabled && !videoEnabled {
+                logger.warning(
+                    "Both audioEnabled and videoEnabled are set to false, what will result in no stream at all. Consider changing one of the options to true."
+                )
             }
         }
-
-        let audioTrackId = UUID().uuidString
-        let audioSource = self.peerConnectionFactory!.audioSource(with: nil)
-        let audioTrack = self.peerConnectionFactory!.audioTrack(with: audioSource, trackId: audioTrackId)
 
         let sendEncodings = [RTCRtpEncodingParameters.create(active: true)]
         let localStreamId = UUID().uuidString
 
-        let transceiverInit = RTCRtpTransceiverInit()
-        transceiverInit.direction = RTCRtpTransceiverDirection.sendOnly
-        transceiverInit.streamIds = [localStreamId]
-        transceiverInit.sendEncodings = sendEncodings
-        peerConnection?.addTransceiver(with: videoTrack, init: transceiverInit)
+        if videoEnabled {
+            guard let videoDevice = self.videoDevice else {
+                throw CaptureDeviceError.VideoDeviceNotAvailable(
+                    description: "Video device not found. Check if it can be accessed and passed to the constructor.")
+            }
 
-        let audioTransceiverInit = RTCRtpTransceiverInit()
-        audioTransceiverInit.direction = RTCRtpTransceiverDirection.sendOnly
-        audioTransceiverInit.streamIds = [localStreamId]
-        peerConnection?.addTransceiver(with: audioTrack, init: audioTransceiverInit)
-        peerConnection?.enforceSendOnlyDirection()
+            let videoSource = peerConnectionFactory!.videoSource()
+            self.videoSource = videoSource
+            let videoCapturer = RTCCameraVideoCapturer(delegate: videoSource)
+            self.videoCapturer = videoCapturer
+            let videoTrackId = UUID().uuidString
 
-        self.videoTrack = videoTrack
+            let videoTrack = peerConnectionFactory!.videoTrack(with: videoSource, trackId: videoTrackId)
+            videoTrack.isEnabled = true
+
+            videoCapturer.startCapture(with: videoDevice, format: videoDevice.activeFormat, fps: 30) { error in
+                if let error = error {
+                    print("Error starting the video capture: \(error)")
+                } else {
+                    print("Video capturing started")
+                    DispatchQueue.main.async {
+                        self.videoTrack = videoTrack
+                    }
+                }
+            }
+
+            let transceiverInit = RTCRtpTransceiverInit()
+            transceiverInit.direction = RTCRtpTransceiverDirection.sendOnly
+            transceiverInit.streamIds = [localStreamId]
+            transceiverInit.sendEncodings = sendEncodings
+            peerConnection?.addTransceiver(with: videoTrack, init: transceiverInit)
+
+            self.videoTrack = videoTrack
+        }
+
+        if audioEnabled {
+            let audioTrackId = UUID().uuidString
+            let audioSource = self.peerConnectionFactory!.audioSource(with: nil)
+            let audioTrack = self.peerConnectionFactory!.audioTrack(with: audioSource, trackId: audioTrackId)
+
+            let audioTransceiverInit = RTCRtpTransceiverInit()
+            audioTransceiverInit.direction = RTCRtpTransceiverDirection.sendOnly
+            audioTransceiverInit.streamIds = [localStreamId]
+            peerConnection?.addTransceiver(with: audioTrack, init: audioTransceiverInit)
+            peerConnection?.enforceSendOnlyDirection()
+        }
+
     }
 }
