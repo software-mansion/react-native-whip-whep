@@ -4,28 +4,28 @@ import WebRTC
 
 public class WhipWhepViewModel: ObservableObject, PlayerListener {
     @Published public var videoTrack: RTCVideoTrack?
-        
+
     public var player: Connectable & ClientBase
 
     public init(player: Connectable & ClientBase) {
         self.player = player
         player.delegate = self
     }
-    
+
     public func onTrackAdded(track: RTCVideoTrack) {
         videoTrack = track
     }
-    
+
     public func onTrackRemoved(track: RTCVideoTrack) {
         if videoTrack == track {
             videoTrack = nil
         }
     }
-    
+
     public func connect() async throws {
         try await player.connect()
     }
-    
+
     public func disconnect() {
         player.disconnect()
     }
@@ -33,7 +33,7 @@ public class WhipWhepViewModel: ObservableObject, PlayerListener {
 
 public struct WhipWhepView: UIViewRepresentable {
     public var videoTrack: RTCVideoTrack?
-    
+
     public init(videoTrack: RTCVideoTrack?) {
         self.videoTrack = videoTrack
     }
