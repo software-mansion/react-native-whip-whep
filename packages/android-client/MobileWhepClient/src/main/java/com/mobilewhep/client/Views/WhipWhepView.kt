@@ -27,7 +27,7 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-const val TAG = "WhipWhepView"
+const val VIEW_TAG = "WHIP/WHEP View"
 
 class WhipWhepView :
   TextureView,
@@ -219,7 +219,7 @@ class WhipWhepView :
       videoLayoutMeasure.measure(widthSpec, heightSpec, rotatedFrameWidth, rotatedFrameHeight)
     setMeasuredDimension(size.x, size.y)
 
-    Log.d(CLIENT_TAG, "onMeasure() New size: ${size.x}x${size.y}")
+    Log.d(VIEW_TAG, "onMeasure() New size: ${size.x}x${size.y}")
   }
 
   override fun onLayout(
@@ -243,7 +243,7 @@ class WhipWhepView :
     eglRenderer.setLayoutAspectRatio(aspectRatio)
     updateSurfaceSize()
 
-    Log.d(CLIENT_TAG, "onLayout() aspect ratio $aspectRatio")
+    Log.d(VIEW_TAG, "onLayout() aspect ratio $aspectRatio")
   }
 
   private fun updateSurfaceSize() {
@@ -279,7 +279,7 @@ class WhipWhepView :
       }
 
       Log.d(
-        CLIENT_TAG,
+        VIEW_TAG,
         "updateSurfaceSize() " +
           "layout size: ${getWidth()} x ${getHeight()}, " +
           "frame size: $rotatedFrameWidth x $rotatedFrameHeight, " +
@@ -325,7 +325,7 @@ class WhipWhepView :
     val yoff = (viewHeight - newHeight) / 2
 
     Log.d(
-      CLIENT_TAG,
+      VIEW_TAG,
       "video=$videoWidth x $videoHeight view=$viewWidth x $viewHeight" +
         " newView=$newWidth x $newHeight off=$xoff,$yoff"
     )
@@ -379,7 +379,7 @@ class WhipWhepView :
   ) {
     ThreadUtils.checkIsOnMainThread()
 
-    Log.d(CLIENT_TAG, "surfaceChanged: size: $width x $height")
+    Log.d(VIEW_TAG, "surfaceChanged: size: $width x $height")
   }
 
   override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
@@ -411,7 +411,7 @@ class WhipWhepView :
     videoHeight: Int,
     rotation: Int
   ) {
-    Log.d(CLIENT_TAG, "Resolution changed to $videoWidth x $videoHeight with rotation of $rotation")
+    Log.d(VIEW_TAG, "Resolution changed to $videoWidth x $videoHeight with rotation of $rotation")
     rendererEvents?.onFrameResolutionChanged(videoWidth, videoHeight, rotation)
 
     val rotatedWidth = if (rotation == 0 || rotation == 180) videoWidth else videoHeight

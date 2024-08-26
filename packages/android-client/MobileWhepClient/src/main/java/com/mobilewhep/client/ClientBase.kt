@@ -33,7 +33,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-internal const val CLIENT_TAG = "ClientBase"
+internal const val CLIENT_TAG = "WHIP/WHEP Client"
 
 interface ClientBaseListener {
   fun onTrackAdded(track: VideoTrack)
