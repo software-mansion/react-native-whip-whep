@@ -39,6 +39,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.mobilewhep.client.ConfigurationOptions
+import com.mobilewhep.client.Views.WhipWhepView
 import com.mobilewhep.client.WhepClient
 import com.mobilewhep.client.WhipClient
 import com.swmansion.whipwhepdemo.ui.theme.WhipWhepDemoTheme
@@ -152,12 +153,12 @@ fun PlayerView(modifier: Modifier = Modifier) {
       )
     }
 
-  var whipView: ClientView? =
+  var whipView: WhipWhepView? =
     remember {
       null
     }
 
-  var view: ClientView? =
+  var view: WhipWhepView? =
     remember {
       null
     }
@@ -199,7 +200,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
     Box {
       AndroidView(
         factory = { ctx ->
-          ClientView(ctx).apply {
+          WhipWhepView(ctx).apply {
             player = whepPlayer
             this.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
             this.setEnableHardwareScaler(true)
@@ -247,7 +248,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
     ) {
       AndroidView(
         factory = { ctx ->
-          ClientView(ctx).apply {
+          WhipWhepView(ctx).apply {
             player = whipPlayer
           }
         },

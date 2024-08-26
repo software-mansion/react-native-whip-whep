@@ -1,4 +1,4 @@
-package com.swmansion.whipwhepdemo
+package com.mobilewhep.client.Views
 
 import android.content.Context
 import android.content.res.Resources
@@ -29,9 +29,9 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-const val TAG = "ClientView"
+const val TAG = "WhipWhepView"
 
-class ClientView :
+class WhipWhepView :
   TextureView,
   SurfaceHolder.Callback,
   SurfaceTextureListener,
