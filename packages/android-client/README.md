@@ -4,14 +4,15 @@ An implementation of WHIP and WHEP protocols for Android. Provides basic methods
 
 ## Components
 
-The repository consists of 7 components:
+The repository consists of 7 main components:
 
 - `WhepClient` - a class that handles WHEP connection and receiving media stream,
 - `WhipClient` - a class that handles WHIP connection and sending media stream,
 - `ClientBase` - provides methods that are shared by both players,
-- `ConfigurationOptions` - a structure that holds optional initial connection configuration options, like STUN server URL, authorization token or stream limitations, for example sending only audio or video track.
+- `ConfigurationOptions` - a structure that holds optional initial connection configuration options, like STUN server URL, authorization token or stream limitations, for example sending only audio or video track,
 - `Errors` - contains all the errors that can be thrown by the package,
-- `SuspendableSdpObserver` - implements the SdpObserver interface used by the WebRTC library.
+- `SuspendableSdpObserver` - implements the SdpObserver interface used by the WebRTC library,
+- `WhipWhepView` - provides a basic view for WHIP camera/WHEP player.
 
 ## Examples
 

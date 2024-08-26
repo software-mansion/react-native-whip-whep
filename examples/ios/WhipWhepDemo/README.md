@@ -42,27 +42,38 @@ The created configuration has to be added to target. After clicking on the `Whip
 
 ## WHEP
 
-In order to initialize a player, an instance of a `WhepClient` has to be created using a server URL. One can provide here some optional configuration, such as authorization token or STUN server address if necessary.
+In order to initialize a player, an instance of a `WhepClient` has to be created using a server URL. One can provide here some optional configuration, such as authorization token or STUN server address if necessary. In the example app, MVVM architecture along with SwiftUI is used.
 
 ```swift
-var whepPlayer = WhepClient(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhepServerUrl"] as? String ?? "")")!)
+@StateObject var whepPlayerViewModel = WhipWhepViewModel(
+    player: WhepClient(
+        serverUrl: URL(
+            string: "\(Bundle.main.infoDictionary?["WhepServerUrl"] as? String ?? "")"
+        )!
+    ),
+    configurationOptions: ConfigurationOptions(
+        authToken: "example"
+    )
+)
 ```
 
 After creating a player, all that has to be done is to invoke the `connect` method:
 
 ```swift
-do {
-    try await whepPlayer.connect()
-} catch is SessionNetworkError {
-    print("Session Network Error")
+Task {
+    do {
+        try await whepPlayerViewModel.connect()
+    } catch is SessionNetworkError{
+        print("Session Network Error")
+    }
 }
 ```
 
-And display the stream, using `RTCMTLVideoView`:
+And display the stream, using `WhipWhepView`:
 
 ```swift
-if let videoTrack = whepPlayer.videoTrack {
-    WebRTCVideoView(videoTrack: videoTrack)
+if let videoTrack = whepPlayerViewModel.videoTrack {
+    WhipWhepView(videoTrack: videoTrack)
         .frame(width: 200, height: 200)
 }
 ```
@@ -82,16 +93,28 @@ An iOS device receiving the stream from the server:
 To initialize a WHIP player, `videoDevice` should also be passed to `WhipClient` constructor, as it has to be specified which device will be used for the stream. Here, the default one has been used. Remember to also check for the access to the camera and microphone, and request it and grant it if necessary.
 
 ```swift
-var whipPlayer = WhipClient(serverUrl: URL(string: "http://\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, videoDevice: AVCaptureDevice.default(for: .video))
+@StateObject var whipPlayerViewModel = WhipWhepViewModel(
+    player: WhipClient(
+        serverUrl: URL(
+            string: "\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")"
+        )!,
+        configurationOptions: ConfigurationOptions(
+            authToken: "example"
+        ),
+        videoDevice: AVCaptureDevice.default(for: .video)
+    )
+)
 ```
 
 For the connection, the flow is the same as for the WHEP player:
 
 ```swift
-do {
-    try await whipPlayer.connect()
-} catch is SessionNetworkError {
-    print("Session Network Error")
+Task {
+    do {
+        try await whipPlayerViewModel.connect()
+    } catch is SessionNetworkError {
+        print("Session Network Error")
+    }
 }
 ```
 

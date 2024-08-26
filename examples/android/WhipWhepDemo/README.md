@@ -44,12 +44,18 @@ After creating a player, all that has to be done is to invoke the `connect` meth
 whepClient.connect()
 ```
 
-And display the stream using EGL:
+And display the stream using provided `WhipWhepView`:
 
 ```kotlin
-override fun onTrackAdded(track: VideoTrack) {
-  track.addSink(this)
-}
+AndroidView(
+  factory = { ctx ->
+    WhipWhepView(ctx).apply {
+      player = whepPlayer
+      this.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
+      this.setEnableHardwareScaler(true)
+    }
+  }
+)
 ```
 
 ### Screenshots:
