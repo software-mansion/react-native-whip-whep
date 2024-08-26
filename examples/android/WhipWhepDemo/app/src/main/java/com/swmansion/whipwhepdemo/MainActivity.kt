@@ -39,7 +39,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.mobilewhep.client.ConfigurationOptions
-import com.mobilewhep.client.Views.WhipWhepView
+import com.mobilewhep.client.WhipWhepView
 import com.mobilewhep.client.WhepClient
 import com.mobilewhep.client.WhipClient
 import com.swmansion.whipwhepdemo.ui.theme.WhipWhepDemoTheme

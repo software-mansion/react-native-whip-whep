@@ -51,7 +51,7 @@ class WhipClient(
 
     if (!audioEnabled && !videoEnabled) {
       Log.d(
-        TAG,
+        CLIENT_TAG,
         "Both audioEnabled and videoEnabled is set to false, which will result in no stream at all. " +
           "Consider changing one of the options to true."
       )

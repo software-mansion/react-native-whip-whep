@@ -1,4 +1,4 @@
-package com.mobilewhep.client.Views
+package com.mobilewhep.client
 
 import android.content.Context
 import android.content.res.Resources
@@ -11,8 +11,6 @@ import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.TextureView
 import android.view.TextureView.SurfaceTextureListener
-import com.mobilewhep.client.ClientBase
-import com.mobilewhep.client.ClientBaseListener
 import org.webrtc.EglBase
 import org.webrtc.EglRenderer
 import org.webrtc.GlRectDrawer
@@ -221,7 +219,7 @@ class WhipWhepView :
       videoLayoutMeasure.measure(widthSpec, heightSpec, rotatedFrameWidth, rotatedFrameHeight)
     setMeasuredDimension(size.x, size.y)
 
-    Log.d(TAG, "onMeasure() New size: ${size.x}x${size.y}")
+    Log.d(CLIENT_TAG, "onMeasure() New size: ${size.x}x${size.y}")
   }
 
   override fun onLayout(
@@ -245,7 +243,7 @@ class WhipWhepView :
     eglRenderer.setLayoutAspectRatio(aspectRatio)
     updateSurfaceSize()
 
-    Log.d(TAG, "onLayout() aspect ratio $aspectRatio")
+    Log.d(CLIENT_TAG, "onLayout() aspect ratio $aspectRatio")
   }
 
   private fun updateSurfaceSize() {
@@ -281,7 +279,7 @@ class WhipWhepView :
       }
 
       Log.d(
-        TAG,
+        CLIENT_TAG,
         "updateSurfaceSize() " +
           "layout size: ${getWidth()} x ${getHeight()}, " +
           "frame size: $rotatedFrameWidth x $rotatedFrameHeight, " +
@@ -327,7 +325,7 @@ class WhipWhepView :
     val yoff = (viewHeight - newHeight) / 2
 
     Log.d(
-      TAG,
+      CLIENT_TAG,
       "video=$videoWidth x $videoHeight view=$viewWidth x $viewHeight" +
         " newView=$newWidth x $newHeight off=$xoff,$yoff"
     )
@@ -381,7 +379,7 @@ class WhipWhepView :
   ) {
     ThreadUtils.checkIsOnMainThread()
 
-    Log.d(TAG, "surfaceChanged: size: $width x $height")
+    Log.d(CLIENT_TAG, "surfaceChanged: size: $width x $height")
   }
 
   override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
@@ -413,7 +411,7 @@ class WhipWhepView :
     videoHeight: Int,
     rotation: Int
   ) {
-    Log.d(TAG, "Resolution changed to $videoWidth x $videoHeight with rotation of $rotation")
+    Log.d(CLIENT_TAG, "Resolution changed to $videoWidth x $videoHeight with rotation of $rotation")
     rendererEvents?.onFrameResolutionChanged(videoWidth, videoHeight, rotation)
 
     val rotatedWidth = if (rotation == 0 || rotation == 180) videoWidth else videoHeight

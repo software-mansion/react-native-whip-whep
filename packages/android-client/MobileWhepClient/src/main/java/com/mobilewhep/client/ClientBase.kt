@@ -33,7 +33,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-internal const val TAG = "ClientBase"
+internal const val CLIENT_TAG = "ClientBase"
 
 interface ClientBaseListener {
   fun onTrackAdded(track: VideoTrack)
@@ -265,7 +265,7 @@ open class ClientBase(
   }
 
   override fun onSignalingChange(p0: PeerConnection.SignalingState?) {
-    Log.d(TAG, "RTC signaling state changed:: ${p0?.name}")
+    Log.d(CLIENT_TAG, "RTC signaling state changed:: ${p0?.name}")
   }
 
   /**
@@ -275,57 +275,57 @@ open class ClientBase(
     when (p0) {
       PeerConnection.IceConnectionState.NEW ->
         Log.d(
-          TAG,
+          CLIENT_TAG,
           "The ICE agent is gathering addresses or is waiting to be given remote candidates through calls"
         )
 
       PeerConnection.IceConnectionState.CHECKING ->
         Log.d(
-          TAG,
+          CLIENT_TAG,
           "ICE is checking paths, this might take a moment."
         )
 
       PeerConnection.IceConnectionState.CONNECTED ->
         Log.d(
-          TAG,
+          CLIENT_TAG,
           "ICE has found a viable connection."
         )
 
       PeerConnection.IceConnectionState.COMPLETED ->
         Log.d(
-          TAG,
+          CLIENT_TAG,
           "The ICE agent has finished gathering candidates, has checked all pairs against one another, " +
             "and has found a connection for all components."
         )
 
       PeerConnection.IceConnectionState.FAILED ->
         Log.d(
-          TAG,
+          CLIENT_TAG,
           "No viable ICE paths found, consider a retry or using TURN."
         )
 
       PeerConnection.IceConnectionState.DISCONNECTED ->
         Log.d(
-          TAG,
+          CLIENT_TAG,
           "ICE connection was disconnected, attempting to reconnect or refresh."
         )
 
       PeerConnection.IceConnectionState.CLOSED ->
         Log.d(
-          TAG,
+          CLIENT_TAG,
           "The ICE agent for this RTCPeerConnection has shut down and is no longer handling requests."
         )
 
-      null -> Log.d(TAG, "The Peer Connection state is null.")
+      null -> Log.d(CLIENT_TAG, "The Peer Connection state is null.")
     }
   }
 
   override fun onIceConnectionReceivingChange(p0: Boolean) {
-    Log.d(TAG, "onIceConnectionReceivingChange: $p0")
+    Log.d(CLIENT_TAG, "onIceConnectionReceivingChange: $p0")
   }
 
   override fun onIceGatheringChange(p0: PeerConnection.IceGatheringState?) {
-    Log.d(TAG, "RTC ICE gathering state changed: ${p0?.name}")
+    Log.d(CLIENT_TAG, "RTC ICE gathering state changed: ${p0?.name}")
   }
 
   /**
@@ -342,23 +342,23 @@ open class ClientBase(
   }
 
   override fun onIceCandidatesRemoved(p0: Array<out IceCandidate>?) {
-    Log.d(TAG, "Removed candidate from candidates list.")
+    Log.d(CLIENT_TAG, "Removed candidate from candidates list.")
   }
 
   override fun onAddStream(p0: MediaStream?) {
-    Log.d(TAG, "RTC media stream added: ${p0?.id}")
+    Log.d(CLIENT_TAG, "RTC media stream added: ${p0?.id}")
   }
 
   override fun onRemoveStream(p0: MediaStream?) {
-    Log.d(TAG, "RTC media stream removed: ${p0?.id}")
+    Log.d(CLIENT_TAG, "RTC media stream removed: ${p0?.id}")
   }
 
   override fun onDataChannel(p0: DataChannel?) {
-    Log.d(TAG, "RTC data channel opened: ${p0?.id()}")
+    Log.d(CLIENT_TAG, "RTC data channel opened: ${p0?.id()}")
   }
 
   override fun onRenegotiationNeeded() {
-    Log.d(TAG, "Peer connection negotiation needed.")
+    Log.d(CLIENT_TAG, "Peer connection negotiation needed.")
   }
 
   /**
@@ -366,23 +366,23 @@ open class ClientBase(
    */
   override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {
     when (newState) {
-      PeerConnection.PeerConnectionState.NEW -> Log.d(TAG, "New connection")
-      PeerConnection.PeerConnectionState.CONNECTING -> Log.d(TAG, "Connecting")
-      PeerConnection.PeerConnectionState.CONNECTED -> Log.d(TAG, "Connection is fully connected")
+      PeerConnection.PeerConnectionState.NEW -> Log.d(CLIENT_TAG, "New connection")
+      PeerConnection.PeerConnectionState.CONNECTING -> Log.d(CLIENT_TAG, "Connecting")
+      PeerConnection.PeerConnectionState.CONNECTED -> Log.d(CLIENT_TAG, "Connection is fully connected")
       PeerConnection.PeerConnectionState.DISCONNECTED ->
         Log.d(
-          TAG,
+          CLIENT_TAG,
           "One or more transports has disconnected unexpectedly"
         )
 
       PeerConnection.PeerConnectionState.FAILED ->
         Log.d(
-          TAG,
+          CLIENT_TAG,
           "One or more transports has encountered an error"
         )
 
-      PeerConnection.PeerConnectionState.CLOSED -> Log.d(TAG, "Connection has been closed")
-      null -> Log.d(TAG, "Connection is null")
+      PeerConnection.PeerConnectionState.CLOSED -> Log.d(CLIENT_TAG, "Connection has been closed")
+      null -> Log.d(CLIENT_TAG, "Connection is null")
     }
   }
 
