@@ -1,5 +1,6 @@
 public enum CaptureDeviceError: Error {
     case VideoDeviceNotAvailable(description: String)
+    case VideoSizeNotSupported(description: String)
 }
 
 public enum AttributeNotFoundError: Error {

@@ -4,12 +4,14 @@ import android.content.Context
 import android.util.Log
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
+import org.webrtc.CameraEnumerationAndroid
 import org.webrtc.CameraEnumerator
 import org.webrtc.CameraVideoCapturer
 import org.webrtc.MediaConstraints
 import org.webrtc.PeerConnection
 import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
+import org.webrtc.Size
 import org.webrtc.SurfaceTextureHelper
 import org.webrtc.VideoCapturer
 import org.webrtc.VideoSource
@@ -44,8 +46,8 @@ class WhipClient(
       throw CaptureDeviceError.VideoDeviceNotAvailable("Video device not found. Check if it can be accessed and passed to the constructor.")
     }
 
-    var audioEnabled = configurationOptions?.audioEnabled ?: true
-    var videoEnabled = configurationOptions?.videoEnabled ?: true
+    val audioEnabled = configurationOptions?.audioEnabled ?: true
+    val videoEnabled = configurationOptions?.videoEnabled ?: true
 
     if (!audioEnabled && !videoEnabled) {
       Log.d(
@@ -76,7 +78,43 @@ class WhipClient(
         peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
       val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
       videoCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
-      videoCapturer.startCapture(1024, 720, 30)
+      if (configurationOptions?.videoParameters != null) {
+        val videoSize =
+          setVideoSize(
+            cameraEnumerator,
+            videoDevice!!,
+            configurationOptions.videoParameters
+          )
+        try {
+          videoCapturer.startCapture(
+            videoSize!!.width,
+            videoSize.height,
+            configurationOptions.videoParameters.maxFps
+          )
+        } catch (e: Exception) {
+          throw CaptureDeviceError.VideoSizeNotSupported(
+            "VideoSize ${configurationOptions.videoParameters} is not supported by this device. Consider switching to another preset."
+          )
+        }
+      } else {
+        val videoSize =
+          setVideoSize(
+            cameraEnumerator,
+            videoDevice!!,
+            VideoParameters.presetHD43
+          )
+        try {
+          videoCapturer.startCapture(
+            videoSize!!.width,
+            videoSize.height,
+            VideoParameters.presetHD43.maxFps
+          )
+        } catch (e: Exception) {
+          throw CaptureDeviceError.VideoSizeNotSupported(
+            "VideoSize ${VideoParameters.presetHD43} is not supported by this device. Consider switching to another preset."
+          )
+        }
+      }
       val videoTrack: VideoTrack = peerConnectionFactory.createVideoTrack(videoTrackId, videoSource)
 
       this.videoSource = videoSource
@@ -143,11 +181,32 @@ class WhipClient(
     videoSource?.dispose()
   }
 
-  fun PeerConnection.enforceSendOnlyDirection() {
+  private fun PeerConnection.enforceSendOnlyDirection() {
     transceivers.forEach { transceiver ->
       if (transceiver.direction == RtpTransceiver.RtpTransceiverDirection.SEND_RECV) {
         transceiver.direction = RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
       }
     }
+  }
+
+  private fun setVideoSize(
+    enumerator: CameraEnumerator,
+    deviceName: String,
+    videoParameters: VideoParameters
+  ): Size? {
+    val sizes =
+      enumerator
+        .getSupportedFormats(deviceName)
+        ?.map { Size(it.width, it.height) }
+        ?: emptyList()
+
+    val size =
+      CameraEnumerationAndroid.getClosestSupportedSize(
+        sizes,
+        videoParameters.dimensions.width,
+        videoParameters.dimensions.height
+      )
+
+    return size
   }
 }

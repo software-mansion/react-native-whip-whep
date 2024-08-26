@@ -6,6 +6,10 @@ sealed class CaptureDeviceError(
   class VideoDeviceNotAvailable(
     description: String
   ) : CaptureDeviceError(description)
+
+  class VideoSizeNotSupported(
+    description: String
+  ) : CaptureDeviceError(description)
 }
 
 sealed class AttributeNotFoundError(

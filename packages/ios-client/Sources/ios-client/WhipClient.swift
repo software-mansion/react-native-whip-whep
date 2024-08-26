@@ -13,7 +13,8 @@ public class WhipClient: ClientBase {
             try setUpVideoAndAudioDevices()
         } catch let error as CaptureDeviceError {
             switch error {
-            case .VideoDeviceNotAvailable(let description):
+            case .VideoDeviceNotAvailable(let description),
+                .VideoSizeNotSupported(let description):
                 print(description)
             }
         } catch {
@@ -122,13 +123,29 @@ public class WhipClient: ClientBase {
             let videoTrack = peerConnectionFactory!.videoTrack(with: videoSource, trackId: videoTrackId)
             videoTrack.isEnabled = true
 
-            videoCapturer.startCapture(with: videoDevice, format: videoDevice.activeFormat, fps: 30) { error in
-                if let error = error {
-                    print("Error starting the video capture: \(error)")
-                } else {
-                    print("Video capturing started")
-                    DispatchQueue.main.async {
-                        self.videoTrack = videoTrack
+            if configurationOptions != nil && configurationOptions?.videoParameters != nil {
+                let (format, fps) = setVideoSize(
+                    device: videoDevice, videoParameters: (configurationOptions?.videoParameters)!)
+
+                videoCapturer.startCapture(with: videoDevice, format: format, fps: fps) { error in
+                    if let error = error {
+                        print("Error starting the video capture: \(error)")
+                    } else {
+                        print("Video capturing started")
+                        DispatchQueue.main.async {
+                            self.videoTrack = videoTrack
+                        }
+                    }
+                }
+            } else {
+                videoCapturer.startCapture(with: videoDevice, format: videoDevice.activeFormat, fps: 30) { error in
+                    if let error = error {
+                        print("Error starting the video capture: \(error)")
+                    } else {
+                        print("Video capturing started")
+                        DispatchQueue.main.async {
+                            self.videoTrack = videoTrack
+                        }
                     }
                 }
             }
@@ -154,5 +171,49 @@ public class WhipClient: ClientBase {
             peerConnection?.enforceSendOnlyDirection()
         }
 
+    }
+
+    private func setVideoSize(device: AVCaptureDevice, videoParameters: VideoParameters) -> (
+        selectedFormat: AVCaptureDevice.Format, fps: Int
+    ) {
+        let formats: [AVCaptureDevice.Format] = RTCCameraVideoCapturer.supportedFormats(for: device)
+
+        let (targetWidth, targetHeight) = (
+            videoParameters.dimensions.width,
+            videoParameters.dimensions.height
+        )
+
+        var currentDiff = Int32.max
+        var selectedFormat: AVCaptureDevice.Format = formats[0]
+        var selectedDimension: Dimensions?
+        for format in formats {
+            let dimension = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
+
+            let diff = abs(targetWidth - dimension.width) + abs(targetHeight - dimension.height)
+            if diff < currentDiff {
+                selectedFormat = format
+                currentDiff = diff
+                selectedDimension = dimension
+            }
+        }
+
+        guard let dimension = selectedDimension else {
+            fatalError("Could not get dimensions for video capture")
+        }
+
+        let fps = videoParameters.maxFps
+
+        // discover FPS limits
+        var minFps = 60
+        var maxFps = 0
+        for fpsRange in selectedFormat.videoSupportedFrameRateRanges {
+            minFps = min(minFps, Int(fpsRange.minFrameRate))
+            maxFps = max(maxFps, Int(fpsRange.maxFrameRate))
+        }
+        if fps < minFps || fps > maxFps {
+            fatalError("unsported requested frame rate of (\(minFps) - \(maxFps)")
+        }
+
+        return (selectedFormat, fps)
     }
 }
