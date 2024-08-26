@@ -47,7 +47,6 @@ import kotlinx.coroutines.launch
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraEnumerator
-import org.webrtc.RendererCommon
 
 class MainActivity : ComponentActivity() {
   private val PERMISSIONS_REQUEST_CODE = 101
@@ -202,8 +201,6 @@ fun PlayerView(modifier: Modifier = Modifier) {
         factory = { ctx ->
           WhipWhepView(ctx).apply {
             player = whepPlayer
-            this.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
-            this.setEnableHardwareScaler(true)
           }
         },
         modifier =

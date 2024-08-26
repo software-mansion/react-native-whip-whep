@@ -138,7 +138,7 @@ open class ClientBase(
                 )
               )
             } else {
-              Log.e(TAG, e.toString())
+              Log.e(CLIENT_TAG, e.toString())
               continuation.resumeWithException(e)
               e.printStackTrace()
             }
