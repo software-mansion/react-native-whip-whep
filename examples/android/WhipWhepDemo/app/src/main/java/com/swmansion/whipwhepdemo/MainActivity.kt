@@ -41,7 +41,7 @@ import androidx.core.content.ContextCompat
 import com.mobilewhep.client.ConfigurationOptions
 import com.mobilewhep.client.WhepClient
 import com.mobilewhep.client.WhipClient
-import com.mobilewhep.client.WhipWhepView
+import com.mobilewhep.client.VideoView
 import com.swmansion.whipwhepdemo.ui.theme.WhipWhepDemoTheme
 import kotlinx.coroutines.launch
 import org.webrtc.Camera1Enumerator
@@ -152,12 +152,12 @@ fun PlayerView(modifier: Modifier = Modifier) {
       )
     }
 
-  var whipView: WhipWhepView? =
+  var whipView: VideoView? =
     remember {
       null
     }
 
-  var view: WhipWhepView? =
+  var view: VideoView? =
     remember {
       null
     }
@@ -199,7 +199,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
     Box {
       AndroidView(
         factory = { ctx ->
-          WhipWhepView(ctx).apply {
+          VideoView(ctx).apply {
             player = whepPlayer
           }
         },
@@ -245,7 +245,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
     ) {
       AndroidView(
         factory = { ctx ->
-          WhipWhepView(ctx).apply {
+          VideoView(ctx).apply {
             player = whipPlayer
           }
         },

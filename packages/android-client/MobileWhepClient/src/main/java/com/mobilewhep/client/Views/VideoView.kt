@@ -29,7 +29,7 @@ import kotlin.math.roundToInt
 
 const val VIEW_TAG = "WHIP/WHEP View"
 
-class WhipWhepView :
+class VideoView :
   TextureView,
   SurfaceHolder.Callback,
   SurfaceTextureListener,
