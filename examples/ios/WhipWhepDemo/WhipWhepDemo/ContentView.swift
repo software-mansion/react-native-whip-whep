@@ -10,8 +10,8 @@ struct ContentView: View {
     }
 
     @State private var selectedPlayerType = PlayerType.whep
-    @StateObject var whepPlayerViewModel = WhipWhepViewModel(player: WhepClient(serverUrl: URL(string: "\(Bundle.main.infoDictionary?["WhepServerUrl"] as? String ?? "")")!, configurationOptions: ConfigurationOptions(authToken: "example")))
-    @StateObject var whipPlayerViewModel = WhipWhepViewModel(player: WhipClient(serverUrl: URL(string: "\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, configurationOptions: ConfigurationOptions(authToken: "example"), videoDevice: AVCaptureDevice.default(for: .video)))
+    @StateObject var whepPlayerViewModel = VideoViewModel(player: WhepClient(serverUrl: URL(string: "\(Bundle.main.infoDictionary?["WhepServerUrl"] as? String ?? "")")!, configurationOptions: ConfigurationOptions(authToken: "example")))
+    @StateObject var whipPlayerViewModel = VideoViewModel(player: WhipClient(serverUrl: URL(string: "\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, configurationOptions: ConfigurationOptions(authToken: "example"), videoDevice: AVCaptureDevice.default(for: .video)))
     
     var body: some View {
         VStack {
@@ -25,7 +25,7 @@ struct ContentView: View {
                 switch selectedPlayerType {
                 case .whep:
                     if let videoTrack = whepPlayerViewModel.videoTrack {
-                        WhipWhepView(videoTrack: videoTrack)
+                        VideoView(videoTrack: videoTrack)
                             .frame(width: 200, height: 200)
                     } else {
                         Text("Stream loading...")
@@ -42,7 +42,7 @@ struct ContentView: View {
                     }
                 case .whip:
                     if let videoTrack = whipPlayerViewModel.videoTrack  {
-                        WhipWhepView(videoTrack: videoTrack)
+                        VideoView(videoTrack: videoTrack)
                             .frame(width: 200, height: 200)
                             .cornerRadius(8)
                             .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.blue, lineWidth: 2))
