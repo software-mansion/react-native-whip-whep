@@ -2,7 +2,6 @@ import Foundation
 import SwiftUI
 import WebRTC
 
-
 public class VideoViewModel: ObservableObject, PlayerListener {
     @Published public var videoTrack: RTCVideoTrack?
 
@@ -56,7 +55,6 @@ public struct VideoView: UIViewRepresentable {
     }
 }
 
-
 public class VideoViewController: UIViewController {
 
     private var videoTrack: RTCVideoTrack?
@@ -66,7 +64,7 @@ public class VideoViewController: UIViewController {
         videoView.videoContentMode = .scaleAspectFit
         return videoView
     }()
-    
+
     public init(videoTrack: RTCVideoTrack?) {
         self.videoTrack = videoTrack
         super.init(nibName: nil, bundle: nil)
@@ -84,9 +82,9 @@ public class VideoViewController: UIViewController {
             videoView.topAnchor.constraint(equalTo: view.topAnchor),
             videoView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             videoView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            videoView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            videoView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
-        
+
         if let track = videoTrack {
             track.add(videoView)
         }
@@ -94,7 +92,7 @@ public class VideoViewController: UIViewController {
 
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
+
         if let track = videoTrack {
             track.remove(videoView)
         }
