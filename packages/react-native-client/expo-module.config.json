@@ -1,0 +1,9 @@
+{
+  "platforms": ["ios", "tvos", "android", "web"],
+  "ios": {
+    "modules": ["MobileWhepClientModule"]
+  },
+  "android": {
+    "modules": ["com.swmansion.mobilewhepclient.MobileWhepClientModule"]
+  }
+}
