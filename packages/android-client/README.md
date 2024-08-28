@@ -12,7 +12,7 @@ The repository consists of 7 main components:
 - `ConfigurationOptions` - a structure that holds optional initial connection configuration options, like STUN server URL, authorization token or stream limitations, for example sending only audio or video track,
 - `Errors` - contains all the errors that can be thrown by the package,
 - `SuspendableSdpObserver` - implements the SdpObserver interface used by the WebRTC library,
-- `WhipWhepView` - provides a basic view for WHIP camera/WHEP player.
+- `VideoView` - provides a basic view for WHIP camera/WHEP player.
 
 ## Examples
 

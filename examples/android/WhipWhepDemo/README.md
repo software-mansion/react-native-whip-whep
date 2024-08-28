@@ -44,12 +44,12 @@ After creating a player, all that has to be done is to invoke the `connect` meth
 whepClient.connect()
 ```
 
-And display the stream using provided `WhipWhepView`:
+And display the stream using provided `VideoView`:
 
 ```kotlin
 AndroidView(
   factory = { ctx ->
-    WhipWhepView(ctx).apply {
+    VideoView(ctx).apply {
       player = whepPlayer
       this.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
       this.setEnableHardwareScaler(true)

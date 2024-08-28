@@ -11,7 +11,7 @@ The repository consists of 6 main components:
 - `ClientBase` - provides methods that are shared by both players,
 - `ConfigurationOptions` - a structure that holds optional initial connection configuration options, like STUN server URL, authorization token or stream limitations, for example sending only audio or video track,
 - `Errors` - contains all the errors that can be thrown by the package,
-- `WhipWhepView` - provides a basic view for WHIP camera/WHEP player.
+- `VideoView` - provides a basic view for WHIP camera/WHEP player.
 
 ## Examples
 
