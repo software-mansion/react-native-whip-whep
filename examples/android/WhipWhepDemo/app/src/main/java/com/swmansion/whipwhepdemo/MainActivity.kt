@@ -39,9 +39,9 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.mobilewhep.client.ConfigurationOptions
+import com.mobilewhep.client.VideoView
 import com.mobilewhep.client.WhepClient
 import com.mobilewhep.client.WhipClient
-import com.mobilewhep.client.VideoView
 import com.swmansion.whipwhepdemo.ui.theme.WhipWhepDemoTheme
 import kotlinx.coroutines.launch
 import org.webrtc.Camera1Enumerator
