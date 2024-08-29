@@ -4038,7 +4038,6 @@ __metadata:
     babel-jest: ^29.6.3
     eslint: ^8.19.0
     jest: ^29.6.3
-    mobile-whep-client: "*"
     prettier: 2.8.8
     react: 18.3.1
     react-native: 0.75.2
@@ -9108,7 +9107,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobile-whep-client@*, mobile-whep-client@workspace:packages/react-native-client":
+"mobile-whep-client@workspace:packages/react-native-client":
   version: 0.0.0-use.local
   resolution: "mobile-whep-client@workspace:packages/react-native-client"
   dependencies:
