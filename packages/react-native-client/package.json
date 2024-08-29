@@ -28,7 +28,6 @@
   "author": "Software Mansion <83274413+gredajustyna@users.noreply.github.com> ()",
   "license": "MIT",
   "homepage": "https://#readme",
-  "dependencies": {},
   "devDependencies": {
     "@types/react": "^18.0.25",
     "expo-module-scripts": "^3.5.2",

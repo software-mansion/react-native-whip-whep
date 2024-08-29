@@ -1,9 +1,12 @@
 {
   "name": "mobile-whep",
   "workspaces": [
-    "packages/*"
+    "packages/android-client",
+    "packages/ios-client",
+    "packages/react-native-client",
+    "examples/react-native/WhipWhepDemo"
   ],
-  "packageManager": "yarn@4.3.1",
+  "packageManager": "yarn@3.6.4",
   "devDependencies": {
     "@react-native/eslint-config": "^0.74.85",
     "eslint": "8.x",
@@ -16,6 +19,7 @@
   },
   "scripts": {
     "lint": "yarn workspaces foreach -A -p run lint",
-    "lint:check": "yarn workspaces foreach -A -p run lint:check"
+    "lint:check": "yarn workspaces foreach -A -p run lint:check",
+    "build": "yarn workspace mobile-whep-client run tsc"
   }
 }

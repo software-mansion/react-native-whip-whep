@@ -1,0 +1,1 @@
+{"version":3,"file":"MobileWhepClient.types.js","sourceRoot":"","sources":["../src/MobileWhepClient.types.ts"],"names":[],"mappings":"","sourcesContent":["export type ChangeEventPayload = {\n  value: string;\n};\n\nexport type MobileWhepClientViewProps = {\n  name: string;\n};\n"]}
