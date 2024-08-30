@@ -1,63 +1,62 @@
 import Foundation
 import SwiftUI
+import UIKit
 import WebRTC
 
-public class VideoViewModel: ObservableObject, PlayerListener {
-    @Published public var videoTrack: RTCVideoTrack?
-
-    public var player: Connectable & ClientBase
-
-    public init(player: Connectable & ClientBase) {
-        self.player = player
-        player.delegate = self
-    }
-
-    public func onTrackAdded(track: RTCVideoTrack) {
-        videoTrack = track
-    }
-
-    public func onTrackRemoved(track: RTCVideoTrack) {
-        if videoTrack == track {
-            videoTrack = nil
-        }
-    }
-
-    public func connect() async throws {
-        try await player.connect()
-    }
-
-    public func disconnect() {
-        player.disconnect()
-    }
-}
-
 public struct VideoView: UIViewRepresentable {
-    public var videoTrack: RTCVideoTrack?
+    public var player: ClientBase
 
-    public init(videoTrack: RTCVideoTrack?) {
-        self.videoTrack = videoTrack
+    public init(player: ClientBase) {
+        self.player = player
     }
 
     public func makeUIView(context: Context) -> RTCMTLVideoView {
         let view = RTCMTLVideoView(frame: .zero)
         view.videoContentMode = .scaleAspectFit
+        player.delegate = context.coordinator  // Ustawienie delegata w makeCoordinator
         return view
     }
 
     public func updateUIView(_ uiView: RTCMTLVideoView, context: Context) {
-        if let track = videoTrack {
+        if let track = player.videoTrack {
             track.add(uiView)
         }
     }
 
-    public static func dismantleUIView(_ uiView: RTCMTLVideoView, coordinator: ()) {
+    public static func dismantleUIView(_ uiView: RTCMTLVideoView, coordinator: Coordinator) {
+        if let track = coordinator.videoTrack {
+            track.remove(uiView)
+        }
         uiView.removeFromSuperview()
+    }
+
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+
+    public class Coordinator: NSObject, PlayerListener {
+        var parent: VideoView
+        var videoTrack: RTCVideoTrack?
+
+        init(_ parent: VideoView) {
+            self.parent = parent
+        }
+
+        public func onTrackAdded(track: RTCVideoTrack) {
+            videoTrack = track
+        }
+
+        public func onTrackRemoved(track: RTCVideoTrack) {
+            if videoTrack == track {
+                videoTrack = nil
+            }
+        }
     }
 }
 
 public class VideoViewController: UIViewController {
 
-    private var videoTrack: RTCVideoTrack?
+    private var player: ClientBase
 
     private lazy var videoView: RTCMTLVideoView = {
         let videoView = RTCMTLVideoView(frame: .zero)
@@ -65,8 +64,8 @@ public class VideoViewController: UIViewController {
         return videoView
     }()
 
-    public init(videoTrack: RTCVideoTrack?) {
-        self.videoTrack = videoTrack
+    public init(player: ClientBase) {
+        self.player = player
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -85,7 +84,9 @@ public class VideoViewController: UIViewController {
             videoView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
 
-        if let track = videoTrack {
+        player.delegate = self  // Ustawienie delegata na VideoViewController
+
+        if let track = player.videoTrack {
             track.add(videoView)
         }
     }
@@ -93,8 +94,18 @@ public class VideoViewController: UIViewController {
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        if let track = videoTrack {
+        if let track = player.videoTrack {
             track.remove(videoView)
         }
+    }
+}
+
+extension VideoViewController: PlayerListener {
+    public func onTrackAdded(track: RTCVideoTrack) {
+        track.add(videoView)
+    }
+
+    public func onTrackRemoved(track: RTCVideoTrack) {
+        track.remove(videoView)
     }
 }

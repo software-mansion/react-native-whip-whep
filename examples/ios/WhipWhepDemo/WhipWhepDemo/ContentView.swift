@@ -10,8 +10,8 @@ struct ContentView: View {
     }
 
     @State private var selectedPlayerType = PlayerType.whep
-    @StateObject var whepPlayerViewModel = VideoViewModel(player: WhepClient(serverUrl: URL(string: "\(Bundle.main.infoDictionary?["WhepServerUrl"] as? String ?? "")")!, configurationOptions: ConfigurationOptions(authToken: "example")))
-    @StateObject var whipPlayerViewModel = VideoViewModel(player: WhipClient(serverUrl: URL(string: "\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, configurationOptions: ConfigurationOptions(authToken: "example"), videoDevice: AVCaptureDevice.default(for: .video)))
+    @State var whepPlayer = WhepClient(serverUrl: URL(string: "\(Bundle.main.infoDictionary?["WhepServerUrl"] as? String ?? "")")!, configurationOptions: ConfigurationOptions(authToken: "example"))
+    @State var whipPlayer = WhipClient(serverUrl: URL(string: "\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, configurationOptions: ConfigurationOptions(authToken: "example"), videoDevice: AVCaptureDevice.default(for: .video))
     
     var body: some View {
         VStack {
@@ -24,8 +24,8 @@ struct ContentView: View {
             VStack {
                 switch selectedPlayerType {
                 case .whep:
-                    if let videoTrack = whepPlayerViewModel.videoTrack {
-                        VideoView(videoTrack: videoTrack)
+                    if whepPlayer.videoTrack != nil {
+                        VideoView(player: whepPlayer)
                             .frame(width: 200, height: 200)
                     } else {
                         Text("Stream loading...")
@@ -34,15 +34,15 @@ struct ContentView: View {
                     Button("Connect WHEP") {
                         Task {
                             do {
-                                try await whepPlayerViewModel.connect()
+                                try await whepPlayer.connect()
                             } catch is SessionNetworkError{
                                 print("Session Network Error")
                             }
                         }
                     }
                 case .whip:
-                    if let videoTrack = whipPlayerViewModel.videoTrack  {
-                        VideoView(videoTrack: videoTrack)
+                    if let videoTrack = whipPlayer.videoTrack  {
+                        VideoView(player: whipPlayer)
                             .frame(width: 200, height: 200)
                             .cornerRadius(8)
                             .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.blue, lineWidth: 2))
@@ -54,7 +54,7 @@ struct ContentView: View {
                     Button("Connect WHIP") {
                         Task {
                             do {
-                                try await whipPlayerViewModel.connect()
+                                try await whipPlayer.connect()
                             } catch is SessionNetworkError {
                                 print("Session Network Error")
                             }
