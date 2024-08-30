@@ -13,14 +13,18 @@ public struct VideoView: UIViewRepresentable {
     public func makeUIView(context: Context) -> RTCMTLVideoView {
         let view = RTCMTLVideoView(frame: .zero)
         view.videoContentMode = .scaleAspectFit
-        player.delegate = context.coordinator  // Ustawienie delegata w makeCoordinator
+        player.delegate = context.coordinator
+        context.coordinator.videoView = view
         return view
     }
 
     public func updateUIView(_ uiView: RTCMTLVideoView, context: Context) {
-        if let track = player.videoTrack {
-            track.add(uiView)
+        DispatchQueue.main.async {
+            if let track = player.videoTrack {
+                track.add(uiView)
+            }
         }
+
     }
 
     public static func dismantleUIView(_ uiView: RTCMTLVideoView, coordinator: Coordinator) {
@@ -37,18 +41,29 @@ public struct VideoView: UIViewRepresentable {
     public class Coordinator: NSObject, PlayerListener {
         var parent: VideoView
         var videoTrack: RTCVideoTrack?
+        var videoView: RTCMTLVideoView?
 
         init(_ parent: VideoView) {
             self.parent = parent
         }
 
         public func onTrackAdded(track: RTCVideoTrack) {
-            videoTrack = track
+            DispatchQueue.main.async {
+                self.videoTrack = track
+                if let videoView = self.videoView {
+                    self.videoTrack?.add(videoView)
+                }
+            }
         }
 
         public func onTrackRemoved(track: RTCVideoTrack) {
-            if videoTrack == track {
-                videoTrack = nil
+            DispatchQueue.main.async {
+                if self.videoTrack == track {
+                    if let videoView = self.videoView {
+                        track.remove(videoView)
+                    }
+                    self.videoTrack = nil
+                }
             }
         }
     }
@@ -84,7 +99,7 @@ public class VideoViewController: UIViewController {
             videoView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
 
-        player.delegate = self  // Ustawienie delegata na VideoViewController
+        player.delegate = self
 
         if let track = player.videoTrack {
             track.add(videoView)

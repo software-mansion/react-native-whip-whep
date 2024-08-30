@@ -24,13 +24,8 @@ struct ContentView: View {
             VStack {
                 switch selectedPlayerType {
                 case .whep:
-                    if whepPlayer.videoTrack != nil {
-                        VideoView(player: whepPlayer)
-                            .frame(width: 200, height: 200)
-                    } else {
-                        Text("Stream loading...")
-                            .padding([.top, .bottom], 140)
-                    }
+                    VideoView(player: whepPlayer)
+                        .frame(width: 200, height: 200)
                     Button("Connect WHEP") {
                         Task {
                             do {
@@ -41,16 +36,11 @@ struct ContentView: View {
                         }
                     }
                 case .whip:
-                    if let videoTrack = whipPlayer.videoTrack  {
-                        VideoView(player: whipPlayer)
-                            .frame(width: 200, height: 200)
-                            .cornerRadius(8)
-                            .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.blue, lineWidth: 2))
-                            .padding([.top, .bottom], 50)
-                    } else {
-                        Text("Preview loading...")
-                    }
-                    
+                    VideoView(player: whipPlayer)
+                        .frame(width: 200, height: 200)
+                        .cornerRadius(8)
+                        .overlay(RoundedRectangle(cornerRadius: 8).stroke(Color.blue, lineWidth: 2))
+                        .padding([.top, .bottom], 50)
                     Button("Connect WHIP") {
                         Task {
                             do {
