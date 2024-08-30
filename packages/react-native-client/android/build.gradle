@@ -45,6 +45,6 @@ android {
 dependencies {
   implementation project(':expo-modules-core')
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
-  implementation project(':mobile-whep-client')
+  implementation project(':MobileWhepClient')
   implementation 'androidx.appcompat:appcompat:1.6.1'
 }
