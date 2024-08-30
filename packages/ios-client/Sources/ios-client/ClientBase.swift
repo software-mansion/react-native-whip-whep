@@ -57,7 +57,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
     var peerConnection: RTCPeerConnection?
     var iceCandidates: [RTCIceCandidate] = []
     var isConnectionSetUp: Bool = false
-    public var videoTrack: RTCVideoTrack? {
+    @Published public var videoTrack: RTCVideoTrack? {
         willSet {
             if let track = videoTrack {
                 delegate?.onTrackRemoved(track: track)
