@@ -1,17 +1,6 @@
-const pak = require('../../../package.json');
-const path = require('path');
-
-module.exports = {
-  presets: ['module:@react-native/babel-preset'],
-  plugins: [
-    [
-      'module-resolver',
-      {
-        root: ['.'],
-        alias: {
-          [pak.name]: path.join(__dirname, '..', 'src/index.tsx'),
-        },
-      },
-    ],
-  ],
+module.exports = function (api) {
+  api.cache(true);
+  return {
+    presets: ['babel-preset-expo'],
+  };
 };
