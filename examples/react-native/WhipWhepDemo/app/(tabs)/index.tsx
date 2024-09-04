@@ -5,6 +5,8 @@ import { useEffect, useState } from "react";
 import { requestPermissions } from "@/utils/RequestPermissions";
 import { WhipWhepClientView } from "@mobile-whep/react-native-client";
 
+import * as MobileWhepClient from "mobile-whep-client";
+
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowPlayBtn, setShouldShowPlayBtn] = useState(true);
