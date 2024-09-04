@@ -10082,7 +10082,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobile-whep-client@workspace:packages/react-native-client":
+"mobile-whep-client@npm:*, mobile-whep-client@workspace:packages/react-native-client":
   version: 0.0.0-use.local
   resolution: "mobile-whep-client@workspace:packages/react-native-client"
   dependencies:
@@ -13644,6 +13644,7 @@ __metadata:
     expo-web-browser: "npm:~13.0.3"
     jest: "npm:^29.2.1"
     jest-expo: "npm:~51.0.3"
+    mobile-whep-client: "npm:*"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     react-native: "npm:0.74.5"
