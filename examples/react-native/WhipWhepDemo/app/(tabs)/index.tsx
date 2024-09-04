@@ -9,7 +9,12 @@ import * as MobileWhepClient from "mobile-whep-client";
 
 export default function HomeScreen() {
   const whepClient = MobileWhepClient.createWhepClient(
-    "https://broadcaster.elixir-webrtc.org/",
+    "http://192.168.1.23:8829/whep",
+    {
+      authToken: "example",
+      audioEnabled: true,
+      videoEnabled: true,
+    },
   );
 
   console.log(whepClient);
