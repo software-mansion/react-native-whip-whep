@@ -72,6 +72,7 @@ PODS:
   - hermes-engine/Pre-built (0.74.5)
   - MobileWhepClient (0.1.0):
     - ExpoModulesCore
+    - WebRTC-SDK (= 125.6422.03)
   - RCT-Folly (2024.01.01.00):
     - boost
     - DoubleConversion
@@ -1296,6 +1297,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - Yoga
   - SocketRocket (0.7.0)
+  - WebRTC-SDK (125.6422.03)
   - Yoga (0.0.0)
 
 DEPENDENCIES:
@@ -1375,6 +1377,7 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - SocketRocket
+    - WebRTC-SDK
 
 EXTERNAL SOURCES:
   boost:
@@ -1537,7 +1540,7 @@ SPEC CHECKSUMS:
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   hermes-engine: 8c1577f3fdb849cbe7729c2e7b5abc4b845e88f8
-  MobileWhepClient: b9ce5d9fd195fa6c69fba680a0c166e0db06ec03
+  MobileWhepClient: db04d46be457ccd825c2985fa437c2f70b75d9e0
   RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
   RCTDeprecation: 3afceddffa65aee666dafd6f0116f1d975db1584
   RCTRequired: ec1239bc9d8bf63e10fb92bd8b26171a9258e0c1
@@ -1590,8 +1593,9 @@ SPEC CHECKSUMS:
   RNReanimated: 16cbf42d8db575242f7956a65c41271756be4832
   RNScreens: b32a9ff15bea7fcdbe5dff6477bc503f792b1208
   SocketRocket: abac6f5de4d4d62d24e11868d7a2f427e0ef940d
+  WebRTC-SDK: a98f7e9d4638b8ae1a8950f7b2970a454ab08cae
   Yoga: 2246eea72aaf1b816a68a35e6e4b74563653ae09
 
-PODFILE CHECKSUM: ab1237d55a10d673ba02142fb4facac36ba89ae2
+PODFILE CHECKSUM: df448b5c2de5387de2c99a3a04b7ba5e74d85033
 
 COCOAPODS: 1.15.2

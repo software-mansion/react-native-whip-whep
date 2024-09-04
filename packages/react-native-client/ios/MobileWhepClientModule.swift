@@ -1,16 +1,11 @@
 import ExpoModulesCore
 
 public class MobileWhepClientModule: Module {
-  // Each module class must implement the definition function. The definition consists of components
-  // that describes the module's functionality and behavior.
-  // See https://docs.expo.dev/modules/module-api for more details about available components.
+    private var client: WhepClient?
+
   public func definition() -> ModuleDefinition {
-    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('MobileWhepClient')` in JavaScript.
     Name("MobileWhepClient")
 
-    // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
     Constants([
       "PI": Double.pi
     ])
@@ -22,6 +17,37 @@ public class MobileWhepClientModule: Module {
     Function("hello") {
       return "Hello world! 👋"
     }
+      
+      // Dodanie funkcji asynchronicznej do tworzenia obiektu WhepClient
+      AsyncFunction("createClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?) in
+        guard let url = URL(string: serverUrl) else {
+          throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+        }
+
+        let options = ConfigurationOptions(
+          stunServerUrl: configurationOptions?["stunServerUrl"] as? String,
+          audioEnabled: configurationOptions?["audioEnabled"] as? Bool ?? true,
+          videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true
+        )
+
+        self.client = WhepClient(serverUrl: url, configurationOptions: options)
+      }
+
+      // Dodanie funkcji asynchronicznej do połączenia się z serwerem
+      AsyncFunction("connect") {
+        guard let client = self.client else {
+          throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
+        }
+        try await client.connect()
+      }
+
+      // Dodanie funkcji do rozłączenia się z serwerem
+      Function("disconnect") {
+        guard let client = self.client else {
+          throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
+        }
+        client.disconnect()
+      }
 
     // Defines a JavaScript function that always returns a Promise and whose native code
     // is by default dispatched on the different thread than the JavaScript runtime runs on.
