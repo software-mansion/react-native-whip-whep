@@ -73,5 +73,9 @@
     <string>Automatic</string>
     <key>UIViewControllerBasedStatusBarAppearance</key>
     <false/>
+    <key>NSCameraUsageDescription</key>
+	<string>This application requires camera access to gather information about available video devices.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This application requires microphone access to gather information about available audio devices.</string>
   </dict>
 </plist>

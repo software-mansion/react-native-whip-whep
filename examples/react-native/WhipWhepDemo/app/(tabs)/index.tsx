@@ -6,16 +6,64 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 
 import * as MobileWhepClient from "mobile-whep-client";
+import { MobileWhepClientView } from "mobile-whep-client";
+import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
+import { useEffect } from "react";
+import { VideoParameters } from "mobile-whep-client/build/MobileWhepClient.types";
+
+const requestPermissions = async () => {
+  try {
+    const cameraPermission = await request(
+      Platform.select({
+        android: PERMISSIONS.ANDROID.CAMERA,
+        ios: PERMISSIONS.IOS.CAMERA,
+      }),
+    );
+
+    const microphonePermission = await request(
+      Platform.select({
+        android: PERMISSIONS.ANDROID.RECORD_AUDIO,
+        ios: PERMISSIONS.IOS.MICROPHONE,
+      }),
+    );
+
+    if (
+      cameraPermission === RESULTS.GRANTED &&
+      microphonePermission === RESULTS.GRANTED
+    ) {
+      console.log("All permissions granted");
+    } else {
+      console.log("Please provide camera and microphone permissions.");
+    }
+  } catch (error) {
+    console.error("Failed to request permission", error);
+  }
+};
 
 export default function HomeScreen() {
+  useEffect(() => {
+    requestPermissions();
+  }, []);
+
   const whepClient = MobileWhepClient.createWhepClient(
-    "http://192.168.1.23:8829/whep",
+    "http://192.168.83.201:8829/whep",
     {
       authToken: "example",
       audioEnabled: true,
       videoEnabled: true,
+      videoParameters: VideoParameters.presetFHD43,
     },
   );
+  const whipClient = MobileWhepClient.createWhipClient(
+    "http://192.168.83.201:8829/whip",
+    {
+      authToken: "example",
+      audioEnabled: true,
+      videoEnabled: true,
+      videoParameters: VideoParameters.presetFHD43,
+    },
+  );
+  const clientToPass = whepClient;
 
   console.log(whepClient);
   return (
@@ -32,9 +80,13 @@ export default function HomeScreen() {
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
         <Button
-          onPress={async () => await MobileWhepClient.connect()}
-          title="cat"
-        ></Button>
+          onPress={async () => await MobileWhepClient.connectWhepClient()}
+          title="whep"
+        />
+        <Button
+          onPress={async () => await MobileWhepClient.connectWhipClient()}
+          title="whip"
+        />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">xd</ThemedText>
@@ -48,13 +100,8 @@ export default function HomeScreen() {
           to open developer tools.
         </ThemedText>
       </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          Tap the Explore tab to learn more about what's included in this
-          starter app.
-        </ThemedText>
-      </ThemedView>
+      <MobileWhepClientView client={clientToPass} />
+      <MobileWhepClientView client={whipClient} />
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
         <ThemedText>

@@ -28,11 +28,29 @@ export async function createWhepClient(
   return MobileWhepClientModule.createClient(serverUrl, configurationOptions);
 }
 
-export async function connect() {
+export async function connectWhipClient() {
+  return MobileWhepClientModule.connectWhip();
+}
+
+export function disconnectWhipClient() {
+  return MobileWhepClientModule.disconnectWhip();
+}
+
+export async function createWhipClient(
+  serverUrl: string,
+  configurationOptions?: ConfigurationOptions,
+) {
+  return MobileWhepClientModule.createWhipClient(
+    serverUrl,
+    configurationOptions,
+  );
+}
+
+export async function connectWhepClient() {
   return MobileWhepClientModule.connect();
 }
 
-export function disconnect() {
+export function disconnectWhepClient() {
   return MobileWhepClientModule.disconnect();
 }
 

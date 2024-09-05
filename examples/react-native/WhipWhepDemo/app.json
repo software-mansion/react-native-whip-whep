@@ -29,6 +29,15 @@
       "favicon": "./assets/images/favicon.png"
     },
     "plugins": [
+      [
+        "react-native-permissions",
+        {
+          "iosPermissions": [
+            "Microphone",
+            "Camera"
+          ]
+        }
+      ],
       "expo-router"
     ],
     "experiments": {

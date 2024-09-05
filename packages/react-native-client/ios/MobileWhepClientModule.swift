@@ -1,7 +1,8 @@
 import ExpoModulesCore
 
 public class MobileWhepClientModule: Module {
-    private var client: WhepClient?
+    private var whepClient: WhepClient?
+    private var whipClient: WhipClient?
 
   public func definition() -> ModuleDefinition {
     Name("MobileWhepClient")
@@ -30,12 +31,12 @@ public class MobileWhepClientModule: Module {
           videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true
         )
 
-        self.client = WhepClient(serverUrl: url, configurationOptions: options)
+        self.whepClient = WhepClient(serverUrl: url, configurationOptions: options)
       }
 
       // Dodanie funkcji asynchronicznej do połączenia się z serwerem
       AsyncFunction("connect") {
-        guard let client = self.client else {
+        guard let client = self.whepClient else {
           throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
         }
         try await client.connect()
@@ -43,7 +44,37 @@ public class MobileWhepClientModule: Module {
 
       // Dodanie funkcji do rozłączenia się z serwerem
       Function("disconnect") {
-        guard let client = self.client else {
+        guard let client = self.whepClient else {
+          throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
+        }
+        client.disconnect()
+      }
+      
+      AsyncFunction("createWhipClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?) in
+        guard let url = URL(string: serverUrl) else {
+          throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+        }
+
+        let options = ConfigurationOptions(
+          stunServerUrl: configurationOptions?["stunServerUrl"] as? String,
+          audioEnabled: configurationOptions?["audioEnabled"] as? Bool ?? true,
+          videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true
+        )
+
+        self.whipClient = WhipClient(serverUrl: url, configurationOptions: options)
+      }
+      
+      // Dodanie funkcji asynchronicznej do połączenia się z serwerem
+      AsyncFunction("connectWhip") {
+        guard let client = self.whipClient else {
+          throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
+        }
+        try await client.connect()
+      }
+
+      // Dodanie funkcji do rozłączenia się z serwerem
+      Function("disconnectWhip") {
+        guard let client = self.whipClient else {
           throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
         }
         client.disconnect()
@@ -60,11 +91,10 @@ public class MobileWhepClientModule: Module {
 
     // Enables the module to be used as a native view. Definition components that are accepted as part of the
     // view definition: Prop, Events.
-    View(MobileWhepClientView.self) {
-      // Defines a setter for the `name` prop.
-      Prop("name") { (view: MobileWhepClientView, prop: String) in
-        print(prop)
+      View(MobileWhepClientView.self) {
+          Prop("client") { (view: MobileWhepClientView, client: ClientBase) in
+              view.setClient(client)
+          }
       }
-    }
   }
 }
