@@ -11,10 +11,19 @@ export function hello() {
 export async function createWhepClient(serverUrl, configurationOptions) {
     return MobileWhepClientModule.createClient(serverUrl, configurationOptions);
 }
-export async function connect() {
+export async function connectWhipClient() {
+    return MobileWhepClientModule.connectWhip();
+}
+export function disconnectWhipClient() {
+    return MobileWhepClientModule.disconnectWhip();
+}
+export async function createWhipClient(serverUrl, configurationOptions) {
+    return MobileWhepClientModule.createWhipClient(serverUrl, configurationOptions);
+}
+export async function connectWhepClient() {
     return MobileWhepClientModule.connect();
 }
-export function disconnect() {
+export function disconnectWhepClient() {
     return MobileWhepClientModule.disconnect();
 }
 export async function setValueAsync(value) {

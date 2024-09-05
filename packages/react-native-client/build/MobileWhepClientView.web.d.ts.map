@@ -1,1 +1,1 @@
-{"version":3,"file":"MobileWhepClientView.web.d.ts","sourceRoot":"","sources":["../src/MobileWhepClientView.web.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAE/B,OAAO,EAAE,yBAAyB,EAAE,MAAM,0BAA0B,CAAC;AAErE,MAAM,CAAC,OAAO,UAAU,oBAAoB,CAAC,KAAK,EAAE,yBAAyB,qBAM5E"}
+{"version":3,"file":"MobileWhepClientView.web.d.ts","sourceRoot":"","sources":["../src/MobileWhepClientView.web.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,KAAK,MAAM,OAAO,CAAC;AAE/B,OAAO,EAAE,yBAAyB,EAAE,MAAM,0BAA0B,CAAC;AAErE,MAAM,CAAC,OAAO,UAAU,oBAAoB,CAAC,KAAK,EAAE,yBAAyB,qBAE5E"}

@@ -4,8 +4,11 @@ import { ChangeEventPayload, ConfigurationOptions, MobileWhepClientViewProps } f
 export declare const PI: any;
 export declare function hello(): string;
 export declare function createWhepClient(serverUrl: string, configurationOptions?: ConfigurationOptions): Promise<any>;
-export declare function connect(): Promise<any>;
-export declare function disconnect(): any;
+export declare function connectWhipClient(): Promise<any>;
+export declare function disconnectWhipClient(): any;
+export declare function createWhipClient(serverUrl: string, configurationOptions?: ConfigurationOptions): Promise<any>;
+export declare function connectWhepClient(): Promise<any>;
+export declare function disconnectWhepClient(): any;
 export declare function setValueAsync(value: string): Promise<any>;
 export declare function addChangeListener(listener: (event: ChangeEventPayload) => void): Subscription;
 export { MobileWhepClientView, MobileWhepClientViewProps, ChangeEventPayload };

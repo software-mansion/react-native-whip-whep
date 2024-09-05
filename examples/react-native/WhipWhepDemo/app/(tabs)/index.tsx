@@ -6,6 +6,39 @@ import { requestPermissions } from "@/utils/RequestPermissions";
 import { WhipWhepClientView } from "@mobile-whep/react-native-client";
 
 import * as MobileWhepClient from "mobile-whep-client";
+import { MobileWhepClientView } from "mobile-whep-client";
+import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
+import { useEffect } from "react";
+import { VideoParameters } from "mobile-whep-client/build/MobileWhepClient.types";
+
+const requestPermissions = async () => {
+  try {
+    const cameraPermission = await request(
+      Platform.select({
+        android: PERMISSIONS.ANDROID.CAMERA,
+        ios: PERMISSIONS.IOS.CAMERA,
+      }),
+    );
+
+    const microphonePermission = await request(
+      Platform.select({
+        android: PERMISSIONS.ANDROID.RECORD_AUDIO,
+        ios: PERMISSIONS.IOS.MICROPHONE,
+      }),
+    );
+
+    if (
+      cameraPermission === RESULTS.GRANTED &&
+      microphonePermission === RESULTS.GRANTED
+    ) {
+      console.log("All permissions granted");
+    } else {
+      console.log("Please provide camera and microphone permissions.");
+    }
+  } catch (error) {
+    console.error("Failed to request permission", error);
+  }
+};
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);

@@ -1,6 +1,7 @@
 import Foundation
 import WebRTC
 import os
+import ExpoModulesCore
 
 protocol RTCPeerConnectionFactoryType: AnyObject, RTCPeerConnectionDelegate {
     var peerConnectionFactory: RTCPeerConnectionFactory? { get set }
@@ -48,7 +49,7 @@ protocol Player {
     func disconnect()
 }
 
-public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionFactoryType {
+public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionFactoryType, AnyArgument {
     var serverUrl: URL
     var authToken: String?
     var configurationOptions: ConfigurationOptions?
