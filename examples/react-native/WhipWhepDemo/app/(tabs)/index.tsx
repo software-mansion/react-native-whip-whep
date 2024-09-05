@@ -54,15 +54,15 @@ export default function HomeScreen() {
       videoParameters: VideoParameters.presetFHD43,
     },
   );
-  const whipClient = MobileWhepClient.createWhipClient(
-    "http://192.168.83.201:8829/whip",
-    {
-      authToken: "example",
-      audioEnabled: true,
-      videoEnabled: true,
-      videoParameters: VideoParameters.presetFHD43,
-    },
-  );
+  // const whipClient = MobileWhepClient.createWhipClient(
+  //   "http://192.168.83.201:8829/whip",
+  //   {
+  //     authToken: "example",
+  //     audioEnabled: true,
+  //     videoEnabled: true,
+  //     videoParameters: VideoParameters.presetFHD43,
+  //   },
+  // );
   const clientToPass = whepClient;
 
   console.log(whepClient);
@@ -101,7 +101,7 @@ export default function HomeScreen() {
         </ThemedText>
       </ThemedView>
       <MobileWhepClientView client={clientToPass} />
-      <MobileWhepClientView client={whipClient} />
+      {/* <MobileWhepClientView client={whipClient} /> */}
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
         <ThemedText>
