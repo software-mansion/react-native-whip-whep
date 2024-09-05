@@ -26,9 +26,12 @@ public class MobileWhepClientModule: Module {
         }
 
         let options = ConfigurationOptions(
+            authToken: configurationOptions?["authToken"] as? String,
           stunServerUrl: configurationOptions?["stunServerUrl"] as? String,
           audioEnabled: configurationOptions?["audioEnabled"] as? Bool ?? true,
-          videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true
+          videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,
+            videoParameters: configurationOptions?["videoParameters"] as? VideoParameters ?? VideoParameters.presetFHD43
+        
         )
 
         self.whepClient = WhepClient(serverUrl: url, configurationOptions: options)
@@ -56,9 +59,11 @@ public class MobileWhepClientModule: Module {
         }
 
         let options = ConfigurationOptions(
+            authToken: configurationOptions?["authToken"] as? String,
           stunServerUrl: configurationOptions?["stunServerUrl"] as? String,
           audioEnabled: configurationOptions?["audioEnabled"] as? Bool ?? true,
-          videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true
+          videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,
+            videoParameters: configurationOptions?["videoParameters"] as? VideoParameters ?? VideoParameters.presetFHD43
         )
 
         self.whipClient = WhipClient(serverUrl: url, configurationOptions: options)

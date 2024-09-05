@@ -1,15 +1,15 @@
-import { StyleSheet, Button, View, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  Button,
+  View,
+  ActivityIndicator,
+  Platform,
+} from "react-native";
 
 import * as WhepClient from "@mobile-whep/react-native-client";
 import { useEffect, useState } from "react";
-import { requestPermissions } from "@/utils/RequestPermissions";
 import { WhipWhepClientView } from "@mobile-whep/react-native-client";
-
-import * as MobileWhepClient from "mobile-whep-client";
-import { MobileWhepClientView } from "mobile-whep-client";
 import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
-import { useEffect } from "react";
-import { VideoParameters } from "mobile-whep-client/build/MobileWhepClient.types";
 
 const requestPermissions = async () => {
   try {
