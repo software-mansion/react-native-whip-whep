@@ -45,15 +45,15 @@ export default function HomeScreen() {
     requestPermissions();
   }, []);
 
-  const whepClient = MobileWhepClient.createWhepClient(
-    "http://192.168.83.201:8829/whep",
-    {
-      authToken: "example",
-      audioEnabled: true,
-      videoEnabled: true,
-      videoParameters: VideoParameters.presetFHD43,
-    },
-  );
+  // const whepClient = MobileWhepClient.createWhepClient(
+  //   "http://192.168.83.201:8829/whep",
+  //   {
+  //     authToken: "example",
+  //     audioEnabled: true,
+  //     videoEnabled: true,
+  //     videoParameters: VideoParameters.presetFHD43,
+  //   },
+  // );
   // const whipClient = MobileWhepClient.createWhipClient(
   //   "http://192.168.83.201:8829/whip",
   //   {
@@ -63,9 +63,9 @@ export default function HomeScreen() {
   //     videoParameters: VideoParameters.presetFHD43,
   //   },
   // );
-  const clientToPass = whepClient;
+  // const clientToPass = whepClient;
 
-  console.log(whepClient);
+  // console.log(whepClient);
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
@@ -100,7 +100,7 @@ export default function HomeScreen() {
           to open developer tools.
         </ThemedText>
       </ThemedView>
-      <MobileWhepClientView client={clientToPass} />
+      {/*<MobileWhepClientView client={clientToPass} /> */}
       {/* <MobileWhepClientView client={whipClient} /> */}
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
