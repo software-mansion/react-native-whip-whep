@@ -18,7 +18,6 @@
     "@expo/vector-icons": "^14.0.2",
     "@mobile-whep/react-native-client": "*",
     "@react-native-community/audio-toolkit": "^2.0.3",
-    "@react-native-community/cameraroll": "^4.1.2",
     "@react-navigation/native": "^6.0.2",
     "expo": "~51.0.28",
     "expo-constants": "~16.0.2",

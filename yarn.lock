@@ -2749,16 +2749,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/cameraroll@npm:^4.1.2":
-  version: 4.1.2
-  resolution: "@react-native-community/cameraroll@npm:4.1.2"
-  peerDependencies:
-    react: 16 || 17
-    react-native: ">=0.60"
-  checksum: 10c0/a395e8e0b4f08398b3f601d48825d3fb70193e4940efaacb6dec6fbe613b934ebdfb667cb49632a0186a9713a661e0cc4a03836b2125a3816ba61f98ba4ef548
-  languageName: node
-  linkType: hard
-
 "@react-native-community/cli-clean@npm:13.6.9":
   version: 13.6.9
   resolution: "@react-native-community/cli-clean@npm:13.6.9"
@@ -13681,7 +13671,6 @@ __metadata:
     "@expo/vector-icons": "npm:^14.0.2"
     "@mobile-whep/react-native-client": "npm:*"
     "@react-native-community/audio-toolkit": "npm:^2.0.3"
-    "@react-native-community/cameraroll": "npm:^4.1.2"
     "@react-navigation/native": "npm:^6.0.2"
     "@types/jest": "npm:^29.5.12"
     "@types/react": "npm:~18.2.45"
