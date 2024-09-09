@@ -46,6 +46,4 @@ dependencies {
   implementation project(':expo-modules-core')
   implementation project(':android-client')
   implementation 'androidx.appcompat:appcompat:1.6.1'
-  api "io.github.webrtc-sdk:android:125.6422.03"
-  implementation "com.squareup.okhttp3:okhttp:4.12.0"
 }
