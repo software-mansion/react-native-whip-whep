@@ -44,7 +44,8 @@ android {
 
 dependencies {
   implementation project(':expo-modules-core')
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
-  implementation project(':MobileWhepClient')
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0"
   implementation 'androidx.appcompat:appcompat:1.6.1'
+  api "io.github.webrtc-sdk:android:125.6422.03"
+  implementation "com.squareup.okhttp3:okhttp:4.12.0"
 }
