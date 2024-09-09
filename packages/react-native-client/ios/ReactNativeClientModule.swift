@@ -6,7 +6,7 @@ public class ReactNativeClientModule: Module {
     private var whipClient: WhipClient?
 
   public func definition() -> ModuleDefinition {
-    Name("MobileWhepClient")
+    Name("ReactNativeClient")
 
     Constants([
       "PI": Double.pi
