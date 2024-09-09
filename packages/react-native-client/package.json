@@ -1,5 +1,5 @@
 {
-  "name": "react-native-client",
+  "name": "@mobile-whep/react-native-client",
   "version": "0.1.0",
   "description": "My new module",
   "main": "build/index.js",

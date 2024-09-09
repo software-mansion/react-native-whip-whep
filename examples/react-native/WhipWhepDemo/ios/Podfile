@@ -85,7 +85,7 @@ target 'WhipWhepDemo' do
       end
     end
   end
-
+  pod 'MobileWhepClient', :path => '../../../../'
   post_integrate do |installer|
     begin
       expo_patch_react_imports!(installer)

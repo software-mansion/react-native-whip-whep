@@ -1,8 +1,6 @@
-import { NativeModulesProxy, EventEmitter } from 'expo-modules-core';
-// Import the native module. On web, it will be resolved to ReactNativeClient.web.ts
-// and on native platforms to ReactNativeClient.ts
-import ReactNativeClientModule from './ReactNativeClientModule';
-import ReactNativeClientView from './ReactNativeClientView';
+import { NativeModulesProxy, EventEmitter, } from "expo-modules-core";
+import ReactNativeClientModule from "./ReactNativeClientModule";
+import ReactNativeClientView from "./ReactNativeClientView";
 // Get the native constant value.
 export const PI = ReactNativeClientModule.PI;
 export function hello() {
@@ -13,7 +11,7 @@ export async function setValueAsync(value) {
 }
 const emitter = new EventEmitter(ReactNativeClientModule ?? NativeModulesProxy.ReactNativeClient);
 export function addChangeListener(listener) {
-    return emitter.addListener('onChange', listener);
+    return emitter.addListener("onChange", listener);
 }
-export { ReactNativeClientView };
+export { ReactNativeClientView, };
 //# sourceMappingURL=index.js.map

@@ -71,7 +71,6 @@ PODS:
     - hermes-engine/Pre-built (= 0.74.5)
   - hermes-engine/Pre-built (0.74.5)
   - MobileWhepClient (0.1.0):
-    - ExpoModulesCore
     - WebRTC-SDK (= 125.6422.03)
   - RCT-Folly (2024.01.01.00):
     - boost
@@ -1236,6 +1235,9 @@ PODS:
     - React-utils (= 0.74.5)
   - ReactNativeAudioToolkit (2.0.3):
     - React
+  - ReactNativeClient (0.1.0):
+    - ExpoModulesCore
+    - MobileWhepClient (>= 0.1)
   - RNGestureHandler (2.16.2):
     - DoubleConversion
     - glog
@@ -1324,7 +1326,7 @@ DEPENDENCIES:
   - fmt (from `../../../../node_modules/react-native/third-party-podspecs/fmt.podspec`)
   - glog (from `../../../../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - hermes-engine (from `../../../../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec`)
-  - MobileWhepClient (from `../../../../packages/react-native-client/ios`)
+  - MobileWhepClient (from `../../../../`)
   - RCT-Folly (from `../../../../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCT-Folly/Fabric (from `../../../../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTDeprecation (from `../../../../node_modules/react-native/ReactApple/Libraries/RCTFoundation/RCTDeprecation`)
@@ -1377,6 +1379,7 @@ DEPENDENCIES:
   - React-utils (from `../../../../node_modules/react-native/ReactCommon/react/utils`)
   - ReactCommon/turbomodule/core (from `../../../../node_modules/react-native/ReactCommon`)
   - "ReactNativeAudioToolkit (from `../../../../node_modules/@react-native-community/audio-toolkit`)"
+  - ReactNativeClient (from `../../../../packages/react-native-client/ios`)
   - RNGestureHandler (from `../../../../node_modules/react-native-gesture-handler`)
   - RNPermissions (from `../../../../node_modules/react-native-permissions`)
   - RNReanimated (from `../../../../node_modules/react-native-reanimated`)
@@ -1425,7 +1428,7 @@ EXTERNAL SOURCES:
     :podspec: "../../../../node_modules/react-native/sdks/hermes-engine/hermes-engine.podspec"
     :tag: hermes-2024-06-28-RNv0.74.3-7bda0c267e76d11b68a585f84cfdd65000babf85
   MobileWhepClient:
-    :path: "../../../../packages/react-native-client/ios"
+    :path: "../../../../"
   RCT-Folly:
     :podspec: "../../../../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTDeprecation:
@@ -1526,6 +1529,8 @@ EXTERNAL SOURCES:
     :path: "../../../../node_modules/react-native/ReactCommon"
   ReactNativeAudioToolkit:
     :path: "../../../../node_modules/@react-native-community/audio-toolkit"
+  ReactNativeClient:
+    :path: "../../../../packages/react-native-client/ios"
   RNGestureHandler:
     :path: "../../../../node_modules/react-native-gesture-handler"
   RNPermissions:
@@ -1555,7 +1560,7 @@ SPEC CHECKSUMS:
   fmt: 4c2741a687cc09f0634a2e2c72a838b99f1ff120
   glog: fdfdfe5479092de0c4bdbebedd9056951f092c4f
   hermes-engine: 8c1577f3fdb849cbe7729c2e7b5abc4b845e88f8
-  MobileWhepClient: db04d46be457ccd825c2985fa437c2f70b75d9e0
+  MobileWhepClient: 097a6173db72c10e835020fa6b160fc6ba1124bb
   RCT-Folly: 02617c592a293bd6d418e0a88ff4ee1f88329b47
   RCTDeprecation: 3afceddffa65aee666dafd6f0116f1d975db1584
   RCTRequired: ec1239bc9d8bf63e10fb92bd8b26171a9258e0c1
@@ -1606,6 +1611,7 @@ SPEC CHECKSUMS:
   React-utils: f242eb7e7889419d979ca0e1c02ccc0ea6e43b29
   ReactCommon: f7da14a8827b72704169a48c929bcde802698361
   ReactNativeAudioToolkit: de9610f323e855ac6574be8c99621f3d57c5df06
+  ReactNativeClient: 81f4b7b0f498b1a1735a9c7743255a1f3544a15a
   RNGestureHandler: 2282cfbcf86c360d29f44ace393203afd5c6cff7
   RNPermissions: f61ebf52bb670809d522bba0b09b3e6a9ea5ab7e
   RNReanimated: 16cbf42d8db575242f7956a65c41271756be4832
@@ -1614,6 +1620,6 @@ SPEC CHECKSUMS:
   WebRTC-SDK: a98f7e9d4638b8ae1a8950f7b2970a454ab08cae
   Yoga: 2246eea72aaf1b816a68a35e6e4b74563653ae09
 
-PODFILE CHECKSUM: 4d1c625ed5bf7df6c44baeb997caa17ba96e962e
+PODFILE CHECKSUM: 9ff00a9109344e6276ebc35612d4572670d0ebcf
 
 COCOAPODS: 1.15.2

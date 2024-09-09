@@ -5,7 +5,7 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 
-import * as ReactNativeClient from "react-native-client";
+import * as ReactNativeClient from "@mobile-whep/react-native-client";
 // import * as MobileWhepClient from "mobile-whep-client";
 // import { MobileWhepClientView } from "mobile-whep-client";
 import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
