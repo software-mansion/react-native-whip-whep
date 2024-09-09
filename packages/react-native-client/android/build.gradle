@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-group = 'com.swmansion.mobilewhepclient'
+group = 'com.swmansion.reactnativeclient'
 version = '0.1.0'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -32,7 +32,7 @@ if (useManagedAndroidSdkVersions) {
 }
 
 android {
-  namespace "com.swmansion.mobilewhepclient"
+  namespace "com.swmansion.reactnativeclient"
   defaultConfig {
     versionCode 1
     versionName "0.1.0"
@@ -44,8 +44,6 @@ android {
 
 dependencies {
   implementation project(':expo-modules-core')
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.0"
+  implementation project(':android-client')
   implementation 'androidx.appcompat:appcompat:1.6.1'
-  api "io.github.webrtc-sdk:android:125.6422.03"
-  implementation "com.squareup.okhttp3:okhttp:4.12.0"
 }

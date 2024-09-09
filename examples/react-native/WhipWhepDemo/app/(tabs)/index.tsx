@@ -5,11 +5,12 @@ import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 
-import * as MobileWhepClient from "mobile-whep-client";
-import { MobileWhepClientView } from "mobile-whep-client";
+import * as ReactNativeClient from "react-native-client";
+// import * as MobileWhepClient from "mobile-whep-client";
+// import { MobileWhepClientView } from "mobile-whep-client";
 import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import { useEffect } from "react";
-import { VideoParameters } from "mobile-whep-client/build/MobileWhepClient.types";
+// import { VideoParameters } from "mobile-whep-client/build/MobileWhepClient.types";
 
 const requestPermissions = async () => {
   try {
@@ -45,15 +46,15 @@ export default function HomeScreen() {
     requestPermissions();
   }, []);
 
-  const whepClient = MobileWhepClient.createWhepClient(
-    "http://192.168.83.201:8829/whep",
-    {
-      authToken: "example",
-      audioEnabled: true,
-      videoEnabled: true,
-      videoParameters: VideoParameters.presetFHD43,
-    },
-  );
+  // const whepClient = MobileWhepClient.createWhepClient(
+  //   "http://192.168.83.201:8829/whep",
+  //   {
+  //     authToken: "example",
+  //     audioEnabled: true,
+  //     videoEnabled: true,
+  //     videoParameters: VideoParameters.presetFHD43,
+  //   },
+  // );
   // const whipClient = MobileWhepClient.createWhipClient(
   //   "http://192.168.83.201:8829/whip",
   //   {
@@ -79,17 +80,17 @@ export default function HomeScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
-        <Button
+        {/*<Button
           onPress={async () => await MobileWhepClient.connectWhepClient()}
           title="whep"
         />
         <Button
           onPress={async () => await MobileWhepClient.connectWhipClient()}
           title="whip"
-        />
+        />*/}
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">xd</ThemedText>
+        <ThemedText type="subtitle">{ReactNativeClient.hello()}</ThemedText>
         <ThemedText>
           Edit{" "}
           <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}

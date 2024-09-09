@@ -1,7 +1,7 @@
 {
-  "name": "mobile-whep-client",
+  "name": "react-native-client",
   "version": "0.1.0",
-  "description": "Mobile WHIP/WHEP client",
+  "description": "My new module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
@@ -18,8 +18,8 @@
   "keywords": [
     "react-native",
     "expo",
-    "mobile-whep-client",
-    "MobileWhepClient"
+    "react-native-client",
+    "ReactNativeClient"
   ],
   "repository": "https://",
   "bugs": {

@@ -1,71 +1,26 @@
-import {
-  NativeModulesProxy,
-  EventEmitter,
-  Subscription,
-} from 'expo-modules-core';
+import { NativeModulesProxy, EventEmitter, Subscription } from 'expo-modules-core';
 
-// Import the native module. On web, it will be resolved to MobileWhepClient.web.ts
-// and on native platforms to MobileWhepClient.ts
-import MobileWhepClientModule from './MobileWhepClientModule';
-import MobileWhepClientView from './MobileWhepClientView';
-import {
-  ChangeEventPayload,
-  ConfigurationOptions,
-  MobileWhepClientViewProps,
-} from './MobileWhepClient.types';
+// Import the native module. On web, it will be resolved to ReactNativeClient.web.ts
+// and on native platforms to ReactNativeClient.ts
+import ReactNativeClientModule from './ReactNativeClientModule';
+import ReactNativeClientView from './ReactNativeClientView';
+import { ChangeEventPayload, ReactNativeClientViewProps } from './ReactNativeClient.types';
 
 // Get the native constant value.
-export const PI = MobileWhepClientModule.PI;
+export const PI = ReactNativeClientModule.PI;
 
 export function hello(): string {
-  return MobileWhepClientModule.hello();
-}
-
-export async function createWhepClient(
-  serverUrl: string,
-  configurationOptions?: ConfigurationOptions,
-) {
-  return MobileWhepClientModule.createClient(serverUrl, configurationOptions);
-}
-
-export async function connectWhipClient() {
-  return MobileWhepClientModule.connectWhip();
-}
-
-export function disconnectWhipClient() {
-  return MobileWhepClientModule.disconnectWhip();
-}
-
-export async function createWhipClient(
-  serverUrl: string,
-  configurationOptions?: ConfigurationOptions,
-) {
-  return MobileWhepClientModule.createWhipClient(
-    serverUrl,
-    configurationOptions,
-  );
-}
-
-export async function connectWhepClient() {
-  return MobileWhepClientModule.connect();
-}
-
-export function disconnectWhepClient() {
-  return MobileWhepClientModule.disconnect();
+  return ReactNativeClientModule.hello();
 }
 
 export async function setValueAsync(value: string) {
-  return await MobileWhepClientModule.setValueAsync(value);
+  return await ReactNativeClientModule.setValueAsync(value);
 }
 
-const emitter = new EventEmitter(
-  MobileWhepClientModule ?? NativeModulesProxy.MobileWhepClient,
-);
+const emitter = new EventEmitter(ReactNativeClientModule ?? NativeModulesProxy.ReactNativeClient);
 
-export function addChangeListener(
-  listener: (event: ChangeEventPayload) => void,
-): Subscription {
+export function addChangeListener(listener: (event: ChangeEventPayload) => void): Subscription {
   return emitter.addListener<ChangeEventPayload>('onChange', listener);
 }
 
-export { MobileWhepClientView, MobileWhepClientViewProps, ChangeEventPayload };
+export { ReactNativeClientView, ReactNativeClientViewProps, ChangeEventPayload };

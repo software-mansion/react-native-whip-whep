@@ -10118,20 +10118,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobile-whep-client@npm:*, mobile-whep-client@workspace:packages/react-native-client":
-  version: 0.0.0-use.local
-  resolution: "mobile-whep-client@workspace:packages/react-native-client"
-  dependencies:
-    "@types/react": "npm:^18.0.25"
-    expo-module-scripts: "npm:^3.5.2"
-    expo-modules-core: "npm:^1.12.20"
-  peerDependencies:
-    expo: "*"
-    react: "*"
-    react-native: "*"
-  languageName: unknown
-  linkType: soft
-
 "mobile-whep@workspace:.":
   version: 0.0.0-use.local
   resolution: "mobile-whep@workspace:."
@@ -11209,6 +11195,20 @@ __metadata:
   checksum: 10c0/2bdb6b93fbb1820b024b496042cce405c57e2f85e777c9aabd55f9b26d145408f9f74f5934676ffdc46f3dcff656d78413a6e43968e7b3f92eea35b3052e9053
   languageName: node
   linkType: hard
+
+"react-native-client@npm:*, react-native-client@workspace:packages/react-native-client":
+  version: 0.0.0-use.local
+  resolution: "react-native-client@workspace:packages/react-native-client"
+  dependencies:
+    "@types/react": "npm:^18.0.25"
+    expo-module-scripts: "npm:^3.5.2"
+    expo-modules-core: "npm:^1.12.20"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  languageName: unknown
+  linkType: soft
 
 "react-native-gesture-handler@npm:~2.16.1":
   version: 2.16.2
@@ -13696,10 +13696,10 @@ __metadata:
     expo-web-browser: "npm:~13.0.3"
     jest: "npm:^29.2.1"
     jest-expo: "npm:~51.0.3"
-    mobile-whep-client: "npm:*"
     react: "npm:18.2.0"
     react-dom: "npm:18.2.0"
     react-native: "npm:0.74.5"
+    react-native-client: "npm:*"
     react-native-gesture-handler: "npm:~2.16.1"
     react-native-permissions: "npm:^4.1.5"
     react-native-reanimated: "npm:~3.10.1"
