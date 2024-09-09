@@ -63,21 +63,21 @@ dependencies {
 
   // Compose dependencies
   implementation platform("androidx.compose:compose-bom:2024.04.01")
-  implementation "androidx.compose.ui:ui:1.1.0"  // Zauważ, że wersja nie jest określona w libs.toml, więc pozostawiono domyślną wersję
-  implementation "androidx.compose.ui:ui-graphics:1.1.0"  // jak wyżej
-  implementation "androidx.compose.ui:ui-tooling-preview:1.1.0"  // jak wyżej
-  implementation "androidx.compose.material3:material3:1.0.0-beta02"  // Zauważ, że wersja nie jest określona w libs.toml, więc pozostawiono domyślną wersję
+  implementation "androidx.compose.ui:ui:1.1.0"
+  implementation "androidx.compose.ui:ui-graphics:1.1.0"
+  implementation "androidx.compose.ui:ui-tooling-preview:1.1.0"
+  implementation "androidx.compose.material3:material3:1.0.0-beta02"
 
   // Testing dependencies
   testImplementation "junit:junit:4.13.2"
   androidTestImplementation "androidx.test.ext:junit:1.1.5"
   androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
   androidTestImplementation platform("androidx.compose:compose-bom:2024.04.01")
-  androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.1.0"  // Zauważ, że wersja nie jest określona w libs.toml, więc pozostawiono domyślną wersję
+  androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.1.0"
 
   // Debug dependencies
-  debugImplementation "androidx.compose.ui:ui-tooling:1.1.0"  // Zauważ, że wersja nie jest określona w libs.toml, więc pozostawiono domyślną wersję
-  debugImplementation "androidx.compose.ui:ui-test-manifest:1.1.0"  // jak wyżej
+  debugImplementation "androidx.compose.ui:ui-tooling:1.1.0"
+  debugImplementation "androidx.compose.ui:ui-test-manifest:1.1.0"
 
   // Other dependencies
   api "io.github.webrtc-sdk:android:125.6422.03"
