@@ -6,6 +6,24 @@ export const PI = ReactNativeClientModule.PI;
 export function hello() {
     return ReactNativeClientModule.hello();
 }
+export async function createWhepClient(serverUrl, configurationOptions) {
+    return await ReactNativeClientModule.createClient(serverUrl, configurationOptions);
+}
+export async function connectWhipClient() {
+    return await ReactNativeClientModule.connectWhip();
+}
+export function disconnectWhipClient() {
+    return ReactNativeClientModule.disconnectWhip();
+}
+export async function createWhipClient(serverUrl, configurationOptions) {
+    return await ReactNativeClientModule.createWhipClient(serverUrl, configurationOptions);
+}
+export async function connectWhepClient() {
+    return await ReactNativeClientModule.connect();
+}
+export function disconnectWhepClient() {
+    return ReactNativeClientModule.disconnect();
+}
 export async function setValueAsync(value) {
     return await ReactNativeClientModule.setValueAsync(value);
 }
