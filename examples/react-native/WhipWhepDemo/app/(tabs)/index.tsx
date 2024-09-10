@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform, Button } from "react-native";
+import { Image, StyleSheet, Platform, Button, View } from "react-native";
 
 import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
@@ -9,8 +9,7 @@ import * as ReactNativeClient from "@mobile-whep/react-native-client";
 import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import { useEffect } from "react";
 import { VideoParameters } from "@mobile-whep/react-native-client/build/ReactNativeClient.types";
-import { ReactNativeClientView } from "@mobile-whep/react-native-client";
-// import { VideoParameters } from "mobile-whep-client/build/ReactNativeClient.types";
+import ReactNativeClientView from "@mobile-whep/react-native-client";
 
 const requestPermissions = async () => {
   try {
@@ -44,6 +43,13 @@ const requestPermissions = async () => {
 export default function HomeScreen() {
   useEffect(() => {
     requestPermissions();
+  }, []);
+
+  useEffect(() => {
+    ReactNativeClient.addTrackListener((event) => {
+      console.log("Track added");
+      console.log(event);
+    });
   }, []);
 
   const whepClient = ReactNativeClient.createWhepClient(
@@ -115,7 +121,9 @@ export default function HomeScreen() {
           to open developer tools.
         </ThemedText>
       </ThemedView>
-      {/* <ReactNativeClientView client={whepClient} /> */}
+      <View style={{ width: 50, height: 50 }}>
+        <ReactNativeClientView trackId="xd" />
+      </View>
       {/* <ReactNativeClientView client={whipClient} /> */}
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>

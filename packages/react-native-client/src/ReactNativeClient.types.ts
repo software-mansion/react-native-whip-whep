@@ -3,7 +3,7 @@ export type ChangeEventPayload = {
 };
 
 export type ReactNativeClientViewProps = {
-  client: any;
+  trackId?: string;
 };
 
 export type ConfigurationOptions = {

@@ -1,5 +1,5 @@
 import { NativeModulesProxy, EventEmitter, } from "expo-modules-core";
-import ReactNativeClientModule from "./ReactNativeClientModule";
+import ReactNativeClientModule, { addTrackListener, } from "./ReactNativeClientModule";
 import ReactNativeClientView from "./ReactNativeClientView";
 // Get the native constant value.
 export const PI = ReactNativeClientModule.PI;
@@ -24,12 +24,9 @@ export async function connectWhepClient() {
 export function disconnectWhepClient() {
     return ReactNativeClientModule.disconnect();
 }
-export async function setValueAsync(value) {
-    return await ReactNativeClientModule.setValueAsync(value);
-}
 const emitter = new EventEmitter(ReactNativeClientModule ?? NativeModulesProxy.ReactNativeClient);
 export function addChangeListener(listener) {
     return emitter.addListener("onChange", listener);
 }
-export { ReactNativeClientView, };
+export { ReactNativeClientView, addTrackListener, };
 //# sourceMappingURL=index.js.map

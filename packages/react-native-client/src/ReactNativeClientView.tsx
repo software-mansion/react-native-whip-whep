@@ -4,10 +4,12 @@ import * as React from "react";
 import { ReactNativeClientViewProps } from "./ReactNativeClient.types";
 
 const NativeView: React.ComponentType<ReactNativeClientViewProps> =
-  requireNativeViewManager("ReactNativeClient");
+  requireNativeViewManager("ReactNativeClientViewModule");
 
-export default function ReactNativeClientView(
-  props: ReactNativeClientViewProps
-) {
-  return <NativeView {...props} />;
-}
+export const ReactNativeClientView = React.forwardRef<
+  React.ComponentType<ReactNativeClientViewProps>,
+  ReactNativeClientViewProps
+>((props, ref) => (
+  // @ts-expect-error ref prop needs to be updated
+  <NativeView {...props} ref={ref} />
+));

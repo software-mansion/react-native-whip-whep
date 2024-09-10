@@ -11,7 +11,9 @@ import {
   ConfigurationOptions,
   ReactNativeClientViewProps,
 } from "./ReactNativeClient.types";
-import ReactNativeClientModule from "./ReactNativeClientModule";
+import ReactNativeClientModule, {
+  addTrackListener,
+} from "./ReactNativeClientModule";
 import ReactNativeClientView from "./ReactNativeClientView";
 
 // Get the native constant value.
@@ -57,10 +59,6 @@ export function disconnectWhepClient() {
   return ReactNativeClientModule.disconnect();
 }
 
-export async function setValueAsync(value: string) {
-  return await ReactNativeClientModule.setValueAsync(value);
-}
-
 const emitter = new EventEmitter(
   ReactNativeClientModule ?? NativeModulesProxy.ReactNativeClient
 );
@@ -75,4 +73,5 @@ export {
   ReactNativeClientView,
   ReactNativeClientViewProps,
   ChangeEventPayload,
+  addTrackListener,
 };

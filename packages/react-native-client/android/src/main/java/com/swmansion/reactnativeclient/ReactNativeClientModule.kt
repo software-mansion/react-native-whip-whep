@@ -2,6 +2,7 @@ package com.swmansion.reactnativeclient
 
 import android.content.Context
 import com.mobilewhep.client.ClientBase
+import com.mobilewhep.client.ClientBaseListener
 import com.mobilewhep.client.ConfigurationOptions
 import com.mobilewhep.client.VideoParameters
 import com.mobilewhep.client.WhepClient
@@ -13,8 +14,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.webrtc.VideoTrack
 
-class ReactNativeClientModule : Module() {
+class ReactNativeClientModule : Module(), ClientBaseListener {
   // Each module class must implement the definition function. The definition consists of components
   // that describes the module's functionality and behavior.
   // See https://docs.expo.dev/modules/module-api for more details about available components.
@@ -33,7 +35,7 @@ class ReactNativeClientModule : Module() {
     )
 
     // Defines event names that the module can send to JavaScript.
-    Events("onChange")
+    Events("onChange", "trackAdded")
 
     // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
     Function("hello") {
@@ -50,6 +52,7 @@ class ReactNativeClientModule : Module() {
         videoParameters = configurationOptions?.get("videoParameters") as? VideoParameters ?: VideoParameters.presetFHD43
       )
       whepClient = WhepClient(context, serverUrl, options)
+      whepClient!!.addTrackListener(this@ReactNativeClientModule)
     }
 
     AsyncFunction("connect")  Coroutine { ->
@@ -72,6 +75,7 @@ class ReactNativeClientModule : Module() {
         videoParameters = configurationOptions?.get("videoParameters") as? VideoParameters ?: VideoParameters.presetFHD43
       )
       whipClient = WhipClient(context, serverUrl, options)
+      sendEvent("onChange", mapOf("status" to "whipClientCreated"))
     }
 
     AsyncFunction("connectWhip") Coroutine  { ->
@@ -95,10 +99,10 @@ class ReactNativeClientModule : Module() {
 
     // Enables the module to be used as a native view. Definition components that are accepted as part of
     // the view definition: Prop, Events.
-    View(ReactNativeClientView::class) {
-      Prop("client") { view: ReactNativeClientView, client: ClientBase ->
-        view.setClient(client)
-      }
-    }
+
+  }
+
+  override fun onTrackAdded(track: VideoTrack) {
+    sendEvent("trackAdded", mapOf(track.id() to track.kind()))
   }
 }
