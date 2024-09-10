@@ -8,6 +8,7 @@ import {
 // and on native platforms to ReactNativeClient.ts
 import {
   ChangeEventPayload,
+  ConfigurationOptions,
   ReactNativeClientViewProps,
 } from "./ReactNativeClient.types";
 import ReactNativeClientModule from "./ReactNativeClientModule";
@@ -18,6 +19,42 @@ export const PI = ReactNativeClientModule.PI;
 
 export function hello(): string {
   return ReactNativeClientModule.hello();
+}
+
+export async function createWhepClient(
+  serverUrl: string,
+  configurationOptions?: ConfigurationOptions
+) {
+  return await ReactNativeClientModule.createClient(
+    serverUrl,
+    configurationOptions
+  );
+}
+
+export async function connectWhipClient() {
+  return await ReactNativeClientModule.connectWhip();
+}
+
+export function disconnectWhipClient() {
+  return ReactNativeClientModule.disconnectWhip();
+}
+
+export async function createWhipClient(
+  serverUrl: string,
+  configurationOptions?: ConfigurationOptions
+) {
+  return await ReactNativeClientModule.createWhipClient(
+    serverUrl,
+    configurationOptions
+  );
+}
+
+export async function connectWhepClient() {
+  return await ReactNativeClientModule.connect();
+}
+
+export function disconnectWhepClient() {
+  return ReactNativeClientModule.disconnect();
 }
 
 export async function setValueAsync(value: string) {

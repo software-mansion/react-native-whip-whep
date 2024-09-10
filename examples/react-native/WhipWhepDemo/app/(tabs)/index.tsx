@@ -6,11 +6,11 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 
 import * as ReactNativeClient from "@mobile-whep/react-native-client";
-// import * as MobileWhepClient from "mobile-whep-client";
-// import { MobileWhepClientView } from "mobile-whep-client";
 import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import { useEffect } from "react";
-// import { VideoParameters } from "mobile-whep-client/build/MobileWhepClient.types";
+import { VideoParameters } from "@mobile-whep/react-native-client/build/ReactNativeClient.types";
+import { ReactNativeClientView } from "@mobile-whep/react-native-client";
+// import { VideoParameters } from "mobile-whep-client/build/ReactNativeClient.types";
 
 const requestPermissions = async () => {
   try {
@@ -46,17 +46,17 @@ export default function HomeScreen() {
     requestPermissions();
   }, []);
 
-  // const whepClient = MobileWhepClient.createWhepClient(
-  //   "http://192.168.83.201:8829/whep",
-  //   {
-  //     authToken: "example",
-  //     audioEnabled: true,
-  //     videoEnabled: true,
-  //     videoParameters: VideoParameters.presetFHD43,
-  //   },
-  // );
-  // const whipClient = MobileWhepClient.createWhipClient(
-  //   "http://192.168.83.201:8829/whip",
+  const whepClient = ReactNativeClient.createWhepClient(
+    "http://192.168.83.48:8829/whep",
+    {
+      authToken: "example",
+      audioEnabled: true,
+      videoEnabled: true,
+      videoParameters: VideoParameters.presetFHD43,
+    },
+  );
+  // const whipClient = ReactNativeClient.createWhipClient(
+  //   "http://192.168.83.48:8829/whip",
   //   {
   //     authToken: "example",
   //     audioEnabled: true,
@@ -80,14 +80,28 @@ export default function HomeScreen() {
       <ThemedView style={styles.titleContainer}>
         <ThemedText type="title">Welcome!</ThemedText>
         <HelloWave />
-        {/*<Button
-          onPress={async () => await MobileWhepClient.connectWhepClient()}
-          title="whep"
+        <Button
+          onPress={async () => {
+            try {
+              await ReactNativeClient.connectWhepClient();
+              console.log("Connected to WHEP Client");
+            } catch (error) {
+              console.error("Failed to connect to WHEP Client", error);
+            }
+          }}
+          title="WHEP"
         />
         <Button
-          onPress={async () => await MobileWhepClient.connectWhipClient()}
-          title="whip"
-        />*/}
+          onPress={async () => {
+            try {
+              await ReactNativeClient.connectWhipClient();
+              console.log("Connected to WHIP Client");
+            } catch (error) {
+              console.error("Failed to connect to WHIP Client", error);
+            }
+          }}
+          title="WHIP"
+        />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">{ReactNativeClient.hello()}</ThemedText>
@@ -101,8 +115,8 @@ export default function HomeScreen() {
           to open developer tools.
         </ThemedText>
       </ThemedView>
-      {/*<MobileWhepClientView client={clientToPass} /> */}
-      {/* <MobileWhepClientView client={whipClient} /> */}
+      {/* <ReactNativeClientView client={whepClient} /> */}
+      {/* <ReactNativeClientView client={whipClient} /> */}
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
         <ThemedText>

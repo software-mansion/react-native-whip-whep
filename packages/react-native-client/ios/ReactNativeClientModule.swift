@@ -97,10 +97,13 @@ public class ReactNativeClientModule: Module {
 
     // Enables the module to be used as a native view. Definition components that are accepted as part of the
     // view definition: Prop, Events.
-//      View(ReactNativeClientView.self) {
-//          Prop("client") { (view: MobileWhepClientView, client: ClientBase) in
-//              view.setClient(client)
-//          }
-//      }
+      View(ReactNativeClientView.self) {
+          Prop("client") { (view: ReactNativeClientView, client: ClientBase) in
+              view.setClient(client)
+          }
+      }
   }
 }
+
+extension ClientBase: AnyArgument {}
+
