@@ -9,7 +9,7 @@ import * as ReactNativeClient from "@mobile-whep/react-native-client";
 import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
 import { useEffect } from "react";
 import { VideoParameters } from "@mobile-whep/react-native-client/build/ReactNativeClient.types";
-import ReactNativeClientView from "@mobile-whep/react-native-client";
+import { ReactNativeClientView } from "@mobile-whep/react-native-client";
 
 const requestPermissions = async () => {
   try {

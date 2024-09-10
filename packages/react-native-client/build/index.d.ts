@@ -1,7 +1,7 @@
 import { Subscription } from "expo-modules-core";
 import { ChangeEventPayload, ConfigurationOptions, ReactNativeClientViewProps } from "./ReactNativeClient.types";
 import { addTrackListener } from "./ReactNativeClientModule";
-import ReactNativeClientView from "./ReactNativeClientView";
+import { ReactNativeClientView } from "./ReactNativeClientView";
 export declare const PI: any;
 export declare function hello(): string;
 export declare function createWhepClient(serverUrl: string, configurationOptions?: ConfigurationOptions): Promise<any>;

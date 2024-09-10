@@ -14,7 +14,7 @@ import {
 import ReactNativeClientModule, {
   addTrackListener,
 } from "./ReactNativeClientModule";
-import ReactNativeClientView from "./ReactNativeClientView";
+import { ReactNativeClientView } from "./ReactNativeClientView";
 
 // Get the native constant value.
 export const PI = ReactNativeClientModule.PI;
