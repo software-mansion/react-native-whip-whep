@@ -9,8 +9,6 @@ import com.mobilewhep.client.VideoView
 import com.swmansion.reactnativeclient.ReactNativeClientModule.Companion.whepClient
 import com.swmansion.reactnativeclient.ReactNativeClientModule.Companion.whipClient
 import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.views.ExpoView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
