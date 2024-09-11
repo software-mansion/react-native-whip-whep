@@ -2,10 +2,6 @@ export type ChangeEventPayload = {
   value: string;
 };
 
-export type ReactNativeClientViewProps = {
-  trackId?: string;
-};
-
 export type ConfigurationOptions = {
   authToken?: string;
   stunServerUrl?: string;

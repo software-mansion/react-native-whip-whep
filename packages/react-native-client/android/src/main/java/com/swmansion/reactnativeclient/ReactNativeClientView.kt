@@ -47,6 +47,8 @@ class ReactNativeClientView(context: Context, appContext: AppContext) : ExpoView
     videoView.player?.videoTrack?.removeSink(videoView)
     videoView.player?.videoTrack = videoTrack
     videoTrack.addSink(videoView)
+    trackIdTextView.text = whepClient?.videoTrack?.id() ?: ""
+
   }
 
   private fun update(track: VideoTrack) {
@@ -54,13 +56,6 @@ class ReactNativeClientView(context: Context, appContext: AppContext) : ExpoView
       Log.d("kotki", track.id() ?: "też ni ma")
       setupTrack(track)
     }
-  }
-
-  private var trackId: String? = null
-  fun init(trackId: String) {
-    this.trackId = trackId
-    trackIdTextView.text = whepClient?.videoTrack?.id() ?: ""
-    Log.d("kotki", activeVideoTrack?.id() ?: "ni ma")
   }
 
   override fun onTrackUpdate(track: VideoTrack) {

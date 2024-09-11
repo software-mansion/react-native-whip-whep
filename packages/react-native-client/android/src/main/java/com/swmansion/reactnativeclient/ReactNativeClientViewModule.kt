@@ -9,10 +9,6 @@ class ReactNativeClientViewModule : Module() {
       Name("ReactNativeClientViewModule")
 
       View(ReactNativeClientView::class) {
-
-        Prop("trackId") { view: ReactNativeClientView, trackId: String ->
-          view.init(trackId)
-        }
       }
     }
 }

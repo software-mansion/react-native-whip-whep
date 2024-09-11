@@ -126,7 +126,7 @@ export default function HomeScreen() {
       </ThemedView>
 
       <View style={{ width: 90, height: 90 }}>
-        <ReactNativeClientView style={{ flex: 1 }} trackId={"xd"} />
+        <ReactNativeClientView style={{ flex: 1 }} />
       </View>
 
       {/* <ReactNativeClientView client={whipClient} /> */}

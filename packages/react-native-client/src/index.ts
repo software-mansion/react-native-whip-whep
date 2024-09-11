@@ -9,7 +9,6 @@ import {
 import {
   ChangeEventPayload,
   ConfigurationOptions,
-  ReactNativeClientViewProps,
 } from "./ReactNativeClient.types";
 import ReactNativeClientModule, {
   addTrackListener,
@@ -71,9 +70,4 @@ export function addChangeListener(
   return emitter.addListener<ChangeEventPayload>("onChange", listener);
 }
 
-export {
-  ReactNativeClientView,
-  ReactNativeClientViewProps,
-  ChangeEventPayload,
-  addTrackListener,
-};
+export { ReactNativeClientView, ChangeEventPayload, addTrackListener };
