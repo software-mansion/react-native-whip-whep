@@ -3,6 +3,7 @@ import { ChangeEventPayload, ConfigurationOptions, ReactNativeClientViewProps } 
 import { addTrackListener } from "./ReactNativeClientModule";
 import { ReactNativeClientView } from "./ReactNativeClientView";
 export declare const PI: any;
+export declare const whepClient: any;
 export declare function hello(): string;
 export declare function createWhepClient(serverUrl: string, configurationOptions?: ConfigurationOptions): Promise<any>;
 export declare function connectWhipClient(): Promise<any>;

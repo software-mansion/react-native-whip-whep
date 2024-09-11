@@ -124,11 +124,11 @@ export default function HomeScreen() {
           to open developer tools.
         </ThemedText>
       </ThemedView>
-      {isConnected && (
-        <View style={{ width: 90, height: 90 }}>
-          <ReactNativeClientView style={{ flex: 1 }} trackId={"xd"} />
-        </View>
-      )}
+
+      <View style={{ width: 90, height: 90 }}>
+        <ReactNativeClientView style={{ flex: 1 }} trackId={"xd"} />
+      </View>
+
       {/* <ReactNativeClientView client={whipClient} /> */}
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>

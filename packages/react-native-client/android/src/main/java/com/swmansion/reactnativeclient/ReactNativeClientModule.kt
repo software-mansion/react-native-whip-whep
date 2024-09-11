@@ -1,7 +1,7 @@
 package com.swmansion.reactnativeclient
 
 import android.content.Context
-import com.mobilewhep.client.ClientBase
+import android.util.Log
 import com.mobilewhep.client.ClientBaseListener
 import com.mobilewhep.client.ConfigurationOptions
 import com.mobilewhep.client.VideoParameters
@@ -10,23 +10,24 @@ import com.mobilewhep.client.WhipClient
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.webrtc.VideoTrack
 
 class ReactNativeClientModule : Module(), ClientBaseListener {
-  public var whepClient: WhepClient? = null
-  public var whipClient: WhipClient? = null
+  interface OnTrackUpdateListener {
+    fun onTrackUpdate(track: VideoTrack)
+  }
+
+  companion object{
+    var onTrackUpdateListeners: MutableList<OnTrackUpdateListener> = mutableListOf()
+    lateinit var whepClient: WhepClient
+    lateinit var whipClient: WhipClient
+  }
 
   override fun definition() = ModuleDefinition {
-    // Sets the name of the module that JavaScript code will use to refer to the module. Takes a string as an argument.
-    // Can be inferred from module's class name, but it's recommended to set it explicitly for clarity.
-    // The module will be accessible from `requireNativeModule('ReactNativeClient')` in JavaScript.
     Name("ReactNativeClient")
 
-    // Sets constant properties on the module. Can take a dictionary or a closure that returns a dictionary.
     Constants(
       "PI" to Math.PI
     )
@@ -98,5 +99,7 @@ class ReactNativeClientModule : Module(), ClientBaseListener {
 
   override fun onTrackAdded(track: VideoTrack) {
     sendEvent("trackAdded", mapOf(track.id() to track.kind()))
+    onTrackUpdateListeners.forEach { it.onTrackUpdate(track) }
+    Log.d("kotki", onTrackUpdateListeners.toString())
   }
 }

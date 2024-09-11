@@ -3,6 +3,7 @@ import ReactNativeClientModule, { addTrackListener, } from "./ReactNativeClientM
 import { ReactNativeClientView } from "./ReactNativeClientView";
 // Get the native constant value.
 export const PI = ReactNativeClientModule.PI;
+export const whepClient = ReactNativeClientModule.whepClient;
 export function hello() {
     return ReactNativeClientModule.hello();
 }
