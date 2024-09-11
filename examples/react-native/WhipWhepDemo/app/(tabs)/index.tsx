@@ -7,7 +7,7 @@ import { ThemedView } from "@/components/ThemedView";
 
 import * as ReactNativeClient from "@mobile-whep/react-native-client";
 import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { VideoParameters } from "@mobile-whep/react-native-client/build/ReactNativeClient.types";
 import { ReactNativeClientView } from "@mobile-whep/react-native-client";
 
@@ -52,8 +52,10 @@ export default function HomeScreen() {
     });
   }, []);
 
+  const [isConnected, setIsConnected] = useState(false);
+
   const whepClient = ReactNativeClient.createWhepClient(
-    "http://192.168.83.48:8829/whep",
+    "http://192.168.1.23:8829/whep",
     {
       authToken: "example",
       audioEnabled: true,
@@ -90,6 +92,7 @@ export default function HomeScreen() {
           onPress={async () => {
             try {
               await ReactNativeClient.connectWhepClient();
+              setIsConnected(true);
               console.log("Connected to WHEP Client");
             } catch (error) {
               console.error("Failed to connect to WHEP Client", error);
@@ -121,9 +124,11 @@ export default function HomeScreen() {
           to open developer tools.
         </ThemedText>
       </ThemedView>
-      <View style={{ width: 50, height: 50 }}>
-        <ReactNativeClientView trackId="xd" />
-      </View>
+      {isConnected && (
+        <View style={{ width: 90, height: 90 }}>
+          <ReactNativeClientView style={{ flex: 1 }} trackId={"xd"} />
+        </View>
+      )}
       {/* <ReactNativeClientView client={whipClient} /> */}
       <ThemedView style={styles.stepContainer}>
         <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
