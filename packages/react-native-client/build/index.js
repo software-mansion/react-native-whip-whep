@@ -29,5 +29,5 @@ const emitter = new EventEmitter(ReactNativeClientModule ?? NativeModulesProxy.R
 export function addChangeListener(listener) {
     return emitter.addListener("onChange", listener);
 }
-export { ReactNativeClientView, addTrackListener, };
+export { ReactNativeClientView, addTrackListener };
 //# sourceMappingURL=index.js.map
