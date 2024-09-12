@@ -39,6 +39,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.mobilewhep.client.ConfigurationOptions
+import com.mobilewhep.client.VideoView
 import com.mobilewhep.client.WhepClient
 import com.mobilewhep.client.WhipClient
 import com.swmansion.whipwhepdemo.ui.theme.WhipWhepDemoTheme
@@ -46,7 +47,6 @@ import kotlinx.coroutines.launch
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraEnumerator
-import org.webrtc.RendererCommon
 
 class MainActivity : ComponentActivity() {
   private val PERMISSIONS_REQUEST_CODE = 101
@@ -152,12 +152,12 @@ fun PlayerView(modifier: Modifier = Modifier) {
       )
     }
 
-  var whipView: ClientView? =
+  var whipView: VideoView? =
     remember {
       null
     }
 
-  var view: ClientView? =
+  var view: VideoView? =
     remember {
       null
     }
@@ -199,10 +199,8 @@ fun PlayerView(modifier: Modifier = Modifier) {
     Box {
       AndroidView(
         factory = { ctx ->
-          ClientView(ctx).apply {
+          VideoView(ctx).apply {
             player = whepPlayer
-            this.setScalingType(RendererCommon.ScalingType.SCALE_ASPECT_FIT)
-            this.setEnableHardwareScaler(true)
           }
         },
         modifier =
@@ -247,7 +245,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
     ) {
       AndroidView(
         factory = { ctx ->
-          ClientView(ctx).apply {
+          VideoView(ctx).apply {
             player = whipPlayer
           }
         },
