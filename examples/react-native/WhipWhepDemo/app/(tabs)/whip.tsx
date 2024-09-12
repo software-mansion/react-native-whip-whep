@@ -16,7 +16,6 @@ import {
 import { useEffect, useState } from "react";
 import { VideoParameters } from "@mobile-whep/react-native-client/build/ReactNativeClient.types";
 import { ReactNativeClientView } from "@mobile-whep/react-native-client";
-import { useCameraDevice } from "react-native-vision-camera";
 
 const requestPermissions = async (): Promise<boolean> => {
   try {
@@ -53,7 +52,6 @@ const requestPermissions = async (): Promise<boolean> => {
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
-  const [devices, setDevices] = useState([]);
 
   const handleStreamBtnClick = async () => {
     setShouldShowStreamBtn(false);
@@ -71,6 +69,8 @@ export default function HomeScreen() {
     const initialize = async () => {
       const hasPermissions = await requestPermissions();
       if (hasPermissions) {
+        const availableDevices = ReactNativeClient.getCaptureDevices();
+
         ReactNativeClient.createWhipClient(
           "http://192.168.1.23:8829/whip",
           {
@@ -79,7 +79,7 @@ export default function HomeScreen() {
             videoEnabled: true,
             videoParameters: VideoParameters.presetFHD43,
           },
-          devices[0],
+          availableDevices[0],
         );
 
         console.log("WHIP Client created");
@@ -87,8 +87,6 @@ export default function HomeScreen() {
         ReactNativeClient.addTrackListener((event) => {
           console.log("Track added:", event);
         });
-
-        setDevices(ReactNativeClient.getCaptureDevices());
 
         return () => {
           ReactNativeClient.disconnectWhipClient();
