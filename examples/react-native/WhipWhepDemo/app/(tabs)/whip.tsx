@@ -8,13 +8,7 @@ import { WhipWhepClientView } from "@mobile-whep/react-native-client";
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
-  const device = useCameraDevice("back", {
-    physicalDevices: [
-      "ultra-wide-angle-camera",
-      "wide-angle-camera",
-      "telephoto-camera",
-    ],
-  });
+  const [devices, setDevices] = useState([]);
 
   const handleStreamBtnClick = async () => {
     setShouldShowStreamBtn(false);
