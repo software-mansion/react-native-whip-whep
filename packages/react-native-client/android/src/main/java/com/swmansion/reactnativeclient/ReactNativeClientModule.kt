@@ -12,6 +12,9 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.webrtc.Camera1Enumerator
+import org.webrtc.Camera2Enumerator
+import org.webrtc.CameraEnumerator
 import org.webrtc.VideoTrack
 
 class ReactNativeClientModule :
@@ -47,6 +50,18 @@ class ReactNativeClientModule :
         dimensions = videoParameters.dimensions,
       )
     return videoParameters
+  }
+
+  private fun getEnumerator(context: Context): CameraEnumerator =
+    if (Camera2Enumerator.isSupported(context)) {
+      Camera2Enumerator(context)
+    } else {
+      Camera1Enumerator(true)
+    }
+
+  fun getCaptureDevices(): List<String> {
+    val enumerator = appContext.reactContext?.let { getEnumerator(it) }
+    return enumerator?.deviceNames?.toList() ?: emptyList()
   }
 
   override fun definition() =
@@ -111,6 +126,10 @@ class ReactNativeClientModule :
 
       Function("disconnectWhip") {
         whipClient?.disconnect() ?: throw Exception("Client not found")
+      }
+
+      Function("getCaptureDevices") {
+        getCaptureDevices()
       }
 
       // Defines a JavaScript function that always returns a Promise and whose native code

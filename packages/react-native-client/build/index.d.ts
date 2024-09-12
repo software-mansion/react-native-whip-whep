@@ -11,6 +11,7 @@ export declare function disconnectWhipClient(): any;
 export declare function createWhipClient(serverUrl: string, configurationOptions?: ConfigurationOptions, videoDevice?: string): Promise<any>;
 export declare function connectWhepClient(): Promise<any>;
 export declare function disconnectWhepClient(): any;
+export declare function getCaptureDevices(): any;
 export declare function addChangeListener(listener: (event: ChangeEventPayload) => void): Subscription;
 export { ReactNativeClientView, ChangeEventPayload, addTrackListener };
 //# sourceMappingURL=index.d.ts.map

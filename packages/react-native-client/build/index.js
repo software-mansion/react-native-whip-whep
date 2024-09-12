@@ -25,6 +25,9 @@ export async function connectWhepClient() {
 export function disconnectWhepClient() {
     return ReactNativeClientModule.disconnect();
 }
+export function getCaptureDevices() {
+    return ReactNativeClientModule.getCaptureDevices();
+}
 const emitter = new EventEmitter(ReactNativeClientModule ?? NativeModulesProxy.ReactNativeClient);
 export function addChangeListener(listener) {
     return emitter.addListener("onChange", listener);

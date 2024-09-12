@@ -62,6 +62,10 @@ export function disconnectWhepClient() {
   return ReactNativeClientModule.disconnect();
 }
 
+export function getCaptureDevices() {
+  return ReactNativeClientModule.getCaptureDevices();
+}
+
 const emitter = new EventEmitter(
   ReactNativeClientModule ?? NativeModulesProxy.ReactNativeClient
 );

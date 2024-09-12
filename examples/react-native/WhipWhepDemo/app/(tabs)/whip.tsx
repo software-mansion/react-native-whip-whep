@@ -53,13 +53,7 @@ const requestPermissions = async (): Promise<boolean> => {
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
-  const device = useCameraDevice("back", {
-    physicalDevices: [
-      "ultra-wide-angle-camera",
-      "wide-angle-camera",
-      "telephoto-camera",
-    ],
-  });
+  const [devices, setDevices] = useState([]);
 
   const handleStreamBtnClick = async () => {
     setShouldShowStreamBtn(false);
@@ -85,7 +79,7 @@ export default function HomeScreen() {
             videoEnabled: true,
             videoParameters: VideoParameters.presetFHD43,
           },
-          device?.id,
+          devices[0],
         );
 
         console.log("WHIP Client created");
@@ -94,6 +88,8 @@ export default function HomeScreen() {
           console.log("Track added:", event);
         });
 
+        setDevices(ReactNativeClient.getCaptureDevices());
+
         return () => {
           ReactNativeClient.disconnectWhipClient();
         };
@@ -101,7 +97,7 @@ export default function HomeScreen() {
     };
 
     initialize();
-  }, [device?.id]);
+  }, []);
 
   return (
     <View style={styles.container}>
