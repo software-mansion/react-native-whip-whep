@@ -16,6 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { VideoParameters } from "@mobile-whep/react-native-client/build/ReactNativeClient.types";
 import { ReactNativeClientView } from "@mobile-whep/react-native-client";
+import { useCameraDevice } from "react-native-vision-camera";
 
 const requestPermissions = async (): Promise<boolean> => {
   try {
@@ -52,6 +53,13 @@ const requestPermissions = async (): Promise<boolean> => {
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
+  const device = useCameraDevice("back", {
+    physicalDevices: [
+      "ultra-wide-angle-camera",
+      "wide-angle-camera",
+      "telephoto-camera",
+    ],
+  });
 
   const handleStreamBtnClick = async () => {
     setShouldShowStreamBtn(false);
@@ -69,12 +77,16 @@ export default function HomeScreen() {
     const initialize = async () => {
       const hasPermissions = await requestPermissions();
       if (hasPermissions) {
-        ReactNativeClient.createWhipClient("http://192.168.1.23:8829/whip", {
-          authToken: "example",
-          audioEnabled: true,
-          videoEnabled: true,
-          videoParameters: VideoParameters.presetFHD43,
-        });
+        ReactNativeClient.createWhipClient(
+          "http://192.168.1.23:8829/whip",
+          {
+            authToken: "example",
+            audioEnabled: true,
+            videoEnabled: true,
+            videoParameters: VideoParameters.presetFHD43,
+          },
+          device?.id,
+        );
 
         console.log("WHIP Client created");
 
@@ -89,7 +101,7 @@ export default function HomeScreen() {
     };
 
     initialize();
-  }, []);
+  }, [device?.id]);
 
   return (
     <View style={styles.container}>

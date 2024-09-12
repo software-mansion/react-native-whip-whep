@@ -85,7 +85,7 @@ class ReactNativeClientModule : Module(), ClientBaseListener {
       whepClient?.disconnect() ?: throw Exception("Client not found")
     }
 
-    AsyncFunction ("createWhipClient") { serverUrl: String, configurationOptions: Map<String, Any>? ->
+    AsyncFunction ("createWhipClient") { serverUrl: String, configurationOptions: Map<String, Any>?, videoDevice: String ->
       val context: Context = appContext.reactContext ?: throw IllegalStateException("React context is not available")
       val options = ConfigurationOptions(
         authToken = configurationOptions?.get("authToken") as? String,
@@ -94,7 +94,7 @@ class ReactNativeClientModule : Module(), ClientBaseListener {
         videoEnabled = configurationOptions?.get("videoEnabled") as? Boolean ?: true,
         videoParameters = configurationOptions?.get("videoParameters") as? VideoParameters ?: VideoParameters.presetFHD43
       )
-      whipClient = WhipClient(context, serverUrl, options)
+      whipClient = WhipClient(context, serverUrl, options, videoDevice)
       sendEvent("onChange", mapOf("status" to "whipClientCreated"))
     }
 

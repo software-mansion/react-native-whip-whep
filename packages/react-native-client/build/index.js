@@ -16,8 +16,8 @@ export async function connectWhipClient() {
 export function disconnectWhipClient() {
     return ReactNativeClientModule.disconnectWhip();
 }
-export async function createWhipClient(serverUrl, configurationOptions) {
-    return await ReactNativeClientModule.createWhipClient(serverUrl, configurationOptions);
+export async function createWhipClient(serverUrl, configurationOptions, videoDevice) {
+    return await ReactNativeClientModule.createWhipClient(serverUrl, configurationOptions, videoDevice);
 }
 export async function connectWhepClient() {
     return await ReactNativeClientModule.connect();

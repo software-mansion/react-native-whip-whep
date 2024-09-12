@@ -44,11 +44,13 @@ export function disconnectWhipClient() {
 
 export async function createWhipClient(
   serverUrl: string,
-  configurationOptions?: ConfigurationOptions
+  configurationOptions?: ConfigurationOptions,
+  videoDevice?: string
 ) {
   return await ReactNativeClientModule.createWhipClient(
     serverUrl,
-    configurationOptions
+    configurationOptions,
+    videoDevice
   );
 }
 
