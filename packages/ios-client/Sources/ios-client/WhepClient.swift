@@ -2,7 +2,7 @@ import WebRTC
 import os
 
 @available(macOS 12.0, *)
-public class WhepClient: ClientBase {
+public class WhepClient: ClientBase & Connectable {
 
     /**
     Initializes a `WhepClient` object.

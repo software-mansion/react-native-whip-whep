@@ -1,2 +1,2 @@
-WHEP_SERVER_URL = 0.0.0.0:8829/whep
-WHIP_SERVER_URL = 0.0.0.0:8829/whip
+WHEP_SERVER_URL = http:/$()/0.0.0.0:8829/whep
+WHIP_SERVER_URL = http:/$()/0.0.0.0:8829/whip

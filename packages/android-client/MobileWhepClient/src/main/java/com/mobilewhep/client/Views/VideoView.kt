@@ -1,4 +1,4 @@
-package com.swmansion.whipwhepdemo
+package com.mobilewhep.client
 
 import android.content.Context
 import android.content.res.Resources
@@ -11,8 +11,6 @@ import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.TextureView
 import android.view.TextureView.SurfaceTextureListener
-import com.mobilewhep.client.ClientBase
-import com.mobilewhep.client.ClientBaseListener
 import org.webrtc.EglBase
 import org.webrtc.EglRenderer
 import org.webrtc.GlRectDrawer
@@ -29,9 +27,9 @@ import kotlin.math.ceil
 import kotlin.math.max
 import kotlin.math.roundToInt
 
-const val TAG = "ClientView"
+const val VIEW_TAG = "WHIP/WHEP View"
 
-class ClientView :
+class VideoView :
   TextureView,
   SurfaceHolder.Callback,
   SurfaceTextureListener,
@@ -221,7 +219,7 @@ class ClientView :
       videoLayoutMeasure.measure(widthSpec, heightSpec, rotatedFrameWidth, rotatedFrameHeight)
     setMeasuredDimension(size.x, size.y)
 
-    Log.d(TAG, "onMeasure() New size: ${size.x}x${size.y}")
+    Log.d(VIEW_TAG, "onMeasure() New size: ${size.x}x${size.y}")
   }
 
   override fun onLayout(
@@ -245,7 +243,7 @@ class ClientView :
     eglRenderer.setLayoutAspectRatio(aspectRatio)
     updateSurfaceSize()
 
-    Log.d(TAG, "onLayout() aspect ratio $aspectRatio")
+    Log.d(VIEW_TAG, "onLayout() aspect ratio $aspectRatio")
   }
 
   private fun updateSurfaceSize() {
@@ -281,7 +279,7 @@ class ClientView :
       }
 
       Log.d(
-        TAG,
+        VIEW_TAG,
         "updateSurfaceSize() " +
           "layout size: ${getWidth()} x ${getHeight()}, " +
           "frame size: $rotatedFrameWidth x $rotatedFrameHeight, " +
@@ -327,7 +325,7 @@ class ClientView :
     val yoff = (viewHeight - newHeight) / 2
 
     Log.d(
-      TAG,
+      VIEW_TAG,
       "video=$videoWidth x $videoHeight view=$viewWidth x $viewHeight" +
         " newView=$newWidth x $newHeight off=$xoff,$yoff"
     )
@@ -381,7 +379,7 @@ class ClientView :
   ) {
     ThreadUtils.checkIsOnMainThread()
 
-    Log.d(TAG, "surfaceChanged: size: $width x $height")
+    Log.d(VIEW_TAG, "surfaceChanged: size: $width x $height")
   }
 
   override fun onSurfaceTextureDestroyed(surface: SurfaceTexture): Boolean {
@@ -413,7 +411,7 @@ class ClientView :
     videoHeight: Int,
     rotation: Int
   ) {
-    Log.d(TAG, "Resolution changed to $videoWidth x $videoHeight with rotation of $rotation")
+    Log.d(VIEW_TAG, "Resolution changed to $videoWidth x $videoHeight with rotation of $rotation")
     rendererEvents?.onFrameResolutionChanged(videoWidth, videoHeight, rotation)
 
     val rotatedWidth = if (rotation == 0 || rotation == 180) videoWidth else videoHeight
