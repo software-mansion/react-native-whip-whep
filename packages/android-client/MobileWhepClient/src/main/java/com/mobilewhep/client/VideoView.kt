@@ -41,6 +41,9 @@ class VideoView :
       newPlayer?.addTrackListener(this)
       newPlayer?.videoTrack?.addSink(this)
       field = newPlayer
+      newPlayer?.eglBase?.eglBaseContext?.let {
+        init(it, null)
+      }
     }
 
   // Cached resource name.
@@ -363,9 +366,6 @@ class VideoView :
     i1: Int
   ) {
     ThreadUtils.checkIsOnMainThread()
-    player?.eglBase?.eglBaseContext?.let {
-      init(it, null)
-    }
     eglRenderer.createEglSurface(Surface(surfaceTexture))
     surfaceHeight = 0
     surfaceWidth = surfaceHeight
