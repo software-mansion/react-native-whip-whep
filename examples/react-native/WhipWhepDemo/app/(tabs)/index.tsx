@@ -17,14 +17,14 @@ const requestPermissions = async () => {
       Platform.select({
         android: PERMISSIONS.ANDROID.CAMERA,
         ios: PERMISSIONS.IOS.CAMERA,
-      }),
+      }) as Permission,
     );
 
     const microphonePermission = await request(
       Platform.select({
         android: PERMISSIONS.ANDROID.RECORD_AUDIO,
         ios: PERMISSIONS.IOS.MICROPHONE,
-      }),
+      }) as Permission,
     );
 
     if (
