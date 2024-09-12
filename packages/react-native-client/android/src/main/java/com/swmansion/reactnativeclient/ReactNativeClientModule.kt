@@ -25,6 +25,28 @@ class ReactNativeClientModule : Module(), ClientBaseListener {
     lateinit var whipClient: WhipClient
   }
 
+  private fun getVideoParametersFromOptions(createOptions: String): VideoParameters {
+    var videoParameters =
+      when (createOptions) {
+        "QVGA169" -> VideoParameters.presetQVGA169
+        "VGA169" -> VideoParameters.presetVGA169
+        "QHD169" -> VideoParameters.presetQHD169
+        "HD169" -> VideoParameters.presetHD169
+        "FHD169" -> VideoParameters.presetFHD169
+        "QVGA43" -> VideoParameters.presetQVGA43
+        "VGA43" -> VideoParameters.presetVGA43
+        "QHD43" -> VideoParameters.presetQHD43
+        "HD43" -> VideoParameters.presetHD43
+        "FHD43" -> VideoParameters.presetFHD43
+        else -> VideoParameters.presetVGA169
+      }
+    videoParameters =
+      videoParameters.copy(
+        dimensions =  videoParameters.dimensions,
+      )
+    return videoParameters
+  }
+
   override fun definition() = ModuleDefinition {
     Name("ReactNativeClient")
 
@@ -47,7 +69,7 @@ class ReactNativeClientModule : Module(), ClientBaseListener {
         stunServerUrl = configurationOptions?.get("stunServerUrl") as? String,
         audioEnabled = configurationOptions?.get("audioEnabled") as? Boolean ?: true,
         videoEnabled = configurationOptions?.get("videoEnabled") as? Boolean ?: true,
-        videoParameters = configurationOptions?.get("videoParameters") as? VideoParameters ?: VideoParameters.presetFHD43
+        videoParameters = getVideoParametersFromOptions(configurationOptions?.get("videoParameters") as? String ?: "HD43")
       )
       whepClient = WhepClient(context, serverUrl, options)
       whepClient!!.addTrackListener(this@ReactNativeClientModule)

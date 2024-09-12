@@ -18,36 +18,30 @@ import org.webrtc.VideoTrack
 class ReactNativeClientView(context: Context, appContext: AppContext) : ExpoView(context, appContext), ReactNativeClientModule.OnTrackUpdateListener {
 
   private val trackIdTextView: TextView
-  private var activeVideoTrack: VideoTrack? = null
   private val videoView: VideoView
 
   init {
     ReactNativeClientModule.onTrackUpdateListeners.add(this)
-    background = ColorDrawable(Color.RED)
+    //background = ColorDrawable(Color.RED)
 
     trackIdTextView = TextView(context).apply {
       setTextColor(Color.BLACK)
       textSize = 30f
     }
-    addView(trackIdTextView)
+    //addView(trackIdTextView)
     videoView = VideoView(context).apply {
       layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, 200)
-      player = whepClient
     }
     videoView.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
     addView(videoView)
   }
 
   private fun setupTrack(videoTrack: VideoTrack) {
-    Log.d("kotki", videoTrack.id())
-    if (activeVideoTrack == videoTrack) return
-
-    activeVideoTrack = videoTrack
-
+    videoView.player = whepClient
     videoView.player?.videoTrack?.removeSink(videoView)
     videoView.player?.videoTrack = videoTrack
     videoTrack.addSink(videoView)
-    trackIdTextView.text = whepClient?.videoTrack?.id() ?: ""
+    trackIdTextView.text = whepClient.videoTrack?.id() ?: ""
 
   }
 
