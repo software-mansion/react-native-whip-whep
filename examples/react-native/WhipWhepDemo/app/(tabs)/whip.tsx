@@ -51,17 +51,17 @@ const requestPermissions = async (): Promise<boolean> => {
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
-  const [shouldShowPlayBtn, setShouldShowPlayBtn] = useState(true);
+  const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
 
-  const handlePlayBtnClick = async () => {
-    setShouldShowPlayBtn(false);
-    setIsLoading(true);
+  const handleStreamBtnClick = async () => {
+    setShouldShowStreamBtn(false);
     try {
-      await ReactNativeClient.connectWhepClient();
-      console.log("Connected to WHEP Client");
+      setIsLoading(true);
+      await ReactNativeClient.connectWhipClient();
+      console.log("Connected to WHIP Client");
       setIsLoading(false);
     } catch (error) {
-      console.error("Failed to connect to WHEP Client", error);
+      console.error("Failed to connect to WHIP Client", error);
     }
   };
 
@@ -69,21 +69,21 @@ export default function HomeScreen() {
     const initialize = async () => {
       const hasPermissions = await requestPermissions();
       if (hasPermissions) {
-        ReactNativeClient.createWhepClient("http://192.168.1.23:8829/whep", {
+        ReactNativeClient.createWhipClient("http://192.168.1.23:8829/whip", {
           authToken: "example",
           audioEnabled: true,
           videoEnabled: true,
           videoParameters: VideoParameters.presetFHD43,
         });
 
-        console.log("WHEP Client created");
+        console.log("WHIP Client created");
 
         ReactNativeClient.addTrackListener((event) => {
           console.log("Track added:", event);
         });
 
         return () => {
-          ReactNativeClient.disconnectWhepClient();
+          ReactNativeClient.disconnectWhipClient();
         };
       }
     };
@@ -95,8 +95,8 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <View style={styles.box}>
         {!isLoading && <ReactNativeClientView style={styles.clientView} />}
-        {shouldShowPlayBtn && (
-          <Button title="Play" onPress={handlePlayBtnClick} />
+        {shouldShowStreamBtn && (
+          <Button title="Stream" onPress={handleStreamBtnClick} />
         )}
         {isLoading && <ActivityIndicator size="large" color="#2196F3" />}
       </View>
