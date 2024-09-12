@@ -10,13 +10,6 @@ export type ConfigurationOptions = {
   videoParameters?: VideoParameters;
 };
 
-interface Dimensions {
-  width: number;
-  height: number;
-}
-
-type BandwidthLimit = number;
-
 export enum VideoParameters {
   presetQVGA43 = "QVGA43",
   presetVGA43 = "VGA43",

@@ -6,8 +6,13 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 
 import * as ReactNativeClient from "@mobile-whep/react-native-client";
-import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
-import { useEffect, useState } from "react";
+import {
+  Permission,
+  PERMISSIONS,
+  request,
+  RESULTS,
+} from "react-native-permissions";
+import { useEffect } from "react";
 import { VideoParameters } from "@mobile-whep/react-native-client/build/ReactNativeClient.types";
 import { ReactNativeClientView } from "@mobile-whep/react-native-client";
 
@@ -17,14 +22,14 @@ const requestPermissions = async () => {
       Platform.select({
         android: PERMISSIONS.ANDROID.CAMERA,
         ios: PERMISSIONS.IOS.CAMERA,
-      }),
+      }) as Permission,
     );
 
     const microphonePermission = await request(
       Platform.select({
         android: PERMISSIONS.ANDROID.RECORD_AUDIO,
         ios: PERMISSIONS.IOS.MICROPHONE,
-      }),
+      }) as Permission,
     );
 
     if (
@@ -52,17 +57,15 @@ export default function HomeScreen() {
     });
   }, []);
 
-  const [isConnected, setIsConnected] = useState(false);
-
-  const whepClient = ReactNativeClient.createWhepClient(
-    "http://192.168.1.23:8829/whep",
-    {
+  useEffect(() => {
+    ReactNativeClient.createWhepClient("http://192.168.1.23:8829/whep", {
       authToken: "example",
       audioEnabled: true,
       videoEnabled: true,
       videoParameters: VideoParameters.presetFHD43,
-    },
-  );
+    });
+  }, []);
+
   // const whipClient = ReactNativeClient.createWhipClient(
   //   "http://192.168.83.48:8829/whip",
   //   {
@@ -92,7 +95,6 @@ export default function HomeScreen() {
           onPress={async () => {
             try {
               await ReactNativeClient.connectWhepClient();
-              setIsConnected(true);
               console.log("Connected to WHEP Client");
             } catch (error) {
               console.error("Failed to connect to WHEP Client", error);
