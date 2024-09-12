@@ -117,7 +117,6 @@ const styles = StyleSheet.create({
   clientView: {
     width: "100%",
     height: 200,
-    backgroundColor: "#000",
     marginBottom: 20,
   },
 });

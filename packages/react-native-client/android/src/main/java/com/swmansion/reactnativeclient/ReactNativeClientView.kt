@@ -2,7 +2,6 @@ package com.swmansion.reactnativeclient
 
 import android.content.Context
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import android.widget.FrameLayout
 import android.widget.TextView
@@ -15,23 +14,28 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.webrtc.VideoTrack
 
-class ReactNativeClientView(context: Context, appContext: AppContext) : ExpoView(context, appContext), ReactNativeClientModule.OnTrackUpdateListener {
-
+class ReactNativeClientView(
+  context: Context,
+  appContext: AppContext,
+) : ExpoView(context, appContext),
+  ReactNativeClientModule.OnTrackUpdateListener {
   private val trackIdTextView: TextView
   private val videoView: VideoView
 
   init {
     ReactNativeClientModule.onTrackUpdateListeners.add(this)
-    //background = ColorDrawable(Color.RED)
+    // background = ColorDrawable(Color.RED)
 
-    trackIdTextView = TextView(context).apply {
-      setTextColor(Color.BLACK)
-      textSize = 30f
-    }
-    //addView(trackIdTextView)
-    videoView = VideoView(context).apply {
-      layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, 200)
-    }
+    trackIdTextView =
+      TextView(context).apply {
+        setTextColor(Color.BLACK)
+        textSize = 30f
+      }
+    // addView(trackIdTextView)
+    videoView =
+      VideoView(context).apply {
+        layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, 200)
+      }
     videoView.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
     addView(videoView)
   }
@@ -42,7 +46,6 @@ class ReactNativeClientView(context: Context, appContext: AppContext) : ExpoView
     videoView.player?.videoTrack = videoTrack
     videoTrack.addSink(videoView)
     trackIdTextView.text = whepClient.videoTrack?.id() ?: ""
-
   }
 
   private fun update(track: VideoTrack) {
