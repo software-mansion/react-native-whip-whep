@@ -11,7 +11,7 @@ import { useEffect, useState } from "react";
 import { WhipWhepClientView } from "@mobile-whep/react-native-client";
 import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
 
-const requestPermissions = async () => {
+const requestPermissions = async (): Promise<boolean> => {
   try {
     const cameraPermission = await request(
       Platform.select({
@@ -32,11 +32,14 @@ const requestPermissions = async () => {
       microphonePermission === RESULTS.GRANTED
     ) {
       console.log("All permissions granted");
+      return true;
     } else {
       console.log("Please provide camera and microphone permissions.");
+      return false;
     }
   } catch (error) {
     console.error("Failed to request permission", error);
+    return false;
   }
 };
 
