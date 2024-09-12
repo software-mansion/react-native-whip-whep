@@ -100,7 +100,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.box}>
-        {!isLoading && <ReactNativeClientView style={styles.clientView} />}
+        <ReactNativeClientView style={styles.clientView} />
         {shouldShowStreamBtn && (
           <Button title="Stream" onPress={handleStreamBtnClick} />
         )}

@@ -91,12 +91,12 @@ class ReactNativeClientModule :
             videoParameters = getVideoParametersFromOptions(configurationOptions?.get("videoParameters") as? String ?: "HD43"),
           )
         whepClient = WhepClient(context, serverUrl, options)
-        whepClient!!.addTrackListener(this@ReactNativeClientModule)
+        whepClient.addTrackListener(this@ReactNativeClientModule)
       }
 
       AsyncFunction("connect") Coroutine { ->
         withContext(Dispatchers.Main) {
-        whepClient?.connect() ?: throw Exception("Client not found")
+        whepClient.connect()
       }
       }
 
@@ -115,17 +115,17 @@ class ReactNativeClientModule :
             videoParameters = configurationOptions?.get("videoParameters") as? VideoParameters ?: VideoParameters.presetFHD43,
           )
         whipClient = WhipClient(context, serverUrl, options, videoDevice)
-        sendEvent("onChange", mapOf("status" to "whipClientCreated"))
+        whipClient.addTrackListener(this@ReactNativeClientModule)
       }
 
       AsyncFunction("connectWhip") Coroutine { ->
         withContext(Dispatchers.Main) {
-        whipClient?.connect() ?: throw Exception("Client not found")
+        whipClient.connect()
       }
       }
 
       Function("disconnectWhip") {
-        whipClient?.disconnect() ?: throw Exception("Client not found")
+        whipClient.disconnect()
       }
 
       Function("getCaptureDevices") {

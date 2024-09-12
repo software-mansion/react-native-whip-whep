@@ -94,7 +94,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.box}>
-        {!isLoading && <ReactNativeClientView style={styles.clientView} />}
+        <ReactNativeClientView style={styles.clientView} />
         {shouldShowPlayBtn && (
           <Button title="Play" onPress={handlePlayBtnClick} />
         )}
