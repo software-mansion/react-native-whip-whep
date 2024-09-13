@@ -101,7 +101,7 @@ class ReactNativeClientModule :
       }
 
       Function("disconnect") {
-        whepClient?.disconnect() ?: throw Exception("Client not found")
+        whepClient?.disconnect()
       }
 
       AsyncFunction("createWhipClient") { serverUrl: String, configurationOptions: Map<String, Any>?, videoDevice: String ->
