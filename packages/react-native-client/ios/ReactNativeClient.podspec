@@ -25,5 +25,6 @@ Pod::Spec.new do |s|
 
   s.source_files = "**/*.{h,m,swift}"
   s.dependency 'MobileWhepClient', ">=0.1"
+  s.dependency 'WebRTC-SDK', '=125.6422.03'
 
 end

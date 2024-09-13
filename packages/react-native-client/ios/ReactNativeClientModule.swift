@@ -1,109 +1,133 @@
 import ExpoModulesCore
 import MobileWhepClient
+import WebRTC
 
-public class ReactNativeClientModule: Module {
-    private var whepClient: WhepClient?
-    private var whipClient: WhipClient?
+public class ReactNativeClientModule: Module, PlayerListener {
+    static var whepClient: WhepClient? = nil
+    static var whipClient: WhipClient? = nil
+    static var onTrackUpdateListeners: [OnTrackUpdateListener] = []
 
-  public func definition() -> ModuleDefinition {
-    Name("ReactNativeClient")
 
-    Constants([
-      "PI": Double.pi
-    ])
-
-    // Defines event names that the module can send to JavaScript.
-    Events("onChange")
-
-    // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-    Function("hello") {
-      return "Hello world! 👋"
+    private func getVideoParametersFromOptions(createOptions: String) throws -> VideoParameters {
+        let preset: VideoParameters = {
+            switch createOptions {
+            case "QVGA169":
+                return VideoParameters.presetQVGA169
+            case "VGA169":
+                return VideoParameters.presetVGA169
+            case "VQHD169":
+                return VideoParameters.presetQHD169
+            case "HD169":
+                return VideoParameters.presetHD169
+            case "FHD169":
+                return VideoParameters.presetFHD169
+            case "QVGA43":
+                return VideoParameters.presetQVGA43
+            case "VGA43":
+                return VideoParameters.presetVGA43
+            case "VQHD43":
+                return VideoParameters.presetQHD43
+            case "HD43":
+                return VideoParameters.presetHD43
+            case "FHD43":
+                return VideoParameters.presetFHD43
+            default:
+                return VideoParameters.presetVGA169
+            }
+        }()
+        return preset
     }
-      
-      // Dodanie funkcji asynchronicznej do tworzenia obiektu WhepClient
-      AsyncFunction("createClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?) in
-        guard let url = URL(string: serverUrl) else {
-          throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+    
+    private func getCaptureDevices() -> [String] {
+        let captureDevices = RTCCameraVideoCapturer.captureDevices()
+        return captureDevices.map { $0.uniqueID }
+    }
+
+    public func definition() -> ModuleDefinition {
+        Name("ReactNativeClient")
+
+        Events("trackAdded")
+
+        Function("hello") {
+            "Hello world! 👋"
         }
 
-        let options = ConfigurationOptions(
-            authToken: configurationOptions?["authToken"] as? String,
-          stunServerUrl: configurationOptions?["stunServerUrl"] as? String,
-          audioEnabled: configurationOptions?["audioEnabled"] as? Bool ?? true,
-          videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,
-            videoParameters: configurationOptions?["videoParameters"] as? VideoParameters ?? VideoParameters.presetFHD43
+        AsyncFunction("createWhepClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?) in
+            guard let url = URL(string: serverUrl) else {
+                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+            }
+
+            let options = ConfigurationOptions(
+                authToken: configurationOptions?["authToken"] as? String,
+                stunServerUrl: configurationOptions?["stunServerUrl"] as? String,
+                audioEnabled: configurationOptions?["audioEnabled"] as? Bool ?? true,
+                videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,
+                videoParameters: try! getVideoParametersFromOptions(createOptions: configurationOptions?["videoParameters"] as? String ?? "HD43"))
+
+            ReactNativeClientModule.whepClient = WhepClient(serverUrl: url, configurationOptions: options)
+            ReactNativeClientModule.whepClient?.delegate = self
+        }
+
+        AsyncFunction("connectWhep") {
+            guard let client = ReactNativeClientModule.whepClient else {
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
+            }
+            try await client.connect()
+        }
+
+        Function("disconnectWhep") {
+            guard let client = ReactNativeClientModule.whepClient else {
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
+            }
+            client.disconnect()
+        }
+
+        AsyncFunction("createWhipClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?, videoDevice: String) in
+            guard let url = URL(string: serverUrl) else {
+                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+            }
+
+            let options = ConfigurationOptions(
+                authToken: configurationOptions?["authToken"] as? String,
+                stunServerUrl: configurationOptions?["stunServerUrl"] as? String,
+                audioEnabled: configurationOptions?["audioEnabled"] as? Bool ?? true,
+                videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,
+                videoParameters: configurationOptions?["videoParameters"] as? VideoParameters ?? VideoParameters.presetFHD43
+            )
+
+            ReactNativeClientModule.whipClient = WhipClient(serverUrl: url, configurationOptions: options, videoDevice: AVCaptureDevice(uniqueID: videoDevice))
+            ReactNativeClientModule.whipClient?.delegate = self
+        }
+
+        AsyncFunction("connectWhip") {
+            guard let client = ReactNativeClientModule.whipClient else {
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
+            }
+            try await client.connect()
+        }
+
+        Function("disconnectWhip") {
+            guard let client = ReactNativeClientModule.whipClient else {
+                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
+            }
+            client.disconnect()
+        }
         
-        )
-
-        self.whepClient = WhepClient(serverUrl: url, configurationOptions: options)
-      }
-
-      // Dodanie funkcji asynchronicznej do połączenia się z serwerem
-      AsyncFunction("connect") {
-        guard let client = self.whepClient else {
-          throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
+        Function("getCaptureDevices") {
+            getCaptureDevices()
         }
-        try await client.connect()
-      }
-
-      // Dodanie funkcji do rozłączenia się z serwerem
-      Function("disconnect") {
-        guard let client = self.whepClient else {
-          throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
-        }
-        client.disconnect()
-      }
-      
-      AsyncFunction("createWhipClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?) in
-        guard let url = URL(string: serverUrl) else {
-          throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
-        }
-
-        let options = ConfigurationOptions(
-            authToken: configurationOptions?["authToken"] as? String,
-          stunServerUrl: configurationOptions?["stunServerUrl"] as? String,
-          audioEnabled: configurationOptions?["audioEnabled"] as? Bool ?? true,
-          videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,
-            videoParameters: configurationOptions?["videoParameters"] as? VideoParameters ?? VideoParameters.presetFHD43
-        )
-
-        self.whipClient = WhipClient(serverUrl: url, configurationOptions: options)
-      }
-      
-      // Dodanie funkcji asynchronicznej do połączenia się z serwerem
-      AsyncFunction("connectWhip") {
-        guard let client = self.whipClient else {
-          throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
-        }
-        try await client.connect()
-      }
-
-      // Dodanie funkcji do rozłączenia się z serwerem
-      Function("disconnectWhip") {
-        guard let client = self.whipClient else {
-          throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
-        }
-        client.disconnect()
-      }
-
-    // Defines a JavaScript function that always returns a Promise and whose native code
-    // is by default dispatched on the different thread than the JavaScript runtime runs on.
-    AsyncFunction("setValueAsync") { (value: String) in
-      // Send an event to JavaScript.
-      self.sendEvent("onChange", [
-        "value": value
-      ])
     }
-
-    // Enables the module to be used as a native view. Definition components that are accepted as part of the
-    // view definition: Prop, Events.
-      View(ReactNativeClientView.self) {
-          Prop("client") { (view: ReactNativeClientView, client: ClientBase) in
-              view.setClient(client)
-          }
-      }
-  }
+    
+    public func onTrackAdded(track: RTCVideoTrack) {
+        self.sendEvent("trackAdded", [
+            track.trackId : track.kind,
+        ])
+        ReactNativeClientModule.onTrackUpdateListeners.forEach {
+            $0.onTrackUpdate(track: track)
+        }
+    }
+    
+    public func onTrackRemoved(track: RTCVideoTrack) {
+        
+    }
 }
-
-extension ClientBase: AnyArgument {}
-

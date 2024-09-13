@@ -4,36 +4,58 @@ import WebRTC
 import SwiftUI
 import MobileWhepClient
 
-class ReactNativeClientView: UIView {
-    private var hostingController: UIHostingController<VideoView>?
+protocol OnTrackUpdateListener {
+    func onTrackUpdate(track: RTCVideoTrack)
+}
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
+class ReactNativeClientView: UIView, OnTrackUpdateListener {
+    private var videoView: VideoView?
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
+        commonInit()
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        commonInit()
+    }
+    
+    private func commonInit() {
+        ReactNativeClientModule.onTrackUpdateListeners.append(self)
+        videoView = VideoView(player: nil)
+        
+        if let videoView = videoView {
+            addSubview(videoView)
+        }
+
+        checkAndSetPlayer()
+    }
+    
+    private func checkAndSetPlayer() {
+        if let whepClient = ReactNativeClientModule.whepClient {
+            videoView?.player = whepClient
+        }
+    }
+    
+    deinit {
+        ReactNativeClientModule.onTrackUpdateListeners.removeAll(where: {
+            if let view = $0 as? ReactNativeClientView {
+                return view === self
+            }
+            return false
+        })
     }
 
-    public func setClient(_ client: ClientBase) {
-        let videoView = VideoView(player: client)
-        hostingController = UIHostingController(rootView: videoView)
-        
-        if let hostingController = hostingController {
-            addSubview(hostingController.view)
-        
-            hostingController.view.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                hostingController.view.topAnchor.constraint(equalTo: self.topAnchor),
-                hostingController.view.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-                hostingController.view.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-                hostingController.view.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            ])
+    func updateVideoTrack(track: RTCVideoTrack) {
+        DispatchQueue.main.async {
+            if self.superview != nil {
+                self.videoView?.player?.videoTrack = track
+            }
         }
     }
 
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        hostingController?.view.frame = self.bounds
+    func onTrackUpdate(track: RTCVideoTrack) {
+        updateVideoTrack(track: track)
     }
 }
