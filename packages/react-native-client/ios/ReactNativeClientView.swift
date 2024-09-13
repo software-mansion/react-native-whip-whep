@@ -23,6 +23,7 @@ class ReactNativeClientView: UIView, OnTrackUpdateListener {
     }
     
     private func commonInit() {
+        ReactNativeClientModule.onTrackUpdateListeners = []
         ReactNativeClientModule.onTrackUpdateListeners.append(self)
         videoView = VideoView(player: nil)
         
@@ -31,20 +32,21 @@ class ReactNativeClientView: UIView, OnTrackUpdateListener {
         }
 
         checkAndSetPlayer()
+        print("player:", self.videoView?.player)
     }
     
     private func checkAndSetPlayer() {
         switch(playerType){
         case "WHEP":
             if let whepClient = ReactNativeClientModule.whepClient {
-                videoView?.player = whepClient
+                self.videoView?.player = whepClient
             }
         case "WHIP":
             if let whipClient = ReactNativeClientModule.whipClient {
-                videoView?.player = whipClient
+                self.videoView?.player = whipClient
             }
         default:
-            videoView?.player = nil
+            self.videoView?.player = nil
         }
     }
     
@@ -59,9 +61,9 @@ class ReactNativeClientView: UIView, OnTrackUpdateListener {
 
     func updateVideoTrack(track: RTCVideoTrack) {
         DispatchQueue.main.async {
-            if self.superview != nil {
-                self.videoView?.player?.videoTrack = track
-            }
+            print("here")
+            self.checkAndSetPlayer()
+            self.videoView?.player?.videoTrack = track
         }
     }
 

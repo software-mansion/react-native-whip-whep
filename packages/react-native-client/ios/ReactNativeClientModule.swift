@@ -57,7 +57,6 @@ public class ReactNativeClientModule: Module, PlayerListener {
                 throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
             }
             
-            ReactNativeClientModule.onTrackUpdateListeners = []
             let options = ConfigurationOptions(
                 authToken: configurationOptions?["authToken"] as? String,
                 stunServerUrl: configurationOptions?["stunServerUrl"] as? String,
@@ -88,7 +87,6 @@ public class ReactNativeClientModule: Module, PlayerListener {
                 throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
             }
 
-            ReactNativeClientModule.onTrackUpdateListeners = []
             let options = ConfigurationOptions(
                 authToken: configurationOptions?["authToken"] as? String,
                 stunServerUrl: configurationOptions?["stunServerUrl"] as? String,
@@ -125,6 +123,7 @@ public class ReactNativeClientModule: Module, PlayerListener {
             track.trackId : track.kind,
         ])
         ReactNativeClientModule.onTrackUpdateListeners.forEach {
+            print("Calling onTrackUpdate for listener:", $0)
             $0.onTrackUpdate(track: track)
         }
     }
