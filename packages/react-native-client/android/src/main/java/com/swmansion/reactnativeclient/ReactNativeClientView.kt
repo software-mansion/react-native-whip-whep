@@ -19,19 +19,10 @@ class ReactNativeClientView(
   appContext: AppContext,
 ) : ExpoView(context, appContext),
   ReactNativeClientModule.OnTrackUpdateListener {
-  private val trackIdTextView: TextView
   private val videoView: VideoView
 
   init {
     ReactNativeClientModule.onTrackUpdateListeners.add(this)
-    // background = ColorDrawable(Color.RED)
-
-    trackIdTextView =
-      TextView(context).apply {
-        setTextColor(Color.BLACK)
-        textSize = 30f
-      }
-    // addView(trackIdTextView)
     videoView =
       VideoView(context).apply {
         layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, 200)
@@ -45,18 +36,15 @@ class ReactNativeClientView(
     videoView.player?.videoTrack?.removeSink(videoView)
     videoView.player?.videoTrack = videoTrack
     videoTrack.addSink(videoView)
-    trackIdTextView.text = whepClient.videoTrack?.id() ?: ""
   }
 
   private fun update(track: VideoTrack) {
     CoroutineScope(Dispatchers.Main).launch {
-      Log.d("kotki", track.id() ?: "też ni ma")
       setupTrack(track)
     }
   }
 
   override fun onTrackUpdate(track: VideoTrack) {
-    Log.d("kotki", "update")
     update(track)
   }
 }

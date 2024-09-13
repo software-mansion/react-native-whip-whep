@@ -59,7 +59,7 @@ class ReactNativeClientModule :
       Camera1Enumerator(true)
     }
 
-  fun getCaptureDevices(): List<String> {
+  private fun getCaptureDevices(): List<String> {
     val enumerator = appContext.reactContext?.let { getEnumerator(it) }
     return enumerator?.deviceNames?.toList() ?: emptyList()
   }
@@ -68,17 +68,7 @@ class ReactNativeClientModule :
     ModuleDefinition {
       Name("ReactNativeClient")
 
-      Constants(
-        "PI" to Math.PI,
-      )
-
-      // Defines event names that the module can send to JavaScript.
-      Events("onChange", "trackAdded")
-
-      // Defines a JavaScript synchronous function that runs the native code on the JavaScript thread.
-      Function("hello") {
-        "Hello world! 👋"
-      }
+      Events("trackAdded")
 
       AsyncFunction("createClient") { serverUrl: String, configurationOptions: Map<String, Any>? ->
         val context: Context = appContext.reactContext ?: throw IllegalStateException("React context is not available")
@@ -101,7 +91,7 @@ class ReactNativeClientModule :
       }
 
       Function("disconnect") {
-        whepClient?.disconnect()
+        whepClient.disconnect()
       }
 
       AsyncFunction("createWhipClient") { serverUrl: String, configurationOptions: Map<String, Any>?, videoDevice: String ->
@@ -131,23 +121,10 @@ class ReactNativeClientModule :
       Function("getCaptureDevices") {
         getCaptureDevices()
       }
-
-      // Defines a JavaScript function that always returns a Promise and whose native code
-      // is by default dispatched on the different thread than the JavaScript runtime runs on.
-      AsyncFunction("setValueAsync") { value: String ->
-        // Send an event to JavaScript.
-        sendEvent(
-          "onChange",
-          mapOf(
-            "value" to value,
-          ),
-        )
-      }
     }
 
   override fun onTrackAdded(track: VideoTrack) {
     sendEvent("trackAdded", mapOf(track.id() to track.kind()))
     onTrackUpdateListeners.forEach { it.onTrackUpdate(track) }
-    Log.d("kotki", onTrackUpdateListeners.toString())
   }
 }
