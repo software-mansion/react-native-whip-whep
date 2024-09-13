@@ -1,14 +1,16 @@
-import { NativeModulesProxy, EventEmitter, } from "expo-modules-core";
 import ReactNativeClientModule, { addTrackListener, } from "./ReactNativeClientModule";
 import { ReactNativeClientView } from "./ReactNativeClientView";
-// Get the native constant value.
-export const PI = ReactNativeClientModule.PI;
-export const whepClient = ReactNativeClientModule.whepClient;
-export function hello() {
-    return ReactNativeClientModule.hello();
-}
 export async function createWhepClient(serverUrl, configurationOptions) {
-    return await ReactNativeClientModule.createClient(serverUrl, configurationOptions);
+    return await ReactNativeClientModule.createWhepClient(serverUrl, configurationOptions);
+}
+export async function connectWhepClient() {
+    return await ReactNativeClientModule.connectWhep();
+}
+export function disconnectWhepClient() {
+    return ReactNativeClientModule.disconnectWhep();
+}
+export async function createWhipClient(serverUrl, configurationOptions, videoDevice) {
+    return await ReactNativeClientModule.createWhipClient(serverUrl, configurationOptions, videoDevice);
 }
 export async function connectWhipClient() {
     return await ReactNativeClientModule.connectWhip();
@@ -16,21 +18,8 @@ export async function connectWhipClient() {
 export function disconnectWhipClient() {
     return ReactNativeClientModule.disconnectWhip();
 }
-export async function createWhipClient(serverUrl, configurationOptions, videoDevice) {
-    return await ReactNativeClientModule.createWhipClient(serverUrl, configurationOptions, videoDevice);
-}
-export async function connectWhepClient() {
-    return await ReactNativeClientModule.connect();
-}
-export function disconnectWhepClient() {
-    return ReactNativeClientModule.disconnect();
-}
 export function getCaptureDevices() {
     return ReactNativeClientModule.getCaptureDevices();
-}
-const emitter = new EventEmitter(ReactNativeClientModule ?? NativeModulesProxy.ReactNativeClient);
-export function addChangeListener(listener) {
-    return emitter.addListener("onChange", listener);
 }
 export { ReactNativeClientView, addTrackListener };
 //# sourceMappingURL=index.js.map

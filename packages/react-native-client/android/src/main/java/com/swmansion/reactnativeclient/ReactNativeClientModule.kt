@@ -70,7 +70,7 @@ class ReactNativeClientModule :
 
       Events("trackAdded")
 
-      AsyncFunction("createClient") { serverUrl: String, configurationOptions: Map<String, Any>? ->
+      AsyncFunction("createWhepClient") { serverUrl: String, configurationOptions: Map<String, Any>? ->
         val context: Context = appContext.reactContext ?: throw IllegalStateException("React context is not available")
         val options =
           ConfigurationOptions(
@@ -84,13 +84,13 @@ class ReactNativeClientModule :
         whepClient.addTrackListener(this@ReactNativeClientModule)
       }
 
-      AsyncFunction("connect") Coroutine { ->
+      AsyncFunction("connectWhep") Coroutine { ->
         withContext(Dispatchers.Main) {
         whepClient.connect()
       }
       }
 
-      Function("disconnect") {
+      Function("disconnectWhep") {
         whepClient.disconnect()
       }
 

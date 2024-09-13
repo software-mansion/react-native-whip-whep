@@ -1,12 +1,4 @@
 import {
-  NativeModulesProxy,
-  EventEmitter,
-  Subscription,
-} from "expo-modules-core";
-
-// Import the native module. On web, it will be resolved to ReactNativeClient.web.ts
-// and on native platforms to ReactNativeClient.ts
-import {
   ChangeEventPayload,
   ConfigurationOptions,
 } from "./ReactNativeClient.types";
@@ -15,31 +7,22 @@ import ReactNativeClientModule, {
 } from "./ReactNativeClientModule";
 import { ReactNativeClientView } from "./ReactNativeClientView";
 
-// Get the native constant value.
-export const PI = ReactNativeClientModule.PI;
-
-export const whepClient = ReactNativeClientModule.whepClient;
-
-export function hello(): string {
-  return ReactNativeClientModule.hello();
-}
-
 export async function createWhepClient(
   serverUrl: string,
   configurationOptions?: ConfigurationOptions
 ) {
-  return await ReactNativeClientModule.createClient(
+  return await ReactNativeClientModule.createWhepClient(
     serverUrl,
     configurationOptions
   );
 }
 
-export async function connectWhipClient() {
-  return await ReactNativeClientModule.connectWhip();
+export async function connectWhepClient() {
+  return await ReactNativeClientModule.connectWhep();
 }
 
-export function disconnectWhipClient() {
-  return ReactNativeClientModule.disconnectWhip();
+export function disconnectWhepClient() {
+  return ReactNativeClientModule.disconnectWhep();
 }
 
 export async function createWhipClient(
@@ -54,26 +37,16 @@ export async function createWhipClient(
   );
 }
 
-export async function connectWhepClient() {
-  return await ReactNativeClientModule.connect();
+export async function connectWhipClient() {
+  return await ReactNativeClientModule.connectWhip();
 }
 
-export function disconnectWhepClient() {
-  return ReactNativeClientModule.disconnect();
+export function disconnectWhipClient() {
+  return ReactNativeClientModule.disconnectWhip();
 }
 
 export function getCaptureDevices() {
   return ReactNativeClientModule.getCaptureDevices();
-}
-
-const emitter = new EventEmitter(
-  ReactNativeClientModule ?? NativeModulesProxy.ReactNativeClient
-);
-
-export function addChangeListener(
-  listener: (event: ChangeEventPayload) => void
-): Subscription {
-  return emitter.addListener<ChangeEventPayload>("onChange", listener);
 }
 
 export { ReactNativeClientView, ChangeEventPayload, addTrackListener };
