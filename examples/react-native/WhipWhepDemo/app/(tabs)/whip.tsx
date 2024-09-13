@@ -72,7 +72,7 @@ export default function HomeScreen() {
         const availableDevices = ReactNativeClient.getCaptureDevices();
 
         ReactNativeClient.createWhipClient(
-          "http://192.168.1.23:8829/whip",
+          process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? "",
           {
             authToken: "example",
             audioEnabled: true,

@@ -69,12 +69,15 @@ export default function HomeScreen() {
     const initialize = async () => {
       const hasPermissions = await requestPermissions();
       if (hasPermissions) {
-        ReactNativeClient.createWhepClient("http://192.168.1.23:8829/whep", {
-          authToken: "example",
-          audioEnabled: true,
-          videoEnabled: true,
-          videoParameters: VideoParameters.presetFHD43,
-        });
+        ReactNativeClient.createWhepClient(
+          process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? "",
+          {
+            authToken: "example",
+            audioEnabled: true,
+            videoEnabled: true,
+            videoParameters: VideoParameters.presetFHD43,
+          },
+        );
 
         console.log("WHEP Client created");
 
