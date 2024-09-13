@@ -10,6 +10,7 @@ protocol OnTrackUpdateListener {
 
 class ReactNativeClientView: UIView, OnTrackUpdateListener {
     private var videoView: VideoView?
+    public var playerType: String = "WHEP"
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
@@ -33,8 +34,17 @@ class ReactNativeClientView: UIView, OnTrackUpdateListener {
     }
     
     private func checkAndSetPlayer() {
-        if let whepClient = ReactNativeClientModule.whepClient {
-            videoView?.player = whepClient
+        switch(playerType){
+        case "WHEP":
+            if let whepClient = ReactNativeClientModule.whepClient {
+                videoView?.player = whepClient
+            }
+        case "WHIP":
+            if let whipClient = ReactNativeClientModule.whipClient {
+                videoView?.player = whipClient
+            }
+        default:
+            videoView?.player = nil
         }
     }
     
