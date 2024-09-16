@@ -14,10 +14,6 @@ import {
   RESULTS,
 } from "react-native-permissions";
 import { useEffect, useState } from "react";
-import {
-  PlayerType,
-  VideoParameters,
-} from "@mobile-whep/react-native-client/build/ReactNativeClient.types";
 import { ReactNativeClientView } from "@mobile-whep/react-native-client";
 
 const requestPermissions = async (): Promise<boolean> => {
@@ -78,7 +74,7 @@ export default function HomeScreen() {
             authToken: "example",
             audioEnabled: true,
             videoEnabled: true,
-            videoParameters: VideoParameters.presetFHD43,
+            videoParameters: ReactNativeClient.VideoParameters.presetFHD43,
           },
         );
 
@@ -102,7 +98,7 @@ export default function HomeScreen() {
       <View style={styles.box}>
         <ReactNativeClientView
           style={styles.clientView}
-          playerType={PlayerType.WHEP}
+          playerType={ReactNativeClient.PlayerType.WHEP}
         />
         {shouldShowPlayBtn && (
           <Button title="Play" onPress={handlePlayBtnClick} />

@@ -50,3 +50,8 @@ export function getCaptureDevices() {
 }
 
 export { ReactNativeClientView, ChangeEventPayload, addTrackListener };
+export {
+  PlayerType,
+  VideoParameters,
+  ConfigurationOptions,
+} from "./ReactNativeClient.types";

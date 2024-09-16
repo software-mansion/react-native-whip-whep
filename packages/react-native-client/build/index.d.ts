@@ -9,4 +9,5 @@ export declare function connectWhipClient(): Promise<any>;
 export declare function disconnectWhipClient(): any;
 export declare function getCaptureDevices(): any;
 export { ReactNativeClientView, ChangeEventPayload, addTrackListener };
+export { PlayerType, VideoParameters, ConfigurationOptions, } from "./ReactNativeClient.types";
 //# sourceMappingURL=index.d.ts.map

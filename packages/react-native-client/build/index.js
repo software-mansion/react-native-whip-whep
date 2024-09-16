@@ -22,4 +22,5 @@ export function getCaptureDevices() {
     return ReactNativeClientModule.getCaptureDevices();
 }
 export { ReactNativeClientView, addTrackListener };
+export { PlayerType, VideoParameters, } from "./ReactNativeClient.types";
 //# sourceMappingURL=index.js.map
