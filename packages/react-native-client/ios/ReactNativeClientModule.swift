@@ -48,11 +48,7 @@ public class ReactNativeClientModule: Module, PlayerListener {
 
         Events("trackAdded")
 
-        Function("hello") {
-            "Hello world! 👋"
-        }
-
-        AsyncFunction("createWhepClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?) in
+        Function("createWhepClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?) in
             guard let url = URL(string: serverUrl) else {
                 throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
             }
@@ -82,7 +78,7 @@ public class ReactNativeClientModule: Module, PlayerListener {
             client.disconnect()
         }
 
-        AsyncFunction("createWhipClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?, videoDevice: String) in
+        Function("createWhipClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?, videoDevice: String) in
             guard let url = URL(string: serverUrl) else {
                 throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
             }
@@ -123,7 +119,6 @@ public class ReactNativeClientModule: Module, PlayerListener {
             track.trackId : track.kind,
         ])
         ReactNativeClientModule.onTrackUpdateListeners.forEach {
-            print("Calling onTrackUpdate for listener:", $0)
             $0.onTrackUpdate(track: track)
         }
     }
