@@ -84,7 +84,7 @@ class ReactNativeClientModule :
       }
 
       AsyncFunction("connectWhep") Coroutine { ->
-        withContext(Dispatchers.Main) {
+        withContext(Dispatchers.IO) {
           whepClient.connect()
         }
       }
@@ -108,7 +108,7 @@ class ReactNativeClientModule :
       }
 
       AsyncFunction("connectWhip") Coroutine { ->
-        withContext(Dispatchers.Main) {
+        withContext(Dispatchers.IO) {
           whipClient.connect()
         }
       }
