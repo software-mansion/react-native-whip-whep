@@ -173,3 +173,4 @@ project.xcworkspace
 local.properties
 *.hprof
 android.iml
+/packages/react-native-client/build
