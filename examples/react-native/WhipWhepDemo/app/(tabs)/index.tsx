@@ -72,9 +72,6 @@ export default function HomeScreen() {
           process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? "",
           {
             authToken: "example",
-            audioEnabled: true,
-            videoEnabled: true,
-            videoParameters: WhepClient.VideoParameters.presetFHD43,
           },
         );
 

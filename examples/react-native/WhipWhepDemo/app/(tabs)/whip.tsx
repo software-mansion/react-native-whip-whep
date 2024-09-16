@@ -74,9 +74,6 @@ export default function HomeScreen() {
           process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? "",
           {
             authToken: "example",
-            audioEnabled: true,
-            videoEnabled: true,
-            videoParameters: WhipClient.VideoParameters.presetFHD43,
           },
           availableDevices[0],
         );
