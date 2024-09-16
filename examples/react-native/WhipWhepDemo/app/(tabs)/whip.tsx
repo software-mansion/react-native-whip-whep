@@ -4,6 +4,7 @@ import * as WhipClient from "@mobile-whep/react-native-client";
 import { useEffect, useState } from "react";
 import { requestPermissions } from "@/utils/RequestPermissions";
 import { WhipWhepClientView } from "@mobile-whep/react-native-client";
+import { PlayerType } from "@mobile-whep/react-native-client/build/ReactNativeClient.types";
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -54,7 +55,7 @@ export default function HomeScreen() {
       <View style={styles.box}>
         <WhipWhepClientView
           style={styles.clientView}
-          playerType={WhipClient.PlayerType.WHIP}
+          playerType={PlayerType.WHIP}
         />
         {shouldShowStreamBtn && (
           <Button title="Stream" onPress={handleStreamBtnClick} />
