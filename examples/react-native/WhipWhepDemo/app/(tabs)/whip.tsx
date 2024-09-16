@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-import * as ReactNativeClient from "@mobile-whep/react-native-client";
+import * as WhipClient from "@mobile-whep/react-native-client";
 import {
   Permission,
   PERMISSIONS,
@@ -56,7 +56,7 @@ export default function HomeScreen() {
     setShouldShowStreamBtn(false);
     try {
       setIsLoading(true);
-      await ReactNativeClient.connectWhipClient();
+      await WhipClient.connectWhipClient();
       console.log("Connected to WHIP Client");
       setIsLoading(false);
     } catch (error) {
@@ -68,27 +68,27 @@ export default function HomeScreen() {
     const initialize = async () => {
       const hasPermissions = await requestPermissions();
       if (hasPermissions) {
-        const availableDevices = ReactNativeClient.getCaptureDevices();
+        const availableDevices = WhipClient.getCaptureDevices();
 
-        ReactNativeClient.createWhipClient(
+        WhipClient.createWhipClient(
           process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? "",
           {
             authToken: "example",
             audioEnabled: true,
             videoEnabled: true,
-            videoParameters: ReactNativeClient.VideoParameters.presetFHD43,
+            videoParameters: WhipClient.VideoParameters.presetFHD43,
           },
           availableDevices[0],
         );
 
         console.log("WHIP Client created");
 
-        ReactNativeClient.addTrackListener((event) => {
+        WhipClient.addTrackListener((event) => {
           console.log("Track added:", event);
         });
 
         return () => {
-          ReactNativeClient.disconnectWhipClient();
+          WhipClient.disconnectWhipClient();
         };
       }
     };
@@ -101,7 +101,7 @@ export default function HomeScreen() {
       <View style={styles.box}>
         <ReactNativeClientView
           style={styles.clientView}
-          playerType={ReactNativeClient.PlayerType.WHIP}
+          playerType={WhipClient.PlayerType.WHIP}
         />
         {shouldShowStreamBtn && (
           <Button title="Stream" onPress={handleStreamBtnClick} />

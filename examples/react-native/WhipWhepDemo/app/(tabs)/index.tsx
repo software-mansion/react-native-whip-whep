@@ -6,7 +6,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 
-import * as ReactNativeClient from "@mobile-whep/react-native-client";
+import * as WhepClient from "@mobile-whep/react-native-client";
 import {
   Permission,
   PERMISSIONS,
@@ -56,7 +56,7 @@ export default function HomeScreen() {
     setShouldShowPlayBtn(false);
     setIsLoading(true);
     try {
-      await ReactNativeClient.connectWhepClient();
+      await WhepClient.connectWhepClient();
       console.log("Connected to WHEP Client");
       setIsLoading(false);
     } catch (error) {
@@ -68,24 +68,24 @@ export default function HomeScreen() {
     const initialize = async () => {
       const hasPermissions = await requestPermissions();
       if (hasPermissions) {
-        ReactNativeClient.createWhepClient(
+        WhepClient.createWhepClient(
           process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? "",
           {
             authToken: "example",
             audioEnabled: true,
             videoEnabled: true,
-            videoParameters: ReactNativeClient.VideoParameters.presetFHD43,
+            videoParameters: WhepClient.VideoParameters.presetFHD43,
           },
         );
 
         console.log("WHEP Client created");
 
-        ReactNativeClient.addTrackListener((event) => {
+        WhepClient.addTrackListener((event) => {
           console.log("Track added:", event);
         });
 
         return () => {
-          ReactNativeClient.disconnectWhepClient();
+          WhepClient.disconnectWhepClient();
         };
       }
     };
@@ -98,7 +98,7 @@ export default function HomeScreen() {
       <View style={styles.box}>
         <ReactNativeClientView
           style={styles.clientView}
-          playerType={ReactNativeClient.PlayerType.WHEP}
+          playerType={WhepClient.PlayerType.WHEP}
         />
         {shouldShowPlayBtn && (
           <Button title="Play" onPress={handlePlayBtnClick} />
