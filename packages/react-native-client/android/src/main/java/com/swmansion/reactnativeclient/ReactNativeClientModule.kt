@@ -1,7 +1,6 @@
 package com.swmansion.reactnativeclient
 
 import android.content.Context
-import android.util.Log
 import com.mobilewhep.client.ClientBaseListener
 import com.mobilewhep.client.ConfigurationOptions
 import com.mobilewhep.client.VideoParameters
@@ -86,8 +85,8 @@ class ReactNativeClientModule :
 
       AsyncFunction("connectWhep") Coroutine { ->
         withContext(Dispatchers.Main) {
-        whepClient.connect()
-      }
+          whepClient.connect()
+        }
       }
 
       Function("disconnectWhep") {
@@ -110,8 +109,8 @@ class ReactNativeClientModule :
 
       AsyncFunction("connectWhip") Coroutine { ->
         withContext(Dispatchers.Main) {
-        whipClient.connect()
-      }
+          whipClient.connect()
+        }
       }
 
       Function("disconnectWhip") {

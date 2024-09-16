@@ -1,10 +1,7 @@
 package com.swmansion.reactnativeclient
 
 import android.content.Context
-import android.graphics.Color
-import android.util.Log
 import android.widget.FrameLayout
-import android.widget.TextView
 import com.mobilewhep.client.VideoView
 import com.swmansion.reactnativeclient.ReactNativeClientModule.Companion.whepClient
 import com.swmansion.reactnativeclient.ReactNativeClientModule.Companion.whipClient
