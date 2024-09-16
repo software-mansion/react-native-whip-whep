@@ -14,7 +14,10 @@ import {
   RESULTS,
 } from "react-native-permissions";
 import { useEffect, useState } from "react";
-import { VideoParameters } from "@mobile-whep/react-native-client/build/ReactNativeClient.types";
+import {
+  PlayerType,
+  VideoParameters,
+} from "@mobile-whep/react-native-client/build/ReactNativeClient.types";
 import { ReactNativeClientView } from "@mobile-whep/react-native-client";
 
 const requestPermissions = async (): Promise<boolean> => {
@@ -100,7 +103,10 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.box}>
-        <ReactNativeClientView style={styles.clientView} />
+        <ReactNativeClientView
+          style={styles.clientView}
+          playerType={PlayerType.WHIP}
+        />
         {shouldShowStreamBtn && (
           <Button title="Stream" onPress={handleStreamBtnClick} />
         )}

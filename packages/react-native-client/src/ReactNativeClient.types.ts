@@ -10,6 +10,15 @@ export type ConfigurationOptions = {
   videoParameters?: VideoParameters;
 };
 
+export type ReactNativeClientViewProps = {
+  playerType: PlayerType;
+};
+
+export enum PlayerType {
+  WHEP = "WHEP",
+  WHIP = "WHIP",
+}
+
 export enum VideoParameters {
   presetQVGA43 = "QVGA43",
   presetVGA43 = "VGA43",

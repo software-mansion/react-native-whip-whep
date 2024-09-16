@@ -9,6 +9,9 @@ class ReactNativeClientViewModule : Module() {
       Name("ReactNativeClientViewModule")
 
       View(ReactNativeClientView::class) {
+        Prop("playerType") { view: ReactNativeClientView, playerType: String ->
+          view.init(playerType)
+        }
       }
     }
 }

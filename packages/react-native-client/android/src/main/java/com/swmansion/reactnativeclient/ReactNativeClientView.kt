@@ -7,6 +7,7 @@ import android.widget.FrameLayout
 import android.widget.TextView
 import com.mobilewhep.client.VideoView
 import com.swmansion.reactnativeclient.ReactNativeClientModule.Companion.whepClient
+import com.swmansion.reactnativeclient.ReactNativeClientModule.Companion.whipClient
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
 import kotlinx.coroutines.CoroutineScope
@@ -20,6 +21,7 @@ class ReactNativeClientView(
 ) : ExpoView(context, appContext),
   ReactNativeClientModule.OnTrackUpdateListener {
   private val videoView: VideoView
+  private var playerType: String = "WHEP"
 
   init {
     ReactNativeClientModule.onTrackUpdateListeners.add(this)
@@ -31,11 +33,23 @@ class ReactNativeClientView(
     addView(videoView)
   }
 
+  fun init(playerType: String) {
+    this.playerType = playerType
+  }
+
   private fun setupTrack(videoTrack: VideoTrack) {
-    videoView.player = whepClient
-    videoView.player?.videoTrack?.removeSink(videoView)
-    videoView.player?.videoTrack = videoTrack
-    videoTrack.addSink(videoView)
+    videoView.post {
+      if (playerType == "WHIP") {
+        videoView.player = whipClient
+      } else {
+        videoView.player = whepClient
+      }
+
+      videoView.player?.videoTrack?.removeSink(videoView)
+      videoView.player?.videoTrack = videoTrack
+
+      videoTrack.addSink(videoView)
+    }
   }
 
   private fun update(track: VideoTrack) {
