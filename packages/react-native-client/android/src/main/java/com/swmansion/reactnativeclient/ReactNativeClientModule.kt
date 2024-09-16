@@ -70,7 +70,7 @@ class ReactNativeClientModule :
 
       Events("trackAdded")
 
-      AsyncFunction("createWhepClient") { serverUrl: String, configurationOptions: Map<String, Any>? ->
+      Function("createWhepClient") { serverUrl: String, configurationOptions: Map<String, Any>? ->
         val context: Context = appContext.reactContext ?: throw IllegalStateException("React context is not available")
         val options =
           ConfigurationOptions(
@@ -94,7 +94,7 @@ class ReactNativeClientModule :
         whepClient.disconnect()
       }
 
-      AsyncFunction("createWhipClient") { serverUrl: String, configurationOptions: Map<String, Any>?, videoDevice: String ->
+      Function("createWhipClient") { serverUrl: String, configurationOptions: Map<String, Any>?, videoDevice: String ->
         val context: Context = appContext.reactContext ?: throw IllegalStateException("React context is not available")
         val options =
           ConfigurationOptions(

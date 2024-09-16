@@ -7,11 +7,11 @@ import ReactNativeClientModule, {
 } from "./ReactNativeClientModule";
 import { ReactNativeClientView } from "./ReactNativeClientView";
 
-export async function createWhepClient(
+export function createWhepClient(
   serverUrl: string,
   configurationOptions?: ConfigurationOptions
 ) {
-  return await ReactNativeClientModule.createWhepClient(
+  return ReactNativeClientModule.createWhepClient(
     serverUrl,
     configurationOptions
   );
@@ -25,12 +25,12 @@ export function disconnectWhepClient() {
   return ReactNativeClientModule.disconnectWhep();
 }
 
-export async function createWhipClient(
+export function createWhipClient(
   serverUrl: string,
   configurationOptions?: ConfigurationOptions,
   videoDevice?: string
 ) {
-  return await ReactNativeClientModule.createWhipClient(
+  return ReactNativeClientModule.createWhipClient(
     serverUrl,
     configurationOptions,
     videoDevice

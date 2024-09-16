@@ -1,7 +1,7 @@
 import ReactNativeClientModule, { addTrackListener, } from "./ReactNativeClientModule";
 import { ReactNativeClientView } from "./ReactNativeClientView";
-export async function createWhepClient(serverUrl, configurationOptions) {
-    return await ReactNativeClientModule.createWhepClient(serverUrl, configurationOptions);
+export function createWhepClient(serverUrl, configurationOptions) {
+    return ReactNativeClientModule.createWhepClient(serverUrl, configurationOptions);
 }
 export async function connectWhepClient() {
     return await ReactNativeClientModule.connectWhep();
@@ -9,8 +9,8 @@ export async function connectWhepClient() {
 export function disconnectWhepClient() {
     return ReactNativeClientModule.disconnectWhep();
 }
-export async function createWhipClient(serverUrl, configurationOptions, videoDevice) {
-    return await ReactNativeClientModule.createWhipClient(serverUrl, configurationOptions, videoDevice);
+export function createWhipClient(serverUrl, configurationOptions, videoDevice) {
+    return ReactNativeClientModule.createWhipClient(serverUrl, configurationOptions, videoDevice);
 }
 export async function connectWhipClient() {
     return await ReactNativeClientModule.connectWhip();
