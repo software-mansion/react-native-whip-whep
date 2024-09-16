@@ -1,9 +1,7 @@
 {
   "platforms": [
     "ios",
-    "tvos",
-    "android",
-    "web"
+    "android"
   ],
   "ios": {
     "modules": [
