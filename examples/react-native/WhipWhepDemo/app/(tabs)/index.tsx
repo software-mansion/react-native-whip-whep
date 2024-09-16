@@ -83,14 +83,14 @@ export default function HomeScreen() {
         WhepClient.addTrackListener((event) => {
           console.log("Track added:", event);
         });
-
-        return () => {
-          WhepClient.disconnectWhepClient();
-        };
       }
     };
 
     initialize();
+
+    return () => {
+      WhepClient.disconnectWhepClient();
+    };
   }, []);
 
   return (

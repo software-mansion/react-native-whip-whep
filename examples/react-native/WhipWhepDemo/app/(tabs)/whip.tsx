@@ -86,14 +86,13 @@ export default function HomeScreen() {
         WhipClient.addTrackListener((event) => {
           console.log("Track added:", event);
         });
-
-        return () => {
-          WhipClient.disconnectWhipClient();
-        };
       }
     };
 
     initialize();
+    return () => {
+      WhipClient.disconnectWhipClient();
+    };
   }, []);
 
   return (
