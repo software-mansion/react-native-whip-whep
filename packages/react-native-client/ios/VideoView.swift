@@ -34,8 +34,10 @@ public class VideoView: UIView {
     }
 
     public func updateVideoTrack() {
+        print("player from view:", player)
         DispatchQueue.main.async {
             if let track = self.player?.videoTrack {
+                print("trackExists")
                 track.add(self.videoView!)
             }
         }

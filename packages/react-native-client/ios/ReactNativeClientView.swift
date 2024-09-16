@@ -63,7 +63,7 @@ class ReactNativeClientView: UIView, OnTrackUpdateListener {
         DispatchQueue.main.async {
             print("here")
             self.checkAndSetPlayer()
-            self.videoView?.player?.videoTrack = track
+            print(self.videoView?.player)
         }
     }
 
