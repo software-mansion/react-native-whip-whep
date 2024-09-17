@@ -16,11 +16,12 @@ const withAndroidSettings = (config) => {
     let contents = config.modResults.contents;
 
     if (!contents.includes("include ':android-client'")) {
-      console.log("Adding android-client to settings.gradle");
+      console.log("Adding android-client to settings.gradle...");
       contents +=
         `\ninclude ':android-client'\n` +
         `project(':android-client').projectDir = new File(rootProject.projectDir, '../../../../packages/android-client/MobileWhepClient')\n`;
       config.modResults.contents = contents;
+      console.log("✔ Added android-client to settings.gradle.");
     } else {
       console.log("android-client already included in settings.gradle");
     }
@@ -30,44 +31,44 @@ const withAndroidSettings = (config) => {
 
   console.log("Modifying app/build.gradle...");
   config = withAppBuildGradle(config, (config) => {
-    const appBuildGradlePath = path.join(
-      config.modRequest.platformProjectRoot,
-      "app",
-      "build.gradle",
-    );
-    console.log("App build.gradle path:", appBuildGradlePath);
-
-    if (fs.existsSync(appBuildGradlePath)) {
-      let contents = fs.readFileSync(appBuildGradlePath, "utf-8");
-
-      if (
-        !contents.includes(
-          "implementation project(':mobile-whep-react-native-client')",
-        )
-      ) {
-        console.log(
-          "Adding mobile-whep-react-native-client to app/build.gradle",
-        );
-        const dependenciesBlock = "dependencies {";
-        const addition =
-          "implementation project(':mobile-whep-react-native-client')";
-
-        const updatedContents = contents.replace(
-          dependenciesBlock,
-          `${dependenciesBlock}\n    ${addition}`,
-        );
-
-        fs.writeFileSync(appBuildGradlePath, updatedContents);
-      } else {
-        console.log(
-          "mobile-whep-react-native-client already included in app/build.gradle",
-        );
-      }
-    } else {
-      console.error(
-        "app/build.gradle file does not exist:",
-        appBuildGradlePath,
+    let contents = config.modResults.contents;
+    if (
+      !contents.includes(
+        "implementation project(':mobile-whep-react-native-client')",
+      )
+    ) {
+      console.log(
+        "Adding mobile-whep-react-native-client to app/build.gradle...",
       );
+      const dependenciesBlock = "dependencies {";
+      const addition =
+        "implementation project(':mobile-whep-react-native-client')";
+
+      const updatedContents = contents.replace(
+        dependenciesBlock,
+        `${dependenciesBlock}\n    ${addition}`,
+      );
+      config.modResults.contents = updatedContents;
+      console.log(
+        "✔ Added mobile-whep-react-native-client to app/build.gradle.",
+      );
+    } else {
+      console.log(
+        "mobile-whep-react-native-client already included in app/build.gradle",
+      );
+    }
+
+    contents = config.modResults.contents;
+    if (contents.includes('namespace "com.whipwhepdemo"')) {
+      console.log("Changing namespace...");
+      const updatedContents = contents.replace(
+        'namespace "com.whipwhepdemo"',
+        "namespace 'com.swmansion.mobilewhepclient'",
+      );
+      config.modResults.contents = updatedContents;
+      console.log("✔ Changed namespace to com.swmansion.mobilewhepclient");
+    } else {
+      console.log("Namespace already changed");
     }
 
     return config;
