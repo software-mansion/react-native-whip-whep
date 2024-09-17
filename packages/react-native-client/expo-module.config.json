@@ -1,0 +1,17 @@
+{
+  "platforms": [
+    "ios",
+    "android"
+  ],
+  "ios": {
+    "modules": [
+      "ReactNativeClientModule"
+    ]
+  },
+  "android": {
+    "modules": [
+      "com.swmansion.reactnativeclient.ReactNativeClientModule",
+      "com.swmansion.reactnativeclient.ReactNativeClientViewModule"
+    ]
+  }
+}

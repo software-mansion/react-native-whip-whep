@@ -1,0 +1,49 @@
+{
+  "expo": {
+    "name": "WhipWhepDemo",
+    "slug": "WhipWhepDemo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "scheme": "myapp",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.swmansion.mobilewhepclient"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.swmansion.mobilewhepclient"
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/images/favicon.png"
+    },
+    "plugins": [
+      [
+        "react-native-permissions",
+        {
+          "iosPermissions": [
+            "Microphone",
+            "Camera"
+          ]
+        }
+      ],
+      "expo-router",
+      "./withAndroidSettings",
+      "./withIosPodfile"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}
