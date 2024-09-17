@@ -8,9 +8,9 @@ const pkg = require("./package.json");
 const withAndroidSettings = (config) => {
   return withSettingsGradle(config, (config) => {
     if (config.modResults.contents) {
-      config.modResults.contents += "\n:mobile-whep-react-native-client\n";
+      config.modResults.contents += "\ninclude ':android-client'\n";
       config.modResults.contents +=
-        "project(':mobile-whep-react-native-client').projectDir = new File(rootProject.projectDir, '../../../packages/android-client/MobileWhepClient')\n";
+        "project(':android-client').projectDir = new File(rootProject.projectDir, '../../../../packages/android-client/MobileWhepClient')\n";
     }
     return config;
   });
