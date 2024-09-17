@@ -6,7 +6,7 @@ const {
 const pkg = require("./package.json");
 
 const withAndroidSettings = (config) => {
-  return withSettingsGradle(config, (config) => {
+  config = withSettingsGradle(config, (config) => {
     if (config.modResults.contents) {
       config.modResults.contents += "\ninclude ':android-client'\n";
       config.modResults.contents +=
@@ -14,6 +14,28 @@ const withAndroidSettings = (config) => {
     }
     return config;
   });
+
+  config = withAppBuildGradle(config, (config) => {
+    if (
+      !config.modResults.contents.includes(
+        "implementation project(':mobile-whep-react-native-client')",
+      )
+    ) {
+      const dependenciesBlock = "dependencies {";
+      const addition =
+        "implementation project(':mobile-whep-react-native-client')";
+
+      const updatedContents = config.modResults.contents.replace(
+        dependenciesBlock,
+        `${dependenciesBlock}\n    ${addition}`,
+      );
+
+      config.modResults.contents = updatedContents;
+    }
+    return config;
+  });
+
+  return config;
 };
 
 module.exports = createRunOncePlugin(
