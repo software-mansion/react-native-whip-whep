@@ -1,19 +1,32 @@
 import { StyleSheet, Button, View, ActivityIndicator } from "react-native";
 
-import * as WhepClient from "@mobile-whep/react-native-client";
 import { useEffect, useState } from "react";
 import { requestPermissions } from "@/utils/RequestPermissions";
-import { WhipWhepClientView } from "@mobile-whep/react-native-client";
+import {
+  addTrackListener,
+  ConfigurationOptions,
+  PlayerType,
+  useWhepClient,
+  WhipWhepClientView,
+} from "@mobile-whep/react-native-client";
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowPlayBtn, setShouldShowPlayBtn] = useState(true);
+  const serverUrl = process.env.EXPO_PUBLIC_WHEP_SERVER_URL;
+  const configurationOptions: ConfigurationOptions = {
+    authToken: "example",
+  };
+  const { connectWhepClient, disconnectWhepClient } = useWhepClient(
+    serverUrl ?? "",
+    configurationOptions,
+  );
 
   const handlePlayBtnClick = async () => {
     setShouldShowPlayBtn(false);
     setIsLoading(true);
     try {
-      await WhepClient.connectWhepClient();
+      await connectWhepClient();
       console.log("Connected to WHEP Client");
       setIsLoading(false);
     } catch (error) {
@@ -25,16 +38,9 @@ export default function HomeScreen() {
     const initialize = async () => {
       const hasPermissions = await requestPermissions();
       if (hasPermissions) {
-        WhepClient.createWhepClient(
-          process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? "",
-          {
-            authToken: "example",
-          },
-        );
-
         console.log("WHEP Client created");
 
-        WhepClient.addTrackListener((event) => {
+        addTrackListener((event) => {
           console.log("Track added:", event);
         });
       }
@@ -43,16 +49,16 @@ export default function HomeScreen() {
     initialize();
 
     return () => {
-      WhepClient.disconnectWhepClient();
+      disconnectWhepClient();
     };
-  }, []);
+  }, [disconnectWhepClient]);
 
   return (
     <View style={styles.container}>
       <View style={styles.box}>
         <WhipWhepClientView
           style={styles.clientView}
-          playerType={WhepClient.PlayerType.WHEP}
+          playerType={PlayerType.WHEP}
         />
         {shouldShowPlayBtn && (
           <Button title="Play" onPress={handlePlayBtnClick} />

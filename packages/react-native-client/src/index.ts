@@ -10,11 +10,7 @@ export {
 } from "./ReactNativeClient.types";
 
 export {
-  createWhepClient,
-  connectWhepClient,
-  disconnectWhepClient,
-  createWhipClient,
-  connectWhipClient,
-  disconnectWhipClient,
+  useWhepClient,
+  useWhipClient,
   captureDevices,
 } from "./ReactNativeClientModule";

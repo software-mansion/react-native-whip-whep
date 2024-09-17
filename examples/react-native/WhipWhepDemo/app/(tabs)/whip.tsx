@@ -1,19 +1,33 @@
 import { StyleSheet, Button, View, ActivityIndicator } from "react-native";
 
-import * as WhipClient from "@mobile-whep/react-native-client";
 import { useEffect, useState } from "react";
 import { requestPermissions } from "@/utils/RequestPermissions";
-import { WhipWhepClientView } from "@mobile-whep/react-native-client";
+import {
+  addTrackListener,
+  captureDevices,
+  PlayerType,
+  useWhipClient,
+  WhipWhepClientView,
+} from "@mobile-whep/react-native-client";
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
+  const availableDevices = captureDevices;
+
+  const { connectWhipClient, disconnectWhipClient } = useWhipClient(
+    process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? "",
+    {
+      authToken: "example",
+    },
+    availableDevices[0],
+  );
 
   const handleStreamBtnClick = async () => {
     setShouldShowStreamBtn(false);
     try {
       setIsLoading(true);
-      await WhipClient.connectWhipClient();
+      await connectWhipClient();
       console.log("Connected to WHIP Client");
       setIsLoading(false);
     } catch (error) {
@@ -25,19 +39,9 @@ export default function HomeScreen() {
     const initialize = async () => {
       const hasPermissions = await requestPermissions();
       if (hasPermissions) {
-        const availableDevices = WhipClient.captureDevices;
-
-        WhipClient.createWhipClient(
-          process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? "",
-          {
-            authToken: "example",
-          },
-          availableDevices[0],
-        );
-
         console.log("WHIP Client created");
 
-        WhipClient.addTrackListener((event) => {
+        addTrackListener((event) => {
           console.log("Track added:", event);
         });
       }
@@ -45,7 +49,7 @@ export default function HomeScreen() {
 
     initialize();
     return () => {
-      WhipClient.disconnectWhipClient();
+      disconnectWhipClient();
     };
   }, []);
 
@@ -54,7 +58,7 @@ export default function HomeScreen() {
       <View style={styles.box}>
         <WhipWhepClientView
           style={styles.clientView}
-          playerType={WhipClient.PlayerType.WHIP}
+          playerType={PlayerType.WHIP}
         />
         {shouldShowStreamBtn && (
           <Button title="Stream" onPress={handleStreamBtnClick} />
