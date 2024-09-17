@@ -2,6 +2,7 @@ const {
   withSettingsGradle,
   withAppBuildGradle,
   createRunOncePlugin,
+  withProjectBuildGradle,
 } = require("@expo/config-plugins");
 const fs = require("fs");
 const path = require("path");
@@ -11,7 +12,6 @@ const pkg = require("./package.json");
 console.log("Starting the plugin!");
 
 const withAndroidSettings = (config) => {
-  console.log("Modifying settings.gradle...");
   config = withSettingsGradle(config, (config) => {
     let contents = config.modResults.contents;
 
@@ -29,7 +29,6 @@ const withAndroidSettings = (config) => {
     return config;
   });
 
-  console.log("Modifying app/build.gradle...");
   config = withAppBuildGradle(config, (config) => {
     let contents = config.modResults.contents;
     if (
@@ -69,6 +68,29 @@ const withAndroidSettings = (config) => {
       console.log("✔ Changed namespace to com.swmansion.mobilewhepclient");
     } else {
       console.log("Namespace already changed");
+    }
+
+    return config;
+  });
+
+  config = withProjectBuildGradle(config, (config) => {
+    let contents = config.modResults.contents;
+    if (
+      contents.includes(
+        "minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')",
+      )
+    ) {
+      console.log("Changing minSdkVersion...");
+      const targetVersion =
+        "minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')";
+      const updatedContents = contents.replace(
+        "minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')",
+        targetVersion,
+      );
+      config.modResults.contents = updatedContents;
+      console.log("✔ Changed minSdkVersion.");
+    } else {
+      console.log("minSdkVersion already satisfied");
     }
 
     return config;
