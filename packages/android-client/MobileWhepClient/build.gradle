@@ -5,7 +5,7 @@ plugins {
 }
 
 ext {
-  kotlin_version = '1.8.0'
+  kotlin_version = '1.9.24'
   java_version = JavaVersion.VERSION_17
 }
 
@@ -42,7 +42,7 @@ android {
     compose true
   }
   composeOptions {
-    kotlinCompilerExtensionVersion '1.5.10'
+    kotlinCompilerExtensionVersion '1.5.14'
   }
   packaging {
     resources {
