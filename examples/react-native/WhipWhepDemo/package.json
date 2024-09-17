@@ -3,7 +3,7 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "start": "expo start",
+    "start": "expo start --dev-client",
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
@@ -15,6 +15,7 @@
     "preset": "jest-expo"
   },
   "dependencies": {
+    "@expo/config-plugins": "^8.0.8",
     "@expo/vector-icons": "^14.0.2",
     "@mobile-whep/react-native-client": "*",
     "@react-native-community/audio-toolkit": "^2.0.3",
