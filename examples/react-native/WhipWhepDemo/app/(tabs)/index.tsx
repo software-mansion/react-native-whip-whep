@@ -2,8 +2,8 @@ import { StyleSheet, Button, View, ActivityIndicator } from "react-native";
 
 import * as WhepClient from "@mobile-whep/react-native-client";
 import { useEffect, useState } from "react";
-import { ReactNativeClientView } from "@mobile-whep/react-native-client";
 import { requestPermissions } from "@/utils/RequestPermissions";
+import { WhipWhepClientView } from "@mobile-whep/react-native-client";
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +50,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.box}>
-        <ReactNativeClientView
+        <WhipWhepClientView
           style={styles.clientView}
           playerType={WhepClient.PlayerType.WHEP}
         />

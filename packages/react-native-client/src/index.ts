@@ -5,9 +5,9 @@ import {
 import ReactNativeClientModule, {
   addTrackListener,
 } from "./ReactNativeClientModule";
-import { ReactNativeClientView } from "./ReactNativeClientView";
+import { WhipWhepClientView } from "./WhipWhepClientView";
 
-export { ReactNativeClientView, ChangeEventPayload, addTrackListener };
+export { WhipWhepClientView, ChangeEventPayload, addTrackListener };
 export {
   PlayerType,
   VideoParameters,

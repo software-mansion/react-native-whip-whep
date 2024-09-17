@@ -10,7 +10,7 @@ export type ConfigurationOptions = {
   videoParameters?: VideoParameters;
 };
 
-export type ReactNativeClientViewProps = {
+export type WhipWhepClientViewProps = {
   playerType: PlayerType;
 };
 
