@@ -174,3 +174,5 @@ local.properties
 *.hprof
 android.iml
 /packages/react-native-client/build
+/examples/react-native/WhipWhepDemo/android
+/examples/react-native/WhipWhepDemo/ios
