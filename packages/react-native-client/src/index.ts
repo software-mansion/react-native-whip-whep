@@ -1,10 +1,5 @@
-import {
-  ChangeEventPayload,
-  ConfigurationOptions,
-} from "./ReactNativeClient.types";
-import ReactNativeClientModule, {
-  addTrackListener,
-} from "./ReactNativeClientModule";
+import { ChangeEventPayload } from "./ReactNativeClient.types";
+import { addTrackListener } from "./ReactNativeClientModule";
 import { WhipWhepClientView } from "./WhipWhepClientView";
 
 export { WhipWhepClientView, ChangeEventPayload, addTrackListener };
