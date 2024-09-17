@@ -1,52 +1,9 @@
-import {
-  StyleSheet,
-  Platform,
-  Button,
-  View,
-  ActivityIndicator,
-} from "react-native";
+import { StyleSheet, Button, View, ActivityIndicator } from "react-native";
 
 import * as WhipClient from "@mobile-whep/react-native-client";
-import {
-  Permission,
-  PERMISSIONS,
-  request,
-  RESULTS,
-} from "react-native-permissions";
 import { useEffect, useState } from "react";
 import { ReactNativeClientView } from "@mobile-whep/react-native-client";
-
-const requestPermissions = async (): Promise<boolean> => {
-  try {
-    const cameraPermission = await request(
-      Platform.select({
-        android: PERMISSIONS.ANDROID.CAMERA,
-        ios: PERMISSIONS.IOS.CAMERA,
-      }) as Permission,
-    );
-
-    const microphonePermission = await request(
-      Platform.select({
-        android: PERMISSIONS.ANDROID.RECORD_AUDIO,
-        ios: PERMISSIONS.IOS.MICROPHONE,
-      }) as Permission,
-    );
-
-    if (
-      cameraPermission === RESULTS.GRANTED &&
-      microphonePermission === RESULTS.GRANTED
-    ) {
-      console.log("All permissions granted");
-      return true;
-    } else {
-      console.log("Please provide camera and microphone permissions.");
-      return false;
-    }
-  } catch (error) {
-    console.error("Failed to request permission", error);
-    return false;
-  }
-};
+import { requestPermissions } from "@/utils/RequestPermissions";
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
