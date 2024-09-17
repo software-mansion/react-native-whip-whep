@@ -29,25 +29,16 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.mobilewhep.client.ConfigurationOptions
 import com.mobilewhep.client.VideoView
-import com.mobilewhep.client.WhepClient
-import com.mobilewhep.client.WhipClient
 import com.swmansion.whipwhepdemo.ui.theme.WhipWhepDemoTheme
-import kotlinx.coroutines.launch
-import org.webrtc.Camera1Enumerator
-import org.webrtc.Camera2Enumerator
-import org.webrtc.CameraEnumerator
 
 class MainActivity : ComponentActivity() {
   private val PERMISSIONS_REQUEST_CODE = 101
@@ -111,7 +102,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun PlayerView(modifier: Modifier = Modifier, viewModel: MainActivityViewModel) {
+fun PlayerView(
+  modifier: Modifier = Modifier,
+  viewModel: MainActivityViewModel
+) {
   var whipView: VideoView? =
     remember {
       null

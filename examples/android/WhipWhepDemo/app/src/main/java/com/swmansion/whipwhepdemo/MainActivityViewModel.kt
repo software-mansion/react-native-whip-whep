@@ -15,7 +15,9 @@ import org.webrtc.CameraEnumerator
 
 const val TAG = "WHEP_EXAMPLE"
 
-class MainActivityViewModel(application: Application) : AndroidViewModel(application) {
+class MainActivityViewModel(
+  application: Application
+) : AndroidViewModel(application) {
   var isLoading = mutableStateOf(false)
   var shouldShowPlayBtn = mutableStateOf(true)
   var shouldShowStreamBtn = mutableStateOf(true)
@@ -33,23 +35,26 @@ class MainActivityViewModel(application: Application) : AndroidViewModel(applica
 
   init {
     try {
-      whepClient = WhepClient(
-        appContext = getApplication<Application>().applicationContext,
-        serverUrl = getApplication<Application>().applicationContext.getString(R.string.WHEP_SERVER_URL),
-        configurationOptions = ConfigurationOptions(
-          authToken = "example",
+      whepClient =
+        WhepClient(
+          appContext = getApplication<Application>().applicationContext,
+          serverUrl = getApplication<Application>().applicationContext.getString(R.string.WHEP_SERVER_URL),
+          configurationOptions =
+            ConfigurationOptions(
+              authToken = "example"
+            )
         )
-      )
 
-      whipClient = WhipClient(
-        appContext = getApplication<Application>().applicationContext,
-        serverUrl =
-        getApplication<Application>().applicationContext.getString(
-          R.string.WHIP_SERVER_URL
-        ),
-        configurationOptions = ConfigurationOptions(authToken = "example"),
-        videoDevice = deviceName
-      )
+      whipClient =
+        WhipClient(
+          appContext = getApplication<Application>().applicationContext,
+          serverUrl =
+            getApplication<Application>().applicationContext.getString(
+              R.string.WHIP_SERVER_URL
+            ),
+          configurationOptions = ConfigurationOptions(authToken = "example"),
+          videoDevice = deviceName
+        )
     } catch (e: Exception) {
       Log.e(TAG, "Error when creating client: ${e.message}")
     }
