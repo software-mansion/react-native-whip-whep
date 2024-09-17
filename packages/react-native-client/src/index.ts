@@ -16,5 +16,5 @@ export {
   createWhipClient,
   connectWhipClient,
   disconnectWhipClient,
-  getCaptureDevices,
+  captureDevices,
 } from "./ReactNativeClientModule";

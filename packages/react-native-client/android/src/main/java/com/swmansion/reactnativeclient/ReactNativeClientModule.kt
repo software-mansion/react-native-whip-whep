@@ -117,8 +117,9 @@ class ReactNativeClientModule :
         whipClient.disconnect()
       }
 
-      Function("getCaptureDevices") {
-        getCaptureDevices()
+      //TODO: Move getCaptureDevices to native package
+      Property("captureDevices") {
+        return@Property getCaptureDevices()
       }
     }
 

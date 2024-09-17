@@ -20,7 +20,7 @@ type RNClientModule = {
   ) => void;
   connectWhip: () => Promise<void>;
   disconnectWhip: () => void;
-  getCaptureDevices: () => string[];
+  captureDevices: ReadonlyArray<string>;
 };
 
 const nativeModule: RNClientModule & NativeModule =
@@ -66,8 +66,6 @@ export function disconnectWhipClient() {
   return nativeModule.disconnectWhip();
 }
 
-export function getCaptureDevices() {
-  return nativeModule.getCaptureDevices();
-}
+export const captureDevices = nativeModule.captureDevices;
 
 export default nativeModule;
