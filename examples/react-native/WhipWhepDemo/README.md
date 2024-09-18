@@ -20,7 +20,12 @@ To see the stream from your device, enter `http://<your IP address>:8829/index.h
 
 ## Get started
 
-1. Install node_modules in project root directory:
+1. Create a `.env` file in `examples/react-native/WhipWhepDemo` directory and put there server URLs details:
+```
+EXPO_PUBLIC_WHEP_SERVER_URL = <YOUR WHEP SERVER URL>
+EXPO_PUBLIC_WHIP_SERVER_URL = <YOUR WHIP SERVER URL>
+```
+3. Install node_modules in project root directory:
 ```
 yarn
 ```
