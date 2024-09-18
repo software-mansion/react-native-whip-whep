@@ -6,42 +6,16 @@ import {
   Platform,
 } from "react-native";
 
-import * as WhepClient from "@mobile-whep/react-native-client";
 import { useEffect, useState } from "react";
-import { WhipWhepClientView } from "@mobile-whep/react-native-client";
-import { PERMISSIONS, request, RESULTS } from "react-native-permissions";
-
-const requestPermissions = async (): Promise<boolean> => {
-  try {
-    const cameraPermission = await request(
-      Platform.select({
-        android: PERMISSIONS.ANDROID.CAMERA,
-        ios: PERMISSIONS.IOS.CAMERA,
-      }) as Permission,
-    );
-
-    const microphonePermission = await request(
-      Platform.select({
-        android: PERMISSIONS.ANDROID.RECORD_AUDIO,
-        ios: PERMISSIONS.IOS.MICROPHONE,
-      }) as Permission,
-    );
-
-    if (
-      cameraPermission === RESULTS.GRANTED &&
-      microphonePermission === RESULTS.GRANTED
-    ) {
-      console.log("All permissions granted");
-      return true;
-    } else {
-      console.log("Please provide camera and microphone permissions.");
-      return false;
-    }
-  } catch (error) {
-    console.error("Failed to request permission", error);
-    return false;
-  }
-};
+import { requestPermissions } from "@/utils/RequestPermissions";
+import {
+  addTrackListener,
+  connectWhepClient,
+  createWhepClient,
+  disconnectWhepClient,
+  PlayerType,
+  WhipWhepClientView,
+} from "@mobile-whep/react-native-client";
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +25,7 @@ export default function HomeScreen() {
     setShouldShowPlayBtn(false);
     setIsLoading(true);
     try {
-      await WhepClient.connectWhepClient();
+      await connectWhepClient();
       console.log("Connected to WHEP Client");
       setIsLoading(false);
     } catch (error) {
@@ -63,16 +37,13 @@ export default function HomeScreen() {
     const initialize = async () => {
       const hasPermissions = await requestPermissions();
       if (hasPermissions) {
-        WhepClient.createWhepClient(
-          process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? "",
-          {
-            authToken: "example",
-          },
-        );
+        createWhepClient(process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? "", {
+          authToken: "example",
+        });
 
         console.log("WHEP Client created");
 
-        WhepClient.addTrackListener((event) => {
+        addTrackListener((event) => {
           console.log("Track added:", event);
         });
       }
@@ -81,7 +52,7 @@ export default function HomeScreen() {
     initialize();
 
     return () => {
-      WhepClient.disconnectWhepClient();
+      disconnectWhepClient();
     };
   }, []);
 
@@ -90,7 +61,7 @@ export default function HomeScreen() {
       <View style={styles.box}>
         <WhipWhepClientView
           style={styles.clientView}
-          playerType={WhepClient.PlayerType.WHEP}
+          playerType={PlayerType.WHEP}
         />
         {shouldShowPlayBtn && (
           <Button title="Play" onPress={handlePlayBtnClick} />

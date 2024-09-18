@@ -40,6 +40,7 @@ public class ReactNativeClientModule: Module, PlayerListener {
     
     private func getCaptureDevices() -> [String] {
         let captureDevices = RTCCameraVideoCapturer.captureDevices()
+        print(captureDevices)
         return captureDevices.map { $0.uniqueID }
     }
 
@@ -109,8 +110,8 @@ public class ReactNativeClientModule: Module, PlayerListener {
             client.disconnect()
         }
         
-        Function("getCaptureDevices") {
-            getCaptureDevices()
+        Property("getCaptureDevices") {
+           return getCaptureDevices()
         }
     }
     

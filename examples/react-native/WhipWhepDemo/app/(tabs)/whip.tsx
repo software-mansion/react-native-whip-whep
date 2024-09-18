@@ -1,10 +1,16 @@
 import { StyleSheet, Button, View, ActivityIndicator } from "react-native";
 
-import * as WhipClient from "@mobile-whep/react-native-client";
 import { useEffect, useState } from "react";
 import { requestPermissions } from "@/utils/RequestPermissions";
-import { WhipWhepClientView } from "@mobile-whep/react-native-client";
-import { PlayerType } from "@mobile-whep/react-native-client/build/ReactNativeClient.types";
+import {
+  addTrackListener,
+  captureDevices,
+  connectWhipClient,
+  createWhipClient,
+  disconnectWhipClient,
+  PlayerType,
+  WhipWhepClientView,
+} from "@mobile-whep/react-native-client";
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,7 +20,7 @@ export default function HomeScreen() {
     setShouldShowStreamBtn(false);
     try {
       setIsLoading(true);
-      await WhipClient.connectWhipClient();
+      await connectWhipClient();
       console.log("Connected to WHIP Client");
       setIsLoading(false);
     } catch (error) {
@@ -26,9 +32,10 @@ export default function HomeScreen() {
     const initialize = async () => {
       const hasPermissions = await requestPermissions();
       if (hasPermissions) {
-        const availableDevices = WhipClient.captureDevices;
+        const availableDevices = captureDevices;
+        console.log(availableDevices);
 
-        WhipClient.createWhipClient(
+        createWhipClient(
           process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? "",
           {
             authToken: "example",
@@ -38,7 +45,7 @@ export default function HomeScreen() {
 
         console.log("WHIP Client created");
 
-        WhipClient.addTrackListener((event) => {
+        addTrackListener((event) => {
           console.log("Track added:", event);
         });
       }
@@ -46,7 +53,7 @@ export default function HomeScreen() {
 
     initialize();
     return () => {
-      WhipClient.disconnectWhipClient();
+      disconnectWhipClient();
     };
   }, []);
 
