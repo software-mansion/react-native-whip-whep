@@ -112,7 +112,7 @@ public class ReactNativeClientModule: Module, PlayerListener {
         }
         
         Property("getCaptureDevices") {
-            return self.getCaptureDevices()
+            self.getCaptureDevices()
         }
     }
     
