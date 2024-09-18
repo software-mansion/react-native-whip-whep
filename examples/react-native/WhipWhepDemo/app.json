@@ -40,7 +40,20 @@
       ],
       "expo-router",
       "./withAndroidSettings",
-      "./withIosPodfile"
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "14.0",
+            "extraPods": [
+              {
+                "name": "MobileWhepClient",
+                "path": "../../../../"
+              }
+            ]
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
