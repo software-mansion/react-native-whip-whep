@@ -21,7 +21,7 @@
   "scripts": {
     "lint": "yarn workspaces foreach -A -p run lint",
     "lint:check": "yarn workspaces foreach -A -p run lint:check",
-    "build": "yarn workspace mobile-whep-client run tsc"
+    "build": "yarn workspace @mobile-whep/react-native-client run expo-module build"
   },
   "dependencies": {
     "babel-plugin-module-resolver": "^5.0.2"
