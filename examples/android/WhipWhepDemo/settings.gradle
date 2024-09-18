@@ -21,6 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "WhipWhepDemo"
 include ':app'
-include ':mobile-whep-react-native-client'
-project(':mobile-whep-react-native-client').projectDir = new File('../../../packages/android-client/MobileWhepClient')
+include ':MobileWhepClient'
+project(':MobileWhepClient').projectDir = new File('../../../packages/android-client/MobileWhepClient')
 

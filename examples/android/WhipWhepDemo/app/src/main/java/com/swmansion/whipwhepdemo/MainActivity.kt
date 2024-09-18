@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,29 +29,22 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.mobilewhep.client.ConfigurationOptions
 import com.mobilewhep.client.VideoView
-import com.mobilewhep.client.WhepClient
-import com.mobilewhep.client.WhipClient
 import com.swmansion.whipwhepdemo.ui.theme.WhipWhepDemoTheme
-import kotlinx.coroutines.launch
-import org.webrtc.Camera1Enumerator
-import org.webrtc.Camera2Enumerator
-import org.webrtc.CameraEnumerator
 
 class MainActivity : ComponentActivity() {
   private val PERMISSIONS_REQUEST_CODE = 101
   private val REQUIRED_PERMISSIONS = arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
+
+  private val viewModel by viewModels<MainActivityViewModel>()
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -66,7 +60,7 @@ class MainActivity : ComponentActivity() {
     setContent {
       WhipWhepDemoTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-          PlayerView(modifier = Modifier.padding(innerPadding))
+          PlayerView(modifier = Modifier.padding(innerPadding), viewModel = viewModel)
         }
       }
     }
@@ -108,50 +102,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun PlayerView(modifier: Modifier = Modifier) {
-  val context = LocalContext.current
-  val cameraEnumerator: CameraEnumerator =
-    if (Camera2Enumerator.isSupported(context)) {
-      Camera2Enumerator(context)
-    } else {
-      Camera1Enumerator(false)
-    }
-
-  val deviceName =
-    cameraEnumerator.deviceNames.find {
-      true
-    }
-
-  var isLoading by remember { mutableStateOf(false) }
-  var shouldShowPlayBtn by remember {
-    mutableStateOf(true)
-  }
-  var shouldShowStreamBtn by remember {
-    mutableStateOf(true)
-  }
-
-  val whepClient =
-    remember {
-      WhepClient(
-        appContext = context,
-        serverUrl = context.getString(R.string.WHEP_SERVER_URL),
-        configurationOptions = ConfigurationOptions(authToken = "example")
-      )
-    }
-
-  val whipClient =
-    remember {
-      WhipClient(
-        appContext = context,
-        serverUrl =
-          context.getString(
-            R.string.WHIP_SERVER_URL
-          ),
-        configurationOptions = ConfigurationOptions(authToken = "example"),
-        videoDevice = deviceName
-      )
-    }
-
+fun PlayerView(
+  modifier: Modifier = Modifier,
+  viewModel: MainActivityViewModel
+) {
   var whipView: VideoView? =
     remember {
       null
@@ -164,43 +118,21 @@ fun PlayerView(modifier: Modifier = Modifier) {
 
   DisposableEffect(Unit) {
     onDispose {
-      whepClient.disconnect()
-      whipClient.disconnect()
+      viewModel.disconnect()
       view?.release()
       whipView?.release()
     }
   }
 
-  val coroutineScope = rememberCoroutineScope()
-
-  fun onPlayBtnClick() {
-    shouldShowPlayBtn = false
-    isLoading = true
-    whepClient.onTrackAdded = { isLoading = false }
-    coroutineScope.launch {
-      whepClient.connect()
-    }
-  }
-
-  fun onStreamBtnClick() {
-    shouldShowStreamBtn = false
-    coroutineScope.launch {
-      whipClient.connect()
-    }
-  }
-
   @Composable
-  fun WHEPTab(
-    whepPlayer: WhepClient,
-    onPlayBtnClick: () -> Unit,
-    shouldShowPlayBtn: Boolean,
-    isLoading: Boolean
-  ) {
+  fun WHEPTab() {
+    val shouldShowPlayBtn by viewModel.shouldShowPlayBtn
+    val isLoading by viewModel.isLoading
     Box {
       AndroidView(
         factory = { ctx ->
           VideoView(ctx).apply {
-            player = whepPlayer
+            player = viewModel.whepClient
           }
         },
         modifier =
@@ -210,7 +142,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
       )
 
       if (shouldShowPlayBtn) {
-        Button(onClick = { onPlayBtnClick() }, modifier = Modifier.align(Alignment.Center)) {
+        Button(onClick = { viewModel.onPlay() }, modifier = Modifier.align(Alignment.Center)) {
           Image(
             painter = painterResource(id = android.R.drawable.ic_media_play),
             contentDescription = "play"
@@ -232,21 +164,18 @@ fun PlayerView(modifier: Modifier = Modifier) {
   }
 
   @Composable
-  fun WHIPTab(
-    whipPlayer: WhipClient,
-    onStreamBtnClick: () -> Unit,
-    shouldShowStreamBtn: Boolean
-  ) {
+  fun WHIPTab() {
     Column(
       modifier =
         Modifier
           .fillMaxSize(),
       horizontalAlignment = Alignment.CenterHorizontally
     ) {
+      val shouldShowStreamBtn by viewModel.shouldShowStreamBtn
       AndroidView(
         factory = { ctx ->
           VideoView(ctx).apply {
-            player = whipPlayer
+            player = viewModel.whipClient
           }
         },
         modifier =
@@ -261,7 +190,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
             Modifier
               .padding(16.dp)
         ) {
-          Button(onClick = { onStreamBtnClick() }) {
+          Button(onClick = { viewModel.onStream() }) {
             Text("Stream")
           }
         }
@@ -270,15 +199,7 @@ fun PlayerView(modifier: Modifier = Modifier) {
   }
 
   @Composable
-  fun TabView(
-    whepPlayer: WhepClient,
-    whipPlayer: WhipClient,
-    onPlayBtnClick: () -> Unit,
-    onStreamBtnClick: () -> Unit,
-    shouldShowPlayBtn: Boolean,
-    isLoading: Boolean,
-    shouldShowStreamBtn: Boolean
-  ) {
+  fun TabView() {
     val tabTitles = listOf("WHEP", "WHIP")
     var selectedTabIndex by remember { mutableStateOf(0) }
 
@@ -295,18 +216,9 @@ fun PlayerView(modifier: Modifier = Modifier) {
 
       when (selectedTabIndex) {
         0 ->
-          WHEPTab(
-            whepPlayer = whepPlayer,
-            onPlayBtnClick = onPlayBtnClick,
-            shouldShowPlayBtn = shouldShowPlayBtn,
-            isLoading = isLoading
-          )
+          WHEPTab()
         1 ->
-          WHIPTab(
-            whipPlayer = whipPlayer,
-            onStreamBtnClick = onStreamBtnClick,
-            shouldShowStreamBtn = shouldShowStreamBtn
-          )
+          WHIPTab()
       }
     }
   }
@@ -316,14 +228,6 @@ fun PlayerView(modifier: Modifier = Modifier) {
         .fillMaxSize()
         .padding(top = 50.dp)
   ) {
-    TabView(
-      whepPlayer = whepClient,
-      whipPlayer = whipClient,
-      onPlayBtnClick = ::onPlayBtnClick,
-      onStreamBtnClick = ::onStreamBtnClick,
-      shouldShowPlayBtn = shouldShowPlayBtn,
-      isLoading = isLoading,
-      shouldShowStreamBtn = shouldShowStreamBtn
-    )
+    TabView()
   }
 }
