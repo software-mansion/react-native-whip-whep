@@ -111,8 +111,8 @@ public class ReactNativeClientModule: Module, PlayerListener {
             client.disconnect()
         }
         
-        Property("getCaptureDevices") {
-            self.getCaptureDevices()
+        Property("captureDevices") {
+            return self.getCaptureDevices()
         }
     }
     
