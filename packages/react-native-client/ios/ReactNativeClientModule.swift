@@ -39,9 +39,7 @@ public class ReactNativeClientModule: Module, PlayerListener {
     }
     
     private func getCaptureDevices() -> [String] {
-        print("got here")
         let captureDevices = RTCCameraVideoCapturer.captureDevices()
-        print(captureDevices)
         return captureDevices.map { $0.uniqueID }
     }
 

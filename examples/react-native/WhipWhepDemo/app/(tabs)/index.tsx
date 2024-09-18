@@ -9,7 +9,6 @@ import {
 import { useEffect, useState } from "react";
 import { requestPermissions } from "@/utils/RequestPermissions";
 import {
-  addTrackListener,
   connectWhepClient,
   createWhepClient,
   disconnectWhepClient,
@@ -26,7 +25,6 @@ export default function HomeScreen() {
     setIsLoading(true);
     try {
       await connectWhepClient();
-      console.log("Connected to WHEP Client");
       setIsLoading(false);
     } catch (error) {
       console.error("Failed to connect to WHEP Client", error);
@@ -39,12 +37,6 @@ export default function HomeScreen() {
       if (hasPermissions) {
         createWhepClient(process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? "", {
           authToken: "example",
-        });
-
-        console.log("WHEP Client created");
-
-        addTrackListener((event) => {
-          console.log("Track added:", event);
         });
       }
     };

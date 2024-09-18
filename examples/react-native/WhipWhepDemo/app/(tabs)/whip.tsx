@@ -3,7 +3,6 @@ import { StyleSheet, Button, View, ActivityIndicator } from "react-native";
 import { useEffect, useState } from "react";
 import { requestPermissions } from "@/utils/RequestPermissions";
 import {
-  addTrackListener,
   captureDevices,
   connectWhipClient,
   createWhipClient,
@@ -21,7 +20,6 @@ export default function HomeScreen() {
     try {
       setIsLoading(true);
       await connectWhipClient();
-      console.log("Connected to WHIP Client");
       setIsLoading(false);
     } catch (error) {
       console.error("Failed to connect to WHIP Client", error);
@@ -42,12 +40,6 @@ export default function HomeScreen() {
           },
           availableDevices[0],
         );
-
-        console.log("WHIP Client created");
-
-        addTrackListener((event) => {
-          console.log("Track added:", event);
-        });
       }
     };
 
