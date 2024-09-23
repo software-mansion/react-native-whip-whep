@@ -1,4 +1,4 @@
-package com.mobilewhep.client.Models
+package com.mobilewhep.client
 
 data class CaptureDevice(
   val deviceName: String,

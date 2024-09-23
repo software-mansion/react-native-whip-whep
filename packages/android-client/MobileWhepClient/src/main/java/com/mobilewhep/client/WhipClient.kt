@@ -2,7 +2,7 @@ package com.mobilewhep.client
 
 import android.content.Context
 import android.util.Log
-import com.mobilewhep.client.Models.CaptureDevice
+import com.mobilewhep.client.CaptureDevice
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraEnumerationAndroid
