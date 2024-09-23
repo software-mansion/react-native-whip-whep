@@ -14,7 +14,11 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.swmansion.mobilewhepclient"
+      "bundleIdentifier": "com.swmansion.mobilewhepclient",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This application requires camera access to gather information about available video devices.",
+        "NSMicrophoneUsageDescription": "This application requires microphone access to gather information about available audio devices."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -40,7 +44,20 @@
       ],
       "expo-router",
       "./withAndroidSettings",
-      "./withIosPodfile"
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "14.0",
+            "extraPods": [
+              {
+                "name": "MobileWhepClient",
+                "path": "../../../../"
+              }
+            ]
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

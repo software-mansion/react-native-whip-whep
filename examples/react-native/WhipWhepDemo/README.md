@@ -1,50 +1,60 @@
-# Welcome to your Expo app 👋
+# WhipWhepDemo
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A simple expo app showing the main functionalities of the WHIP/WHEP package. It consists of a view that, depending of whether WHIP or WHEP has been chosen, shows a camera preview or current media stream.
+
+## Server configuration
+
+As stated in the package README file, for the server it is recommended to use the [ex_webrtc](https://github.com/elixir-webrtc/ex_webrtc/tree/9e1888185211c8da7128db7309584af8e863fafa/examples/whip_whep) server, as it is simple, easy to use and it was used during the package development. In order to run the server:
+
+- Clone the `ex_webrtc` repo
+- In the folder `examples/whip_whep/config` modify the file `config.exs` to use your IP address:
+  ```
+  config :whip_whep,
+  ip: <your IP address>,
+  port: 8829,
+  token: "example"
+  ```
+- From the `whip_whep` folder run commands `mix deps.get` and `mix run --no-halt` (running the commands requires Elixir installed on your device, for example using `brew install elixir`)
+
+To see the stream from your device, enter `http://<your IP address>:8829/index.html`. These instructions are available in the `ex_webrtc` repo as well.
 
 ## Get started
 
-1. Install dependencies
+1. Create a `.env` file in `examples/react-native/WhipWhepDemo` directory and put there server URLs details:
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+EXPO_PUBLIC_WHEP_SERVER_URL = <YOUR WHEP SERVER URL>
+EXPO_PUBLIC_WHIP_SERVER_URL = <YOUR WHIP SERVER URL>
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. In a separate window, in the project root directory build the package:
 
-## Learn more
+```
+yarn build
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+3. Run this command in the project root directory to install node_modules, initialize native package directories and install cocoapods:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```
+yarn prepare
+```
 
-## Join the community
+4. Start Metro bundler in `examples/react-native/WhipWhepDemo` directory:
 
-Join our community of developers creating universal apps.
+```
+yarn start
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+5. To run the application use
+
+```
+yarn android
+```
+
+or
+
+```
+yarn ios
+```
+
+depending on the platform.

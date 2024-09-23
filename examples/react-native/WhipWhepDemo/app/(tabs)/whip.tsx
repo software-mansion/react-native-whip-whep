@@ -1,9 +1,14 @@
 import { StyleSheet, Button, View, ActivityIndicator } from "react-native";
 
-import * as WhipClient from "@mobile-whep/react-native-client";
 import { useEffect, useState } from "react";
 import { requestPermissions } from "@/utils/RequestPermissions";
-import { WhipWhepClientView } from "@mobile-whep/react-native-client";
+import {
+  captureDevices,
+  connectWhipClient,
+  createWhipClient,
+  disconnectWhipClient,
+  WhipClientView,
+} from "@mobile-whep/react-native-client";
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -13,8 +18,7 @@ export default function HomeScreen() {
     setShouldShowStreamBtn(false);
     try {
       setIsLoading(true);
-      await WhipClient.connectWhipClient();
-      console.log("Connected to WHIP Client");
+      await connectWhipClient();
       setIsLoading(false);
     } catch (error) {
       console.error("Failed to connect to WHIP Client", error);
@@ -25,37 +29,27 @@ export default function HomeScreen() {
     const initialize = async () => {
       const hasPermissions = await requestPermissions();
       if (hasPermissions) {
-        const availableDevices = WhipClient.captureDevices;
-
-        WhipClient.createWhipClient(
+        const availableDevices = captureDevices;
+        createWhipClient(
           process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? "",
           {
             authToken: "example",
           },
           availableDevices[0],
         );
-
-        console.log("WHIP Client created");
-
-        WhipClient.addTrackListener((event) => {
-          console.log("Track added:", event);
-        });
       }
     };
 
     initialize();
     return () => {
-      WhipClient.disconnectWhipClient();
+      disconnectWhipClient();
     };
   }, []);
 
   return (
     <View style={styles.container}>
       <View style={styles.box}>
-        <WhipWhepClientView
-          style={styles.clientView}
-          playerType={WhipClient.PlayerType.WHIP}
-        />
+        <WhipClientView style={styles.clientView} />
         {shouldShowStreamBtn && (
           <Button title="Stream" onPress={handleStreamBtnClick} />
         )}

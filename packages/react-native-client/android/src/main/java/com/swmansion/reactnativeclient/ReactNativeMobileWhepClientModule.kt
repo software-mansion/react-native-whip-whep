@@ -16,7 +16,7 @@ import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraEnumerator
 import org.webrtc.VideoTrack
 
-class ReactNativeClientModule :
+class ReactNativeMobileWhepClientModule :
   Module(),
   ClientBaseListener {
   interface OnTrackUpdateListener {
@@ -65,7 +65,7 @@ class ReactNativeClientModule :
 
   override fun definition() =
     ModuleDefinition {
-      Name("ReactNativeClient")
+      Name("ReactNativeMobileWhepClient")
 
       Events("trackAdded")
 
@@ -80,7 +80,7 @@ class ReactNativeClientModule :
             videoParameters = getVideoParametersFromOptions(configurationOptions?.get("videoParameters") as? String ?: "HD43"),
           )
         whepClient = WhepClient(context, serverUrl, options)
-        whepClient.addTrackListener(this@ReactNativeClientModule)
+        whepClient.addTrackListener(this@ReactNativeMobileWhepClientModule)
       }
 
       AsyncFunction("connectWhep") Coroutine { ->
@@ -104,7 +104,7 @@ class ReactNativeClientModule :
             videoParameters = configurationOptions?.get("videoParameters") as? VideoParameters ?: VideoParameters.presetFHD43,
           )
         whipClient = WhipClient(context, serverUrl, options, videoDevice)
-        whipClient.addTrackListener(this@ReactNativeClientModule)
+        whipClient.addTrackListener(this@ReactNativeMobileWhepClientModule)
       }
 
       AsyncFunction("connectWhip") Coroutine { ->
