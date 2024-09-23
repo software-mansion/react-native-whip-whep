@@ -3,7 +3,6 @@
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
-    "prepare": "cd ../../../ && yarn && cd examples/react-native/WhipWhepDemo && expo prebuild && cd ios && pod install",
     "start": "EXPO_USE_METRO_WORKSPACE_ROOT=1 npx expo start",
     "android": "expo run:android",
     "ios": "expo run:ios",
