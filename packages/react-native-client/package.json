@@ -1,7 +1,7 @@
 {
   "name": "@mobile-whep/react-native-client",
   "version": "0.1.0",
-  "description": "My new module",
+  "description": "An implementation of WHIP and WHEP protocols functionalities for React Native.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
@@ -17,17 +17,24 @@
   },
   "keywords": [
     "react-native",
-    "expo",
-    "react-native-client",
-    "ReactNativeMobileWhepClient"
+    "WHIP",
+    "WHEP",
+    "WebRTC",
+    "streaming",
+    "video",
+    "audio"
   ],
-  "repository": "https://",
-  "bugs": {
-    "url": "https:///issues"
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/software-mansion-labs/mobile-whep.git",
+    "directory": "packages/react-native-client"
   },
-  "author": "Software Mansion <83274413+gredajustyna@users.noreply.github.com> ()",
+  "bugs": {
+    "url": "https://github.com/software-mansion-labs/mobile-whep/issues"
+  },
+  "author": "Software Mansion",
   "license": "MIT",
-  "homepage": "https://#readme",
+  "homepage": "https://github.com/software-mansion-labs/mobile-whep",
   "devDependencies": {
     "@types/react": "^18.0.25",
     "expo-module-scripts": "^3.5.2",
