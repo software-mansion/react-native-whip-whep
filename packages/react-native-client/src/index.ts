@@ -1,13 +1,16 @@
-import { ChangeEventPayload } from "./ReactNativeClient.types";
-import { addTrackListener } from "./ReactNativeClientModule";
-import { WhipClientView, WhepClientView } from "./WhipWhepClientView";
+import { ChangeEventPayload } from "./ReactNativeMobileWhepClient.types";
+import { addTrackListener } from "./ReactNativeMobileWhepClientModule";
+import {
+  WhipClientView,
+  WhepClientView,
+} from "./ReactNativeMobileWhepClientView";
 
 export { WhipClientView, WhepClientView, ChangeEventPayload, addTrackListener };
 export {
   PlayerType,
   VideoParameters,
   ConfigurationOptions,
-} from "./ReactNativeClient.types";
+} from "./ReactNativeMobileWhepClient.types";
 
 export {
   createWhepClient,
@@ -17,4 +20,4 @@ export {
   connectWhipClient,
   disconnectWhipClient,
   captureDevices,
-} from "./ReactNativeClientModule";
+} from "./ReactNativeMobileWhepClientModule";

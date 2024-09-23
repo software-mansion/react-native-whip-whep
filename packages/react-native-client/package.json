@@ -19,7 +19,7 @@
     "react-native",
     "expo",
     "react-native-client",
-    "ReactNativeClient"
+    "ReactNativeMobileWhepClient"
   ],
   "repository": "https://",
   "bugs": {

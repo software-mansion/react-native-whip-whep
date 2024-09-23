@@ -2,7 +2,7 @@
 
 An implementation of WHIP and WHEP protocols for React Native. Provides basic methods for establishing a connection in order to stream or receive media.
 
-This repository is an expo module that makes use of native Android and iOS packages and allows to use them in a React Native App with the code provided in `src/ReactNativeClientModule.ts` and the exports in `src/index.ts`. It also provides a simple native `WhipWhepClientView` to show the stream or camera preview.
+This repository is an expo module that makes use of native Android and iOS packages and allows to use them in a React Native App with the code provided in `src/ReactNativeMobileWhepClientModule.ts` and the exports in `src/index.ts`. It also provides two simple native views - `WhepClientView` and `WhipClientView` to show the stream or camera preview.
 
 ## Examples
 

@@ -3,10 +3,11 @@ import {
   requireNativeModule,
   Subscription,
 } from "expo-modules-core";
-import { ConfigurationOptions } from "./ReactNativeClient.types";
 import { NativeModule } from "react-native";
 
-type RNClientModule = {
+import { ConfigurationOptions } from "./ReactNativeMobileWhepClient.types";
+
+type RNMobileWhepClientModule = {
   createWhepClient: (
     serverUrl: string,
     configurationOptions?: ConfigurationOptions
@@ -20,11 +21,11 @@ type RNClientModule = {
   ) => void;
   connectWhip: () => Promise<void>;
   disconnectWhip: () => void;
-  captureDevices: ReadonlyArray<string>;
+  captureDevices: readonly string[];
 };
 
-const nativeModule: RNClientModule & NativeModule =
-  requireNativeModule("ReactNativeClient");
+const nativeModule: RNMobileWhepClientModule & NativeModule =
+  requireNativeModule("ReactNativeMobileWhepClient");
 export const eventEmitter = new EventEmitter(nativeModule);
 
 export function addTrackListener(listener: (event) => void): Subscription {

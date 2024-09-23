@@ -10,9 +10,11 @@ export type ConfigurationOptions = {
   videoParameters?: VideoParameters;
 };
 
-export type WhipWhepClientViewProps = {
+export type ReactNativeMobileWhepClientViewProps = {
   style: React.CSSProperties;
-  ref: React.ForwardedRef<React.ComponentType<WhipWhepClientViewProps>>;
+  ref: React.ForwardedRef<
+    React.ComponentType<ReactNativeMobileWhepClientViewProps>
+  >;
 };
 
 export enum PlayerType {

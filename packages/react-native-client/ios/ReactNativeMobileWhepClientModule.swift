@@ -2,7 +2,7 @@ import ExpoModulesCore
 import MobileWhepClient
 import WebRTC
 
-public class ReactNativeClientModule: Module, PlayerListener {
+public class ReactNativeMobileWhepClientModule: Module, PlayerListener {
     static var whepClient: WhepClient? = nil
     static var whipClient: WhipClient? = nil
     static var onTrackUpdateListeners: [OnTrackUpdateListener] = []
@@ -44,7 +44,7 @@ public class ReactNativeClientModule: Module, PlayerListener {
     }
 
     public func definition() -> ModuleDefinition {
-        Name("ReactNativeClient")
+        Name("ReactNativeMobileWhepClient")
 
         Events("trackAdded")
 
@@ -62,12 +62,12 @@ public class ReactNativeClientModule: Module, PlayerListener {
                 videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,
                 videoParameters: try! getVideoParametersFromOptions(createOptions: configurationOptions?["videoParameters"] as? String ?? "HD43"))
 
-            ReactNativeClientModule.whepClient = WhepClient(serverUrl: url, configurationOptions: options)
-            ReactNativeClientModule.whepClient?.delegate = self
+            ReactNativeMobileWhepClientModule.whepClient = WhepClient(serverUrl: url, configurationOptions: options)
+            ReactNativeMobileWhepClientModule.whepClient?.delegate = self
         }
 
         AsyncFunction("connectWhep") {
-            guard let client = ReactNativeClientModule.whepClient else {
+            guard let client = ReactNativeMobileWhepClientModule.whepClient else {
                 throw Exception(
                                 name: "E_WHEP_CLIENT_NOT_FOUND",
                                 description: "WHEP client not found. Make sure it was initialized properly.")
@@ -76,7 +76,7 @@ public class ReactNativeClientModule: Module, PlayerListener {
         }
 
         Function("disconnectWhep") {
-            guard let client = ReactNativeClientModule.whepClient else {
+            guard let client = ReactNativeMobileWhepClientModule.whepClient else {
                 throw Exception(
                                 name: "E_WHEP_CLIENT_NOT_FOUND",
                                 description: "WHEP client not found. Make sure it was initialized properly.")
@@ -99,12 +99,12 @@ public class ReactNativeClientModule: Module, PlayerListener {
                 videoParameters: configurationOptions?["videoParameters"] as? VideoParameters ?? VideoParameters.presetFHD43
             )
 
-            ReactNativeClientModule.whipClient = WhipClient(serverUrl: url, configurationOptions: options, videoDevice: AVCaptureDevice(uniqueID: videoDevice))
-            ReactNativeClientModule.whipClient?.delegate = self
+            ReactNativeMobileWhepClientModule.whipClient = WhipClient(serverUrl: url, configurationOptions: options, videoDevice: AVCaptureDevice(uniqueID: videoDevice))
+            ReactNativeMobileWhepClientModule.whipClient?.delegate = self
         }
 
         AsyncFunction("connectWhip") {
-            guard let client = ReactNativeClientModule.whipClient else {
+            guard let client = ReactNativeMobileWhepClientModule.whipClient else {
                 throw Exception(
                                 name: "E_WHIP_CLIENT_NOT_FOUND",
                                 description: "WHIP client not found. Make sure it was initialized properly.")
@@ -113,7 +113,7 @@ public class ReactNativeClientModule: Module, PlayerListener {
         }
 
         Function("disconnectWhip") {
-            guard let client = ReactNativeClientModule.whipClient else {
+            guard let client = ReactNativeMobileWhepClientModule.whipClient else {
                 throw Exception(
                                 name: "E_WHIP_CLIENT_NOT_FOUND",
                                 description: "WHIP client not found. Make sure it was initialized properly.")
@@ -130,7 +130,7 @@ public class ReactNativeClientModule: Module, PlayerListener {
         self.sendEvent("trackAdded", [
             track.trackId : track.kind,
         ])
-        ReactNativeClientModule.onTrackUpdateListeners.forEach {
+        ReactNativeMobileWhepClientModule.onTrackUpdateListeners.forEach {
             $0.onTrackUpdate()
         }
     }

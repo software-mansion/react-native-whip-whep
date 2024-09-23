@@ -1,13 +1,10 @@
 package com.swmansion.reactnativeclient
 
 import android.content.Context
-import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
-import android.provider.CalendarContract.Colors
 import android.widget.FrameLayout
 import com.mobilewhep.client.VideoView
-import com.swmansion.reactnativeclient.ReactNativeClientModule.Companion.whepClient
-import com.swmansion.reactnativeclient.ReactNativeClientModule.Companion.whipClient
+import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whepClient
+import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whipClient
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
 import kotlinx.coroutines.CoroutineScope
@@ -15,16 +12,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.webrtc.VideoTrack
 
-class ReactNativeClientView(
+class ReactNativeMobileWhepClientView(
   context: Context,
   appContext: AppContext,
 ) : ExpoView(context, appContext),
-  ReactNativeClientModule.OnTrackUpdateListener {
+  ReactNativeMobileWhepClientModule.OnTrackUpdateListener {
   private val videoView: VideoView
   private var playerType: String = "WHEP"
 
   init {
-    ReactNativeClientModule.onTrackUpdateListeners.add(this)
+    ReactNativeMobileWhepClientModule.onTrackUpdateListeners.add(this)
     videoView =
       VideoView(context).apply {
         layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, 200)

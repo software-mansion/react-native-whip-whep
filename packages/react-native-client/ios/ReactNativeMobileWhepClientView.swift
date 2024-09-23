@@ -8,8 +8,8 @@ protocol OnTrackUpdateListener {
     func onTrackUpdate()
 }
 
-@objc(ReactNativeClientView)
-public class ReactNativeClientView: UIView, OnTrackUpdateListener {
+@objc(ReactNativeMobileWhepClientView)
+public class ReactNativeMobileWhepClientView: UIView, OnTrackUpdateListener {
     func onTrackUpdate() {
         setupPlayer()
     }
@@ -25,8 +25,8 @@ public class ReactNativeClientView: UIView, OnTrackUpdateListener {
 
     override public init(frame: CGRect) {
         super.init(frame: frame)
-        ReactNativeClientModule.onTrackUpdateListeners = []
-        ReactNativeClientModule.onTrackUpdateListeners.append(self)
+        ReactNativeMobileWhepClientModule.onTrackUpdateListeners = []
+        ReactNativeMobileWhepClientModule.onTrackUpdateListeners.append(self)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -36,9 +36,9 @@ public class ReactNativeClientView: UIView, OnTrackUpdateListener {
     private func setupPlayer() {
         guard let playerType = self.playerType else { return }
         if(playerType == "WHIP"){
-            self.player = ReactNativeClientModule.whipClient
+            self.player = ReactNativeMobileWhepClientModule.whipClient
         }else{
-            self.player = ReactNativeClientModule.whepClient
+            self.player = ReactNativeMobileWhepClientModule.whepClient
         }
         
         guard let player = self.player else { return }
