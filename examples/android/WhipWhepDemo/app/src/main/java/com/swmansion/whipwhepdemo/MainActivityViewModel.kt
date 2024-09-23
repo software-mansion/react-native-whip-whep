@@ -29,21 +29,22 @@ class MainActivityViewModel(
           appContext = getApplication<Application>().applicationContext,
           serverUrl = getApplication<Application>().applicationContext.getString(R.string.WHEP_SERVER_URL),
           configurationOptions =
-          ConfigurationOptions(
-            authToken = "example"
-          )
+            ConfigurationOptions(
+              authToken = "example"
+            )
         )
 
       whipClient =
         WhipClient(
           appContext = getApplication<Application>().applicationContext,
           serverUrl =
-          getApplication<Application>().applicationContext.getString(
-            R.string.WHIP_SERVER_URL
-          ),
+            getApplication<Application>().applicationContext.getString(
+              R.string.WHIP_SERVER_URL
+            ),
           configurationOptions = ConfigurationOptions(authToken = "example"),
-          videoDevice = WhipClient.getCaptureDevices(getApplication<Application>().applicationContext)
-            .first().deviceName
+          videoDevice =
+            WhipClient.getCaptureDevices(getApplication<Application>().applicationContext)
+              .first().deviceName
         )
     } catch (e: Exception) {
       Log.e(TAG, "Error when creating client: ${e.message}")
