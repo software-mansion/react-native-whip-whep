@@ -119,7 +119,7 @@ public class ReactNativeClientModule: Module, PlayerListener {
             track.trackId : track.kind,
         ])
         ReactNativeClientModule.onTrackUpdateListeners.forEach {
-            $0.onTrackUpdate(track: track)
+            $0.onTrackUpdate()
         }
     }
     

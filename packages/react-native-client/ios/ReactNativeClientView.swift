@@ -3,15 +3,14 @@ import UIKit
 import Foundation
 import ExpoModulesCore
 import MobileWhepClient
-import WebRTC
 
 protocol OnTrackUpdateListener {
-    func onTrackUpdate(track: RTCVideoTrack)
+    func onTrackUpdate()
 }
 
 @objc(ReactNativeClientView)
 public class ReactNativeClientView: UIView, OnTrackUpdateListener {
-    func onTrackUpdate(track: RTCVideoTrack) {
+    func onTrackUpdate() {
         setupPlayer()
     }
     
