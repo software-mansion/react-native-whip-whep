@@ -21,31 +21,32 @@ To see the stream from your device, enter `http://<your IP address>:8829/index.h
 ## Get started
 
 1. Create a `.env` file in `examples/react-native/WhipWhepDemo` directory and put there server URLs details:
+
 ```
 EXPO_PUBLIC_WHEP_SERVER_URL = <YOUR WHEP SERVER URL>
 EXPO_PUBLIC_WHIP_SERVER_URL = <YOUR WHIP SERVER URL>
 ```
-3. Install node_modules in project root directory:
+
+2. In a separate window, in the project root directory build the package:
+
 ```
-yarn
+yarn build
 ```
-2. Install node_modules in `examples/react-native/WhipWhepDemo` directory:
+
+3. Run this command in the project root directory to install node_modules, initialize native package directories and install cocoapods:
+
 ```
-cd examples/react-native/WhipWhepDemo && yarn
+yarn prepare
 ```
-3. Initialize the `android` and `ios` folders with native packages linked using expo prebuild:
-```
-expo prebuild
-```
-4. Install cocoapods:
-```
-cd ios && pod install
-```
-5. Start Metro bundler in `examples/react-native/WhipWhepDemo` directory:
+
+4. Start Metro bundler in `examples/react-native/WhipWhepDemo` directory:
+
 ```
 yarn start
 ```
-6. To run the application use
+
+5. To run the application use
+
 ```
 yarn android
 ```
@@ -57,6 +58,3 @@ yarn ios
 ```
 
 depending on the platform.
-
-
-
