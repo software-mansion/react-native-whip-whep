@@ -31,8 +31,6 @@ export default function HomeScreen() {
       const hasPermissions = await requestPermissions();
       if (hasPermissions) {
         const availableDevices = captureDevices;
-        console.log(availableDevices);
-
         createWhipClient(
           process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? "",
           {
