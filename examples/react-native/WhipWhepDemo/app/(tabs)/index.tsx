@@ -1,13 +1,12 @@
 import { StyleSheet, Button, View, ActivityIndicator } from "react-native";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { requestPermissions } from "@/utils/RequestPermissions";
 import {
   connectWhepClient,
   createWhepClient,
   disconnectWhepClient,
-  PlayerType,
-  WhipWhepClientView,
+  WhepClientView,
 } from "@mobile-whep/react-native-client";
 
 export default function HomeScreen() {
@@ -45,10 +44,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.box}>
-        <WhipWhepClientView
-          style={styles.clientView}
-          playerType={PlayerType.WHEP}
-        />
+        <WhepClientView style={styles.clientView} />
         {shouldShowPlayBtn && (
           <Button title="Play" onPress={handlePlayBtnClick} />
         )}

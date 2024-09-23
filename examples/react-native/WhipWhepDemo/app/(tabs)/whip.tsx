@@ -7,8 +7,7 @@ import {
   connectWhipClient,
   createWhipClient,
   disconnectWhipClient,
-  PlayerType,
-  WhipWhepClientView,
+  WhipClientView,
 } from "@mobile-whep/react-native-client";
 
 export default function HomeScreen() {
@@ -50,10 +49,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.box}>
-        <WhipWhepClientView
-          style={styles.clientView}
-          playerType={PlayerType.WHIP}
-        />
+        <WhipClientView style={styles.clientView} />
         {shouldShowStreamBtn && (
           <Button title="Stream" onPress={handleStreamBtnClick} />
         )}

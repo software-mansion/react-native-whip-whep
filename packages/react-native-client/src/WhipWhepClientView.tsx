@@ -1,14 +1,21 @@
 import { requireNativeViewManager } from "expo-modules-core";
 import * as React from "react";
-import { WhipWhepClientViewProps } from "./ReactNativeClient.types";
+import { PlayerType, WhipWhepClientViewProps } from "./ReactNativeClient.types";
 
-const NativeView: React.ComponentType<WhipWhepClientViewProps> =
-  requireNativeViewManager("ReactNativeClientViewModule");
+const NativeView: React.ComponentType<
+  WhipWhepClientViewProps & { playerType: PlayerType }
+> = requireNativeViewManager("ReactNativeClientViewModule");
 
-export const WhipWhepClientView = React.forwardRef<
+export const WhepClientView = React.forwardRef<
   React.ComponentType<WhipWhepClientViewProps>,
   WhipWhepClientViewProps
 >((props, ref) => (
-  // @ts-expect-error ref prop needs to be updated
-  <NativeView {...props} ref={ref} />
+  <NativeView {...props} playerType={PlayerType.WHEP} ref={ref} />
+));
+
+export const WhipClientView = React.forwardRef<
+  React.ComponentType<WhipWhepClientViewProps>,
+  WhipWhepClientViewProps
+>((props, ref) => (
+  <NativeView {...props} playerType={PlayerType.WHIP} ref={ref} />
 ));

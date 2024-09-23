@@ -11,7 +11,8 @@ export type ConfigurationOptions = {
 };
 
 export type WhipWhepClientViewProps = {
-  playerType: PlayerType;
+  style: React.CSSProperties;
+  ref: React.ForwardedRef<React.ComponentType<WhipWhepClientViewProps>>;
 };
 
 export enum PlayerType {
