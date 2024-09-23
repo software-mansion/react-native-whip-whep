@@ -50,7 +50,9 @@ public class ReactNativeClientModule: Module, PlayerListener {
 
         Function("createWhepClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?) in
             guard let url = URL(string: serverUrl) else {
-                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+                throw Exception(
+                                name: "E_INVALID_URL",
+                                description: "Invalid server URL. Make sure the address in .env file is correct.")
             }
             
             let options = ConfigurationOptions(
@@ -66,21 +68,27 @@ public class ReactNativeClientModule: Module, PlayerListener {
 
         AsyncFunction("connectWhep") {
             guard let client = ReactNativeClientModule.whepClient else {
-                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
+                throw Exception(
+                                name: "E_WHEP_CLIENT_NOT_FOUND",
+                                description: "WHEP client not found. Make sure it was initialized properly.")
             }
             try await client.connect()
         }
 
         Function("disconnectWhep") {
             guard let client = ReactNativeClientModule.whepClient else {
-                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
+                throw Exception(
+                                name: "E_WHEP_CLIENT_NOT_FOUND",
+                                description: "WHEP client not found. Make sure it was initialized properly.")
             }
             client.disconnect()
         }
 
         Function("createWhipClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?, videoDevice: String) in
             guard let url = URL(string: serverUrl) else {
-                throw NSError(domain: "", code: 400, userInfo: [NSLocalizedDescriptionKey: "Invalid URL"])
+                throw Exception(
+                                name: "E_INVALID_URL",
+                                description: "Invalid server URL. Make sure the address in .env file is correct.")
             }
 
             let options = ConfigurationOptions(
@@ -97,14 +105,18 @@ public class ReactNativeClientModule: Module, PlayerListener {
 
         AsyncFunction("connectWhip") {
             guard let client = ReactNativeClientModule.whipClient else {
-                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
+                throw Exception(
+                                name: "E_WHIP_CLIENT_NOT_FOUND",
+                                description: "WHIP client not found. Make sure it was initialized properly.")
             }
             try await client.connect()
         }
 
         Function("disconnectWhip") {
             guard let client = ReactNativeClientModule.whipClient else {
-                throw NSError(domain: "", code: 404, userInfo: [NSLocalizedDescriptionKey: "Client not found"])
+                throw Exception(
+                                name: "E_WHIP_CLIENT_NOT_FOUND",
+                                description: "WHIP client not found. Make sure it was initialized properly.")
             }
             client.disconnect()
         }
