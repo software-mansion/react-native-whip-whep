@@ -61,9 +61,4 @@ class ReactNativeClientView(
   override fun onTrackUpdate(track: VideoTrack) {
     update(track)
   }
-
-  override fun onTrackUpdate(track: VideoTrack) {
-    Log.d("kotki", "update")
-    update(track)
-  }
 }

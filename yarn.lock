@@ -2739,17 +2739,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native-community/audio-toolkit@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "@react-native-community/audio-toolkit@npm:2.0.3"
-  dependencies:
-    async: "npm:^2.6.3"
-    eventemitter3: "npm:^1.2.0"
-    lodash: "npm:^4.17.15"
-  checksum: 10c0/921bc13b84b100ccae08d842167e97e9a1d00acece658b0814492b36776e801783d91311b4ee8ba2134abbdb71ef5f48bba899326483d63b8f7ef893aecc4054
-  languageName: node
-  linkType: hard
-
 "@react-native-community/cli-clean@npm:13.6.9":
   version: 13.6.9
   resolution: "@react-native-community/cli-clean@npm:13.6.9"
@@ -4538,15 +4527,6 @@ __metadata:
   version: 1.0.1
   resolution: "async-limiter@npm:1.0.1"
   checksum: 10c0/0693d378cfe86842a70d4c849595a0bb50dc44c11649640ca982fa90cbfc74e3cc4753b5a0847e51933f2e9c65ce8e05576e75e5e1fd963a086e673735b35969
-  languageName: node
-  linkType: hard
-
-"async@npm:^2.6.3":
-  version: 2.6.4
-  resolution: "async@npm:2.6.4"
-  dependencies:
-    lodash: "npm:^4.17.14"
-  checksum: 10c0/0ebb3273ef96513389520adc88e0d3c45e523d03653cc9b66f5c46f4239444294899bfd13d2b569e7dbfde7da2235c35cf5fd3ece9524f935d41bbe4efccdad0
   languageName: node
   linkType: hard
 
@@ -6633,13 +6613,6 @@ __metadata:
   version: 5.0.1
   resolution: "event-target-shim@npm:5.0.1"
   checksum: 10c0/0255d9f936215fd206156fd4caa9e8d35e62075d720dc7d847e89b417e5e62cf1ce6c9b4e0a1633a9256de0efefaf9f8d26924b1f3c8620cffb9db78e7d3076b
-  languageName: node
-  linkType: hard
-
-"eventemitter3@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "eventemitter3@npm:1.2.0"
-  checksum: 10c0/8fb54d4b00d87d0d43fe9bfd4f07bb27702a8f9f23cfa3ac854470b6e23d2868501198a74494c54a8585f8d99e0ef7f63ff926623883c13b4f93e585184867a5
   languageName: node
   linkType: hard
 
@@ -9522,7 +9495,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash@npm:^4.17.13, lodash@npm:^4.17.14, lodash@npm:^4.17.15, lodash@npm:^4.17.19, lodash@npm:^4.17.21":
+"lodash@npm:^4.17.13, lodash@npm:^4.17.19, lodash@npm:^4.17.21":
   version: 4.17.21
   resolution: "lodash@npm:4.17.21"
   checksum: 10c0/d8cbea072bb08655bb4c989da418994b073a608dffa608b09ac04b43a791b12aeae7cd7ad919aa4c925f33b48490b5cfe6c1f71d827956071dae2e7bb3a6b74c
@@ -13771,7 +13744,6 @@ __metadata:
     "@expo/config-plugins": "npm:^8.0.8"
     "@expo/vector-icons": "npm:^14.0.2"
     "@mobile-whep/react-native-client": "npm:*"
-    "@react-native-community/audio-toolkit": "npm:^2.0.3"
     "@react-navigation/native": "npm:^6.0.2"
     "@types/jest": "npm:^29.5.12"
     "@types/react": "npm:~18.2.45"

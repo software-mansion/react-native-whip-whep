@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Button,
-  View,
-  ActivityIndicator,
-  Platform,
-} from "react-native";
+import { StyleSheet, Button, View, ActivityIndicator } from "react-native";
 
 import { useEffect, useState } from "react";
 import { requestPermissions } from "@/utils/RequestPermissions";
