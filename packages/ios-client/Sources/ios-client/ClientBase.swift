@@ -1,6 +1,7 @@
 import Foundation
 import WebRTC
 import os
+import Logging
 
 protocol RTCPeerConnectionFactoryType: AnyObject, RTCPeerConnectionDelegate {
     var peerConnectionFactory: RTCPeerConnectionFactory? { get set }
@@ -72,7 +73,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
 
     public var delegate: PlayerListener?
 
-    let logger = Logger()
+    let logger = Logger(label: "com.swmansion.WhipWhepDemo")
 
     public init(serverUrl: URL, configurationOptions: ConfigurationOptions? = nil) {
         self.serverUrl = serverUrl
