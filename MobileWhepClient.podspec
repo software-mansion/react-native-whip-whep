@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
 
   s.author           = { 'Software Mansion' => 'https://swmansion.com' }
   s.source           = { git: 'https://' }
-  s.ios.deployment_target = '14.0'
+  s.ios.deployment_target = '13.0'
   s.swift_version = '5.0'
 
   s.source_files = 'packages/ios-client/Sources/**/*'
@@ -16,5 +16,6 @@ Pod::Spec.new do |s|
   s.pod_target_xcconfig = { 'ENABLE_BITCODE' => 'NO' }
 
   s.dependency 'WebRTC-SDK', '=125.6422.03'
+  s.dependency 'SwiftLogJellyfish', '1.5.2'
 
 end
