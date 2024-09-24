@@ -1,10 +1,10 @@
-import { Platform } from "react-native";
+import { Platform } from 'react-native';
 import {
   Permission,
   PERMISSIONS,
   request,
   RESULTS,
-} from "react-native-permissions";
+} from 'react-native-permissions';
 
 export const requestPermissions = async (): Promise<boolean> => {
   try {
@@ -26,14 +26,14 @@ export const requestPermissions = async (): Promise<boolean> => {
       cameraPermission === RESULTS.GRANTED &&
       microphonePermission === RESULTS.GRANTED
     ) {
-      console.log("All permissions granted");
+      console.log('All permissions granted');
       return true;
     } else {
-      console.log("Please provide camera and microphone permissions.");
+      console.log('Please provide camera and microphone permissions.');
       return false;
     }
   } catch (error) {
-    console.error("Failed to request permission", error);
+    console.error('Failed to request permission', error);
     return false;
   }
 };

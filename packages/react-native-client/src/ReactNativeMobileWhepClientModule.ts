@@ -10,14 +10,14 @@ import { ConfigurationOptions } from "./ReactNativeMobileWhepClient.types";
 type RNMobileWhepClientModule = {
   createWhepClient: (
     serverUrl: string,
-    configurationOptions?: ConfigurationOptions
+    configurationOptions?: ConfigurationOptions,
   ) => void;
   connectWhep: () => Promise<void>;
   disconnectWhep: () => void;
   createWhipClient: (
     serverUrl: string,
     configurationOptions?: ConfigurationOptions,
-    videoDevice?: string
+    videoDevice?: string,
   ) => void;
   connectWhip: () => Promise<void>;
   disconnectWhip: () => void;
@@ -34,7 +34,7 @@ export function addTrackListener(listener: (event) => void): Subscription {
 
 export function createWhepClient(
   serverUrl: string,
-  configurationOptions?: ConfigurationOptions
+  configurationOptions?: ConfigurationOptions,
 ) {
   return nativeModule.createWhepClient(serverUrl, configurationOptions);
 }
@@ -50,12 +50,12 @@ export function disconnectWhepClient() {
 export function createWhipClient(
   serverUrl: string,
   configurationOptions?: ConfigurationOptions,
-  videoDevice?: string
+  videoDevice?: string,
 ) {
   return nativeModule.createWhipClient(
     serverUrl,
     configurationOptions,
-    videoDevice
+    videoDevice,
   );
 }
 
