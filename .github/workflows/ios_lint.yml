@@ -25,7 +25,7 @@ jobs:
       - name: Run formatter on examples/ios 🎨
         run: swift-format format -i -r ./**/**/*.swift --configuration swift-format-config.json
         working-directory: ./examples/ios
-        
+
       - name: Run lint on examples/ios 👀
         run: swift-format lint -r -s ./**/**/*.swift --configuration swift-format-config.json
         working-directory: ./examples/ios

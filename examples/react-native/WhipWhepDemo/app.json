@@ -36,10 +36,7 @@
       [
         "react-native-permissions",
         {
-          "iosPermissions": [
-            "Microphone",
-            "Camera"
-          ]
+          "iosPermissions": ["Microphone", "Camera"]
         }
       ],
       "expo-router",
