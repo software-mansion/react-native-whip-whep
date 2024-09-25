@@ -2,7 +2,6 @@ const {
   withSettingsGradle,
   withAppBuildGradle,
   createRunOncePlugin,
-  withProjectBuildGradle,
   withPodfile,
 } = require("@expo/config-plugins");
 const fs = require("fs");
@@ -12,7 +11,7 @@ const pkg = require("./package.json");
 
 console.log("Starting the plugin!");
 
-const withAndroidSettings = (config) => {
+const withLocalPathsForNativePackages = (config) => {
   config = withSettingsGradle(config, (config) => {
     let contents = config.modResults.contents;
 
@@ -97,7 +96,7 @@ const withAndroidSettings = (config) => {
 
 console.log("Registering the plugin...");
 module.exports = createRunOncePlugin(
-  withAndroidSettings,
+  withLocalPathsForNativePackages,
   pkg.name,
   pkg.version,
 );
