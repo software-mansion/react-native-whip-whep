@@ -1,14 +1,14 @@
-import { StyleSheet, Button, View, ActivityIndicator } from "react-native";
+import { StyleSheet, Button, View, ActivityIndicator } from 'react-native';
 
-import { useEffect, useState } from "react";
-import { requestPermissions } from "@/utils/RequestPermissions";
+import { useEffect, useState } from 'react';
+import { requestPermissions } from '@/utils/RequestPermissions';
 import {
   cameras,
   connectWhipClient,
   createWhipClient,
   disconnectWhipClient,
   WhipClientView,
-} from "@mobile-whep/react-native-client";
+} from '@mobile-whep/react-native-client';
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +21,7 @@ export default function HomeScreen() {
       await connectWhipClient();
       setIsLoading(false);
     } catch (error) {
-      console.error("Failed to connect to WHIP Client", error);
+      console.error('Failed to connect to WHIP Client', error);
     }
   };
 
@@ -31,9 +31,9 @@ export default function HomeScreen() {
       if (hasPermissions) {
         const availableDevices = cameras;
         createWhipClient(
-          process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? "",
+          process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
           {
-            authToken: "example",
+            authToken: 'example',
           },
           availableDevices[0].id,
         );
@@ -66,11 +66,11 @@ const styles = StyleSheet.create({
   },
   box: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   clientView: {
-    width: "100%",
+    width: '100%',
     height: 200,
     marginBottom: 20,
   },
