@@ -3,27 +3,27 @@ const {
   withAppBuildGradle,
   createRunOncePlugin,
   withPodfile,
-} = require("@expo/config-plugins");
-const fs = require("fs");
-const path = require("path");
+} = require('@expo/config-plugins');
+const fs = require('fs');
+const path = require('path');
 
-const pkg = require("./package.json");
+const pkg = require('./package.json');
 
-console.log("Starting the plugin!");
+console.log('Starting the plugin!');
 
 const withLocalPathsForNativePackages = (config) => {
   config = withSettingsGradle(config, (config) => {
     let contents = config.modResults.contents;
 
     if (!contents.includes("include ':android-client'")) {
-      console.log("Adding android-client to settings.gradle...");
+      console.log('Adding android-client to settings.gradle...');
       contents +=
         `\ninclude ':android-client'\n` +
         `project(':android-client').projectDir = new File(rootProject.projectDir, '../../../../packages/android-client/MobileWhepClient')\n`;
       config.modResults.contents = contents;
-      console.log("\x1b[32m✔\x1b[0m Added android-client to settings.gradle.");
+      console.log('\x1b[32m✔\x1b[0m Added android-client to settings.gradle.');
     } else {
-      console.log("android-client already included in settings.gradle");
+      console.log('android-client already included in settings.gradle');
     }
 
     return config;
@@ -37,9 +37,9 @@ const withLocalPathsForNativePackages = (config) => {
       )
     ) {
       console.log(
-        "Adding mobile-whep-react-native-client to app/build.gradle...",
+        'Adding mobile-whep-react-native-client to app/build.gradle...',
       );
-      const dependenciesBlock = "dependencies {";
+      const dependenciesBlock = 'dependencies {';
       const addition =
         "implementation project(':mobile-whep-react-native-client')";
 
@@ -49,27 +49,27 @@ const withLocalPathsForNativePackages = (config) => {
       );
       config.modResults.contents = updatedContents;
       console.log(
-        "\x1b[32m✔\x1b[0m Added mobile-whep-react-native-client to app/build.gradle.",
+        '\x1b[32m✔\x1b[0m Added mobile-whep-react-native-client to app/build.gradle.',
       );
     } else {
       console.log(
-        "mobile-whep-react-native-client already included in app/build.gradle",
+        'mobile-whep-react-native-client already included in app/build.gradle',
       );
     }
 
     contents = config.modResults.contents;
     if (contents.includes('namespace "com.whipwhepdemo"')) {
-      console.log("Changing namespace...");
+      console.log('Changing namespace...');
       const updatedContents = contents.replace(
         'namespace "com.whipwhepdemo"',
         "namespace 'com.swmansion.mobilewhepclient'",
       );
       config.modResults.contents = updatedContents;
       console.log(
-        "\x1b[32m✔\x1b[0m Changed namespace to com.swmansion.mobilewhepclient",
+        '\x1b[32m✔\x1b[0m Changed namespace to com.swmansion.mobilewhepclient',
       );
     } else {
-      console.log("Namespace already changed");
+      console.log('Namespace already changed');
     }
 
     return config;
@@ -77,7 +77,7 @@ const withLocalPathsForNativePackages = (config) => {
 
   config = withPodfile(config, (config) => {
     let podfile = config.modResults.contents;
-    console.log("Adding MobileWhepClient pod to Podfile...");
+    console.log('Adding MobileWhepClient pod to Podfile...');
 
     const mainAppTarget = /target ['"]WhipWhepDemo['"] do/g;
     const podToAdd = `pod 'MobileWhepClient', :path => '../../../../'`;
@@ -87,17 +87,17 @@ const withLocalPathsForNativePackages = (config) => {
     });
 
     config.modResults.contents = podfile;
-    console.log("\x1b[32m✔\x1b[0m MobileWhepClient added.");
+    console.log('\x1b[32m✔\x1b[0m MobileWhepClient added.');
     return config;
   });
 
   return config;
 };
 
-console.log("Registering the plugin...");
+console.log('Registering the plugin...');
 module.exports = createRunOncePlugin(
   withLocalPathsForNativePackages,
   pkg.name,
   pkg.version,
 );
-console.log("Plugin registered successfully!");
+console.log('Plugin registered successfully!');

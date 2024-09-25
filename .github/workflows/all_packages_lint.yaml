@@ -1,0 +1,24 @@
+name: All packages - Lint & Types
+on:
+  pull_request:
+jobs:
+  types_and_lint:
+    runs-on: macos-14
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: Use Node.js 18
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18.12.0
+          cache: "yarn"
+      - name: Install deps
+        run: brew install swift-format xcbeautify ktlint
+      - name: Install node dependencies
+        run: yarn
+      - name: Build Types
+        run: yarn build
+      - name: Check types
+        run: yarn tsc
+      - name: Lint
+        run: yarn lint:check

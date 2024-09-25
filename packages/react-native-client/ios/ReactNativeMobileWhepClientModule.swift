@@ -38,9 +38,21 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener {
         return preset
     }
     
-    private func getCaptureDevices() -> [String] {
-        let captureDevices = RTCCameraVideoCapturer.captureDevices()
-        return captureDevices.map { $0.uniqueID }
+    private func getCaptureDevices() -> [[String: Any]] {
+        let devices = RTCCameraVideoCapturer.captureDevices()
+        return devices.map { device -> [String: Any] in
+            let facingDirection =
+                switch device.position {
+                case .front: "front"
+                case .back: "back"
+                default: "unspecified"
+                }
+            return [
+                "id": device.uniqueID,
+                "name": device.localizedName,
+                "facingDirection": facingDirection,
+            ]
+        }
     }
 
     public func definition() -> ModuleDefinition {
@@ -121,7 +133,7 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener {
             client.disconnect()
         }
         
-        Property("captureDevices") {
+        Property("cameras") {
             return self.getCaptureDevices()
         }
     }
