@@ -3,6 +3,7 @@ const {
   withAppBuildGradle,
   createRunOncePlugin,
   withProjectBuildGradle,
+  withPodfile,
 } = require("@expo/config-plugins");
 const fs = require("fs");
 const path = require("path");
@@ -73,26 +74,19 @@ const withAndroidSettings = (config) => {
     return config;
   });
 
-  config = withProjectBuildGradle(config, (config) => {
-    let contents = config.modResults.contents;
-    if (
-      contents.includes(
-        "minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')",
-      )
-    ) {
-      console.log("Changing minSdkVersion...");
-      const targetVersion =
-        "minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')";
-      const updatedContents = contents.replace(
-        "minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')",
-        targetVersion,
-      );
-      config.modResults.contents = updatedContents;
-      console.log("✔ Changed minSdkVersion.");
-    } else {
-      console.log("minSdkVersion already satisfied");
-    }
+  config = withPodfile(config, (config) => {
+    let podfile = config.modResults.contents;
+    console.log("Adding MobileWhepClient pod to Podfile...");
 
+    const mainAppTarget = /target ['"]WhipWhepDemo['"] do/g;
+    const podToAdd = `pod 'MobileWhepClient', :path => '../../../../'`;
+
+    podfile = podfile.replace(mainAppTarget, (match) => {
+      return `${match}\n${podToAdd}`;
+    });
+
+    config.modResults.contents = podfile;
+    console.log("✔ MobileWhepClient added.");
     return config;
   });
 
