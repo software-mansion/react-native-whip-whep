@@ -26,8 +26,8 @@ let package = Package(
             dependencies: [
                 "WebRTC",
                 .product(name: "Logging", package: "swift-log"),
-                ]
-            ),
+            ]
+        ),
         .testTarget(
             name: "MobileWhepClientTests",
             dependencies: ["MobileWhepClient"]),
