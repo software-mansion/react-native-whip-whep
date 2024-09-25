@@ -22,7 +22,7 @@ const withAndroidSettings = (config) => {
         `\ninclude ':android-client'\n` +
         `project(':android-client').projectDir = new File(rootProject.projectDir, '../../../../packages/android-client/MobileWhepClient')\n`;
       config.modResults.contents = contents;
-      console.log("✔ Added android-client to settings.gradle.");
+      console.log("\x1b[32m✔\x1b[0m Added android-client to settings.gradle.");
     } else {
       console.log("android-client already included in settings.gradle");
     }
@@ -50,7 +50,7 @@ const withAndroidSettings = (config) => {
       );
       config.modResults.contents = updatedContents;
       console.log(
-        "✔ Added mobile-whep-react-native-client to app/build.gradle.",
+        "\x1b[32m✔\x1b[0m Added mobile-whep-react-native-client to app/build.gradle.",
       );
     } else {
       console.log(
@@ -66,7 +66,9 @@ const withAndroidSettings = (config) => {
         "namespace 'com.swmansion.mobilewhepclient'",
       );
       config.modResults.contents = updatedContents;
-      console.log("✔ Changed namespace to com.swmansion.mobilewhepclient");
+      console.log(
+        "\x1b[32m✔\x1b[0m Changed namespace to com.swmansion.mobilewhepclient",
+      );
     } else {
       console.log("Namespace already changed");
     }
@@ -86,7 +88,7 @@ const withAndroidSettings = (config) => {
     });
 
     config.modResults.contents = podfile;
-    console.log("✔ MobileWhepClient added.");
+    console.log("\x1b[32m✔\x1b[0m MobileWhepClient added.");
     return config;
   });
 
