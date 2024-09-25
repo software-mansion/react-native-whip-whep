@@ -9,8 +9,6 @@ const path = require('path');
 
 const pkg = require('./package.json');
 
-console.log('Starting the plugin!');
-
 const withLocalPathsForNativePackages = (config) => {
   config = withSettingsGradle(config, (config) => {
     let contents = config.modResults.contents;
@@ -94,10 +92,8 @@ const withLocalPathsForNativePackages = (config) => {
   return config;
 };
 
-console.log('Registering the plugin...');
 module.exports = createRunOncePlugin(
   withLocalPathsForNativePackages,
   pkg.name,
   pkg.version,
 );
-console.log('Plugin registered successfully!');
