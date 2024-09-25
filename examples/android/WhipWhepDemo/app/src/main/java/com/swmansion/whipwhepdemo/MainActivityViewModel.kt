@@ -9,9 +9,6 @@ import com.mobilewhep.client.ConfigurationOptions
 import com.mobilewhep.client.WhepClient
 import com.mobilewhep.client.WhipClient
 import kotlinx.coroutines.launch
-import org.webrtc.Camera1Enumerator
-import org.webrtc.Camera2Enumerator
-import org.webrtc.CameraEnumerator
 
 const val TAG = "WHEP_EXAMPLE"
 
@@ -22,14 +19,6 @@ class MainActivityViewModel(
   var shouldShowPlayBtn = mutableStateOf(true)
   var shouldShowStreamBtn = mutableStateOf(true)
 
-  private val cameraEnumerator: CameraEnumerator =
-    if (Camera2Enumerator.isSupported(getApplication<Application>().applicationContext)) {
-      Camera2Enumerator(getApplication<Application>().applicationContext)
-    } else {
-      Camera1Enumerator(false)
-    }
-
-  private val deviceName = cameraEnumerator.deviceNames.first()
   var whepClient: WhepClient? = null
   var whipClient: WhipClient? = null
 
@@ -53,7 +42,9 @@ class MainActivityViewModel(
               R.string.WHIP_SERVER_URL
             ),
           configurationOptions = ConfigurationOptions(authToken = "example"),
-          videoDevice = deviceName
+          videoDevice =
+            WhipClient.getCaptureDevices(getApplication<Application>().applicationContext)
+              .first().deviceName
         )
     } catch (e: Exception) {
       Log.e(TAG, "Error when creating client: ${e.message}")

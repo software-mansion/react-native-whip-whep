@@ -3,7 +3,7 @@ import { StyleSheet, Button, View, ActivityIndicator } from 'react-native';
 import { useEffect, useState } from 'react';
 import { requestPermissions } from '@/utils/RequestPermissions';
 import {
-  captureDevices,
+  cameras,
   connectWhipClient,
   createWhipClient,
   disconnectWhipClient,
@@ -29,13 +29,13 @@ export default function HomeScreen() {
     const initialize = async () => {
       const hasPermissions = await requestPermissions();
       if (hasPermissions) {
-        const availableDevices = captureDevices;
+        const availableDevices = cameras;
         createWhipClient(
           process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
           {
             authToken: 'example',
           },
-          availableDevices[0],
+          availableDevices[0].id,
         );
       }
     };

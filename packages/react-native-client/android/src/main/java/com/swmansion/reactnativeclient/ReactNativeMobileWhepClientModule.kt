@@ -11,9 +11,6 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.webrtc.Camera1Enumerator
-import org.webrtc.Camera2Enumerator
-import org.webrtc.CameraEnumerator
 import org.webrtc.VideoTrack
 
 class ReactNativeMobileWhepClientModule :
@@ -51,16 +48,21 @@ class ReactNativeMobileWhepClientModule :
     return videoParameters
   }
 
-  private fun getEnumerator(context: Context): CameraEnumerator =
-    if (Camera2Enumerator.isSupported(context)) {
-      Camera2Enumerator(context)
-    } else {
-      Camera1Enumerator(true)
-    }
 
-  private fun getCaptureDevices(): List<String> {
-    val enumerator = appContext.reactContext?.let { getEnumerator(it) }
-    return enumerator?.deviceNames?.toList() ?: emptyList()
+  private fun getCaptureDevices(): List<Map<String, Any>> {
+    val devices = WhipClient.getCaptureDevices(appContext.reactContext!!)
+    return devices.map { device ->
+      mapOf<String, Any>(
+        "id" to device.deviceName,
+        "name" to device.deviceName,
+        "facingDirection" to
+          when (true) {
+            device.isFrontFacing -> "front"
+            device.isBackFacing -> "back"
+            else -> "unspecified"
+          }
+      )
+    }
   }
 
   override fun definition() =
@@ -70,14 +72,17 @@ class ReactNativeMobileWhepClientModule :
       Events("trackAdded")
 
       Function("createWhepClient") { serverUrl: String, configurationOptions: Map<String, Any>? ->
-        val context: Context = appContext.reactContext ?: throw IllegalStateException("React context is not available")
+        val context: Context =
+          appContext.reactContext ?: throw IllegalStateException("React context is not available")
         val options =
           ConfigurationOptions(
             authToken = configurationOptions?.get("authToken") as? String,
             stunServerUrl = configurationOptions?.get("stunServerUrl") as? String,
             audioEnabled = configurationOptions?.get("audioEnabled") as? Boolean ?: true,
             videoEnabled = configurationOptions?.get("videoEnabled") as? Boolean ?: true,
-            videoParameters = getVideoParametersFromOptions(configurationOptions?.get("videoParameters") as? String ?: "HD43"),
+            videoParameters = getVideoParametersFromOptions(
+              configurationOptions?.get("videoParameters") as? String ?: "HD43"
+            ),
           )
         whepClient = WhepClient(context, serverUrl, options)
         whepClient.addTrackListener(this@ReactNativeMobileWhepClientModule)
@@ -94,14 +99,16 @@ class ReactNativeMobileWhepClientModule :
       }
 
       Function("createWhipClient") { serverUrl: String, configurationOptions: Map<String, Any>?, videoDevice: String ->
-        val context: Context = appContext.reactContext ?: throw IllegalStateException("React context is not available")
+        val context: Context =
+          appContext.reactContext ?: throw IllegalStateException("React context is not available")
         val options =
           ConfigurationOptions(
             authToken = configurationOptions?.get("authToken") as? String,
             stunServerUrl = configurationOptions?.get("stunServerUrl") as? String,
             audioEnabled = configurationOptions?.get("audioEnabled") as? Boolean ?: true,
             videoEnabled = configurationOptions?.get("videoEnabled") as? Boolean ?: true,
-            videoParameters = configurationOptions?.get("videoParameters") as? VideoParameters ?: VideoParameters.presetFHD43,
+            videoParameters = configurationOptions?.get("videoParameters") as? VideoParameters
+              ?: VideoParameters.presetFHD43,
           )
         whipClient = WhipClient(context, serverUrl, options, videoDevice)
         whipClient.addTrackListener(this@ReactNativeMobileWhepClientModule)
@@ -117,8 +124,7 @@ class ReactNativeMobileWhepClientModule :
         whipClient.disconnect()
       }
 
-      //TODO: Move getCaptureDevices to native package
-      Property("captureDevices") {
+      Property("cameras") {
         return@Property getCaptureDevices()
       }
     }

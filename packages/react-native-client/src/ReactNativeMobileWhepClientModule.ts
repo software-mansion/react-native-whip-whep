@@ -7,6 +7,20 @@ import { NativeModule } from "react-native";
 
 import { ConfigurationOptions } from "./ReactNativeMobileWhepClient.types";
 
+// branded types are useful for restricting where given value can be passed
+declare const brand: unique symbol;
+export type Brand<T, TBrand extends string> = T & { [brand]: TBrand };
+
+export type CameraId = Brand<string, "CameraId">;
+
+export type CameraFacingDirection = "front" | "back" | "unspecified";
+
+export type Camera = {
+  id: CameraId;
+  name: string;
+  facingDirection: CameraFacingDirection;
+};
+
 type RNMobileWhepClientModule = {
   createWhepClient: (
     serverUrl: string,
@@ -17,11 +31,11 @@ type RNMobileWhepClientModule = {
   createWhipClient: (
     serverUrl: string,
     configurationOptions?: ConfigurationOptions,
-    videoDevice?: string,
+    videoDevice?: CameraId,
   ) => void;
   connectWhip: () => Promise<void>;
   disconnectWhip: () => void;
-  captureDevices: readonly string[];
+  cameras: readonly Camera[];
 };
 
 const nativeModule: RNMobileWhepClientModule & NativeModule =
@@ -50,7 +64,7 @@ export function disconnectWhepClient() {
 export function createWhipClient(
   serverUrl: string,
   configurationOptions?: ConfigurationOptions,
-  videoDevice?: string,
+  videoDevice?: CameraId,
 ) {
   return nativeModule.createWhipClient(
     serverUrl,
@@ -67,6 +81,6 @@ export function disconnectWhipClient() {
   return nativeModule.disconnectWhip();
 }
 
-export const captureDevices = nativeModule.captureDevices;
+export const cameras = nativeModule.cameras;
 
 export default nativeModule;

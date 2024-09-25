@@ -209,4 +209,24 @@ class WhipClient(
 
     return size
   }
+
+  companion object {
+    private fun getEnumerator(context: Context): CameraEnumerator =
+      if (Camera2Enumerator.isSupported(context)) {
+        Camera2Enumerator(context)
+      } else {
+        Camera1Enumerator(true)
+      }
+
+    fun getCaptureDevices(context: Context): List<CaptureDevice> {
+      val enumerator = getEnumerator(context)
+      return enumerator.deviceNames.map { name ->
+        CaptureDevice(
+          name,
+          enumerator.isFrontFacing(name),
+          enumerator.isBackFacing(name)
+        )
+      }
+    }
+  }
 }
