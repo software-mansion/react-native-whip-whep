@@ -73,7 +73,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
 
     public var delegate: PlayerListener?
 
-    let logger = Logger(label: "com.swmansion.WhipWhepDemo")
+    let logger = Logger(label: "com.swmansion.whipwhepclient")
 
     public init(serverUrl: URL, configurationOptions: ConfigurationOptions? = nil) {
         self.serverUrl = serverUrl
