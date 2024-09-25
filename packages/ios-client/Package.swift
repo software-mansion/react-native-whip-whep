@@ -23,8 +23,11 @@ let package = Package(
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
             name: "MobileWhepClient",
-            dependencies: ["WebRTC",
-                .product(name: "Logging", package: "swift-log"),]),
+            dependencies: [
+                "WebRTC",
+                .product(name: "Logging", package: "swift-log"),
+                ]
+            ),
         .testTarget(
             name: "MobileWhepClientTests",
             dependencies: ["MobileWhepClient"]),
