@@ -36,7 +36,7 @@ yarn build
 3. Run this command in the project root directory to install node_modules, initialize native package directories and install cocoapods:
 
 ```
-yarn prepare
+yarn prepare:example
 ```
 
 4. Start Metro bundler in `examples/react-native/WhipWhepDemo` directory:
