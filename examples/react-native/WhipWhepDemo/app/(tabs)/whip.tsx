@@ -7,7 +7,7 @@ import {
   createWhipClient,
   disconnectWhipClient,
   WhipClientView,
-} from '@mobile-whep/react-native-client';
+} from 'react-native-whip-whep';
 import { checkPermissions } from '@/utils/CheckPermissions';
 
 export default function HomeScreen() {

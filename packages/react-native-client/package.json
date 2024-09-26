@@ -1,5 +1,5 @@
 {
-  "name": "@mobile-whep/react-native-client",
+  "name": "react-native-whip-whep",
   "version": "0.1.0",
   "description": "An implementation of WHIP and WHEP protocols functionalities for React Native.",
   "main": "build/index.js",
