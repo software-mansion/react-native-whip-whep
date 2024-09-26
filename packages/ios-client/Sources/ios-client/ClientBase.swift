@@ -1,4 +1,5 @@
 import Foundation
+import Logging
 import WebRTC
 import os
 
@@ -72,7 +73,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
 
     public var delegate: PlayerListener?
 
-    let logger = Logger()
+    let logger = Logger(label: "com.swmansion.whipwhepclient")
 
     public init(serverUrl: URL, configurationOptions: ConfigurationOptions? = nil) {
         self.serverUrl = serverUrl

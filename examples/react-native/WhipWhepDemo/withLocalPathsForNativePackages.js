@@ -2,16 +2,14 @@ const {
   withSettingsGradle,
   withAppBuildGradle,
   createRunOncePlugin,
-  withProjectBuildGradle,
+  withPodfile,
 } = require('@expo/config-plugins');
 const fs = require('fs');
 const path = require('path');
 
 const pkg = require('./package.json');
 
-console.log('Starting the plugin!');
-
-const withAndroidSettings = (config) => {
+const withLocalPathsForNativePackages = (config) => {
   config = withSettingsGradle(config, (config) => {
     let contents = config.modResults.contents;
 
@@ -21,7 +19,7 @@ const withAndroidSettings = (config) => {
         `\ninclude ':android-client'\n` +
         `project(':android-client').projectDir = new File(rootProject.projectDir, '../../../../packages/android-client/MobileWhepClient')\n`;
       config.modResults.contents = contents;
-      console.log('✔ Added android-client to settings.gradle.');
+      console.log('\x1b[32m✔\x1b[0m Added android-client to settings.gradle.');
     } else {
       console.log('android-client already included in settings.gradle');
     }
@@ -49,7 +47,7 @@ const withAndroidSettings = (config) => {
       );
       config.modResults.contents = updatedContents;
       console.log(
-        '✔ Added mobile-whep-react-native-client to app/build.gradle.',
+        '\x1b[32m✔\x1b[0m Added mobile-whep-react-native-client to app/build.gradle.',
       );
     } else {
       console.log(
@@ -65,7 +63,9 @@ const withAndroidSettings = (config) => {
         "namespace 'com.swmansion.mobilewhepclient'",
       );
       config.modResults.contents = updatedContents;
-      console.log('✔ Changed namespace to com.swmansion.mobilewhepclient');
+      console.log(
+        '\x1b[32m✔\x1b[0m Changed namespace to com.swmansion.mobilewhepclient',
+      );
     } else {
       console.log('Namespace already changed');
     }
@@ -73,36 +73,27 @@ const withAndroidSettings = (config) => {
     return config;
   });
 
-  config = withProjectBuildGradle(config, (config) => {
-    let contents = config.modResults.contents;
-    if (
-      contents.includes(
-        "minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')",
-      )
-    ) {
-      console.log('Changing minSdkVersion...');
-      const targetVersion =
-        "minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '24')";
-      const updatedContents = contents.replace(
-        "minSdkVersion = Integer.parseInt(findProperty('android.minSdkVersion') ?: '23')",
-        targetVersion,
-      );
-      config.modResults.contents = updatedContents;
-      console.log('✔ Changed minSdkVersion.');
-    } else {
-      console.log('minSdkVersion already satisfied');
-    }
+  config = withPodfile(config, (config) => {
+    let podfile = config.modResults.contents;
+    console.log('Adding MobileWhepClient pod to Podfile...');
 
+    const mainAppTarget = /target ['"]WhipWhepDemo['"] do/g;
+    const podToAdd = `pod 'MobileWhepClient', :path => '../../../../'`;
+
+    podfile = podfile.replace(mainAppTarget, (match) => {
+      return `${match}\n${podToAdd}`;
+    });
+
+    config.modResults.contents = podfile;
+    console.log('\x1b[32m✔\x1b[0m MobileWhepClient added.');
     return config;
   });
 
   return config;
 };
 
-console.log('Registering the plugin...');
 module.exports = createRunOncePlugin(
-  withAndroidSettings,
+  withLocalPathsForNativePackages,
   pkg.name,
   pkg.version,
 );
-console.log('Plugin registered successfully!');
