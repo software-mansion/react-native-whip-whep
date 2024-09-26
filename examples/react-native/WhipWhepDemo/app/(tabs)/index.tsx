@@ -1,13 +1,13 @@
 import { StyleSheet, Button, View, ActivityIndicator } from 'react-native';
 
 import React, { useEffect, useState } from 'react';
-import { requestPermissions } from '@/utils/RequestPermissions';
 import {
   connectWhepClient,
   createWhepClient,
   disconnectWhepClient,
   WhepClientView,
 } from '@mobile-whep/react-native-client';
+import { checkPermissions } from '@/utils/CheckPermissions';
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -24,18 +24,15 @@ export default function HomeScreen() {
     }
   };
 
+  const initialize = async () => {
+    await checkPermissions();
+    createWhepClient(process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? '', {
+      authToken: 'example',
+    });
+  };
+
   useEffect(() => {
-    const initialize = async () => {
-      const hasPermissions = await requestPermissions();
-      if (hasPermissions) {
-        createWhepClient(process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? '', {
-          authToken: 'example',
-        });
-      }
-    };
-
     initialize();
-
     return () => {
       disconnectWhepClient();
     };
