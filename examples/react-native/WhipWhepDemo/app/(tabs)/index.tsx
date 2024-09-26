@@ -1,13 +1,13 @@
-import { StyleSheet, Button, View, ActivityIndicator } from "react-native";
+import { StyleSheet, Button, View, ActivityIndicator } from 'react-native';
 
-import React, { useEffect, useState } from "react";
-import { requestPermissions } from "@/utils/RequestPermissions";
+import React, { useEffect, useState } from 'react';
+import { requestPermissions } from '@/utils/RequestPermissions';
 import {
   connectWhepClient,
   createWhepClient,
   disconnectWhepClient,
   WhepClientView,
-} from "@mobile-whep/react-native-client";
+} from '@mobile-whep/react-native-client';
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,7 +20,7 @@ export default function HomeScreen() {
       await connectWhepClient();
       setIsLoading(false);
     } catch (error) {
-      console.error("Failed to connect to WHEP Client", error);
+      console.error('Failed to connect to WHEP Client', error);
     }
   };
 
@@ -28,8 +28,8 @@ export default function HomeScreen() {
     const initialize = async () => {
       const hasPermissions = await requestPermissions();
       if (hasPermissions) {
-        createWhepClient(process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? "", {
-          authToken: "example",
+        createWhepClient(process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? '', {
+          authToken: 'example',
         });
       }
     };
@@ -61,11 +61,11 @@ const styles = StyleSheet.create({
   },
   box: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   clientView: {
-    width: "100%",
+    width: '100%',
     height: 200,
     marginBottom: 20,
   },

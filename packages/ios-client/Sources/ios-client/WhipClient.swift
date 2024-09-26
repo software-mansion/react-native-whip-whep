@@ -216,4 +216,8 @@ public class WhipClient: ClientBase & Connectable {
 
         return (selectedFormat, fps)
     }
+
+    public static func getCaptureDevices() -> [AVCaptureDevice] {
+        return RTCCameraVideoCapturer.captureDevices()
+    }
 }
