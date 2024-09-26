@@ -26,7 +26,7 @@ export default function HomeScreen() {
 
   const initialize = async () => {
     await checkPermissions();
-    createWhepClient('https://broadcaster.elixir-webrtc.org/api/whep', {
+    createWhepClient(process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? '', {
       authToken: 'example',
     });
   };
