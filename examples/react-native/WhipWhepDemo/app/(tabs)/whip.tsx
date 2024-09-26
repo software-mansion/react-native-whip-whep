@@ -1,7 +1,6 @@
 import { StyleSheet, Button, View, ActivityIndicator } from 'react-native';
 
 import { useEffect, useState } from 'react';
-import { requestPermissions } from '@/utils/RequestPermissions';
 import {
   cameras,
   connectWhipClient,
@@ -9,10 +8,13 @@ import {
   disconnectWhipClient,
   WhipClientView,
 } from '@mobile-whep/react-native-client';
+import { usePermissionCheck } from '@/hooks/usePermissionCheck';
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
+
+  usePermissionCheck();
 
   const handleStreamBtnClick = async () => {
     setShouldShowStreamBtn(false);
@@ -27,17 +29,14 @@ export default function HomeScreen() {
 
   useEffect(() => {
     const initialize = async () => {
-      const hasPermissions = await requestPermissions();
-      if (hasPermissions) {
-        const availableDevices = cameras;
-        createWhipClient(
-          process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
-          {
-            authToken: 'example',
-          },
-          availableDevices[0].id,
-        );
-      }
+      const availableDevices = cameras;
+      createWhipClient(
+        process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
+        {
+          authToken: 'example',
+        },
+        availableDevices[0].id,
+      );
     };
 
     initialize();
