@@ -26,15 +26,15 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/software-mansion-labs/mobile-whep.git",
+    "url": "git+https://github.com/software-mansion/react-native-whip-whep.git",
     "directory": "packages/react-native-client"
   },
   "bugs": {
-    "url": "https://github.com/software-mansion-labs/mobile-whep/issues"
+    "url": "https://github.com/software-mansion/react-native-whip-whep/issues"
   },
   "author": "Software Mansion",
   "license": "MIT",
-  "homepage": "https://github.com/software-mansion-labs/mobile-whep",
+  "homepage": "https://github.com/software-mansion/react-native-whip-whep",
   "devDependencies": {
     "@types/react": "^18.0.25",
     "expo-module-scripts": "^3.5.2",
