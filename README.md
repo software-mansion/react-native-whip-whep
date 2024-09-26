@@ -10,10 +10,12 @@ For documentation and examples of usage, check out the [examples](https://github
 
 A WHIP/WHEP server is necessary in order to use the SDKs. We recommend [ex-webrtc](https://github.com/elixir-webrtc/ex_webrtc/tree/master/examples/whip_whep) server as it was used during development and testing.
 
-## Copyright and License
-
-Copyright 2024, [Software Mansion](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=whip-whep-client)
-
-[![Software Mansion](https://logo.swmansion.com/logo?color=white&variant=desktop&width=200&tag=react-client)](https://swmansion.com/?utm_source=git&utm_medium=readme&utm_campaign=whip-whep-client)
+## License
 
 Licensed under the [MIT License](LICENSE)
+
+## React Native Whip Whep is created by Software Mansion
+
+Since 2012 [Software Mansion](https://swmansion.com) is a software agency with experience in building web and mobile apps. We are Core React Native Contributors and experts in dealing with all kinds of React Native issues. We can help you build your next dream product – [Hire us](https://swmansion.com/contact/projects?utm_source=whip-whep-client&utm_medium=mobile-readme).
+
+[![Software Mansion](https://logo.swmansion.com/logo?color=white&variant=desktop&width=200&tag=react-client)](https://swmansion.com/contact/projects?utm_source=whip-whep-client&utm_medium=mobile-readme)
