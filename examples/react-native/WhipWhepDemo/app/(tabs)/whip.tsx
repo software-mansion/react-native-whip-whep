@@ -8,13 +8,11 @@ import {
   disconnectWhipClient,
   WhipClientView,
 } from '@mobile-whep/react-native-client';
-import { usePermissionCheck } from '@/hooks/usePermissionCheck';
+import { checkPermissions } from '@/utils/CheckPermissions';
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
-
-  usePermissionCheck();
 
   const handleStreamBtnClick = async () => {
     setShouldShowStreamBtn(false);
@@ -27,18 +25,19 @@ export default function HomeScreen() {
     }
   };
 
-  useEffect(() => {
-    const initialize = async () => {
-      const availableDevices = cameras;
-      createWhipClient(
-        process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
-        {
-          authToken: 'example',
-        },
-        availableDevices[0].id,
-      );
-    };
+  const initialize = async () => {
+    await checkPermissions();
+    const availableDevices = cameras;
+    createWhipClient(
+      process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
+      {
+        authToken: 'example',
+      },
+      availableDevices[0].id,
+    );
+  };
 
+  useEffect(() => {
     initialize();
     return () => {
       disconnectWhipClient();

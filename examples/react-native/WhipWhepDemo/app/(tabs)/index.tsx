@@ -7,13 +7,11 @@ import {
   disconnectWhepClient,
   WhepClientView,
 } from '@mobile-whep/react-native-client';
-import { usePermissionCheck } from '@/hooks/usePermissionCheck';
+import { checkPermissions } from '@/utils/CheckPermissions';
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowPlayBtn, setShouldShowPlayBtn] = useState(true);
-
-  usePermissionCheck();
 
   const handlePlayBtnClick = async () => {
     setShouldShowPlayBtn(false);
@@ -26,15 +24,15 @@ export default function HomeScreen() {
     }
   };
 
+  const initialize = async () => {
+    await checkPermissions();
+    createWhepClient(process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? '', {
+      authToken: 'example',
+    });
+  };
+
   useEffect(() => {
-    const initialize = async () => {
-      createWhepClient(process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? '', {
-        authToken: 'example',
-      });
-    };
-
     initialize();
-
     return () => {
       disconnectWhepClient();
     };
