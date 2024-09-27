@@ -4,15 +4,15 @@
 import PackageDescription
 
 let package = Package(
-    name: "MobileWhepClient",
+    name: "MobileWhipWhepClient",
     platforms: [
         .iOS(.v13)
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
-            name: "MobileWhepClient",
-            targets: ["MobileWhepClient"])
+            name: "MobileWhipWhepClient",
+            targets: ["MobileWhipWhepClient"])
     ],
     dependencies: [
         .package(name: "WebRTC", url: "https://github.com/webrtc-sdk/Specs.git", .exact("125.6422.03")),
@@ -22,14 +22,14 @@ let package = Package(
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "MobileWhepClient",
+            name: "MobileWhipWhepClient",
             dependencies: [
                 "WebRTC",
                 .product(name: "Logging", package: "swift-log"),
             ]
         ),
         .testTarget(
-            name: "MobileWhepClientTests",
-            dependencies: ["MobileWhepClient"]),
+            name: "MobileWhipWhepClientTests",
+            dependencies: ["MobileWhipWhepClient"]),
     ]
 )
