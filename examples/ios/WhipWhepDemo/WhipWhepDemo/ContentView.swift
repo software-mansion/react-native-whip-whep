@@ -1,5 +1,5 @@
 import SwiftUI
-import MobileWhepClient
+import MobileWhipWhepClient
 import AVFoundation
 import WebRTC
 

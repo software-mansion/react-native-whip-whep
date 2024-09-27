@@ -7,12 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7C2F50D02CA6891900E7F2A3 /* MobileWhipWhepClient in Frameworks */ = {isa = PBXBuildFile; productRef = 7C2F50CF2CA6891900E7F2A3 /* MobileWhipWhepClient */; };
 		7C35C0962C4927BA00EE0290 /* WhipWhepDemoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0952C4927BA00EE0290 /* WhipWhepDemoApp.swift */; };
 		7C35C0982C4927BA00EE0290 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C35C0972C4927BA00EE0290 /* ContentView.swift */; };
 		7C35C09A2C4927BB00EE0290 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C35C0992C4927BB00EE0290 /* Assets.xcassets */; };
 		7C35C09D2C4927BB00EE0290 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7C35C09C2C4927BB00EE0290 /* Preview Assets.xcassets */; };
-		7C75AD8A2C58DA740011DB76 /* MobileWhepClient in Frameworks */ = {isa = PBXBuildFile; productRef = 7C75AD892C58DA740011DB76 /* MobileWhepClient */; };
-		7C75AD8C2C58DCBF0011DB76 /* MobileWhepClient in Frameworks */ = {isa = PBXBuildFile; productRef = 7C75AD8B2C58DCBF0011DB76 /* MobileWhepClient */; };
 		7CBEEA042C65004C00B1DA4A /* ServerSettings.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = 7CBEEA032C65004C00B1DA4A /* ServerSettings.xcconfig */; };
 		7CFD45B82C51056900D6A404 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CFD45B72C51056900D6A404 /* CoreAudio.framework */; };
 /* End PBXBuildFile section */
@@ -35,8 +34,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7CFD45B82C51056900D6A404 /* CoreAudio.framework in Frameworks */,
-				7C75AD8A2C58DA740011DB76 /* MobileWhepClient in Frameworks */,
-				7C75AD8C2C58DCBF0011DB76 /* MobileWhepClient in Frameworks */,
+				7C2F50D02CA6891900E7F2A3 /* MobileWhipWhepClient in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -107,8 +105,7 @@
 			);
 			name = WhipWhepDemo;
 			packageProductDependencies = (
-				7C75AD892C58DA740011DB76 /* MobileWhepClient */,
-				7C75AD8B2C58DCBF0011DB76 /* MobileWhepClient */,
+				7C2F50CF2CA6891900E7F2A3 /* MobileWhipWhepClient */,
 			);
 			productName = WhipWhepDemo;
 			productReference = 7C35C0922C4927BA00EE0290 /* WhipWhepDemo.app */;
@@ -394,13 +391,9 @@
 /* End XCLocalSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		7C75AD892C58DA740011DB76 /* MobileWhepClient */ = {
+		7C2F50CF2CA6891900E7F2A3 /* MobileWhipWhepClient */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = MobileWhepClient;
-		};
-		7C75AD8B2C58DCBF0011DB76 /* MobileWhepClient */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = MobileWhepClient;
+			productName = MobileWhipWhepClient;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
