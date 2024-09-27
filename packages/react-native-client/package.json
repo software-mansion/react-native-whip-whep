@@ -45,5 +45,15 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
-  }
+  },
+  "files": [
+    "build/**",
+    "android/build.gradle",
+    "android/src/**",
+    "ios/*.swift",
+    "ios/ReactNativeMobileWhepClient.podspec",
+    "expo-module.config.json",
+    "README.md",
+    "!**/node_modules"
+  ]
 }
