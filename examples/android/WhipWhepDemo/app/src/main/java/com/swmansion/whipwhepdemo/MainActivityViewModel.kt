@@ -12,20 +12,31 @@ import kotlinx.coroutines.launch
 
 const val TAG = "WHEP_EXAMPLE"
 
+enum class Tabs {
+  WHEP_BROADCASTER_TAB,
+  WHEP_TAB,
+  WHIP_TAB
+}
+
 class MainActivityViewModel(
   application: Application
 ) : AndroidViewModel(application) {
   var isLoading = mutableStateOf(false)
   var shouldShowPlayBtn = mutableStateOf(true)
   var shouldShowStreamBtn = mutableStateOf(true)
+  var selectedTabIndex = mutableStateOf(Tabs.WHEP_BROADCASTER_TAB)
 
+  var whepBroadcaster: WhepClient? = null
   var whepClient: WhepClient? = null
-  var whepServerClient: WhepClient? = null
   var whipClient: WhipClient? = null
 
   init {
+    createWhepBroadcasterClient()
+  }
+
+  private fun createWhepBroadcasterClient() {
     try {
-      whepClient =
+      whepBroadcaster =
         WhepClient(
           appContext = getApplication<Application>().applicationContext,
           serverUrl = "https://broadcaster.elixir-webrtc.org/api/whep",
@@ -34,38 +45,79 @@ class MainActivityViewModel(
             authToken = "example"
           )
         )
+    } catch (e: Exception) {
+      Log.e(TAG, "Error when creating client: ${e.message}")
+    }
+  }
 
-      whepServerClient =
+  private fun createWhepClient() {
+    try {
+      whepClient =
         WhepClient(
           appContext = getApplication<Application>().applicationContext,
           serverUrl = getApplication<Application>().applicationContext.getString(R.string.WHEP_SERVER_URL),
           configurationOptions =
-            ConfigurationOptions(
-              authToken = "example"
-            )
-        )
-
-      whipClient =
-        WhipClient(
-          appContext = getApplication<Application>().applicationContext,
-          serverUrl =
-            getApplication<Application>().applicationContext.getString(
-              R.string.WHIP_SERVER_URL
-            ),
-          configurationOptions = ConfigurationOptions(authToken = "example"),
-          videoDevice =
-            WhipClient.getCaptureDevices(getApplication<Application>().applicationContext)
-              .first().deviceName
+          ConfigurationOptions(
+            authToken = "example"
+          )
         )
     } catch (e: Exception) {
       Log.e(TAG, "Error when creating client: ${e.message}")
     }
   }
 
-  fun disconnect() {
-    whepClient?.disconnect()
-    whepServerClient?.disconnect()
+  private fun createWhipClient() {
+    try {
+      whipClient =
+        WhipClient(
+          appContext = getApplication<Application>().applicationContext,
+          serverUrl =
+          getApplication<Application>().applicationContext.getString(
+            R.string.WHIP_SERVER_URL
+          ),
+          configurationOptions = ConfigurationOptions(authToken = "example"),
+          videoDevice =
+          WhipClient.getCaptureDevices(getApplication<Application>().applicationContext)
+            .first().deviceName
+        )
+    } catch (e: Exception) {
+      Log.e(TAG, "Error when creating client: ${e.message}")
+    }
+  }
+
+  fun switchTab(tab: Tabs) {
+    whepBroadcaster?.disconnect()
+    whepBroadcaster = null
     whipClient?.disconnect()
+    whipClient = null
+    whepClient?.disconnect()
+    whepClient = null
+
+    when(tab) {
+      Tabs.WHEP_BROADCASTER_TAB -> createWhepBroadcasterClient()
+      Tabs.WHEP_TAB -> createWhepClient()
+      Tabs.WHIP_TAB -> createWhipClient()
+    }
+
+    shouldShowPlayBtn.value = true
+    shouldShowStreamBtn.value = true
+    isLoading.value = false
+    selectedTabIndex.value = tab
+  }
+
+  fun disconnect() {
+    whepBroadcaster?.disconnect()
+    whepClient?.disconnect()
+    whipClient?.disconnect()
+  }
+
+  fun onBroadcasterPlay() {
+    shouldShowPlayBtn.value = false
+    isLoading.value = true
+    whepBroadcaster?.onTrackAdded = { isLoading.value = false }
+    viewModelScope.launch {
+      whepBroadcaster?.connect()
+    }
   }
 
   fun onPlay() {
@@ -74,15 +126,6 @@ class MainActivityViewModel(
     whepClient?.onTrackAdded = { isLoading.value = false }
     viewModelScope.launch {
       whepClient?.connect()
-    }
-  }
-
-  fun onServerPlay() {
-    shouldShowPlayBtn.value = false
-    isLoading.value = true
-    whepServerClient?.onTrackAdded = { isLoading.value = false }
-    viewModelScope.launch {
-      whepServerClient?.connect()
     }
   }
 
