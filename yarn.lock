@@ -2622,21 +2622,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mobile-whep/react-native-client@npm:*, @mobile-whep/react-native-client@workspace:packages/react-native-client":
-  version: 0.0.0-use.local
-  resolution: "@mobile-whep/react-native-client@workspace:packages/react-native-client"
-  dependencies:
-    "@types/react": "npm:~18.2.45"
-    expo-module-scripts: "npm:^3.5.2"
-    expo-modules-core: "npm:^1.12.20"
-    typescript: "npm:^5.5.4"
-  peerDependencies:
-    expo: "*"
-    react: "*"
-    react-native: "*"
-  languageName: unknown
-  linkType: soft
-
 "@nicolo-ribaudo/chokidar-2@npm:2.1.8-no-fsevents.3":
   version: 2.1.8-no-fsevents.3
   resolution: "@nicolo-ribaudo/chokidar-2@npm:2.1.8-no-fsevents.3"
@@ -11337,6 +11322,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-whip-whep@npm:*, react-native-whip-whep@workspace:packages/react-native-client":
+  version: 0.0.0-use.local
+  resolution: "react-native-whip-whep@workspace:packages/react-native-client"
+  dependencies:
+    "@types/react": "npm:~18.2.45"
+    expo-module-scripts: "npm:^3.5.2"
+    expo-modules-core: "npm:^1.12.20"
+    typescript: "npm:^5.5.4"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  languageName: unknown
+  linkType: soft
+
 "react-native@npm:0.74.5":
   version: 0.74.5
   resolution: "react-native@npm:0.74.5"
@@ -13709,7 +13709,6 @@ __metadata:
     "@babel/core": "npm:^7.20.0"
     "@expo/config-plugins": "npm:^8.0.8"
     "@expo/vector-icons": "npm:^14.0.2"
-    "@mobile-whep/react-native-client": "npm:*"
     "@react-navigation/native": "npm:^6.0.2"
     "@types/jest": "npm:^29.5.12"
     "@types/react": "npm:~18.2.45"
@@ -13734,6 +13733,7 @@ __metadata:
     react-native-safe-area-context: "npm:4.10.5"
     react-native-screens: "npm:3.31.1"
     react-native-web: "npm:~0.19.10"
+    react-native-whip-whep: "npm:*"
     react-test-renderer: "npm:18.2.0"
     typescript: "npm:^5.5.4"
   languageName: unknown

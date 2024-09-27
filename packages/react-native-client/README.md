@@ -83,7 +83,7 @@ disconnectWhepClient();
 The process of creating a WHIP client is similar to the WHEP one, but the function takes one more parameter: a `videoDevice` that will be used to stream the video to the server. `react-native-whip-whep` shares a property to obtain all available video devices:
 
 ```typescript
-import { cameras } from "@mobile-whep/react-native-client";
+import { cameras } from "react-native-whip-whep";
 
 const availableDevices = cameras;
 ```
