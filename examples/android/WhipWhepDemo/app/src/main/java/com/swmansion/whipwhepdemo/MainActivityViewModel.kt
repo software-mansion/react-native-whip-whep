@@ -20,11 +20,22 @@ class MainActivityViewModel(
   var shouldShowStreamBtn = mutableStateOf(true)
 
   var whepClient: WhepClient? = null
+  var whepServerClient: WhepClient? = null
   var whipClient: WhipClient? = null
 
   init {
     try {
       whepClient =
+        WhepClient(
+          appContext = getApplication<Application>().applicationContext,
+          serverUrl = "https://broadcaster.elixir-webrtc.org/api/whep",
+          configurationOptions =
+          ConfigurationOptions(
+            authToken = "example"
+          )
+        )
+
+      whepServerClient =
         WhepClient(
           appContext = getApplication<Application>().applicationContext,
           serverUrl = getApplication<Application>().applicationContext.getString(R.string.WHEP_SERVER_URL),
@@ -53,6 +64,7 @@ class MainActivityViewModel(
 
   fun disconnect() {
     whepClient?.disconnect()
+    whepServerClient?.disconnect()
     whipClient?.disconnect()
   }
 
@@ -62,6 +74,15 @@ class MainActivityViewModel(
     whepClient?.onTrackAdded = { isLoading.value = false }
     viewModelScope.launch {
       whepClient?.connect()
+    }
+  }
+
+  fun onServerPlay() {
+    shouldShowPlayBtn.value = false
+    isLoading.value = true
+    whepServerClient?.onTrackAdded = { isLoading.value = false }
+    viewModelScope.launch {
+      whepServerClient?.connect()
     }
   }
 

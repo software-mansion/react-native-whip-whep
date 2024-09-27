@@ -72,5 +72,5 @@ dependencies {
     debugImplementation libs.androidx.ui.test.manifest
     api libs.webrtc
     implementation libs.okhttp
-    implementation project(":MobileWhepClient")
+    implementation project(":react-native-whip-whep")
 }
