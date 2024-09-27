@@ -1,7 +1,7 @@
 apply plugin: 'com.android.library'
 
 group = 'com.swmansion.reactnativeclient'
-version = '0.1.1'
+version = '0.1.2'
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -35,7 +35,7 @@ android {
   namespace "com.swmansion.reactnativeclient"
   defaultConfig {
     versionCode 1
-    versionName "0.1.1"
+    versionName "0.1.2"
   }
   lintOptions {
     abortOnError false
@@ -44,6 +44,11 @@ android {
 
 dependencies {
   implementation project(':expo-modules-core')
-  implementation project(':android-client')
+  if (findProject(':android-client')) {
+    implementation project(':android-client')
+  } else {
+//   todo when released, changed repo name etc then update
+    implementation 'com.github.software-mansion:react-native-whip-whep:0.1.2'
+  }
   implementation 'androidx.appcompat:appcompat:1.6.1'
 }
