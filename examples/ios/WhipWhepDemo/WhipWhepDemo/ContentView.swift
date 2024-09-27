@@ -84,10 +84,8 @@ struct ContentView: View {
         switch selectedPlayerType {
         case .whep:
             whepServerPlayer.disconnect()
-            whipPlayer.disconnect()
         case .whep_server:
             whepPlayer.disconnect()
-            whipPlayer.disconnect()
         case .whip:
             whepPlayer.disconnect()
             whepServerPlayer.disconnect()
