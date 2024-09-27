@@ -28,7 +28,7 @@ jobs:
           node-version: "20.x"
           registry-url: "https://registry.npmjs.org"
       - run: yarn
-      - run: yarn prepare
+      - run: yarn prepare:package
       - run: yarn npm publish --access public
         working-directory: packages/react-native-client
         env:
