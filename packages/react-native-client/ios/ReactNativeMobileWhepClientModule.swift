@@ -1,5 +1,5 @@
 import ExpoModulesCore
-import MobileWhepClient
+import MobileWhipWhepClient
 import WebRTC
 
 public class ReactNativeMobileWhepClientModule: Module, PlayerListener {
