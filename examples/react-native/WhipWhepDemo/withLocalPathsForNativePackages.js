@@ -75,17 +75,17 @@ const withLocalPathsForNativePackages = (config) => {
 
   config = withPodfile(config, (config) => {
     let podfile = config.modResults.contents;
-    console.log('Adding MobileWhepClient pod to Podfile...');
+    console.log('Adding MobileWhipWhepClient pod to Podfile...');
 
     const mainAppTarget = /target ['"]WhipWhepDemo['"] do/g;
-    const podToAdd = `pod 'MobileWhepClient', :path => '../../../../'`;
+    const podToAdd = `pod 'MobileWhipWhepClient', :path => '../../../../'`;
 
     podfile = podfile.replace(mainAppTarget, (match) => {
       return `${match}\n${podToAdd}`;
     });
 
     config.modResults.contents = podfile;
-    console.log('\x1b[32m✔\x1b[0m MobileWhepClient added.');
+    console.log('\x1b[32m✔\x1b[0m MobileWhipWhepClient added.');
     return config;
   });
 
