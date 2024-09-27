@@ -2622,21 +2622,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mobile-whep/react-native-client@npm:*, @mobile-whep/react-native-client@workspace:packages/react-native-client":
-  version: 0.0.0-use.local
-  resolution: "@mobile-whep/react-native-client@workspace:packages/react-native-client"
-  dependencies:
-    "@types/react": "npm:^18.0.25"
-    expo-module-scripts: "npm:^3.5.2"
-    expo-modules-core: "npm:^1.12.20"
-    typescript: "npm:^5.5.4"
-  peerDependencies:
-    expo: "*"
-    react: "*"
-    react-native: "*"
-  languageName: unknown
-  linkType: soft
-
 "@nicolo-ribaudo/chokidar-2@npm:2.1.8-no-fsevents.3":
   version: 2.1.8-no-fsevents.3
   resolution: "@nicolo-ribaudo/chokidar-2@npm:2.1.8-no-fsevents.3"
@@ -3655,7 +3640,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:>=16.9.0, @types/react@npm:^18.0.25":
+"@types/react@npm:*, @types/react@npm:>=16.9.0":
   version: 18.3.5
   resolution: "@types/react@npm:18.3.5"
   dependencies:
@@ -11337,6 +11322,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-whip-whep@npm:*, react-native-whip-whep@workspace:packages/react-native-client":
+  version: 0.0.0-use.local
+  resolution: "react-native-whip-whep@workspace:packages/react-native-client"
+  dependencies:
+    "@types/react": "npm:~18.2.45"
+    expo-module-scripts: "npm:^3.5.2"
+    expo-modules-core: "npm:^1.12.20"
+    typescript: "npm:^5.5.4"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+  languageName: unknown
+  linkType: soft
+
 "react-native@npm:0.74.5":
   version: 0.74.5
   resolution: "react-native@npm:0.74.5"
@@ -13178,16 +13178,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:~5.3.3":
-  version: 5.3.3
-  resolution: "typescript@npm:5.3.3"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/e33cef99d82573624fc0f854a2980322714986bc35b9cb4d1ce736ed182aeab78e2cb32b385efa493b2a976ef52c53e20d6c6918312353a91850e2b76f1ea44f
-  languageName: node
-  linkType: hard
-
 "typescript@patch:typescript@npm%3A^5.1.3#optional!builtin<compat/typescript>":
   version: 5.5.4
   resolution: "typescript@patch:typescript@npm%3A5.5.4#optional!builtin<compat/typescript>::version=5.5.4&hash=379a07"
@@ -13205,16 +13195,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10c0/94eb47e130d3edd964b76da85975601dcb3604b0c848a36f63ac448d0104e93819d94c8bdf6b07c00120f2ce9c05256b8b6092d23cf5cf1c6fa911159e4d572f
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A~5.3.3#optional!builtin<compat/typescript>":
-  version: 5.3.3
-  resolution: "typescript@patch:typescript@npm%3A5.3.3#optional!builtin<compat/typescript>::version=5.3.3&hash=e012d7"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/1d0a5f4ce496c42caa9a30e659c467c5686eae15d54b027ee7866744952547f1be1262f2d40de911618c242b510029d51d43ff605dba8fb740ec85ca2d3f9500
   languageName: node
   linkType: hard
 
@@ -13729,7 +13709,6 @@ __metadata:
     "@babel/core": "npm:^7.20.0"
     "@expo/config-plugins": "npm:^8.0.8"
     "@expo/vector-icons": "npm:^14.0.2"
-    "@mobile-whep/react-native-client": "npm:*"
     "@react-navigation/native": "npm:^6.0.2"
     "@types/jest": "npm:^29.5.12"
     "@types/react": "npm:~18.2.45"
@@ -13754,8 +13733,9 @@ __metadata:
     react-native-safe-area-context: "npm:4.10.5"
     react-native-screens: "npm:3.31.1"
     react-native-web: "npm:~0.19.10"
+    react-native-whip-whep: "npm:*"
     react-test-renderer: "npm:18.2.0"
-    typescript: "npm:~5.3.3"
+    typescript: "npm:^5.5.4"
   languageName: unknown
   linkType: soft
 

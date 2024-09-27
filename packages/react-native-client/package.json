@@ -1,6 +1,6 @@
 {
-  "name": "@mobile-whep/react-native-client",
-  "version": "0.1.0",
+  "name": "react-native-whip-whep",
+  "version": "0.1.1",
   "description": "An implementation of WHIP and WHEP protocols functionalities for React Native.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -26,17 +26,17 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/software-mansion-labs/mobile-whep.git",
+    "url": "git+https://github.com/software-mansion/react-native-whip-whep.git",
     "directory": "packages/react-native-client"
   },
   "bugs": {
-    "url": "https://github.com/software-mansion-labs/mobile-whep/issues"
+    "url": "https://github.com/software-mansion/react-native-whip-whep/issues"
   },
   "author": "Software Mansion",
   "license": "MIT",
-  "homepage": "https://github.com/software-mansion-labs/mobile-whep",
+  "homepage": "https://github.com/software-mansion/react-native-whip-whep",
   "devDependencies": {
-    "@types/react": "^18.0.25",
+    "@types/react": "~18.2.45",
     "expo-module-scripts": "^3.5.2",
     "expo-modules-core": "^1.12.20",
     "typescript": "^5.5.4"
