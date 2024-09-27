@@ -30,16 +30,11 @@ const withLocalPathsForNativePackages = (config) => {
   config = withAppBuildGradle(config, (config) => {
     let contents = config.modResults.contents;
     if (
-      !contents.includes(
-        "implementation project(':mobile-whep-react-native-client')",
-      )
+      !contents.includes("implementation project(':react-native-whip-whep')")
     ) {
-      console.log(
-        'Adding mobile-whep-react-native-client to app/build.gradle...',
-      );
+      console.log('Adding react-native-whip-whep to app/build.gradle...');
       const dependenciesBlock = 'dependencies {';
-      const addition =
-        "implementation project(':mobile-whep-react-native-client')";
+      const addition = "implementation project(':react-native-whip-whep')";
 
       const updatedContents = contents.replace(
         dependenciesBlock,
@@ -47,11 +42,11 @@ const withLocalPathsForNativePackages = (config) => {
       );
       config.modResults.contents = updatedContents;
       console.log(
-        '\x1b[32m✔\x1b[0m Added mobile-whep-react-native-client to app/build.gradle.',
+        '\x1b[32m✔\x1b[0m Added react-native-whip-whep to app/build.gradle.',
       );
     } else {
       console.log(
-        'mobile-whep-react-native-client already included in app/build.gradle',
+        'react-native-whip-whep already included in app/build.gradle',
       );
     }
 
