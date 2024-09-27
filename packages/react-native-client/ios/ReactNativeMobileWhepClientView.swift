@@ -2,7 +2,7 @@ import SwiftUI
 import UIKit
 import Foundation
 import ExpoModulesCore
-import MobileWhepClient
+import MobileWhipWhepClient
 
 protocol OnTrackUpdateListener {
     func onTrackUpdate()
