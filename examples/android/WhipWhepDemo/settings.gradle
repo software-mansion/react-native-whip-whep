@@ -23,4 +23,3 @@ rootProject.name = "WhipWhepDemo"
 include ':app'
 include ':react-native-whip-whep'
 project(':react-native-whip-whep').projectDir = new File('../../../packages/android-client/MobileWhepClient')
-
