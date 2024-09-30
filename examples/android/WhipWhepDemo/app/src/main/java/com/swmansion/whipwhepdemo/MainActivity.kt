@@ -27,9 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -106,12 +104,17 @@ fun PlayerView(
   modifier: Modifier = Modifier,
   viewModel: MainActivityViewModel
 ) {
-  var whipView: VideoView? =
+  var whepView: VideoView? =
     remember {
       null
     }
 
-  var view: VideoView? =
+  var whepServerView: VideoView? =
+    remember {
+      null
+    }
+
+  var whipView: VideoView? =
     remember {
       null
     }
@@ -119,13 +122,53 @@ fun PlayerView(
   DisposableEffect(Unit) {
     onDispose {
       viewModel.disconnect()
-      view?.release()
+      whepView?.release()
+      whepServerView?.release()
       whipView?.release()
     }
   }
 
   @Composable
-  fun WHEPTab() {
+  fun WhepBroadcasterTab() {
+    val shouldShowPlayBtn by viewModel.shouldShowPlayBtn
+    val isLoading by viewModel.isLoading
+    Box {
+      AndroidView(
+        factory = { ctx ->
+          VideoView(ctx).apply {
+            player = viewModel.whepBroadcaster
+          }
+        },
+        modifier =
+          Modifier
+            .fillMaxWidth()
+            .height(200.dp)
+      )
+
+      if (shouldShowPlayBtn) {
+        Button(onClick = { viewModel.onBroadcasterPlay() }, modifier = Modifier.align(Alignment.Center)) {
+          Image(
+            painter = painterResource(id = android.R.drawable.ic_media_play),
+            contentDescription = "play"
+          )
+        }
+      }
+
+      if (isLoading) {
+        CircularProgressIndicator(
+          modifier =
+            Modifier
+              .width(64.dp)
+              .align(Alignment.Center),
+          color = MaterialTheme.colorScheme.secondary,
+          trackColor = MaterialTheme.colorScheme.surfaceVariant
+        )
+      }
+    }
+  }
+
+  @Composable
+  fun WhepTab() {
     val shouldShowPlayBtn by viewModel.shouldShowPlayBtn
     val isLoading by viewModel.isLoading
     Box {
@@ -164,7 +207,7 @@ fun PlayerView(
   }
 
   @Composable
-  fun WHIPTab() {
+  fun WhipTab() {
     Column(
       modifier =
         Modifier
@@ -200,25 +243,24 @@ fun PlayerView(
 
   @Composable
   fun TabView() {
-    val tabTitles = listOf("WHEP", "WHIP")
-    var selectedTabIndex by remember { mutableStateOf(0) }
+    val tabTitles = listOf("WHEP (broadcaster)", "WHEP", "WHIP")
+    val selectedTabIndex by viewModel.selectedTabIndex
 
     Column(modifier = Modifier.fillMaxSize()) {
-      TabRow(selectedTabIndex = selectedTabIndex) {
+      TabRow(selectedTabIndex = selectedTabIndex.ordinal) {
         tabTitles.forEachIndexed { index, title ->
           Tab(
-            selected = selectedTabIndex == index,
-            onClick = { selectedTabIndex = index },
+            selected = selectedTabIndex.ordinal == index,
+            onClick = { viewModel.switchTab(Tabs.entries[index]) },
             text = { Text(title) }
           )
         }
       }
 
       when (selectedTabIndex) {
-        0 ->
-          WHEPTab()
-        1 ->
-          WHIPTab()
+        Tabs.WHEP_BROADCASTER_TAB -> WhepBroadcasterTab()
+        Tabs.WHEP_TAB -> WhepTab()
+        Tabs.WHIP_TAB -> WhipTab()
       }
     }
   }
