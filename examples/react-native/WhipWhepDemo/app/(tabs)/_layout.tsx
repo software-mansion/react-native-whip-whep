@@ -17,6 +17,19 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
+          title: 'Whep (broadcaster)',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon
+              name={focused ? 'globe' : 'globe-outline'}
+              color={color}
+            />
+          ),
+          unmountOnBlur: true,
+        }}
+      />
+      <Tabs.Screen
+        name="whep"
+        options={{
           title: 'Whep',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
