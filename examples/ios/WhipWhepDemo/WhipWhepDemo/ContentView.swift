@@ -22,8 +22,8 @@ struct ContentView: View {
     var body: some View {
         VStack {
             Picker("Choose Player", selection: $selectedPlayerType) {
-                Text("WHEP").tag(PlayerType.whep_broadcaster)
-                Text("WHEP (server)").tag(PlayerType.whep)
+                Text("WHEP (broadcaster").tag(PlayerType.whep_broadcaster)
+                Text("WHEP").tag(PlayerType.whep)
                 Text("WHIP").tag(PlayerType.whip)
             }
             .pickerStyle(SegmentedPickerStyle())

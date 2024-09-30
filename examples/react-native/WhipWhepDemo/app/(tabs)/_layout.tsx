@@ -17,7 +17,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Whep',
+          title: 'Whep (broadcaster)',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? 'globe' : 'globe-outline'}
@@ -30,10 +30,10 @@ export default function TabLayout() {
       <Tabs.Screen
         name="whep"
         options={{
-          title: 'Whep (server)',
+          title: 'Whep',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
-              name={focused ? 'log-out' : 'log-out-outline'}
+              name={focused ? 'log-in' : 'log-in-outline'}
               color={color}
             />
           ),
@@ -43,7 +43,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="whip"
         options={{
-          title: 'Whip (server)',
+          title: 'Whip',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon
               name={focused ? 'log-out' : 'log-out-outline'}

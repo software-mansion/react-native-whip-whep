@@ -243,7 +243,7 @@ fun PlayerView(
 
   @Composable
   fun TabView() {
-    val tabTitles = listOf("WHEP", "WHEP (server)", "WHIP (server)")
+    val tabTitles = listOf("WHEP (broadcaster)", "WHEP", "WHIP")
     val selectedTabIndex by viewModel.selectedTabIndex
 
     Column(modifier = Modifier.fillMaxSize()) {
