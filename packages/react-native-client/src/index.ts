@@ -9,6 +9,7 @@ export {
   PlayerType,
   VideoParameters,
   ConfigurationOptions,
+  ReactNativeMobileWhepClientViewProps,
 } from "./ReactNativeMobileWhepClient.types";
 
 export {
@@ -19,4 +20,7 @@ export {
   connectWhipClient,
   disconnectWhipClient,
   cameras,
+  Camera,
+  CameraFacingDirection,
+  CameraId,
 } from "./ReactNativeMobileWhepClientModule";

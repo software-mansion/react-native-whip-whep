@@ -11,13 +11,19 @@ import { ConfigurationOptions } from "./ReactNativeMobileWhepClient.types";
 declare const brand: unique symbol;
 export type Brand<T, TBrand extends string> = T & { [brand]: TBrand };
 
+/** A unique ID of the camera.  */
 export type CameraId = Brand<string, "CameraId">;
 
+/** Describes whether the camera is front-facing or back-facing. */
 export type CameraFacingDirection = "front" | "back" | "unspecified";
 
+/** Contains information about the camera available on the device. */
 export type Camera = {
+  /** A unique ID of the camera.  */
   id: CameraId;
+  /** A string describing camera name. */
   name: string;
+  /** Information about the camera being a front one or back one. */
   facingDirection: CameraFacingDirection;
 };
 
@@ -81,6 +87,7 @@ export function disconnectWhipClient() {
   return nativeModule.disconnectWhip();
 }
 
+/** Gives access to the cameras available on the device.*/
 export const cameras = nativeModule.cameras;
 
 export default nativeModule;
