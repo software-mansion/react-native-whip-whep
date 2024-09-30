@@ -27,6 +27,7 @@
     "tsc": "yarn workspaces foreach -A -p run tsc"
   },
   "dependencies": {
-    "babel-plugin-module-resolver": "^5.0.2"
+    "babel-plugin-module-resolver": "^5.0.2",
+    "typedoc": "^0.26.7"
   }
 }
