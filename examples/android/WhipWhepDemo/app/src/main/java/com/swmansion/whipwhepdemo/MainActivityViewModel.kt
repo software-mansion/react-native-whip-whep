@@ -41,9 +41,9 @@ class MainActivityViewModel(
           appContext = getApplication<Application>().applicationContext,
           serverUrl = "https://broadcaster.elixir-webrtc.org/api/whep",
           configurationOptions =
-          ConfigurationOptions(
-            authToken = "example"
-          )
+            ConfigurationOptions(
+              authToken = "example"
+            )
         )
     } catch (e: Exception) {
       Log.e(TAG, "Error when creating client: ${e.message}")
@@ -57,9 +57,9 @@ class MainActivityViewModel(
           appContext = getApplication<Application>().applicationContext,
           serverUrl = getApplication<Application>().applicationContext.getString(R.string.WHEP_SERVER_URL),
           configurationOptions =
-          ConfigurationOptions(
-            authToken = "example"
-          )
+            ConfigurationOptions(
+              authToken = "example"
+            )
         )
     } catch (e: Exception) {
       Log.e(TAG, "Error when creating client: ${e.message}")
@@ -72,13 +72,13 @@ class MainActivityViewModel(
         WhipClient(
           appContext = getApplication<Application>().applicationContext,
           serverUrl =
-          getApplication<Application>().applicationContext.getString(
-            R.string.WHIP_SERVER_URL
-          ),
+            getApplication<Application>().applicationContext.getString(
+              R.string.WHIP_SERVER_URL
+            ),
           configurationOptions = ConfigurationOptions(authToken = "example"),
           videoDevice =
-          WhipClient.getCaptureDevices(getApplication<Application>().applicationContext)
-            .first().deviceName
+            WhipClient.getCaptureDevices(getApplication<Application>().applicationContext)
+              .first().deviceName
         )
     } catch (e: Exception) {
       Log.e(TAG, "Error when creating client: ${e.message}")
@@ -93,7 +93,7 @@ class MainActivityViewModel(
     whepClient?.disconnect()
     whepClient = null
 
-    when(tab) {
+    when (tab) {
       Tabs.WHEP_BROADCASTER_TAB -> createWhepBroadcasterClient()
       Tabs.WHEP_TAB -> createWhepClient()
       Tabs.WHIP_TAB -> createWhipClient()

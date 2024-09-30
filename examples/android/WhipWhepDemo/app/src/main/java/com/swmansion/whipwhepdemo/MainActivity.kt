@@ -140,9 +140,9 @@ fun PlayerView(
           }
         },
         modifier =
-        Modifier
-          .fillMaxWidth()
-          .height(200.dp)
+          Modifier
+            .fillMaxWidth()
+            .height(200.dp)
       )
 
       if (shouldShowPlayBtn) {
@@ -157,9 +157,9 @@ fun PlayerView(
       if (isLoading) {
         CircularProgressIndicator(
           modifier =
-          Modifier
-            .width(64.dp)
-            .align(Alignment.Center),
+            Modifier
+              .width(64.dp)
+              .align(Alignment.Center),
           color = MaterialTheme.colorScheme.secondary,
           trackColor = MaterialTheme.colorScheme.surfaceVariant
         )
@@ -179,9 +179,9 @@ fun PlayerView(
           }
         },
         modifier =
-        Modifier
-          .fillMaxWidth()
-          .height(200.dp)
+          Modifier
+            .fillMaxWidth()
+            .height(200.dp)
       )
 
       if (shouldShowPlayBtn) {
@@ -196,9 +196,9 @@ fun PlayerView(
       if (isLoading) {
         CircularProgressIndicator(
           modifier =
-          Modifier
-            .width(64.dp)
-            .align(Alignment.Center),
+            Modifier
+              .width(64.dp)
+              .align(Alignment.Center),
           color = MaterialTheme.colorScheme.secondary,
           trackColor = MaterialTheme.colorScheme.surfaceVariant
         )
@@ -222,9 +222,9 @@ fun PlayerView(
           }
         },
         modifier =
-        Modifier
-          .fillMaxWidth()
-          .height(200.dp)
+          Modifier
+            .fillMaxWidth()
+            .height(200.dp)
       )
 
       if (shouldShowStreamBtn) {
@@ -266,9 +266,9 @@ fun PlayerView(
   }
   Box(
     modifier =
-    Modifier
-      .fillMaxSize()
-      .padding(top = 50.dp)
+      Modifier
+        .fillMaxSize()
+        .padding(top = 50.dp)
   ) {
     TabView()
   }
