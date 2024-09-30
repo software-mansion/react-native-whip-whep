@@ -28,7 +28,6 @@
     "docs": "cd packages/react-native-client && npx typedoc src/index.ts"
   },
   "dependencies": {
-    "babel-plugin-module-resolver": "^5.0.2",
-    "typedoc": "^0.26.7"
+    "babel-plugin-module-resolver": "^5.0.2"
   }
 }

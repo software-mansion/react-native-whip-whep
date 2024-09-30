@@ -11607,6 +11607,7 @@ __metadata:
     "@types/react": "npm:~18.2.45"
     expo-module-scripts: "npm:^3.5.2"
     expo-modules-core: "npm:^1.12.20"
+    typedoc: "npm:^0.26.7"
     typescript: "npm:^5.5.4"
   peerDependencies:
     expo: "*"
