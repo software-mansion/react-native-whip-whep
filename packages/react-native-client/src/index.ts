@@ -1,11 +1,10 @@
-import { ChangeEventPayload } from "./ReactNativeMobileWhepClient.types";
 import { addTrackListener } from "./ReactNativeMobileWhepClientModule";
 import {
   WhipClientView,
   WhepClientView,
 } from "./ReactNativeMobileWhepClientView";
 
-export { WhipClientView, WhepClientView, ChangeEventPayload, addTrackListener };
+export { WhipClientView, WhepClientView, addTrackListener };
 export {
   PlayerType,
   VideoParameters,

@@ -1,7 +1,3 @@
-export type ChangeEventPayload = {
-  value: string;
-};
-
 /** Defines initial connection and stream options. */
 export type ConfigurationOptions = {
   /** Authorization token that might be required to access the server. */
