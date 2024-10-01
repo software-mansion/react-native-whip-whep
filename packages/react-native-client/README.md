@@ -64,6 +64,8 @@ If the project is a bare React Native project, it is required to install `expo-m
 $ npx install-expo-modules
 ```
 
+For more information and troubleshooting, visit [expo-modules documentation](https://docs.expo.dev/bare/installing-expo-modules/).
+
 It is necessary to configure app permissions in order to stream a preview from the camera or sound:
 
 #### Android
