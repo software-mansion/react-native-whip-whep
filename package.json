@@ -24,11 +24,9 @@
     "build": "yarn workspace react-native-whip-whep run expo-module build",
     "prepare:package": "yarn workspace react-native-whip-whep run expo-module prepare",
     "prepare:example": "yarn && cd examples/react-native/WhipWhepDemo && npx expo prebuild",
-    "tsc": "yarn workspaces foreach -A -p run tsc",
-    "docs": "cd packages/react-native-client && npx typedoc src/index.ts"
+    "tsc": "yarn workspaces foreach -A -p run tsc"
   },
   "dependencies": {
-    "babel-plugin-module-resolver": "^5.0.2",
-    "typedoc": "^0.26.7"
+    "babel-plugin-module-resolver": "^5.0.2"
   }
 }

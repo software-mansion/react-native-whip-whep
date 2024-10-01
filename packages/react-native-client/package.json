@@ -13,7 +13,8 @@
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
     "open:ios": "xed example/ios",
-    "open:android": "open -a \"Android Studio\" example/android"
+    "open:android": "open -a \"Android Studio\" example/android",
+    "docs": "typedoc"
   },
   "keywords": [
     "react-native",
@@ -39,6 +40,7 @@
     "@types/react": "~18.2.45",
     "expo-module-scripts": "^3.5.2",
     "expo-modules-core": "^1.12.20",
+    "typedoc": "^0.26.7",
     "typescript": "^5.5.4"
   },
   "peerDependencies": {

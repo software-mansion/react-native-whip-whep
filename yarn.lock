@@ -10410,7 +10410,6 @@ __metadata:
     eslint-plugin-react-hooks: "npm:^4.6.2"
     globals: "npm:^15.8.0"
     prettier: "npm:^3.3.3"
-    typedoc: "npm:^0.26.7"
     typescript-eslint: "npm:^7.16.1"
   languageName: unknown
   linkType: soft
@@ -11607,6 +11606,7 @@ __metadata:
     "@types/react": "npm:~18.2.45"
     expo-module-scripts: "npm:^3.5.2"
     expo-modules-core: "npm:^1.12.20"
+    typedoc: "npm:^0.26.7"
     typescript: "npm:^5.5.4"
   peerDependencies:
     expo: "*"
