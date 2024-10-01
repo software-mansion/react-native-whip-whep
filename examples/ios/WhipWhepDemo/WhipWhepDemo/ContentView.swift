@@ -16,8 +16,8 @@ struct ContentView: View {
             }
         }
     @State var whepBroadcaster = WhepClient(serverUrl: URL(string: "https://broadcaster.elixir-webrtc.org/api/whep")!, configurationOptions: ConfigurationOptions(authToken: "example"))
-    @State var whepPlayer = WhepClient(serverUrl: URL(string: "\(Bundle.main.infoDictionary?["WhepServerUrl"] as? String ?? "")")!, configurationOptions: ConfigurationOptions(authToken: "example"))
-    @State var whipPlayer = WhipClient(serverUrl: URL(string: "\(Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")")!, configurationOptions: ConfigurationOptions(authToken: "example"), videoDevice: WhipClient.getCaptureDevices().first)
+    @State var whepPlayer = WhepClient(serverUrl: URL(string: Bundle.main.infoDictionary?["WhepServerUrl"] as? String ?? "")!, configurationOptions: ConfigurationOptions(authToken: "example"))
+    @State var whipPlayer = WhipClient(serverUrl: URL(string: Bundle.main.infoDictionary?["WhipServerUrl"] as? String ?? "")!, configurationOptions: ConfigurationOptions(authToken: "example"), videoDevice: WhipClient.getCaptureDevices().first)
     
     var body: some View {
         VStack {
