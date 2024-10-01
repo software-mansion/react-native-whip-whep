@@ -6,15 +6,19 @@ This repository is an expo module that makes use of native Android and iOS packa
 
 ## Setup
 
+Install the package using `npm` or `yarn`:
+
 ```
 $ npm install --save react-native-whip-whep
 # --- or ---
 $ yarn add react-native-whip-whep
 ```
 
+### With Expo
+
 It is necessary to configure app permissions in order to stream a preview from the camera or sound:
 
-### Android
+#### Android
 
 Modify `app.json` file to request necessary permissions:
 
@@ -24,16 +28,16 @@ Modify `app.json` file to request necessary permissions:
     ...
     "android": {
       ...
-      "permissions": {
+      "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
-      }
+      ]
     }
   }
 }
 ```
 
-### iOS
+#### iOS
 
 Add the following lines to `app.json`:
 
@@ -50,6 +54,42 @@ Add the following lines to `app.json`:
     },
   }
 }
+```
+
+### Without Expo
+
+If the project is a bare React Native project, it is required to install `expo-modules`:
+
+```
+$ npx install-expo-modules
+```
+
+For more information and troubleshooting, visit [expo-modules documentation](https://docs.expo.dev/bare/installing-expo-modules/).
+
+It is necessary to configure app permissions in order to stream a preview from the camera or sound:
+
+#### Android
+
+Modify `AndroidManifest.xml` file to request necessary permissions:
+
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+  ...
+  <uses-permission android:name="android.permission.CAMERA"/>
+  <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+  ...
+</manifest>
+```
+
+#### iOS
+
+Add the following lines to `info.plist`:
+
+```plist
+<key>NSCameraUsageDescription</key>
+<string>This application requires camera access to gather information about available video devices.</string>
+<key>NSMicrophoneUsageDescription</key>
+<string>This application requires microphone access to gather information about available audio devices.</string>
 ```
 
 ## Usage
