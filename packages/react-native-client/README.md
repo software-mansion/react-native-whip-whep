@@ -12,6 +12,12 @@ $ npm install --save react-native-whip-whep
 $ yarn add react-native-whip-whep
 ```
 
+Install `expo-modules`:
+
+```
+$ npx install-expo-modules
+```
+
 It is necessary to configure app permissions in order to stream a preview from the camera or sound:
 
 ### Android
