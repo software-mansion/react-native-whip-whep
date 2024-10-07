@@ -87,11 +87,24 @@ public class WhepClient: ClientBase & Connectable {
         }
     }
     
+    private func fetchAudioTrack() -> RTCAudioTrack? {
+        for transceiver in peerConnection!.transceivers {
+            if let track = transceiver.receiver.track as? RTCAudioTrack {
+                return track
+            }
+        }
+        return nil
+    }
+    
     public func pause() {
+        let audioTrack = fetchAudioTrack()
+        audioTrack?.isEnabled = false
         self.videoTrack?.isEnabled = false
     }
     
     public func restart() {
+        let audioTrack = fetchAudioTrack()
+        audioTrack?.isEnabled = true
         self.videoTrack?.isEnabled = true
     }
 }
