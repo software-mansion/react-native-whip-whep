@@ -80,10 +80,12 @@ export function disconnectWhepClient() {
   return nativeModule.disconnectWhep();
 }
 
+/** Pauses the WHEP stream, making the view black and disabling the sound. */
 export function pauseWhepClient() {
   return nativeModule.pauseWhep();
 }
 
+/** Restarts the WHEP stream. Makes the view reappear along with sound. */
 export function restartWhepClient() {
   return nativeModule.restartWhep();
 }
