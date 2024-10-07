@@ -76,7 +76,7 @@ class WhepClient(
     eglBase.release()
   }
 
-  private fun fetchAudioTrack(): AudioTrack? {
+  private fun getAudioTrack(): AudioTrack? {
     peerConnection?.transceivers?.forEach { transceiver ->
       val track = transceiver.receiver.track()
       if (track is AudioTrack) {
@@ -87,13 +87,13 @@ class WhepClient(
   }
 
   public fun pause() {
-    var track = fetchAudioTrack()
+    var track = getAudioTrack()
     track?.setEnabled(false)
     this.videoTrack?.setEnabled(false)
   }
 
   public fun unpause() {
-    var track = fetchAudioTrack()
+    var track = getAudioTrack()
     track?.setEnabled(true)
     this.videoTrack?.setEnabled(true)
   }
