@@ -2,6 +2,7 @@ package com.mobilewhep.client
 
 import android.content.Context
 import android.util.Log
+import org.webrtc.AudioTrack
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStreamTrack
 import org.webrtc.RtpTransceiver
@@ -75,11 +76,25 @@ class WhepClient(
     eglBase.release()
   }
 
+  private fun fetchAudioTrack(): AudioTrack? {
+    peerConnection?.transceivers?.forEach { transceiver ->
+      val track = transceiver.receiver.track()
+      if (track is AudioTrack) {
+        return track
+      }
+    }
+    return null
+  }
+
   public fun pause() {
+    var track = fetchAudioTrack()
+    track?.setEnabled(false)
     this.videoTrack?.setEnabled(false)
   }
 
   public fun restart() {
+    var track = fetchAudioTrack()
+    track?.setEnabled(true)
     this.videoTrack?.setEnabled(true)
   }
 }
