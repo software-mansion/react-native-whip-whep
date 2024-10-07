@@ -102,8 +102,8 @@ class ReactNativeMobileWhepClientModule :
         whepClient.pause()
       }
 
-      Function("restartWhep") {
-        whepClient.restart()
+      Function("unpauseWhep") {
+        whepClient.unpause()
       }
 
       Function("createWhipClient") { serverUrl: String, configurationOptions: Map<String, Any>?, videoDevice: String ->

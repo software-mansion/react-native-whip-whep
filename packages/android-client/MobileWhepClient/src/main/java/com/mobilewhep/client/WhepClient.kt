@@ -92,7 +92,7 @@ class WhepClient(
     this.videoTrack?.setEnabled(false)
   }
 
-  public fun restart() {
+  public fun unpause() {
     var track = fetchAudioTrack()
     track?.setEnabled(true)
     this.videoTrack?.setEnabled(true)

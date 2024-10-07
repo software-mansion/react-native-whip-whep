@@ -102,7 +102,7 @@ public class WhepClient: ClientBase & Connectable {
         self.videoTrack?.isEnabled = false
     }
 
-    public func restart() {
+    public func unpause() {
         let audioTrack = fetchAudioTrack()
         audioTrack?.isEnabled = true
         self.videoTrack?.isEnabled = true

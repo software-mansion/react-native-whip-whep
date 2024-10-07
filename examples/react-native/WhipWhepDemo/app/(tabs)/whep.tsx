@@ -6,7 +6,7 @@ import {
   createWhepClient,
   disconnectWhepClient,
   pauseWhepClient,
-  restartWhepClient,
+  unpauseWhepClient,
   WhepClientView,
 } from 'react-native-whip-whep';
 import { checkPermissions } from '@/utils/CheckPermissions';
@@ -38,10 +38,10 @@ export default function HomeScreen() {
 
   const handleRestartBtnClick = async () => {
     try {
-      restartWhepClient();
+      unpauseWhepClient();
       setIsPaused(false);
     } catch (error) {
-      console.error('Failed to restart WHEP Client', error);
+      console.error('Failed to unpause WHEP Client', error);
     }
   };
 

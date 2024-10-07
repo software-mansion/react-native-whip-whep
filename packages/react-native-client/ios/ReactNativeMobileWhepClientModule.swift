@@ -105,13 +105,13 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener {
             client.pause()
         }
 
-        Function("restartWhep") {
+        Function("unpauseWhep") {
             guard let client = ReactNativeMobileWhepClientModule.whepClient else {
                 throw Exception(
                                 name: "E_WHEP_CLIENT_NOT_FOUND",
                                 description: "WHEP client not found. Make sure it was initialized properly.")
             }
-            client.restart()
+            client.unpause()
         }
 
         Function("createWhipClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?, videoDevice: String) in
