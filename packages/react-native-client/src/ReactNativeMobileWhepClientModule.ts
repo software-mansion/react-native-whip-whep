@@ -34,6 +34,8 @@ type RNMobileWhepClientModule = {
   ) => void;
   connectWhep: () => Promise<void>;
   disconnectWhep: () => void;
+  pauseWhep: () => void;
+  restartWhep: () => void;
   createWhipClient: (
     serverUrl: string,
     configurationOptions?: ConfigurationOptions,
@@ -76,6 +78,14 @@ export async function connectWhepClient() {
  */
 export function disconnectWhepClient() {
   return nativeModule.disconnectWhep();
+}
+
+export function pauseWhepClient() {
+  return nativeModule.pauseWhep();
+}
+
+export function restartWhepClient() {
+  return nativeModule.restartWhep();
 }
 
 /** Creates a WHIP client based on the provided server URL and optional additional `configurationOptions`.

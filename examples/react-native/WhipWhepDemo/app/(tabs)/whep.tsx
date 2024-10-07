@@ -5,6 +5,8 @@ import {
   connectWhepClient,
   createWhepClient,
   disconnectWhepClient,
+  pauseWhepClient,
+  restartWhepClient,
   WhepClientView,
 } from 'react-native-whip-whep';
 import { checkPermissions } from '@/utils/CheckPermissions';
@@ -21,6 +23,22 @@ export default function HomeScreen() {
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to connect to WHEP Client', error);
+    }
+  };
+
+  const handlePauseBtnClick = async () => {
+    try {
+      pauseWhepClient();
+    } catch (error) {
+      console.error('Failed to pause WHEP Client', error);
+    }
+  };
+
+  const handleRestartBtnClick = async () => {
+    try {
+      restartWhepClient();
+    } catch (error) {
+      console.error('Failed to restart WHEP Client', error);
     }
   };
 
@@ -44,6 +62,12 @@ export default function HomeScreen() {
         <WhepClientView style={styles.clientView} />
         {shouldShowPlayBtn && (
           <Button title="Play" onPress={handlePlayBtnClick} />
+        )}
+        {!shouldShowPlayBtn && !isLoading && (
+          <Button title="Pause" onPress={handlePauseBtnClick} />
+        )}
+        {!shouldShowPlayBtn && !isLoading && (
+          <Button title="Play" onPress={handleRestartBtnClick} />
         )}
         {isLoading && <ActivityIndicator size="large" color="#2196F3" />}
       </View>

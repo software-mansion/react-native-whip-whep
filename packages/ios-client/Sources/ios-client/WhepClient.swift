@@ -86,4 +86,12 @@ public class WhepClient: ClientBase & Connectable {
             self.videoTrack = nil
         }
     }
+    
+    public func pause() {
+        self.videoTrack?.isEnabled = false
+    }
+    
+    public func restart() {
+        self.videoTrack?.isEnabled = true
+    }
 }
