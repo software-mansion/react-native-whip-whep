@@ -74,4 +74,12 @@ class WhepClient(
     peerConnectionFactory.dispose()
     eglBase.release()
   }
+
+  public fun pause() {
+    this.videoTrack?.setEnabled(false)
+  }
+
+  public fun restart() {
+    this.videoTrack?.setEnabled(true)
+  }
 }

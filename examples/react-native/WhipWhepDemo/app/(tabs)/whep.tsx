@@ -14,6 +14,7 @@ import { checkPermissions } from '@/utils/CheckPermissions';
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowPlayBtn, setShouldShowPlayBtn] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
   const handlePlayBtnClick = async () => {
     setShouldShowPlayBtn(false);
@@ -29,6 +30,7 @@ export default function HomeScreen() {
   const handlePauseBtnClick = async () => {
     try {
       pauseWhepClient();
+      setIsPaused(true);
     } catch (error) {
       console.error('Failed to pause WHEP Client', error);
     }
@@ -37,6 +39,7 @@ export default function HomeScreen() {
   const handleRestartBtnClick = async () => {
     try {
       restartWhepClient();
+      setIsPaused(false);
     } catch (error) {
       console.error('Failed to restart WHEP Client', error);
     }
@@ -63,12 +66,13 @@ export default function HomeScreen() {
         {shouldShowPlayBtn && (
           <Button title="Play" onPress={handlePlayBtnClick} />
         )}
-        {!shouldShowPlayBtn && !isLoading && (
-          <Button title="Pause" onPress={handlePauseBtnClick} />
-        )}
-        {!shouldShowPlayBtn && !isLoading && (
-          <Button title="Play" onPress={handleRestartBtnClick} />
-        )}
+        {!shouldShowPlayBtn &&
+          !isLoading &&
+          (isPaused ? (
+            <Button title="Restart" onPress={handleRestartBtnClick} />
+          ) : (
+            <Button title="Play" onPress={handlePauseBtnClick} />
+          ))}
         {isLoading && <ActivityIndicator size="large" color="#2196F3" />}
       </View>
     </View>

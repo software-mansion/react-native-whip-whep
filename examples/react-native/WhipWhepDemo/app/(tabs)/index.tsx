@@ -5,6 +5,8 @@ import {
   connectWhepClient,
   createWhepClient,
   disconnectWhepClient,
+  pauseWhepClient,
+  restartWhepClient,
   WhepClientView,
 } from 'react-native-whip-whep';
 import { checkPermissions } from '@/utils/CheckPermissions';
@@ -12,6 +14,7 @@ import { checkPermissions } from '@/utils/CheckPermissions';
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowPlayBtn, setShouldShowPlayBtn] = useState(true);
+  const [isPaused, setIsPaused] = useState(false);
 
   const handlePlayBtnClick = async () => {
     setShouldShowPlayBtn(false);
@@ -21,6 +24,24 @@ export default function HomeScreen() {
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to connect to WHEP Client', error);
+    }
+  };
+
+  const handlePauseBtnClick = async () => {
+    try {
+      pauseWhepClient();
+      setIsPaused(true);
+    } catch (error) {
+      console.error('Failed to pause WHEP Client', error);
+    }
+  };
+
+  const handleRestartBtnClick = async () => {
+    try {
+      restartWhepClient();
+      setIsPaused(false);
+    } catch (error) {
+      console.error('Failed to restart WHEP Client', error);
     }
   };
 
@@ -45,6 +66,13 @@ export default function HomeScreen() {
         {shouldShowPlayBtn && (
           <Button title="Play" onPress={handlePlayBtnClick} />
         )}
+        {!shouldShowPlayBtn &&
+          !isLoading &&
+          (isPaused ? (
+            <Button title="Play" onPress={handleRestartBtnClick} />
+          ) : (
+            <Button title="Pause" onPress={handlePauseBtnClick} />
+          ))}
         {isLoading && <ActivityIndicator size="large" color="#2196F3" />}
       </View>
     </View>
