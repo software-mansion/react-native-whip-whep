@@ -6,7 +6,10 @@ import android.util.Log
 import org.webrtc.audio.AudioDeviceModule
 import org.webrtc.audio.JavaAudioDeviceModule
 
-fun createAudioDeviceModule(appContext: Context, audioAttributes: AudioAttributes): AudioDeviceModule {
+fun createAudioDeviceModule(
+  appContext: Context,
+  audioAttributes: AudioAttributes
+): AudioDeviceModule {
   val audioRecordErrorCallback =
     object : JavaAudioDeviceModule.AudioRecordErrorCallback {
       override fun onWebRtcAudioRecordInitError(errorMessage: String?) {
