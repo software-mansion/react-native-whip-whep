@@ -14,6 +14,8 @@ export {
   createWhepClient,
   connectWhepClient,
   disconnectWhepClient,
+  pauseWhepClient,
+  unpauseWhepClient,
   createWhipClient,
   connectWhipClient,
   disconnectWhipClient,

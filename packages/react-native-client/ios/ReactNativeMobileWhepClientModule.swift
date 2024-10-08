@@ -96,6 +96,24 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener {
             client.disconnect()
         }
 
+        Function("pauseWhep") {
+            guard let client = ReactNativeMobileWhepClientModule.whepClient else {
+                throw Exception(
+                                name: "E_WHEP_CLIENT_NOT_FOUND",
+                                description: "WHEP client not found. Make sure it was initialized properly.")
+            }
+            client.pause()
+        }
+
+        Function("unpauseWhep") {
+            guard let client = ReactNativeMobileWhepClientModule.whepClient else {
+                throw Exception(
+                                name: "E_WHEP_CLIENT_NOT_FOUND",
+                                description: "WHEP client not found. Make sure it was initialized properly.")
+            }
+            client.unpause()
+        }
+
         Function("createWhipClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?, videoDevice: String) in
             guard let url = URL(string: serverUrl) else {
                 throw Exception(

@@ -98,6 +98,14 @@ class ReactNativeMobileWhepClientModule :
         whepClient.disconnect()
       }
 
+      Function("pauseWhep") {
+        whepClient.pause()
+      }
+
+      Function("unpauseWhep") {
+        whepClient.unpause()
+      }
+
       Function("createWhipClient") { serverUrl: String, configurationOptions: Map<String, Any>?, videoDevice: String ->
         val context: Context =
           appContext.reactContext ?: throw IllegalStateException("React context is not available")
