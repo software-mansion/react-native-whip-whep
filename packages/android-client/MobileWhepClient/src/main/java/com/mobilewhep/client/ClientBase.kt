@@ -3,6 +3,7 @@ package com.mobilewhep.client
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.media.AudioAttributes
 import android.util.Log
 import androidx.core.content.ContextCompat
 import kotlinx.coroutines.CoroutineScope
@@ -25,6 +26,7 @@ import org.webrtc.PeerConnection
 import org.webrtc.PeerConnectionFactory
 import org.webrtc.RtpReceiver
 import org.webrtc.VideoTrack
+import org.webrtc.audio.AudioDeviceModule
 import java.io.IOException
 import java.net.ConnectException
 import java.net.URI
@@ -52,6 +54,13 @@ open class ClientBase(
   protected val iceCandidates = mutableListOf<IceCandidate>()
 
   private val client = OkHttpClient()
+  private val audioAttributes: AudioAttributes =
+    AudioAttributes
+      .Builder()
+      .setUsage(AudioAttributes.USAGE_MEDIA)
+      .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
+      .build()
+  private val audioDeviceModule: AudioDeviceModule = createAudioDeviceModule(appContext, audioAttributes)
 
   private val coroutineScope: CoroutineScope =
     CoroutineScope(Dispatchers.Default)
@@ -90,6 +99,7 @@ open class ClientBase(
     peerConnectionFactory =
       PeerConnectionFactory
         .builder()
+        .setAudioDeviceModule(audioDeviceModule)
         .setVideoDecoderFactory(DefaultVideoDecoderFactory(eglBase.eglBaseContext))
         .setVideoEncoderFactory(DefaultVideoEncoderFactory(eglBase.eglBaseContext, true, true))
         .createPeerConnectionFactory()
