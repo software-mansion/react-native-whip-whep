@@ -34,6 +34,8 @@ type RNMobileWhepClientModule = {
   ) => void;
   connectWhep: () => Promise<void>;
   disconnectWhep: () => void;
+  pauseWhep: () => void;
+  unpauseWhep: () => void;
   createWhipClient: (
     serverUrl: string,
     configurationOptions?: ConfigurationOptions,
@@ -76,6 +78,16 @@ export async function connectWhepClient() {
  */
 export function disconnectWhepClient() {
   return nativeModule.disconnectWhep();
+}
+
+/** Pauses the WHEP stream, making the view black and disabling the sound. */
+export function pauseWhepClient() {
+  return nativeModule.pauseWhep();
+}
+
+/** Restarts the WHEP stream. Makes the view reappear along with sound. */
+export function unpauseWhepClient() {
+  return nativeModule.unpauseWhep();
 }
 
 /** Creates a WHIP client based on the provided server URL and optional additional `configurationOptions`.

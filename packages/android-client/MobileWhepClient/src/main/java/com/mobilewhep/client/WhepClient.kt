@@ -2,6 +2,7 @@ package com.mobilewhep.client
 
 import android.content.Context
 import android.util.Log
+import org.webrtc.AudioTrack
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStreamTrack
 import org.webrtc.RtpTransceiver
@@ -73,5 +74,27 @@ class WhepClient(
     peerConnection.dispose()
     peerConnectionFactory.dispose()
     eglBase.release()
+  }
+
+  private fun getAudioTrack(): AudioTrack? {
+    peerConnection?.transceivers?.forEach { transceiver ->
+      val track = transceiver.receiver.track()
+      if (track is AudioTrack) {
+        return track
+      }
+    }
+    return null
+  }
+
+  public fun pause() {
+    var track = getAudioTrack()
+    track?.setEnabled(false)
+    this.videoTrack?.setEnabled(false)
+  }
+
+  public fun unpause() {
+    var track = getAudioTrack()
+    track?.setEnabled(true)
+    this.videoTrack?.setEnabled(true)
   }
 }
