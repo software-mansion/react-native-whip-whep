@@ -87,7 +87,7 @@ Modify `AndroidManifest.xml` file to request necessary permissions:
 
 Add the following lines to `info.plist`:
 
-```plist
+```xml
 <key>NSCameraUsageDescription</key>
 <string>This application requires camera access to gather information about available video devices.</string>
 <key>NSMicrophoneUsageDescription</key>
