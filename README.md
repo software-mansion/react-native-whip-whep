@@ -1,3 +1,5 @@
+<img src="./.github/images/whipwhep_github.png" width="100%">
+
 # WHIP/WHEP Mobile Client
 
 Monorepo containing mobile SDKs for WHIP/WHEP client
