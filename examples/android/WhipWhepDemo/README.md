@@ -1,3 +1,6 @@
+![WhipWhep logo](./../../../.github/images/main_dark.png#gh-dark-mode-only)
+![WhipWhep logo](./../../../.github/images/main_ligth.png#gh-light-mode-only)
+
 # WhipWhepDemo
 
 A simple example app showing the main functionalities of the WHIP/WHEP package. It consists of a view that, depending of whether WHIP or WHEP has been chosen, shows a camera preview or current media stream.

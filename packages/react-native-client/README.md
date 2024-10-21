@@ -1,3 +1,5 @@
+<img src="../../.github/images/whipwhep_github.png" width="100%">
+
 # react-native-whip-whep
 
 An implementation of WHIP and WHEP protocols for React Native. Provides basic methods for establishing a connection in order to stream or receive media.
@@ -85,7 +87,7 @@ Modify `AndroidManifest.xml` file to request necessary permissions:
 
 Add the following lines to `info.plist`:
 
-```plist
+```xml
 <key>NSCameraUsageDescription</key>
 <string>This application requires camera access to gather information about available video devices.</string>
 <key>NSMicrophoneUsageDescription</key>

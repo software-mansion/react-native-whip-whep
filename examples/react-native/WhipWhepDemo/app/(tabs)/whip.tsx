@@ -9,10 +9,13 @@ import {
   WhipClientView,
 } from 'react-native-whip-whep';
 import { checkPermissions } from '@/utils/CheckPermissions';
+import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
+
+  const { tint } = useThemeColor();
 
   const handleStreamBtnClick = async () => {
     setShouldShowStreamBtn(false);
@@ -49,9 +52,9 @@ export default function HomeScreen() {
       <View style={styles.box}>
         <WhipClientView style={styles.clientView} />
         {shouldShowStreamBtn && (
-          <Button title="Stream" onPress={handleStreamBtnClick} />
+          <Button title="Stream" onPress={handleStreamBtnClick} color={tint} />
         )}
-        {isLoading && <ActivityIndicator size="large" color="#2196F3" />}
+        {isLoading && <ActivityIndicator size="large" color={tint} />}
       </View>
     </View>
   );

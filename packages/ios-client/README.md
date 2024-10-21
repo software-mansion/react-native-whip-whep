@@ -1,3 +1,5 @@
+<img src="../../.github/images/whipwhep_github.png" width="100%">
+
 # WHIP/WHEP ios-client
 
 An implementation of WHIP and WHEP protocols for iOS. Provides basic methods for establishing a connection in order to stream or receive media.
