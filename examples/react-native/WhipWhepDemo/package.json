@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@expo/config-plugins": "^8.0.8",
-    "@expo/vector-icons": "^14.0.2",
+    "@expo/vector-icons": "^14.0.4",
     "@react-navigation/native": "^6.0.2",
     "expo": "~51.0.28",
     "expo-build-properties": "~0.12.5",
