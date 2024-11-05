@@ -7295,7 +7295,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-splash-screen@npm:0.27.5, expo-splash-screen@npm:~0.27.5":
+"expo-splash-screen@npm:0.27.5":
   version: 0.27.5
   resolution: "expo-splash-screen@npm:0.27.5"
   dependencies:
@@ -7303,6 +7303,17 @@ __metadata:
   peerDependencies:
     expo: "*"
   checksum: 10c0/25ec881ca5cc15154c56320a094e885c90806faca5bad069550159681296c3d3fa2b405140a843b735bdd9a32628fb6d818dc6f5233f35f0bbb549682b4cc6a6
+  languageName: node
+  linkType: hard
+
+"expo-splash-screen@npm:~0.27.6":
+  version: 0.27.6
+  resolution: "expo-splash-screen@npm:0.27.6"
+  dependencies:
+    "@expo/prebuild-config": "npm:7.0.8"
+  peerDependencies:
+    expo: "*"
+  checksum: 10c0/9cb8a7a04c2fd95dcc84800f63a0abece5d659ab70a961debb51ca9fd63cf582c15d33ac2fa421d31a4d7bd9f04d9a232d2a03e044bcf2105e18b8da84e59f10
   languageName: node
   linkType: hard
 
@@ -14556,7 +14567,7 @@ __metadata:
     expo-font: "npm:~12.0.9"
     expo-linking: "npm:~6.3.1"
     expo-router: "npm:~3.5.23"
-    expo-splash-screen: "npm:~0.27.5"
+    expo-splash-screen: "npm:~0.27.6"
     expo-status-bar: "npm:~1.12.1"
     expo-system-ui: "npm:~3.0.7"
     expo-web-browser: "npm:~13.0.3"
