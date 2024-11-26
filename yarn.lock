@@ -3333,6 +3333,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@react-native/normalize-colors@npm:0.76.3":
+  version: 0.76.3
+  resolution: "@react-native/normalize-colors@npm:0.76.3"
+  checksum: 10c0/9b7eca7e7219e0f458822dc622ddd64b475f99c808aa49d5bd926a6971974a86999193d227c1de06e6eb83234324dde524642a3fd96d912607bacfc5c16867c2
+  languageName: node
+  linkType: hard
+
 "@react-native/virtualized-lists@npm:0.74.87":
   version: 0.74.87
   resolution: "@react-native/virtualized-lists@npm:0.74.87"
@@ -7313,15 +7320,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-system-ui@npm:~3.0.7":
-  version: 3.0.7
-  resolution: "expo-system-ui@npm:3.0.7"
+"expo-system-ui@npm:~4.0.4":
+  version: 4.0.4
+  resolution: "expo-system-ui@npm:4.0.4"
   dependencies:
-    "@react-native/normalize-colors": "npm:0.74.85"
+    "@react-native/normalize-colors": "npm:0.76.3"
     debug: "npm:^4.3.2"
   peerDependencies:
     expo: "*"
-  checksum: 10c0/f0aa251852319d3b8942ef8b01a661f2fa6b21892b2d95a5025231e1c545d419aa46fff8e25f08a2e659a130557810ea28bfff0730129cb307394c80860a9482
+    react-native: "*"
+    react-native-web: "*"
+  peerDependenciesMeta:
+    react-native-web:
+      optional: true
+  checksum: 10c0/66ad09d78e7eacba86ce737c4b855e5457b0dfee60bff660220d65c1f870e42749fb7bcf4037df662f83a75560f3f3303da7c59603af441a4d31ff9495baae28
   languageName: node
   linkType: hard
 
@@ -14558,7 +14570,7 @@ __metadata:
     expo-router: "npm:~3.5.23"
     expo-splash-screen: "npm:~0.27.5"
     expo-status-bar: "npm:~1.12.1"
-    expo-system-ui: "npm:~3.0.7"
+    expo-system-ui: "npm:~4.0.4"
     expo-web-browser: "npm:~13.0.3"
     jest: "npm:^29.2.1"
     jest-expo: "npm:~51.0.3"
