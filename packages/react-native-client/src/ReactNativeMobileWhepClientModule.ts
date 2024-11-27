@@ -1,9 +1,5 @@
-import {
-  EventEmitter,
-  requireNativeModule,
-  Subscription,
-} from "expo-modules-core";
-import { NativeModule } from "react-native";
+import { EventSubscription, requireNativeModule } from "expo-modules-core";
+import type { NativeModule } from "expo-modules-core/types";
 
 import { ConfigurationOptions } from "./ReactNativeMobileWhepClient.types";
 
@@ -46,12 +42,13 @@ type RNMobileWhepClientModule = {
   cameras: readonly Camera[];
 };
 
-const nativeModule: RNMobileWhepClientModule & NativeModule =
-  requireNativeModule("ReactNativeMobileWhepClient");
-export const eventEmitter = new EventEmitter(nativeModule);
+const nativeModule: RNMobileWhepClientModule &
+  NativeModule<Record<string, <T>(...args: T[]) => void>> = requireNativeModule(
+  "ReactNativeMobileWhepClient",
+);
 
-export function addTrackListener(listener: (event) => void): Subscription {
-  return eventEmitter.addListener("trackAdded", listener);
+export function addTrackListener(listener: (event) => void): EventSubscription {
+  return nativeModule.addListener("trackAdded", listener);
 }
 
 /** Creates a WHEP client based on the provided server URL and optional additional `configurationOptions`.
