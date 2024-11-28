@@ -33,9 +33,9 @@
     },
     "plugins": [
       "expo-router",
-      "./withLocalPathsForNativePackages",
       "expo-build-properties",
-      "expo-font"
+      "expo-font",
+      "./withLocalPathsForNativePackages"
     ],
     "experiments": {
       "typedRoutes": true
