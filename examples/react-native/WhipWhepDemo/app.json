@@ -35,7 +35,7 @@
       "expo-router",
       "expo-build-properties",
       "expo-font",
-      "./withLocalPathsForNativePackages"
+      "./withLocalPathsForNativePackages" // Only relevant for local development of packages/ios-client and packages/android-client
     ],
     "experiments": {
       "typedRoutes": true
