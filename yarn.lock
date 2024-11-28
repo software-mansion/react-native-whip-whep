@@ -2556,7 +2556,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/vector-icons@npm:^14.0.4":
+"@expo/vector-icons@npm:~14.0.4":
   version: 14.0.4
   resolution: "@expo/vector-icons@npm:14.0.4"
   dependencies:
@@ -3334,7 +3334,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-navigation/native@npm:^7.0.0":
+"@react-navigation/native@npm:^7.0.0, @react-navigation/native@npm:~7.0.0":
   version: 7.0.8
   resolution: "@react-navigation/native@npm:7.0.8"
   dependencies:
@@ -7195,7 +7195,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo@npm:^52.0.11":
+"expo@npm:~52.0.11":
   version: 52.0.11
   resolution: "expo@npm:52.0.11"
   dependencies:
@@ -14200,12 +14200,12 @@ __metadata:
   dependencies:
     "@babel/core": "npm:^7.26.0"
     "@expo/config-plugins": "npm:~9.0.0"
-    "@expo/vector-icons": "npm:^14.0.4"
-    "@react-navigation/native": "npm:^7.0.0"
+    "@expo/vector-icons": "npm:~14.0.4"
+    "@react-navigation/native": "npm:~7.0.0"
     "@types/jest": "npm:^29.5.14"
     "@types/react": "npm:~18.3.12"
     "@types/react-test-renderer": "npm:^18.0.7"
-    expo: "npm:^52.0.11"
+    expo: "npm:~52.0.11"
     expo-build-properties: "npm:~0.13.1"
     expo-constants: "npm:~17.0.3"
     expo-font: "npm:~13.0.1"
