@@ -33,8 +33,6 @@
     },
     "plugins": [
       "expo-router",
-      "expo-build-properties",
-      "expo-font",
       "./withLocalPathsForNativePackages" // Only relevant for local development of packages/ios-client and packages/android-client
     ],
     "experiments": {

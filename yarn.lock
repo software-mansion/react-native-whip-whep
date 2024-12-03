@@ -4455,7 +4455,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:^8.0.0, ajv@npm:^8.11.0, ajv@npm:^8.9.0":
+"ajv@npm:^8.0.0, ajv@npm:^8.9.0":
   version: 8.17.1
   resolution: "ajv@npm:8.17.1"
   dependencies:
@@ -6980,18 +6980,6 @@ __metadata:
     react: "*"
     react-native: "*"
   checksum: 10c0/62a3541481e73ee815c7572ebde4397ee5f6d92fe74da22857d7cc0731caf7da270b5a2fada01d60a726c4e8dd8ad1554d070bfe576b64213957a0af41f289e0
-  languageName: node
-  linkType: hard
-
-"expo-build-properties@npm:~0.13.1":
-  version: 0.13.1
-  resolution: "expo-build-properties@npm:0.13.1"
-  dependencies:
-    ajv: "npm:^8.11.0"
-    semver: "npm:^7.6.0"
-  peerDependencies:
-    expo: "*"
-  checksum: 10c0/b565f6f995371ce0be526dcab45dba504f82934d8fffdf38ce2f46d1e7497e25df80d38e0fa4e4e7203a6d557bc4190a840e9eb8c94a5c205b0285777945c8fd
   languageName: node
   linkType: hard
 
@@ -14206,7 +14194,6 @@ __metadata:
     "@types/react": "npm:~18.3.12"
     "@types/react-test-renderer": "npm:^18.0.7"
     expo: "npm:~52.0.11"
-    expo-build-properties: "npm:~0.13.1"
     expo-constants: "npm:~17.0.3"
     expo-font: "npm:~13.0.1"
     expo-linking: "npm:~7.0.3"
