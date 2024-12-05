@@ -25,7 +25,7 @@ export default function TabLayout() {
               color={color}
             />
           ),
-          unmountOnBlur: true,
+          freezeOnBlur: true,
         }}
       />
       <Tabs.Screen
@@ -38,7 +38,7 @@ export default function TabLayout() {
               color={color}
             />
           ),
-          unmountOnBlur: true,
+          freezeOnBlur: true,
         }}
       />
       <Tabs.Screen
@@ -51,7 +51,7 @@ export default function TabLayout() {
               color={color}
             />
           ),
-          unmountOnBlur: true,
+          freezeOnBlur: true,
         }}
       />
     </Tabs>

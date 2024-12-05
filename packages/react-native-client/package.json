@@ -37,9 +37,8 @@
   "license": "MIT",
   "homepage": "https://github.com/software-mansion/react-native-whip-whep",
   "devDependencies": {
-    "@types/react": "~18.2.45",
-    "expo-module-scripts": "^3.5.2",
-    "expo-modules-core": "^1.12.26",
+    "@types/react": "~18.3.12",
+    "expo-module-scripts": "~4.0.2",
     "typedoc": "^0.26.11",
     "typescript": "^5.6.3"
   },
