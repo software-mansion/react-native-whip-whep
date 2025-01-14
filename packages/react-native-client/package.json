@@ -38,9 +38,9 @@
   "homepage": "https://github.com/software-mansion/react-native-whip-whep",
   "devDependencies": {
     "@types/react": "~18.3.12",
-    "expo-module-scripts": "~4.0.2",
+    "expo-module-scripts": "~4.0.3",
     "typedoc": "^0.27.6",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.3"
   },
   "peerDependencies": {
     "expo": "*",
