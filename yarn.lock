@@ -7084,18 +7084,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-font@npm:~13.0.1":
-  version: 13.0.1
-  resolution: "expo-font@npm:13.0.1"
-  dependencies:
-    fontfaceobserver: "npm:^2.1.0"
-  peerDependencies:
-    expo: "*"
-    react: "*"
-  checksum: 10c0/f53737b8a44db9778e03b99f0ad5dd218a1692a78f856bee6cc31c0b960372735ffad05bb7e30d54ec6db17a7cfad83f315a6c90f50ae063f84b15b075943255
-  languageName: node
-  linkType: hard
-
 "expo-font@npm:~13.0.3":
   version: 13.0.3
   resolution: "expo-font@npm:13.0.3"
@@ -13999,7 +13987,7 @@ __metadata:
     "@types/react-test-renderer": "npm:^18.0.7"
     expo: "npm:~52.0.27"
     expo-constants: "npm:~17.0.4"
-    expo-font: "npm:~13.0.1"
+    expo-font: "npm:~13.0.3"
     expo-linking: "npm:~7.0.5"
     expo-router: "npm:~4.0.11"
     expo-splash-screen: "npm:~0.29.21"
