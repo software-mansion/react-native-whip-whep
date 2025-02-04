@@ -14143,7 +14143,7 @@ __metadata:
     "@types/react": "npm:~18.3.12"
     "@types/react-test-renderer": "npm:^18.0.7"
     expo: "npm:~52.0.27"
-    expo-constants: "npm:~17.0.4"
+    expo-constants: "npm:~17.0.5"
     expo-font: "npm:~13.0.3"
     expo-linking: "npm:~7.0.5"
     expo-router: "npm:~4.0.17"
