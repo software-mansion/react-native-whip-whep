@@ -2391,10 +2391,39 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@expo/config-plugins@npm:~9.0.15":
+  version: 9.0.15
+  resolution: "@expo/config-plugins@npm:9.0.15"
+  dependencies:
+    "@expo/config-types": "npm:^52.0.4"
+    "@expo/json-file": "npm:~9.0.1"
+    "@expo/plist": "npm:^0.2.1"
+    "@expo/sdk-runtime-versions": "npm:^1.0.0"
+    chalk: "npm:^4.1.2"
+    debug: "npm:^4.3.5"
+    getenv: "npm:^1.0.0"
+    glob: "npm:^10.4.2"
+    resolve-from: "npm:^5.0.0"
+    semver: "npm:^7.5.4"
+    slash: "npm:^3.0.0"
+    slugify: "npm:^1.6.6"
+    xcode: "npm:^3.0.1"
+    xml2js: "npm:0.6.0"
+  checksum: 10c0/d32c6276be723e9428c71b2b48cf829d66627becb54bbc27996d845d956ccf0edaf5aab08152baf361acf3a6ba41316cb2ad7bc9bf8802a13316c969e7c5ff16
+  languageName: node
+  linkType: hard
+
 "@expo/config-types@npm:^52.0.3":
   version: 52.0.3
   resolution: "@expo/config-types@npm:52.0.3"
   checksum: 10c0/babf090f791594232b10dbcedaa43c2705167b03b5681ecc21bab53a181950d22eb05939e3fea079eeef5111e641ee28d74b580b6503057a6ba7b5673d3594c6
+  languageName: node
+  linkType: hard
+
+"@expo/config-types@npm:^52.0.4":
+  version: 52.0.4
+  resolution: "@expo/config-types@npm:52.0.4"
+  checksum: 10c0/45d0895b87c0a6d88bb41079b2fcb9a58768b0fe11972589077bbbb6d8cd344166bfcbcae7a62c35ed7cb30bc19f64a4029cacb745fca4e204a62e754cc7d54c
   languageName: node
   linkType: hard
 
@@ -14124,7 +14153,7 @@ __metadata:
   resolution: "whipwhepdemo@workspace:examples/react-native/WhipWhepDemo"
   dependencies:
     "@babel/core": "npm:^7.26.7"
-    "@expo/config-plugins": "npm:~9.0.14"
+    "@expo/config-plugins": "npm:~9.0.15"
     "@expo/vector-icons": "npm:~14.0.4"
     "@react-navigation/native": "npm:~7.0.0"
     "@types/jest": "npm:^29.5.14"
