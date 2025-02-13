@@ -6,11 +6,11 @@ jobs:
     runs-on: macos-14
     steps:
       - name: checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Use Node.js 18
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
-          node-version: 18.12.0
+          node-version: 22.x
           cache: "yarn"
       - name: Install deps
         run: brew install swift-format xcbeautify ktlint
