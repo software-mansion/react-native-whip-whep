@@ -9,7 +9,7 @@ jobs:
   ios_build_and_lint:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Install deps 📡
         run: brew install swift-format xcbeautify
