@@ -18,7 +18,7 @@
     "@expo/config-plugins": "~9.0.15",
     "@expo/vector-icons": "~14.0.4",
     "@react-navigation/native": "~7.0.0",
-    "expo": "~52.0.35",
+    "expo": "~52.0.37",
     "expo-constants": "~17.0.7",
     "expo-font": "~13.0.3",
     "expo-linking": "~7.0.5",
