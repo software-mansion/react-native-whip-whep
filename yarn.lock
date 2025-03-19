@@ -2445,28 +2445,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@expo/config-plugins@npm:~9.0.16":
-  version: 9.0.16
-  resolution: "@expo/config-plugins@npm:9.0.16"
-  dependencies:
-    "@expo/config-types": "npm:^52.0.5"
-    "@expo/json-file": "npm:~9.0.2"
-    "@expo/plist": "npm:^0.2.2"
-    "@expo/sdk-runtime-versions": "npm:^1.0.0"
-    chalk: "npm:^4.1.2"
-    debug: "npm:^4.3.5"
-    getenv: "npm:^1.0.0"
-    glob: "npm:^10.4.2"
-    resolve-from: "npm:^5.0.0"
-    semver: "npm:^7.5.4"
-    slash: "npm:^3.0.0"
-    slugify: "npm:^1.6.6"
-    xcode: "npm:^3.0.1"
-    xml2js: "npm:0.6.0"
-  checksum: 10c0/fd73e0333e377072a84916607365c160cb11ee411c0ec7ecc30e68ca262280190f637e3881806dc7e65fd43384e8d24a9e82dbf22a7a9db7549b50e6c34e3067
-  languageName: node
-  linkType: hard
-
 "@expo/config-plugins@npm:~9.0.17":
   version: 9.0.17
   resolution: "@expo/config-plugins@npm:9.0.17"
@@ -14207,7 +14185,7 @@ __metadata:
   resolution: "whipwhepdemo@workspace:examples/react-native/WhipWhepDemo"
   dependencies:
     "@babel/core": "npm:^7.26.10"
-    "@expo/config-plugins": "npm:~9.0.16"
+    "@expo/config-plugins": "npm:~9.0.17"
     "@expo/vector-icons": "npm:~14.0.4"
     "@react-navigation/native": "npm:~7.0.0"
     "@types/jest": "npm:^29.5.14"
