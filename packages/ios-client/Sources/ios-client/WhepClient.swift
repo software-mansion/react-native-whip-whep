@@ -6,10 +6,10 @@ public class WhepClient: ClientBase & Connectable {
 
     /**
     Initializes a `WhepClient` object.
-
+    
     - Parameter serverUrl: A URL of the WHEP server.
     - Parameter configurationOptions: Additional configuration options, such as a STUN server URL or authorization token.
-
+    
     - Returns: A `WhepClient` object.
     */
     override public init(serverUrl: URL, configurationOptions: ConfigurationOptions? = nil) {
@@ -19,7 +19,7 @@ public class WhepClient: ClientBase & Connectable {
 
     /**
     Connects the client to the WHEP server using WebRTC Peer Connection.
-
+    
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
         of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
      */
@@ -74,7 +74,7 @@ public class WhepClient: ClientBase & Connectable {
 
     /**
     Closes the established Peer Connection.
-
+    
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
     of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */

@@ -114,14 +114,14 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
 
     /**
     Sends an SDP offer to the WHIP/WHEP server.
-
+    
     - Parameter sdpOffer: The offer to send to the server.
-
+    
     - Throws: `AttributeNotFoundError.ResponseNotFound` if there is no response to the offer or
      `AttributeNotFoundError.LocationNotFound` if the response does not contain the location parameter or
      `SessionNetworkError.ConnectionError` if the  connection could not be established or the response code is incorrect,
       for example due to server being down, wrong server URL or token.
-
+    
     - Returns: A SDP response.
     */
     func sendSdpOffer(sdpOffer: String) async throws -> String {
@@ -169,9 +169,9 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
 
     /**
     Sends an ICE candidate to WHIP/WHEP server in order to provide a streaming device.
-
+    
     - Parameter candidate: Represents a single ICE candidate.
-
+    
     - Throws: `AttributeNotFoundError.PatchEndpointNotFound` if the patch endpoint has not been properly set up,
       `AttributeNotFoundError.UFragNotFound` if the SDP of the candidate does not contain the ufrag,
       `SessionNetworkError.CandidateSendingError` if the candidate could not be sent and
