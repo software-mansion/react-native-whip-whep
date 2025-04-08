@@ -24,11 +24,11 @@ public class WhipClient: ClientBase & Connectable {
 
     /**
     Initializes a `WhipClient` object.
-
+    
     - Parameter serverUrl: A URL of the WHIP server.
     - Parameter configurationOptions: Additional configuration options, such as a STUN server URL or authorization token.
     - Parameter videoDevice: A device that will be used to stream video.
-
+    
     - Returns: A `WhipClient` object.
     */
     public init(
@@ -42,7 +42,7 @@ public class WhipClient: ClientBase & Connectable {
 
     /**
     Connects the client to the WHIP server using WebRTC Peer Connection.
-
+    
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
         of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
@@ -69,7 +69,7 @@ public class WhipClient: ClientBase & Connectable {
 
     /**
     Closes the established Peer Connection.
-
+    
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
     of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
@@ -87,7 +87,7 @@ public class WhipClient: ClientBase & Connectable {
 
     /**
     Gets the video and audio devices, prepares them, starts capture and adds it to the Peer Connection.
-
+    
     - Throws: `AVCaptureDeviceError.VideoDeviceNotAvailable` if there is no video device available.
     */
     private func setUpVideoAndAudioDevices() throws {
