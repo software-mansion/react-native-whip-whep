@@ -7515,9 +7515,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-router@npm:~4.0.19":
-  version: 4.0.19
-  resolution: "expo-router@npm:4.0.19"
+"expo-router@npm:~4.0.20":
+  version: 4.0.20
+  resolution: "expo-router@npm:4.0.20"
   dependencies:
     "@expo/metro-runtime": "npm:4.0.1"
     "@expo/server": "npm:^0.5.3"
@@ -7547,7 +7547,7 @@ __metadata:
       optional: true
     react-native-reanimated:
       optional: true
-  checksum: 10c0/34e4832ea725d3bd85ee046fed0fc44ea3328051ef337a7abc5189c783890058e5a96983e720a7036e5a9933385794d6c95848e7d9bd0dffe903214023e658bd
+  checksum: 10c0/76187e9870015777606742933346eb39ce9c3c45e2d850157954d3ddfac8bbb88c3afc10c33665510709d9ac70f646f7cffd86c09010b2043c60c557b87f34e7
   languageName: node
   linkType: hard
 
@@ -14310,7 +14310,7 @@ __metadata:
     expo-constants: "npm:~17.0.8"
     expo-font: "npm:~13.0.4"
     expo-linking: "npm:~7.0.5"
-    expo-router: "npm:~4.0.19"
+    expo-router: "npm:~4.0.20"
     expo-splash-screen: "npm:~0.29.22"
     expo-status-bar: "npm:~2.0.1"
     expo-system-ui: "npm:~4.0.9"
