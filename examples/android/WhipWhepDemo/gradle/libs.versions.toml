@@ -1,6 +1,6 @@
 [versions]
 agp = "8.5.0"
-webrtc = "125.6422.03"
+webrtc = "125.6422.06"
 kotlin = "1.9.0"
 coreKtx = "1.13.1"
 junit = "4.13.2"
