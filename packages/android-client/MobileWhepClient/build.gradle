@@ -75,6 +75,6 @@ dependencies {
   debugImplementation "androidx.compose.ui:ui-tooling:1.1.0"
   debugImplementation "androidx.compose.ui:ui-test-manifest:1.1.0"
 
-  api "io.github.webrtc-sdk:android:125.6422.03"
+  api "io.github.webrtc-sdk:android:125.6422.06"
   implementation "com.squareup.okhttp3:okhttp:4.12.0"
 }

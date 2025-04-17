@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'MobileWhipWhepClient'
-  s.version          = '0.1.6'
+  s.version          = '0.1.7'
   s.summary          = 'WHIP/WHEP SDK for iOS.'
 
   s.author           = { 'Software Mansion' => 'https://swmansion.com' }
@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.source           = { :git => 'https://github.com/software-mansion/react-native-whip-whep.git', :tag => s.version.to_s }
   s.pod_target_xcconfig = { 'ENABLE_BITCODE' => 'NO' }
 
-  s.dependency 'WebRTC-SDK', '=125.6422.03'
+  s.dependency 'WebRTC-SDK', '=125.6422.06'
   s.dependency 'SwiftLogJellyfish', '1.5.2'
 
 end
