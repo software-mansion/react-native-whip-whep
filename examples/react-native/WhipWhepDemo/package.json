@@ -31,7 +31,7 @@
     "react-dom": "18.3.1",
     "react-native": "0.76.3",
     "react-native-gesture-handler": "~2.25.0",
-    "react-native-reanimated": "~3.17.3",
+    "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.10.0",
     "react-native-web": "~0.20.0",
