@@ -1,7 +1,10 @@
 package com.mobilewhep.client
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
+import androidx.core.content.ContextCompat
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraEnumerationAndroid
@@ -139,6 +142,9 @@ class WhipClient(
     peerConnection.enforceSendOnlyDirection()
   }
 
+  private val REQUIRED_PERMISSIONS =
+    arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
+
   /**
    * Connects the client to the WHIP server using WebRTC Peer Connection.
    *
@@ -148,6 +154,12 @@ class WhipClient(
    *
    */
   suspend fun connect() {
+    if (!hasPermissions(appContext, REQUIRED_PERMISSIONS)) {
+      throw PermissionError.PermissionsNotGrantedError(
+        "Permissions for camera and audio recording have not been granted. Please check your application settings."
+      )
+    }
+
     val constraints = MediaConstraints()
     val sdpOffer = peerConnection.createOffer(constraints).getOrThrow()
     peerConnection.setLocalDescription(sdpOffer).getOrThrow()
@@ -208,6 +220,22 @@ class WhipClient(
       )
 
     return size
+  }
+
+  private fun hasPermissions(
+    context: Context,
+    permissions: Array<String>
+  ): Boolean {
+    for (permission in permissions) {
+      if (ContextCompat.checkSelfPermission(
+          context,
+          permission
+        ) != PackageManager.PERMISSION_GRANTED
+      ) {
+        return false
+      }
+    }
+    return true
   }
 
   companion object {
