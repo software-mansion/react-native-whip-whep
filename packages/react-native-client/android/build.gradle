@@ -3,7 +3,6 @@ apply plugin: 'com.android.library'
 def packageVersion = '0.1.7'
 
 group = 'com.swmansion.reactnativeclient'
-version = "${packageVersion}"
 
 def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
 apply from: expoModulesCorePlugin
@@ -50,7 +49,7 @@ dependencies {
     implementation project(':android-client')
   } else {
 //   todo when released, changed repo name etc then update
-    implementation 'com.github.software-mansion:react-native-whip-whep:${packageVersion}'
+    implementation "com.github.software-mansion:react-native-whip-whep:${packageVersion}"
   }
   implementation 'androidx.appcompat:appcompat:1.6.1'
 }
