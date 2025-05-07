@@ -8,6 +8,9 @@ public class ReactNativeMobileWhepClientViewModule: Module {
             Prop("playerType") { (view: ReactNativeMobileWhepClientView, playerType: String) in
                 view.playerType = playerType
             }
+            Prop("orientation") { (view: ReactNativeMobileWhepClientView, orientation: String) in
+                view.orientation = Orientation(rawValue: orientation) ?? .portrait
+            }
         }
     }
 }

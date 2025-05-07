@@ -26,6 +26,11 @@ export type ReactNativeMobileWhepClientViewProps = {
   ref: React.ForwardedRef<
     React.ComponentType<ReactNativeMobileWhepClientViewProps>
   >;
+  /**
+   * Used to set the orientation of the video.
+   * Defaults to "portrait".
+   */
+  orientation?: "landscape" | "portrait";
 };
 
 /** Internal enum telling native views whether the stream will come from the server or device camera*/
