@@ -12,6 +12,10 @@ class ReactNativeMobileWhepClientViewModule : Module() {
         Prop("playerType") { view: ReactNativeMobileWhepClientView, playerType: String ->
           view.init(playerType)
         }
+
+        Prop("orientation") { view: ReactNativeMobileWhepClientView, orientation: String ->
+          view.setOrientation(if (orientation.lowercase() == "landscape") Orientation.LANDSCAPE else Orientation.PORTRAIT)
+        }
       }
     }
 }

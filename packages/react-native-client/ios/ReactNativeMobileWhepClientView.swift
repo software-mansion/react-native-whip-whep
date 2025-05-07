@@ -4,12 +4,17 @@ import Foundation
 import ExpoModulesCore
 import MobileWhipWhepClient
 
+public enum Orientation: String {
+    case portrait
+    case landscape
+}
+
 protocol OnTrackUpdateListener {
     func onTrackUpdate()
 }
 
 @objc(ReactNativeMobileWhepClientView)
-public class ReactNativeMobileWhepClientView: UIView, OnTrackUpdateListener {
+public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
     func onTrackUpdate() {
         setupPlayer()
     }
@@ -19,25 +24,28 @@ public class ReactNativeMobileWhepClientView: UIView, OnTrackUpdateListener {
             setupPlayer()
         }
     }
-    
+  
+    public var orientation = Orientation.portrait {
+        didSet {
+            updateOrientation()
+        }
+    }
+      
     private var player: ClientBase?
     private var hostingController: UIHostingController<VideoView>?
 
-    override public init(frame: CGRect) {
-        super.init(frame: frame)
+    required init(appContext: AppContext? = nil) {
+        super.init(appContext: appContext)
         ReactNativeMobileWhepClientModule.onTrackUpdateListeners = []
         ReactNativeMobileWhepClientModule.onTrackUpdateListeners.append(self)
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-    }
-
     private func setupPlayer() {
+        removeOldPlayer()
         guard let playerType = self.playerType else { return }
-        if(playerType == "WHIP"){
+        if (playerType == "WHIP"){
             self.player = ReactNativeMobileWhepClientModule.whipClient
-        }else{
+        } else{
             self.player = ReactNativeMobileWhepClientModule.whepClient
         }
         
@@ -55,5 +63,22 @@ public class ReactNativeMobileWhepClientView: UIView, OnTrackUpdateListener {
         ])
         
         self.hostingController = hostingController
+        updateOrientation()
     }
-}
+    
+    private func removeOldPlayer() {
+        hostingController?.view.removeFromSuperview()
+    }
+  
+    private func updateOrientation() {
+      guard let hostingController = hostingController else { return }
+      
+      if self.orientation == .landscape {
+        hostingController.view.transform = CGAffineTransform(rotationAngle: .pi / 2)
+        hostingController.view.frame = self.bounds
+      } else {
+        hostingController.view.transform = .identity
+        hostingController.view.frame = self.bounds
+      }
+    }
+  }

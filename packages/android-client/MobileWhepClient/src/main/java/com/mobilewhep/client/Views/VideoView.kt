@@ -38,6 +38,9 @@ class VideoView :
   ClientBaseListener {
   var player: ClientBase? = null
     set(newPlayer) {
+      if (field != null) {
+        release()
+      }
       newPlayer?.addTrackListener(this)
       newPlayer?.videoTrack?.addSink(this)
       field = newPlayer

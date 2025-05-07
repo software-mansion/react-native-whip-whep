@@ -12,6 +12,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.webrtc.VideoTrack
 
+enum class Orientation {
+    PORTRAIT,
+    LANDSCAPE
+}
+
 class ReactNativeMobileWhepClientView(
   context: Context,
   appContext: AppContext,
@@ -19,6 +24,7 @@ class ReactNativeMobileWhepClientView(
   ReactNativeMobileWhepClientModule.OnTrackUpdateListener {
   private val videoView: VideoView
   private var playerType: String = "WHEP"
+  private var orientation: Orientation = Orientation.PORTRAIT
 
   init {
     ReactNativeMobileWhepClientModule.onTrackUpdateListeners.add(this)
@@ -32,6 +38,11 @@ class ReactNativeMobileWhepClientView(
 
   fun init(playerType: String) {
     this.playerType = playerType
+  }
+
+  fun setOrientation(orientation: Orientation) {
+    this.orientation = orientation
+    updateOrientation()
   }
 
   private fun setupTrack(videoTrack: VideoTrack) {
@@ -57,5 +68,15 @@ class ReactNativeMobileWhepClientView(
 
   override fun onTrackUpdate(track: VideoTrack) {
     update(track)
+  }
+
+  private fun updateOrientation() {
+    videoView.post {
+      val rotation = when (orientation) {
+        Orientation.PORTRAIT -> 0f
+        Orientation.LANDSCAPE -> 90f
+      }
+      videoView.rotation = rotation
+    }
   }
 }
