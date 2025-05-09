@@ -1,6 +1,6 @@
 apply plugin: 'com.android.library'
 
-def packageVersion = '0.1.10'
+def packageVersion = '0.1.11'
 
 group = 'com.swmansion.reactnativeclient'
 
@@ -36,7 +36,7 @@ android {
   namespace "com.swmansion.reactnativeclient"
   defaultConfig {
     versionCode 1
-    versionName "0.1.10"
+    versionName "0.1.11"
   }
   lintOptions {
     abortOnError false
