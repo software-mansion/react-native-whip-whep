@@ -1,6 +1,7 @@
 package com.swmansion.reactnativeclient
 
 import android.content.Context
+import com.mobilewhep.client.VideoView
 import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whepClient
 import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whipClient
 import expo.modules.kotlin.AppContext
