@@ -3,13 +3,18 @@ import SwiftUI
 import UIKit
 import WebRTC
 
+public enum Orientation: String {
+    case portrait
+    case landscape
+}
+
 public struct VideoView: UIViewRepresentable {
     public var player: ClientBase
 
     public init(player: ClientBase) {
         self.player = player
     }
-
+    
     public func makeUIView(context: Context) -> RTCMTLVideoView {
         let view = RTCMTLVideoView(frame: .zero)
         view.videoContentMode = .scaleAspectFit
@@ -24,7 +29,6 @@ public struct VideoView: UIViewRepresentable {
                 track.add(uiView)
             }
         }
-
     }
 
     public static func dismantleUIView(_ uiView: RTCMTLVideoView, coordinator: Coordinator) {
@@ -78,6 +82,12 @@ public class VideoViewController: UIViewController {
         videoView.videoContentMode = .scaleAspectFit
         return videoView
     }()
+    
+    public var orientation = Orientation.portrait {
+        didSet {
+            videoView.rotationOverride = getRTCVideoRotation(for: orientation).nsNumber
+        }
+    }
 
     public init(player: ClientBase) {
         self.player = player
@@ -90,6 +100,7 @@ public class VideoViewController: UIViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
+        videoView.rotationOverride = getRTCVideoRotation(for: orientation).nsNumber
         view.addSubview(videoView)
         videoView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -113,6 +124,17 @@ public class VideoViewController: UIViewController {
             track.remove(videoView)
         }
     }
+    
+    private func getRTCVideoRotation(for orientation: Orientation) -> RTCVideoRotation {
+        switch orientation {
+        case .portrait:
+            return RTCVideoRotation._0
+        case .landscape:
+            return RTCVideoRotation._90
+        @unknown default:
+            return RTCVideoRotation._0
+        }
+    }
 }
 
 extension VideoViewController: PlayerListener {
@@ -122,5 +144,11 @@ extension VideoViewController: PlayerListener {
 
     public func onTrackRemoved(track: RTCVideoTrack) {
         track.remove(videoView)
+    }
+}
+
+extension RTCVideoRotation {
+    var nsNumber: NSValue {
+        return NSNumber(value: rawValue)
     }
 }
