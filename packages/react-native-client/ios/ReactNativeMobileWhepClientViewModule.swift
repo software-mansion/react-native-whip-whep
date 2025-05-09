@@ -1,4 +1,5 @@
 import ExpoModulesCore
+import MobileWhipWhepClient
 
 public class ReactNativeMobileWhepClientViewModule: Module {
     public func definition() -> ModuleDefinition {

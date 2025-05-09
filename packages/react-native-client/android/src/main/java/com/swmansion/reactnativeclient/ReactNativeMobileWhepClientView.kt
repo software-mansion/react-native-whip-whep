@@ -1,8 +1,6 @@
 package com.swmansion.reactnativeclient
 
 import android.content.Context
-import android.widget.FrameLayout
-import com.mobilewhep.client.VideoView
 import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whepClient
 import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whipClient
 import expo.modules.kotlin.AppContext
@@ -10,6 +8,7 @@ import expo.modules.kotlin.views.ExpoView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import org.webrtc.VideoFrame
 import org.webrtc.VideoTrack
 
 enum class Orientation {
@@ -28,11 +27,7 @@ class ReactNativeMobileWhepClientView(
 
   init {
     ReactNativeMobileWhepClientModule.onTrackUpdateListeners.add(this)
-    videoView =
-      VideoView(context).apply {
-        layoutParams = FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, 200)
-      }
-    videoView.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT)
+    videoView = VideoView(context)
     addView(videoView)
   }
 
@@ -42,7 +37,7 @@ class ReactNativeMobileWhepClientView(
 
   fun setOrientation(orientation: Orientation) {
     this.orientation = orientation
-    updateOrientation()
+    reinitializeVideoTrackSink()
   }
 
   private fun setupTrack(videoTrack: VideoTrack) {
@@ -53,10 +48,23 @@ class ReactNativeMobileWhepClientView(
         videoView.player = whepClient
       }
 
-      videoView.player?.videoTrack?.removeSink(videoView)
       videoView.player?.videoTrack = videoTrack
+      reinitializeVideoTrackSink()
+    }
+  }
 
-      videoTrack.addSink(videoView)
+  private fun reinitializeVideoTrackSink() {
+    videoView.player?.videoTrack?.let { track ->
+      track.removeSink(videoView)
+      track.addSink {
+        val rotation = when (orientation) {
+          Orientation.PORTRAIT -> 0
+          Orientation.LANDSCAPE -> -90
+        }
+
+        videoView.onFrame(VideoFrame(it.buffer, rotation, -1))
+      }
+
     }
   }
 
@@ -68,15 +76,5 @@ class ReactNativeMobileWhepClientView(
 
   override fun onTrackUpdate(track: VideoTrack) {
     update(track)
-  }
-
-  private fun updateOrientation() {
-    videoView.post {
-      val rotation = when (orientation) {
-        Orientation.PORTRAIT -> 0f
-        Orientation.LANDSCAPE -> 90f
-      }
-      videoView.rotation = rotation
-    }
   }
 }
