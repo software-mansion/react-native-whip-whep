@@ -14,7 +14,7 @@ public struct VideoView: UIViewRepresentable {
     public init(player: ClientBase) {
         self.player = player
     }
-    
+
     public func makeUIView(context: Context) -> RTCMTLVideoView {
         let view = RTCMTLVideoView(frame: .zero)
         view.videoContentMode = .scaleAspectFit
@@ -82,7 +82,7 @@ public class VideoViewController: UIViewController {
         videoView.videoContentMode = .scaleAspectFit
         return videoView
     }()
-    
+
     public var orientation = Orientation.portrait {
         didSet {
             videoView.rotationOverride = getRTCVideoRotation(for: orientation).nsNumber
@@ -124,7 +124,7 @@ public class VideoViewController: UIViewController {
             track.remove(videoView)
         }
     }
-    
+
     private func getRTCVideoRotation(for orientation: Orientation) -> RTCVideoRotation {
         switch orientation {
         case .portrait:
