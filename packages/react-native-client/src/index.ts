@@ -23,4 +23,5 @@ export {
   Camera,
   CameraFacingDirection,
   CameraId,
+  addReconnectionListener,
 } from "./ReactNativeMobileWhepClientModule";
