@@ -58,26 +58,7 @@ export type ReceivableEventPayloads = {
 const nativeModule = requireNativeModule(
   "ReactNativeMobileWhepClient",
 ) as RNMobileWhepClientModule &
-  NativeModule<
-    Record<
-      keyof typeof ReceivableEvents,
-      (payload: ReceivableEventPayloads) => void
-    >
-  >;
-
-export function addReconnectionListener(
-  listener: (
-    event: ReceivableEventPayloads[typeof ReceivableEvents.reconnectionStatusChanged],
-  ) => void,
-): EventSubscription {
-  return nativeModule.addListener(
-    ReceivableEvents.reconnectionStatusChanged,
-    (event) => {
-      const payload = event[ReceivableEvents.reconnectionStatusChanged];
-      listener(payload);
-    },
-  );
-}
+  NativeModule<Record<keyof typeof ReceivableEvents, (payload: any) => void>>;
 
 /** Creates a WHEP client based on the provided server URL and optional additional `configurationOptions`.
  *  It is a first step before connecting to the server.
