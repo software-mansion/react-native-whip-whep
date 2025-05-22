@@ -42,14 +42,23 @@ type RNMobileWhepClientModule = {
   cameras: readonly Camera[];
 };
 
-const nativeModule: RNMobileWhepClientModule &
-  NativeModule<Record<string, <T>(...args: T[]) => void>> = requireNativeModule(
-  "ReactNativeMobileWhepClient",
-);
+export const ReceivableEvents = {
+  reconnectionStatusChanged: "reconnectionStatusChanged",
+} as const;
 
-export function addTrackListener(listener: (event) => void): EventSubscription {
-  return nativeModule.addListener("trackAdded", listener);
-}
+export type ReceivableEventPayloads = {
+  [ReceivableEvents.reconnectionStatusChanged]: {
+    status:
+      | "reconnectionStarted"
+      | "reconnected"
+      | "reconnectionRetriesLimitReached";
+  };
+};
+
+const nativeModule = requireNativeModule(
+  "ReactNativeMobileWhepClient",
+) as RNMobileWhepClientModule &
+  NativeModule<Record<keyof typeof ReceivableEvents, (payload: any) => void>>;
 
 /** Creates a WHEP client based on the provided server URL and optional additional `configurationOptions`.
  *  It is a first step before connecting to the server.

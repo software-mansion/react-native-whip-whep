@@ -2,11 +2,10 @@ import ExpoModulesCore
 import MobileWhipWhepClient
 import WebRTC
 
-public class ReactNativeMobileWhepClientModule: Module, PlayerListener {
+public class ReactNativeMobileWhepClientModule: Module, PlayerListener, ReconnectionManagerListener {
     static var whepClient: WhepClient? = nil
     static var whipClient: WhipClient? = nil
     static var onTrackUpdateListeners: [OnTrackUpdateListener] = []
-
 
     private func getVideoParametersFromOptions(createOptions: String) throws -> VideoParameters {
         let preset: VideoParameters = {
@@ -58,7 +57,7 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener {
     public func definition() -> ModuleDefinition {
         Name("ReactNativeMobileWhepClient")
 
-        Events("trackAdded")
+        Events(["trackAdded", "reconnectionStatusChanged"])
 
         Function("createWhepClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?) in
             guard let url = URL(string: serverUrl) else {
@@ -74,7 +73,7 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener {
                 videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,
                 videoParameters: try! getVideoParametersFromOptions(createOptions: configurationOptions?["videoParameters"] as? String ?? "HD43"))
 
-            ReactNativeMobileWhepClientModule.whepClient = WhepClient(serverUrl: url, configurationOptions: options)
+            ReactNativeMobileWhepClientModule.whepClient = WhepClient(serverUrl: url, configurationOptions: options, reconnectionListener: self)
             ReactNativeMobileWhepClientModule.whepClient?.delegate = self
         }
 
@@ -167,5 +166,17 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener {
     
     public func onTrackRemoved(track: RTCVideoTrack) {
         
+    }
+    
+    public func onReconnectionStarted() {
+        self.sendEvent("reconnectionStatusChanged", ["status":"reconnectionStarted"])
+    }
+    
+    public func onReconnected() {
+        self.sendEvent("reconnectionStatusChanged", ["status":"reconnected"])
+    }
+    
+    public func onReconnectionRetriesLimitReached() {
+        self.sendEvent("reconnectionStatusChanged", ["status":"reconnectionRetriesLimitReached"])
     }
 }

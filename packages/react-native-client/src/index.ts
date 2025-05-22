@@ -24,3 +24,5 @@ export {
   CameraFacingDirection,
   CameraId,
 } from "./ReactNativeMobileWhepClientModule";
+
+export { useEvent } from "./hooks/useEvent";

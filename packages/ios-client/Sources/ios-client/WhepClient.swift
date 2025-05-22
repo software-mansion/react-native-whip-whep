@@ -3,6 +3,7 @@ import os
 
 @available(macOS 12.0, *)
 public class WhepClient: ClientBase & Connectable {
+    private var reconnectionManager: ReconnectionManager?
 
     /**
     Initializes a `WhepClient` object.
@@ -12,9 +13,28 @@ public class WhepClient: ClientBase & Connectable {
     
     - Returns: A `WhepClient` object.
     */
-    override public init(serverUrl: URL, configurationOptions: ConfigurationOptions? = nil) {
+    public init(
+        serverUrl: URL, configurationOptions: ConfigurationOptions? = nil,
+        reconnectionListener: ReconnectionManagerListener
+    ) {
         super.init(serverUrl: serverUrl, configurationOptions: configurationOptions)
         setUpPeerConnection()
+
+        let config = ReconnectConfig()
+
+        self.reconnectionManager = ReconnectionManager(
+            reconnectConfig: config,
+            connect: {
+                Task { [weak self] in
+                    do {
+                        try await self?.connect()
+                    } catch {
+                        self?.logger.error("Reconnection failed: \(error)")
+                    }
+                }
+            },
+            listener: reconnectionListener
+        )
     }
 
     /**
@@ -70,6 +90,17 @@ public class WhepClient: ClientBase & Connectable {
         let remoteDescription = RTCSessionDescription(type: .answer, sdp: sdpAnswer)
 
         try await peerConnection!.setRemoteDescription(remoteDescription)
+
+        reconnectionManager?.onReconnected()
+    }
+
+    public override func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState)
+    {
+        super.peerConnection(peerConnection, didChange: newState)
+
+        if newState == .disconnected {
+            reconnectionManager?.onDisconnected()
+        }
     }
 
     /**
