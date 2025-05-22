@@ -2,15 +2,15 @@ package com.mobilewhep.client
 
 import android.content.Context
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.webrtc.AudioTrack
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
 import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 
 class WhepClient(
   appContext: Context,
@@ -21,7 +21,6 @@ class WhepClient(
     serverUrl,
     configurationOptions
   ) {
-
   private var reconnectionManager: ReconnectionManager
 
   init {
