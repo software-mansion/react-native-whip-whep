@@ -3,6 +3,7 @@ package com.swmansion.reactnativeclient
 import android.content.Context
 import com.mobilewhep.client.ClientBaseListener
 import com.mobilewhep.client.ConfigurationOptions
+import com.mobilewhep.client.ReconnectionManagerListener
 import com.mobilewhep.client.VideoParameters
 import com.mobilewhep.client.WhepClient
 import com.mobilewhep.client.WhipClient
@@ -15,7 +16,8 @@ import org.webrtc.VideoTrack
 
 class ReactNativeMobileWhepClientModule :
   Module(),
-  ClientBaseListener {
+  ClientBaseListener,
+  ReconnectionManagerListener {
   interface OnTrackUpdateListener {
     fun onTrackUpdate(track: VideoTrack)
   }
@@ -69,7 +71,7 @@ class ReactNativeMobileWhepClientModule :
     ModuleDefinition {
       Name("ReactNativeMobileWhepClient")
 
-      Events("trackAdded")
+      Events("trackAdded", "reconnectionStatusChanged")
 
       Function("createWhepClient") { serverUrl: String, configurationOptions: Map<String, Any>? ->
         val context: Context =
@@ -85,6 +87,7 @@ class ReactNativeMobileWhepClientModule :
             ),
           )
         whepClient = WhepClient(context, serverUrl, options)
+        whepClient.addReconnectionListener(this@ReactNativeMobileWhepClientModule)
         whepClient.addTrackListener(this@ReactNativeMobileWhepClientModule)
       }
 
@@ -140,5 +143,20 @@ class ReactNativeMobileWhepClientModule :
   override fun onTrackAdded(track: VideoTrack) {
     sendEvent("trackAdded", mapOf(track.id() to track.kind()))
     onTrackUpdateListeners.forEach { it.onTrackUpdate(track) }
+  }
+
+  override fun onReconnectionStarted() {
+    super.onReconnectionStarted()
+    sendEvent("reconnectionStatusChanged", mapOf("status" to "reconnectionStarted"))
+  }
+
+  override fun onReconnected() {
+    super.onReconnected()
+    sendEvent("reconnectionStatusChanged", mapOf("status" to "reconnected"))
+  }
+
+  override fun onReconnectionRetriesLimitReached() {
+    super.onReconnectionRetriesLimitReached()
+    sendEvent("reconnectionStatusChanged", mapOf("status" to "reconnectionRetriesLimitReached"))
   }
 }

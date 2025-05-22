@@ -5,18 +5,35 @@ import android.util.Log
 import org.webrtc.AudioTrack
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStreamTrack
+import org.webrtc.PeerConnection
 import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 
 class WhepClient(
   appContext: Context,
   serverUrl: String,
-  val configurationOptions: ConfigurationOptions? = null
+  private val configurationOptions: ConfigurationOptions? = null
 ) : ClientBase(
     appContext,
     serverUrl,
     configurationOptions
   ) {
+
+  private var reconnectionManager: ReconnectionManager
+
+  init {
+    val config = ReconnectConfig()
+    this.reconnectionManager =
+      ReconnectionManager(config) {
+        CoroutineScope(Dispatchers.Default).launch {
+          connect()
+        }
+      }
+  }
+
   /**
    * Connects the client to the WHEP server using WebRTC Peer Connection.
    *
@@ -60,6 +77,8 @@ class WhepClient(
         sdp
       )
     peerConnection.setRemoteDescription(answer)
+
+    reconnectionManager.onReconnected()
   }
 
   /**
@@ -96,5 +115,17 @@ class WhepClient(
     var track = getAudioTrack()
     track?.setEnabled(true)
     this.videoTrack?.setEnabled(true)
+  }
+
+  override fun onIceConnectionChange(connectionState: PeerConnection.IceConnectionState?) {
+    super.onIceConnectionChange(connectionState)
+
+    if (connectionState == PeerConnection.IceConnectionState.DISCONNECTED) {
+      reconnectionManager.onDisconnected()
+    }
+  }
+
+  fun addReconnectionListener(listener: ReconnectionManagerListener) {
+    reconnectionManager.addListener(listener)
   }
 }
