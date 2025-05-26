@@ -1,4 +1,4 @@
-import { EventSubscription, requireNativeModule } from "expo-modules-core";
+import { requireNativeModule } from "expo-modules-core";
 import type { NativeModule } from "expo-modules-core/types";
 
 import { ConfigurationOptions } from "./ReactNativeMobileWhepClient.types";
