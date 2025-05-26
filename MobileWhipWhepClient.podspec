@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'MobileWhipWhepClient'
-  s.version          = '0.2.0'
+  s.version          = '0.2.1'
   s.summary          = 'WHIP/WHEP SDK for iOS.'
 
   s.author           = { 'Software Mansion' => 'https://swmansion.com' }
