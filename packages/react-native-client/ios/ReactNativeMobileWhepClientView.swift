@@ -25,6 +25,16 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
             hostingController?.orientation = self.orientation
         }
     }
+  
+  public var pipEnabled = false {
+    didSet {
+      setupPip()
+    }
+  }
+  
+  public var pipController: PictureInPictureController? {
+    hostingController?.pipController
+  }
       
     private var player: ClientBase?
     private var hostingController: VideoViewController?
@@ -58,7 +68,17 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
         ])
         
         self.hostingController = hostingController
+      
+      setupPip()
     }
+  
+  private func setupPip() {
+    if pipEnabled {
+      hostingController?.setup(pictureInPictureWith: PictureInPictureController(sourceView: self))
+    } else {
+      hostingController?.disablePictureInPicture()
+    }
+  }
     
     private func removeOldPlayer() {
         hostingController?.view.removeFromSuperview()

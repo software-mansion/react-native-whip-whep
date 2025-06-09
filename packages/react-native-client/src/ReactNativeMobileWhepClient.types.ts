@@ -12,6 +12,16 @@ export type ConfigurationOptions = {
   videoParameters?: VideoParameters;
 };
 
+/**
+ * A type that represents the ref to the WhepClientView component.
+ * It contains methods to start, stop, and toggle Picture-in-Picture mode.
+ */
+export type WhepClientViewRef = {
+  startPip: () => void;
+  stopPip: () => void;
+  togglePip: () => void;
+};
+
 /** Describes props that can be passed to the module view. */
 export type ReactNativeMobileWhepClientViewProps = {
   /**
@@ -20,17 +30,33 @@ export type ReactNativeMobileWhepClientViewProps = {
    */
   style: React.CSSProperties;
   /**
-   * Used to get a reference to the React component instance.
-   * It is useful for accessing the component methods and properties directly.
-   */
-  ref: React.ForwardedRef<
-    React.ComponentType<ReactNativeMobileWhepClientViewProps>
-  >;
-  /**
    * Used to set the orientation of the video.
    * Defaults to "portrait".
    */
   orientation?: "landscape" | "portrait";
+
+  /**
+   * A variable deciding whether the Picture-in-Picture is enabled.
+   * Defaults to true.
+   */
+  pipEnabled?: boolean;
+
+  /**
+   * A variable deciding whether the Picture-in-Picture mode should be started automatically after the app is backgrounded.
+   * Defaults to false.
+   */
+  autoStartPip?: boolean;
+
+  /**
+   * A variable deciding whether the Picture-in-Picture mode should be stopped automatically after the app is foregrounded.
+   * Defaults to false.
+   */
+  autoStopPip?: boolean;
+
+  /**
+   * A variable deciding the size of the Picture-in-Picture mode.
+   */
+  pipSize?: { width: number; height: number };
 };
 
 /** Internal enum telling native views whether the stream will come from the server or device camera*/

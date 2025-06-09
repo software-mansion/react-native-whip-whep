@@ -4,11 +4,19 @@ import * as React from "react";
 import {
   PlayerType,
   ReactNativeMobileWhepClientViewProps,
+  WhepClientViewRef,
 } from "./ReactNativeMobileWhepClient.types";
 
-const NativeView: React.ComponentType<
+const NativeViewBase: React.ComponentType<
   ReactNativeMobileWhepClientViewProps & { playerType: PlayerType }
 > = requireNativeViewManager("ReactNativeMobileWhepClientViewModule");
+
+const NativeView = NativeViewBase as React.ComponentType<
+  ReactNativeMobileWhepClientViewProps & {
+    playerType: PlayerType;
+    ref?: React.Ref<WhepClientViewRef>;
+  }
+>;
 
 /**
  * A component that renders a native view for WHEP player type.
@@ -18,11 +26,11 @@ const NativeView: React.ComponentType<
  * ReactNativeMobileWhepClientViewProps.
  *
  * @param {ReactNativeMobileWhepClientViewProps} props - The properties to customize the component.
- * @param {React.ForwardedRef<React.ComponentType<ReactNativeMobileWhepClientViewProps>>} ref - Ref to the component instance.
+ * @param {React.ForwardedRef<WhepClientViewRef>} ref - Ref to the component instance.
  * @returns {JSX.Element} The rendered component.
  */
 export const WhepClientView = React.forwardRef<
-  React.ComponentType<ReactNativeMobileWhepClientViewProps>,
+  WhepClientViewRef,
   ReactNativeMobileWhepClientViewProps
 >((props, ref) => (
   <NativeView {...props} playerType={PlayerType.WHEP} ref={ref} />
@@ -36,11 +44,11 @@ export const WhepClientView = React.forwardRef<
  * ReactNativeMobileWhepClientViewProps.
  *
  * @param {ReactNativeMobileWhepClientViewProps} props - The properties to customize the component.
- * @param {React.ForwardedRef<React.ComponentType<ReactNativeMobileWhepClientViewProps>>} ref - Ref to the component instance.
+ * @param {React.ForwardedRef<WhepClientViewRef>} ref - Ref to the component instance.
  * @returns {JSX.Element} The rendered component.
  */
 export const WhipClientView = React.forwardRef<
-  React.ComponentType<ReactNativeMobileWhepClientViewProps>,
+  WhepClientViewRef,
   ReactNativeMobileWhepClientViewProps
 >((props, ref) => (
   <NativeView {...props} playerType={PlayerType.WHIP} ref={ref} />

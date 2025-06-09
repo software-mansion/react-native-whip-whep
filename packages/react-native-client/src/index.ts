@@ -8,6 +8,7 @@ export {
   VideoParameters,
   ConfigurationOptions,
   ReactNativeMobileWhepClientViewProps,
+  WhepClientViewRef,
 } from "./ReactNativeMobileWhepClient.types";
 
 export {

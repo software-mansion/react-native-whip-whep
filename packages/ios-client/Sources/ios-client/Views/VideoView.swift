@@ -74,14 +74,15 @@ public struct VideoView: UIViewRepresentable {
 }
 
 public class VideoViewController: UIViewController {
-
     private var player: ClientBase
 
-    private lazy var videoView: RTCMTLVideoView = {
+    private let videoView: RTCMTLVideoView = {
         let videoView = RTCMTLVideoView(frame: .zero)
         videoView.videoContentMode = .scaleAspectFit
         return videoView
     }()
+  
+   public private(set) var pipController: PictureInPictureController?
 
     public var orientation = Orientation.portrait {
         didSet {
@@ -111,10 +112,11 @@ public class VideoViewController: UIViewController {
         ])
 
         player.delegate = self
-
-        if let track = player.videoTrack {
-            track.add(videoView)
-        }
+      
+      if let track = player.videoTrack {
+          track.add(videoView)
+         pipController?.videoTrack = track
+      }
     }
 
     public override func viewWillDisappear(_ animated: Bool) {
@@ -123,6 +125,17 @@ public class VideoViewController: UIViewController {
         if let track = player.videoTrack {
             track.remove(videoView)
         }
+    }
+  
+    public func setup(pictureInPictureWith controller: PictureInPictureController) {
+      self.pipController = controller
+      if let track = player.videoTrack {
+         pipController?.videoTrack = track
+      }
+    }
+  
+    public func disablePictureInPicture() {
+      self.pipController = nil
     }
 
     private func getRTCVideoRotation(for orientation: Orientation) -> RTCVideoRotation {
@@ -140,10 +153,12 @@ public class VideoViewController: UIViewController {
 extension VideoViewController: PlayerListener {
     public func onTrackAdded(track: RTCVideoTrack) {
         track.add(videoView)
+        pipController?.videoTrack = track
     }
 
     public func onTrackRemoved(track: RTCVideoTrack) {
         track.remove(videoView)
+        pipController?.videoTrack = nil
     }
 }
 
