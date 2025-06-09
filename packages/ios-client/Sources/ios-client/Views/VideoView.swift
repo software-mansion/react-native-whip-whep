@@ -81,8 +81,8 @@ public class VideoViewController: UIViewController {
         videoView.videoContentMode = .scaleAspectFit
         return videoView
     }()
-  
-   public private(set) var pipController: PictureInPictureController?
+
+    public private(set) var pipController: PictureInPictureController?
 
     public var orientation = Orientation.portrait {
         didSet {
@@ -112,11 +112,11 @@ public class VideoViewController: UIViewController {
         ])
 
         player.delegate = self
-      
-      if let track = player.videoTrack {
-          track.add(videoView)
-         pipController?.videoTrack = track
-      }
+
+        if let track = player.videoTrack {
+            track.add(videoView)
+            pipController?.videoTrack = track
+        }
     }
 
     public override func viewWillDisappear(_ animated: Bool) {
@@ -126,16 +126,16 @@ public class VideoViewController: UIViewController {
             track.remove(videoView)
         }
     }
-  
+
     public func setup(pictureInPictureWith controller: PictureInPictureController) {
-      self.pipController = controller
-      if let track = player.videoTrack {
-         pipController?.videoTrack = track
-      }
+        self.pipController = controller
+        if let track = player.videoTrack {
+            pipController?.videoTrack = track
+        }
     }
-  
+
     public func disablePictureInPicture() {
-      self.pipController = nil
+        self.pipController = nil
     }
 
     private func getRTCVideoRotation(for orientation: Orientation) -> RTCVideoRotation {

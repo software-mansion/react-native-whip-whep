@@ -25,17 +25,17 @@ public class PictureInPictureController: NSObject {
         get { pipController?.canStartPictureInPictureAutomaticallyFromInline ?? false }
         set { pipController?.canStartPictureInPictureAutomaticallyFromInline = newValue }
     }
-    
+
     public var stopAutomatically: Bool = true
 
     public var preferredSize: CGSize {
         get { pipCallViewController?.preferredContentSize ?? .zero }
         set {
-          guard !newValue.equalTo(pipCallViewController?.preferredContentSize ?? .zero) else {
-            return
-          }
-          pipCallViewController?.preferredContentSize = newValue
-          sampleView.requestScaleRecalculation()
+            guard !newValue.equalTo(pipCallViewController?.preferredContentSize ?? .zero) else {
+                return
+            }
+            pipCallViewController?.preferredContentSize = newValue
+            sampleView.requestScaleRecalculation()
         }
     }
 
@@ -48,9 +48,9 @@ public class PictureInPictureController: NSObject {
 
     public init(sourceView: UIView) {
         self.sourceView = sourceView
-        
+
         self.fallbackView = UIView(frame: .zero)
-      
+
         self.sampleView = SampleBufferVideoCallView(frame: .zero)
 
         super.init()

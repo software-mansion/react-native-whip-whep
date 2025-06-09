@@ -4,7 +4,7 @@ import WebRTC
 public class SampleBufferVideoCallView: UIView {
     private lazy var converter = I420Converter()
     private let sampleBufferLayer: AVSampleBufferDisplayLayer
-    
+
     public var shouldRender: Bool = true
 
     public override init(frame: CGRect) {
@@ -91,17 +91,17 @@ public class SampleBufferVideoCallView: UIView {
     }
 }
 
-extension SampleBufferVideoCallView: RTCVideoRenderer{
-  public func setSize(_ size: CGSize) {
-      DispatchQueue.main.async { [weak self] in
-          self?.sampleBufferLayer.frame = CGRect(origin: .zero, size: size)
-      }
-  }
+extension SampleBufferVideoCallView: RTCVideoRenderer {
+    public func setSize(_ size: CGSize) {
+        DispatchQueue.main.async { [weak self] in
+            self?.sampleBufferLayer.frame = CGRect(origin: .zero, size: size)
+        }
+    }
 
-  public func renderFrame(_ frame: RTCVideoFrame?) {
-      guard shouldRender else { return }
-      guard let frame = frame, let sampleBuffer = sampleBuffer(from: frame) else { return }
+    public func renderFrame(_ frame: RTCVideoFrame?) {
+        guard shouldRender else { return }
+        guard let frame = frame, let sampleBuffer = sampleBuffer(from: frame) else { return }
 
-      sampleBufferLayer.enqueue(sampleBuffer)
-  }
+        sampleBufferLayer.enqueue(sampleBuffer)
+    }
 }
