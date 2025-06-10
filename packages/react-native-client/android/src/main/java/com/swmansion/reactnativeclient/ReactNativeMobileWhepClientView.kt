@@ -1,9 +1,17 @@
 package com.swmansion.reactnativeclient
 
+import android.app.PictureInPictureParams
 import android.content.Context
+import android.os.Build
+import android.util.Rational
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import androidx.fragment.app.FragmentActivity
 import com.mobilewhep.client.VideoView
 import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whepClient
 import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whipClient
+import com.swmansion.reactnativeclient.helpers.PictureInPictureHelperFragment
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
 import kotlinx.coroutines.CoroutineScope
@@ -51,7 +59,73 @@ class ReactNativeMobileWhepClientView(
 
       videoView.player?.videoTrack = videoTrack
       reinitializeVideoTrackSink()
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val params = PictureInPictureParams.Builder()
+          .setAspectRatio(Rational(16, 9))
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+          params.setAutoEnterEnabled(true)
+        } else {}
+        appContext.currentActivity?.enterPictureInPictureMode(params.build())
+      } else {
+        appContext.currentActivity?.enterPictureInPictureMode()
+      }
     }
+  }
+
+  private val currentActivity = appContext.throwingActivity
+  private val decorView = currentActivity.window.decorView
+  private val rootView = decorView.findViewById<ViewGroup>(android.R.id.content)
+  private val rootViewChildrenOriginalVisibility: ArrayList<Int> = arrayListOf()
+  private var pictureInPictureHelperTag: String? = null
+
+  override fun onAttachedToWindow() {
+    super.onAttachedToWindow()
+    (currentActivity as? FragmentActivity)?.let {
+      val fragment = PictureInPictureHelperFragment(this)
+      pictureInPictureHelperTag = fragment.id
+      it.supportFragmentManager.beginTransaction()
+        .add(fragment, fragment.id)
+        .commitAllowingStateLoss()
+    }
+//    applyAutoEnterPiP(currentActivity, autoEnterPiP)
+  }
+
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
+    (currentActivity as? FragmentActivity)?.let {
+      val fragment = it.supportFragmentManager.findFragmentByTag(pictureInPictureHelperTag ?: "")
+        ?: return
+      it.supportFragmentManager.beginTransaction()
+        .remove(fragment)
+        .commitAllowingStateLoss()
+    }
+//    applyAutoEnterPiP(currentActivity, false)
+  }
+
+  /**
+   * For optimal picture in picture experience it's best to only have one view. This method
+   * hides all children of the root view and makes the player the only visible child of the rootView.
+   */
+  fun layoutForPiPEnter() {
+
+
+    (videoView.parent as? ViewGroup)?.removeView(videoView)
+    for (i in 0 until rootView.childCount) {
+      if (rootView.getChildAt(i) != videoView) {
+        rootViewChildrenOriginalVisibility.add(rootView.getChildAt(i).visibility)
+        rootView.getChildAt(i).visibility = View.GONE
+      }
+    }
+    rootView.addView(videoView, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
+  }
+
+  fun layoutForPiPExit() {
+    rootView.removeView(videoView)
+    for (i in 0 until rootView.childCount) {
+      rootView.getChildAt(i).visibility = rootViewChildrenOriginalVisibility[i]
+    }
+    rootViewChildrenOriginalVisibility.clear()
+    this.addView(videoView)
   }
 
   private fun reinitializeVideoTrackSink() {
