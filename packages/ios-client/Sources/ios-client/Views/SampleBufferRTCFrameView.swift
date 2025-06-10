@@ -5,7 +5,7 @@ public class SampleBufferVideoCallView: UIView {
     private lazy var converter = I420Converter()
     private let sampleBufferLayer: AVSampleBufferDisplayLayer
 
-    public var shouldRender: Bool = true
+    public var shouldRender: Bool = false
 
     public override init(frame: CGRect) {
         sampleBufferLayer = AVSampleBufferDisplayLayer()
