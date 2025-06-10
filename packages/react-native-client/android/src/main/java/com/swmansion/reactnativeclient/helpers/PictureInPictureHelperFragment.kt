@@ -1,7 +1,6 @@
 package com.swmansion.reactnativeclient.helpers
 
 import androidx.fragment.app.Fragment
-import com.mobilewhep.client.VideoView
 import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientView
 import java.util.UUID
 

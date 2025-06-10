@@ -209,14 +209,6 @@ class VideoView :
     eglRenderer.pauseVideo()
   }
 
-  fun layoutForPiPEnter() {
-
-  }
-
-  fun layoutForPiPExit() {
-
-  }
-
   // VideoSink interface.
   override fun onFrame(frame: VideoFrame) {
     eglRenderer.onFrame(frame)

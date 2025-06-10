@@ -7,6 +7,7 @@ import android.util.Rational
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.FragmentActivity
 import com.mobilewhep.client.VideoView
 import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whepClient
@@ -59,16 +60,6 @@ class ReactNativeMobileWhepClientView(
 
       videoView.player?.videoTrack = videoTrack
       reinitializeVideoTrackSink()
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val params = PictureInPictureParams.Builder()
-          .setAspectRatio(Rational(16, 9))
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-          params.setAutoEnterEnabled(true)
-        } else {}
-        appContext.currentActivity?.enterPictureInPictureMode(params.build())
-      } else {
-        appContext.currentActivity?.enterPictureInPictureMode()
-      }
     }
   }
 
@@ -77,6 +68,33 @@ class ReactNativeMobileWhepClientView(
   private val rootView = decorView.findViewById<ViewGroup>(android.R.id.content)
   private val rootViewChildrenOriginalVisibility: ArrayList<Int> = arrayListOf()
   private var pictureInPictureHelperTag: String? = null
+
+  @RequiresApi(Build.VERSION_CODES.O)
+  private var pictureInPictureParamsBuilder = PictureInPictureParams.Builder()
+
+  @RequiresApi(Build.VERSION_CODES.O)
+  fun setAspectRatio(rational: Rational) {
+    pictureInPictureParamsBuilder.setAspectRatio(rational)
+  }
+
+  @RequiresApi(Build.VERSION_CODES.S)
+  fun setAutoEnterEnabled(enabled: Boolean) {
+    pictureInPictureParamsBuilder.setAutoEnterEnabled(enabled)
+  }
+
+  @RequiresApi(Build.VERSION_CODES.O)
+  fun startPictureInPicture() {
+    appContext.currentActivity?.enterPictureInPictureMode(pictureInPictureParamsBuilder.build())
+  }
+
+  @RequiresApi(Build.VERSION_CODES.O)
+  fun setPictureInPictureEnabled(enabled: Boolean) {
+    if (!enabled) {
+      pictureInPictureParamsBuilder = PictureInPictureParams.Builder()
+    }
+
+    appContext.currentActivity?.setPictureInPictureParams(pictureInPictureParamsBuilder.build())
+  }
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
@@ -107,8 +125,6 @@ class ReactNativeMobileWhepClientView(
    * hides all children of the root view and makes the player the only visible child of the rootView.
    */
   fun layoutForPiPEnter() {
-
-
     (videoView.parent as? ViewGroup)?.removeView(videoView)
     for (i in 0 until rootView.childCount) {
       if (rootView.getChildAt(i) != videoView) {
