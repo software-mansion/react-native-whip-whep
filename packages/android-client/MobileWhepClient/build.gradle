@@ -39,7 +39,6 @@ android {
     jvmTarget = java_version
   }
   buildFeatures {
-    compose true
   }
   composeOptions {
     kotlinCompilerExtensionVersion '1.5.14'
