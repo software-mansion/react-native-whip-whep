@@ -20,7 +20,13 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.box}>
-        <WhepClientView style={styles.clientView} />
+        <WhepClientView
+          pipEnabled
+          autoStartPip
+          autoStopPip
+          pipSize={{ width: 1920, height: 1080 }}
+          style={styles.clientView}
+        />
         {shouldShowPlayBtn && (
           <Button title="Play" onPress={handlePlayBtnClick} color={tint} />
         )}
