@@ -75,25 +75,32 @@ class ReactNativeMobileWhepClientView(
   @RequiresApi(Build.VERSION_CODES.O)
   fun setAspectRatio(rational: Rational) {
     pictureInPictureParamsBuilder.setAspectRatio(rational)
+    updatePictureInPictureParams()
   }
 
   @RequiresApi(Build.VERSION_CODES.S)
   fun setAutoEnterEnabled(enabled: Boolean) {
     pictureInPictureParamsBuilder.setAutoEnterEnabled(enabled)
+    updatePictureInPictureParams()
   }
 
   @RequiresApi(Build.VERSION_CODES.O)
   fun startPictureInPicture() {
-    appContext.currentActivity?.enterPictureInPictureMode(pictureInPictureParamsBuilder.build())
+    currentActivity.enterPictureInPictureMode(pictureInPictureParamsBuilder.build())
+    updatePictureInPictureParams()
   }
 
   @RequiresApi(Build.VERSION_CODES.O)
   fun setPictureInPictureEnabled(enabled: Boolean) {
     if (!enabled) {
       pictureInPictureParamsBuilder = PictureInPictureParams.Builder()
+      updatePictureInPictureParams()
     }
+  }
 
-    appContext.currentActivity?.setPictureInPictureParams(pictureInPictureParamsBuilder.build())
+  @RequiresApi(Build.VERSION_CODES.O)
+  fun updatePictureInPictureParams() {
+    currentActivity.setPictureInPictureParams(pictureInPictureParamsBuilder.build())
   }
 
   override fun onAttachedToWindow() {
@@ -105,7 +112,6 @@ class ReactNativeMobileWhepClientView(
         .add(fragment, fragment.id)
         .commitAllowingStateLoss()
     }
-//    applyAutoEnterPiP(currentActivity, autoEnterPiP)
   }
 
   override fun onDetachedFromWindow() {
@@ -117,7 +123,6 @@ class ReactNativeMobileWhepClientView(
         .remove(fragment)
         .commitAllowingStateLoss()
     }
-//    applyAutoEnterPiP(currentActivity, false)
   }
 
   /**
