@@ -17,8 +17,20 @@ export type ConfigurationOptions = {
  * It contains methods to start, stop, and toggle Picture-in-Picture mode.
  */
 export type WhepClientViewRef = {
+  /**
+   * Starts the Picture-in-Picture mode.
+   * On android enters the Picture-in-Picture mode and background the app.
+   */
   startPip: () => void;
+  /**
+   * Stops the Picture-in-Picture mode.
+   * Does nothing on Android as PiP is not supported in foreground.
+   */
   stopPip: () => void;
+  /**
+   * Toggles the Picture-in-Picture mode.
+   * On android enters the Picture-in-Picture mode and background the app.
+   */
   togglePip: () => void;
 };
 
@@ -48,7 +60,8 @@ export type ReactNativeMobileWhepClientViewProps = {
   autoStartPip?: boolean;
 
   /**
-   * A variable deciding whether the Picture-in-Picture mode should be stopped automatically after the app is foregrounded.
+   * A variable deciding whether the Picture-in-Picture mode should be stopped automatically on iOS after the app is foregrounded.
+   * Always enabled on Android as PiP is not supported in foreground.
    * Defaults to false.
    */
   autoStopPip?: boolean;

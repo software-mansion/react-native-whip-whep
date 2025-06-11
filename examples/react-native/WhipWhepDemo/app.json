@@ -33,7 +33,13 @@
     },
     "plugins": [
       "expo-router",
-      "./withLocalPathsForNativePackages" // Only relevant for local development of packages/ios-client and packages/android-client
+      "./withLocalPathsForNativePackages",
+      [
+        "react-native-whip-whep",
+        {
+          "supportsPictureInPicture": true
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true
