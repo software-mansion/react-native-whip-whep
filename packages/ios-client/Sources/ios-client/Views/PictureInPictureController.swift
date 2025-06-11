@@ -86,7 +86,6 @@ public class PictureInPictureController: NSObject {
         guard let contentSource = contentSource else { return }
 
         pipController = AVPictureInPictureController(contentSource: contentSource)
-        pipController?.delegate = self
 
         keyValueObservation = pipController?.observe(\.isPictureInPictureActive, options: [.initial, .new]) {
             [weak self] controller, change in
@@ -201,46 +200,5 @@ public class PictureInPictureController: NSObject {
         else { return }
 
         pipController.stopPictureInPicture()
-    }
-}
-
-extension PictureInPictureController: AVPictureInPictureControllerDelegate {
-
-    public func pictureInPictureControllerWillStartPictureInPicture(
-        _ pictureInPictureController: AVPictureInPictureController
-    ) {
-        print("\(#function)")
-    }
-
-    public func pictureInPictureControllerDidStartPictureInPicture(
-        _ pictureInPictureController: AVPictureInPictureController
-    ) {
-        print("\(#function)")
-    }
-
-    public func pictureInPictureController(
-        _ pictureInPictureController: AVPictureInPictureController, failedToStartPictureInPictureWithError error: Error
-    ) {
-        print("\(#function): \(error.localizedDescription)")
-    }
-
-    public func pictureInPictureControllerWillStopPictureInPicture(
-        _ pictureInPictureController: AVPictureInPictureController
-    ) {
-        print("\(#function)")
-    }
-
-    public func pictureInPictureControllerDidStopPictureInPicture(
-        _ pictureInPictureController: AVPictureInPictureController
-    ) {
-        print("\(#function)")
-    }
-
-    public func pictureInPictureController(
-        _ pictureInPictureController: AVPictureInPictureController,
-        restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void
-    ) {
-        print("\(#function)")
-        completionHandler(true)
     }
 }
