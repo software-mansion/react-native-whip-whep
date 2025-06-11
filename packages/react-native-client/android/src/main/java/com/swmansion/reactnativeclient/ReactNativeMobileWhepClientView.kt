@@ -125,10 +125,6 @@ class ReactNativeMobileWhepClientView(
     }
   }
 
-  /**
-   * For optimal picture in picture experience it's best to only have one view. This method
-   * hides all children of the root view and makes the player the only visible child of the rootView.
-   */
   fun layoutForPiPEnter() {
     (videoView.parent as? ViewGroup)?.removeView(videoView)
     for (i in 0 until rootView.childCount) {

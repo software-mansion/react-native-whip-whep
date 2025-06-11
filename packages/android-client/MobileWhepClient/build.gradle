@@ -38,8 +38,6 @@ android {
   kotlinOptions {
     jvmTarget = java_version
   }
-  buildFeatures {
-  }
   composeOptions {
     kotlinCompilerExtensionVersion '1.5.14'
   }
