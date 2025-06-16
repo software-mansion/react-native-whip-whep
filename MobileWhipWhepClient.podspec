@@ -5,7 +5,7 @@ Pod::Spec.new do |s|
 
   s.author           = { 'Software Mansion' => 'https://swmansion.com' }
   s.source           = { git: 'https://github.com/software-mansion/react-native-whip-whep' }
-  s.ios.deployment_target = '13.0'
+  s.ios.deployment_target = '15.1'
   s.swift_version = '5.0'
 
   s.source_files = 'packages/ios-client/Sources/**/*'
