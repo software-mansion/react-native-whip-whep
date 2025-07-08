@@ -11609,13 +11609,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-native-safe-area-context@npm:4.12.0":
-  version: 4.12.0
-  resolution: "react-native-safe-area-context@npm:4.12.0"
+"react-native-safe-area-context@npm:5.5.1":
+  version: 5.5.1
+  resolution: "react-native-safe-area-context@npm:5.5.1"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/122e7e24de39371b107fcac7ecd6b62d41301a46c945c7a6b3a07c8b65d4cb9ebf58bf163bfecfd430b1bd8fdf61d4f319dac1812edd7986c00b7d2cc16da24c
+  checksum: 10c0/603d9f4cdfd34b494ae64dbcbcd57f306271b9843971c0fb820e8d50e6470f63cdd06472536e8ff9668f79a33c3d1ef32741ed6fe71ca81b093ec01ac99054f0
   languageName: node
   linkType: hard
 
@@ -14011,7 +14011,7 @@ __metadata:
     react-native: "npm:0.76.9"
     react-native-gesture-handler: "npm:2.20.2"
     react-native-reanimated: "npm:~3.17.3"
-    react-native-safe-area-context: "npm:4.12.0"
+    react-native-safe-area-context: "npm:5.5.1"
     react-native-screens: "npm:4.4.0"
     react-native-web: "npm:0.19.13"
     react-native-whip-whep: "npm:*"
