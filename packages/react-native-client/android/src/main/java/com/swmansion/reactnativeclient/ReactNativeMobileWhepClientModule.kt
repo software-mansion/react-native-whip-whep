@@ -24,8 +24,8 @@ class ReactNativeMobileWhepClientModule :
 
   companion object {
     var onTrackUpdateListeners: MutableList<OnTrackUpdateListener> = mutableListOf()
-    lateinit var whepClient: WhepClient
-    lateinit var whipClient: WhipClient
+    var whepClient: WhepClient? = null
+    var whipClient: WhipClient? = null
   }
 
   private fun getVideoParametersFromOptions(createOptions: String): VideoParameters {
@@ -87,26 +87,29 @@ class ReactNativeMobileWhepClientModule :
             ),
           )
         whepClient = WhepClient(context, serverUrl, options)
-        whepClient.addReconnectionListener(this@ReactNativeMobileWhepClientModule)
-        whepClient.addTrackListener(this@ReactNativeMobileWhepClientModule)
+        whepClient?.addReconnectionListener(this@ReactNativeMobileWhepClientModule)
+        whepClient?.addTrackListener(this@ReactNativeMobileWhepClientModule)
       }
 
       AsyncFunction("connectWhep") Coroutine { ->
+        if (whepClient == null) {
+          throw IllegalStateException("React context is not available")
+        }
         withContext(Dispatchers.IO) {
-          whepClient.connect()
+          whepClient?.connect()
         }
       }
 
       Function("disconnectWhep") {
-        whepClient.disconnect()
+        whepClient?.disconnect()
       }
 
       Function("pauseWhep") {
-        whepClient.pause()
+        whepClient?.pause()
       }
 
       Function("unpauseWhep") {
-        whepClient.unpause()
+        whepClient?.unpause()
       }
 
       Function("createWhipClient") { serverUrl: String, configurationOptions: Map<String, Any>?, videoDevice: String ->
@@ -122,17 +125,20 @@ class ReactNativeMobileWhepClientModule :
               ?: VideoParameters.presetFHD43,
           )
         whipClient = WhipClient(context, serverUrl, options, videoDevice)
-        whipClient.addTrackListener(this@ReactNativeMobileWhepClientModule)
+        whipClient?.addTrackListener(this@ReactNativeMobileWhepClientModule)
       }
 
       AsyncFunction("connectWhip") Coroutine { ->
         withContext(Dispatchers.IO) {
-          whipClient.connect()
+          if (whipClient == null) {
+            throw IllegalStateException("WHIP client not found. Make sure it was initialized properly.")
+          }
+          whipClient?.connect()
         }
       }
 
       Function("disconnectWhip") {
-        whipClient.disconnect()
+        whipClient?.disconnect()
       }
 
       Property("cameras") {
