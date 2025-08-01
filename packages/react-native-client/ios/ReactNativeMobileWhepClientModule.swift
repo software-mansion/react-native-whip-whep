@@ -87,12 +87,7 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
         }
 
         Function("disconnectWhep") {
-            guard let client = ReactNativeMobileWhepClientModule.whepClient else {
-                throw Exception(
-                                name: "E_WHEP_CLIENT_NOT_FOUND",
-                                description: "WHEP client not found. Make sure it was initialized properly.")
-            }
-            client.disconnect()
+          ReactNativeMobileWhepClientModule.whepClient?.disconnect()
         }
 
         Function("pauseWhep") {
@@ -142,12 +137,7 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
         }
 
         Function("disconnectWhip") {
-            guard let client = ReactNativeMobileWhepClientModule.whipClient else {
-                throw Exception(
-                                name: "E_WHIP_CLIENT_NOT_FOUND",
-                                description: "WHIP client not found. Make sure it was initialized properly.")
-            }
-            client.disconnect()
+          ReactNativeMobileWhepClientModule.whipClient?.disconnect()
         }
         
         Property("cameras") {

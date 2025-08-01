@@ -6,6 +6,8 @@ public struct ConfigurationOptions {
     let videoParameters: VideoParameters?
     let audioEnabled: Bool
     let videoEnabled: Bool
+  
+  //WHIP
 
     public init(
         authToken: String? = nil, stunServerUrl: String? = nil, audioEnabled: Bool = true, videoEnabled: Bool = true,
