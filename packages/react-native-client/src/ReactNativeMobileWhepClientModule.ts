@@ -40,19 +40,35 @@ type RNMobileWhepClientModule = {
   connectWhip: () => Promise<void>;
   disconnectWhip: () => void;
   cameras: readonly Camera[];
+  whepPeerConnectionState: PeerConnectionState | null;
+  whipPeerConnectionState: PeerConnectionState | null;
 };
 
 export const ReceivableEvents = {
-  reconnectionStatusChanged: "reconnectionStatusChanged",
+  WhepPeerConnectionStateChanged: "WhepPeerConnectionStateChanged",
+  WhipPeerConnectionStateChanged: "WhipPeerConnectionStateChanged",
+  ReconnectionStatusChanged: "ReconnectionStatusChanged",
+  Warning: "Warning",
 } as const;
 
+export type PeerConnectionState =
+  | "new"
+  | "connecting"
+  | "connected"
+  | "disconnected"
+  | "failed"
+  | "closed"
+  | "unknown";
+
 export type ReceivableEventPayloads = {
-  [ReceivableEvents.reconnectionStatusChanged]: {
-    status:
-      | "reconnectionStarted"
-      | "reconnected"
-      | "reconnectionRetriesLimitReached";
-  };
+  [ReceivableEvents.ReconnectionStatusChanged]:
+    | "reconnectionStarted"
+    | "reconnected"
+    | "reconnectionRetriesLimitReached";
+
+  [ReceivableEvents.WhepPeerConnectionStateChanged]: PeerConnectionState;
+  [ReceivableEvents.WhipPeerConnectionStateChanged]: PeerConnectionState;
+  [ReceivableEvents.Warning]: string;
 };
 
 const nativeModule = requireNativeModule(
@@ -128,5 +144,11 @@ export function disconnectWhipClient() {
 
 /** Gives access to the cameras available on the device.*/
 export const cameras = nativeModule.cameras;
+
+/** Gives access to the current state of the WHEP peer connection. */
+export const whepPeerConnectionState = nativeModule.whepPeerConnectionState;
+
+/** Gives access to the current state of the WHIP peer connection. */
+export const whipPeerConnectionState = nativeModule.whipPeerConnectionState;
 
 export default nativeModule;

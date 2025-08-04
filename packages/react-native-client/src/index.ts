@@ -2,6 +2,7 @@ import {
   WhipClientView,
   WhepClientView,
 } from "./ReactNativeMobileWhepClientView";
+import { initializeWarningListener } from "./utils/errorListener";
 
 export { WhipClientView, WhepClientView };
 export {
@@ -27,3 +28,10 @@ export {
 } from "./ReactNativeMobileWhepClientModule";
 
 export { useEvent } from "./hooks/useEvent";
+export { useEventState } from "./hooks/useEventState";
+export {
+  useWhepConnectionState,
+  useWhipConnectionState,
+} from "./hooks/useConnectionState";
+
+initializeWarningListener();

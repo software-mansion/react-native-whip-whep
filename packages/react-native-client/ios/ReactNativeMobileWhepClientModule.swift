@@ -57,9 +57,25 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
     public func definition() -> ModuleDefinition {
         Name("ReactNativeMobileWhepClient")
 
-        Events(["trackAdded", "reconnectionStatusChanged"])
+        Events(EmitableEvent.allEvents)
+      
+        Property("cameras") {
+            return self.getCaptureDevices()
+        }
+      
+      Property("whepPeerConnectionState") {
+        return ReactNativeMobileWhepClientModule.whepClient?.peerConnectionState?.stringValue
+      }
+      
+      Property("whipPeerConnectionState") {
+        return ReactNativeMobileWhepClientModule.whipClient?.peerConnectionState?.stringValue
+      }
 
         Function("createWhepClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?) in
+          guard ReactNativeMobileWhepClientModule.whepClient == nil else {
+            emit(event: .warning(message: "WHEP client already exists. You must disconnect before creating a new one."))
+            return
+          }
             guard let url = URL(string: serverUrl) else {
                 throw Exception(
                                 name: "E_INVALID_URL",
@@ -75,6 +91,9 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
 
             ReactNativeMobileWhepClientModule.whepClient = WhepClient(serverUrl: url, configurationOptions: options, reconnectionListener: self)
             ReactNativeMobileWhepClientModule.whepClient?.delegate = self
+            ReactNativeMobileWhepClientModule.whepClient?.onConnectionStateChanged = { [weak self] newState in
+              self?.emit(event: .whepPeerConnectionStateChanged(status: newState))
+            }
         }
 
         AsyncFunction("connectWhep") {
@@ -88,6 +107,7 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
 
         Function("disconnectWhep") {
           ReactNativeMobileWhepClientModule.whepClient?.disconnect()
+          ReactNativeMobileWhepClientModule.whepClient = nil
         }
 
         Function("pauseWhep") {
@@ -109,6 +129,10 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
         }
 
         Function("createWhipClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?, videoDevice: String) in
+            guard ReactNativeMobileWhepClientModule.whipClient == nil else {
+              emit(event: .warning(message: "WHIP client already exists. You must disconnect before creating a new one."))
+              return
+            }
             guard let url = URL(string: serverUrl) else {
                 throw Exception(
                                 name: "E_INVALID_URL",
@@ -125,6 +149,9 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
 
             ReactNativeMobileWhepClientModule.whipClient = WhipClient(serverUrl: url, configurationOptions: options, videoDevice: AVCaptureDevice(uniqueID: videoDevice))
             ReactNativeMobileWhepClientModule.whipClient?.delegate = self
+            ReactNativeMobileWhepClientModule.whipClient?.onConnectionStateChanged = { [weak self] newState in
+              self?.emit(event: .whipPeerConnectionStateChanged(status: newState))
+            }
         }
 
         AsyncFunction("connectWhip") {
@@ -138,17 +165,12 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
 
         Function("disconnectWhip") {
           ReactNativeMobileWhepClientModule.whipClient?.disconnect()
+          ReactNativeMobileWhepClientModule.whipClient = nil
         }
         
-        Property("cameras") {
-            return self.getCaptureDevices()
-        }
     }
     
     public func onTrackAdded(track: RTCVideoTrack) {
-        self.sendEvent("trackAdded", [
-            track.trackId : track.kind,
-        ])
         ReactNativeMobileWhepClientModule.onTrackUpdateListeners.forEach {
             $0.onTrackUpdate()
         }
@@ -159,14 +181,14 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
     }
     
     public func onReconnectionStarted() {
-        self.sendEvent("reconnectionStatusChanged", ["status":"reconnectionStarted"])
+      emit(event: .reconnectionStatusChanged(reconnectionStatus: .reconnectionStarted))
     }
     
     public func onReconnected() {
-        self.sendEvent("reconnectionStatusChanged", ["status":"reconnected"])
+      emit(event: .reconnectionStatusChanged(reconnectionStatus: .reconnected))
     }
     
     public func onReconnectionRetriesLimitReached() {
-        self.sendEvent("reconnectionStatusChanged", ["status":"reconnectionRetriesLimitReached"])
+      emit(event: .reconnectionStatusChanged(reconnectionStatus: .reconnectionRetriesLimitReached))
     }
 }

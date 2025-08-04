@@ -58,6 +58,11 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
     var peerConnection: RTCPeerConnection?
     var iceCandidates: [RTCIceCandidate] = []
     var isConnectionSetUp: Bool = false
+
+    public var peerConnectionState: RTCPeerConnectionState? {
+        return peerConnection?.connectionState
+    }
+
     @Published public var videoTrack: RTCVideoTrack? {
         willSet {
             if let track = videoTrack {
@@ -72,6 +77,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
     }
 
     public var delegate: PlayerListener?
+    public var onConnectionStateChanged: ((RTCPeerConnectionState) -> Void)?
 
     let logger = Logger(label: "com.swmansion.whipwhepclient")
 
@@ -297,6 +303,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
      Reacts to changes in the Peer Connection state and logs a message depending on the current state
     */
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCPeerConnectionState) {
+        onConnectionStateChanged?(stateChanged)
         switch stateChanged {
         case .connected:
             logger.debug("Connection is fully connected")
