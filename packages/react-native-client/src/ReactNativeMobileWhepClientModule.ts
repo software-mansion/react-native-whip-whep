@@ -1,14 +1,12 @@
 import { requireNativeModule } from "expo-modules-core";
 import type { NativeModule } from "expo-modules-core/types";
 
-import { ConfigurationOptions } from "./ReactNativeMobileWhepClient.types";
-
-// branded types are useful for restricting where given value can be passed
-declare const brand: unique symbol;
-export type Brand<T, TBrand extends string> = T & { [brand]: TBrand };
-
-/** A unique ID of the camera.  */
-export type CameraId = Brand<string, "CameraId">;
+import {
+  WhipConfigurationOptions,
+  CameraId,
+  ConnectOptions,
+  WhepConfigurationOptions,
+} from "./ReactNativeMobileWhepClient.types";
 
 /** Describes whether the camera is front-facing or back-facing. */
 export type CameraFacingDirection = "front" | "back" | "unspecified";
@@ -24,20 +22,15 @@ export type Camera = {
 };
 
 type RNMobileWhepClientModule = {
-  createWhepClient: (
-    serverUrl: string,
-    configurationOptions?: ConfigurationOptions,
-  ) => void;
-  connectWhep: () => Promise<void>;
+  createWhepClient: (configurationOptions?: WhepConfigurationOptions) => void;
+  connectWhep: (serverUrl: string, authToken?: string) => Promise<void>;
   disconnectWhep: () => void;
   pauseWhep: () => void;
   unpauseWhep: () => void;
   createWhipClient: (
-    serverUrl: string,
-    configurationOptions?: ConfigurationOptions,
-    videoDevice?: CameraId,
+    configurationOptions?: WhipConfigurationOptions,
   ) => Promise<void>;
-  connectWhip: () => Promise<void>;
+  connectWhip: (serverUrl: string, authToken?: string) => Promise<void>;
   disconnectWhip: () => void;
   cameras: readonly Camera[];
   whepPeerConnectionState: PeerConnectionState | null;
@@ -76,23 +69,24 @@ const nativeModule = requireNativeModule(
 ) as RNMobileWhepClientModule &
   NativeModule<Record<keyof typeof ReceivableEvents, (payload: any) => void>>;
 
-/** Creates a WHEP client based on the provided server URL and optional additional `configurationOptions`.
+/** Creates a WHEP client based on the `configurationOptions`.
  *  It is a first step before connecting to the server.
  */
 export function createWhepClient(
-  /** URL of the WHEP server from which the stream should be received. */
-  serverUrl: string,
   /** Additional configuration options. */
-  configurationOptions?: ConfigurationOptions,
+  configurationOptions?: WhepConfigurationOptions,
 ) {
-  return nativeModule.createWhepClient(serverUrl, configurationOptions);
+  return nativeModule.createWhepClient(configurationOptions);
 }
 
 /** Connects to the WHEP server defined while creating WHEP client.
  * Allows user to receive video and audio stream.
  */
-export async function connectWhepClient() {
-  return await nativeModule.connectWhep();
+export async function connectWhepClient(connectOptions: ConnectOptions) {
+  return await nativeModule.connectWhep(
+    connectOptions.serverUrl,
+    connectOptions.authToken,
+  );
 }
 
 /** Disconnects from the WHEP server defined while creating WHEP client.
@@ -112,27 +106,24 @@ export function unpauseWhepClient() {
   return nativeModule.unpauseWhep();
 }
 
-/** Creates a WHIP client based on the provided server URL and optional additional `configurationOptions`.
+/** Creates a WHIP client based on the provided `configurationOptions`.
  * Allows user to choose a streaming device from all available cameras.
  *  It is a first step before connecting to the server.
  */
 export async function createWhipClient(
-  serverUrl: string,
-  configurationOptions?: ConfigurationOptions,
-  videoDevice?: CameraId,
+  configurationOptions?: WhipConfigurationOptions,
 ) {
-  return nativeModule.createWhipClient(
-    serverUrl,
-    configurationOptions,
-    videoDevice,
-  );
+  return nativeModule.createWhipClient(configurationOptions);
 }
 
 /** Connects to the WHIP server defined while creating WHIP client.
  * Allows user to stream video and audio.
  */
-export async function connectWhipClient() {
-  return await nativeModule.connectWhip();
+export async function connectWhipClient(connectOptions: ConnectOptions) {
+  return await nativeModule.connectWhip(
+    connectOptions.serverUrl,
+    connectOptions.authToken,
+  );
 }
 
 /** Disconnects from the WHIP server defined while creating WHIP client.

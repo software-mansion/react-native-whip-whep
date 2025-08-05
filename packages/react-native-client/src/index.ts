@@ -7,9 +7,12 @@ import { initializeWarningListener } from "./utils/errorListener";
 export { WhipClientView, WhepClientView };
 export {
   VideoParameters,
-  ConfigurationOptions,
   ReactNativeMobileWhepClientViewProps,
   WhepClientViewRef,
+  CameraId,
+  ConnectOptions,
+  WhipConfigurationOptions,
+  WhepConfigurationOptions,
 } from "./ReactNativeMobileWhepClient.types";
 
 export {
@@ -24,7 +27,6 @@ export {
   cameras,
   Camera,
   CameraFacingDirection,
-  CameraId,
 } from "./ReactNativeMobileWhepClientModule";
 
 export { useEvent } from "./hooks/useEvent";

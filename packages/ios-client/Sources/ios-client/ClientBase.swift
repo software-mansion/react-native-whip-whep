@@ -50,14 +50,13 @@ protocol Player {
 }
 
 public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionFactoryType {
-    var serverUrl: URL
-    var authToken: String?
-    var configurationOptions: ConfigurationOptions?
+    private let stunServerUrl: String
     var patchEndpoint: String?
     var peerConnectionFactory: RTCPeerConnectionFactory?
     var peerConnection: RTCPeerConnection?
     var iceCandidates: [RTCIceCandidate] = []
     var isConnectionSetUp: Bool = false
+    var connectOptions: ClientConnectOptions?
 
     public var peerConnectionState: RTCPeerConnectionState? {
         return peerConnection?.connectionState
@@ -81,10 +80,8 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
 
     let logger = Logger(label: "com.swmansion.whipwhepclient")
 
-    public init(serverUrl: URL, configurationOptions: ConfigurationOptions? = nil) {
-        self.serverUrl = serverUrl
-        self.authToken = configurationOptions?.authToken
-        self.configurationOptions = configurationOptions
+    public init(stunServerUrl: String?) {
+        self.stunServerUrl = stunServerUrl ?? "stun:stun.l.google.com:19302"
     }
 
     func setUpPeerConnection() {
@@ -94,7 +91,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
             encoderFactory: encoderFactory,
             decoderFactory: decoderFactory)
 
-        let stunServerUrl = configurationOptions?.stunServerUrl ?? "stun:stun.l.google.com:19302"
+        let stunServerUrl = stunServerUrl
         let stunServer = RTCIceServer(urlStrings: [stunServerUrl])
         let iceServers = [stunServer]
 
@@ -117,6 +114,10 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
 
         self.isConnectionSetUp = true
     }
+  
+  public func connect(_ connectOptions: ClientConnectOptions) async throws {
+    self.connectOptions = connectOptions
+  }
 
     /**
     Sends an SDP offer to the WHIP/WHEP server.
@@ -130,13 +131,19 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
     
     - Returns: A SDP response.
     */
-    func sendSdpOffer(sdpOffer: String) async throws -> String {
-        var request = URLRequest(url: serverUrl)
+    func send(sdpOffer: String) async throws -> String {
+      guard let connectOptions else {
+        throw SessionNetworkError.ConnectionError(
+          description:
+            "Cannot send the SDP Offer. Connection not setup. Remember to call connect first.")
+      }
+      
+      var request = URLRequest(url: connectOptions.serverUrl)
         request.httpMethod = "POST"
         request.httpBody = sdpOffer.data(using: .utf8)
         request.addValue("application/sdp", forHTTPHeaderField: "Accept")
         request.addValue("application/sdp", forHTTPHeaderField: "Content-Type")
-        if let token = authToken {
+        if let token = connectOptions.authToken {
             request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
@@ -184,6 +191,12 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
       `NSError` for when the candidate data dictionary could not be serialized to JSON.
     */
     func sendCandidate(candidate: RTCIceCandidate) async throws {
+      guard let connectOptions else {
+        throw SessionNetworkError.ConnectionError(
+          description:
+            "Cannot send ICE Candidate. Connection not setup. Remember to call connect first.")
+      }
+      
         guard patchEndpoint != nil else {
             throw AttributeNotFoundError.PatchEndpointNotFound(
                 description: "Patch endpoint not found. Make sure the SDP answer is correct.")
@@ -208,7 +221,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
             throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "JSON serialization error"])
         }
 
-        var components = URLComponents(string: serverUrl.absoluteString)
+        var components = URLComponents(string: connectOptions.serverUrl.absoluteString)
         components?.path = ""
         components?.path = patchEndpoint!
         let url = components?.url

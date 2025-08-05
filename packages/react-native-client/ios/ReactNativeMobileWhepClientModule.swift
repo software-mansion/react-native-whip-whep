@@ -82,27 +82,32 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
                                 description: "Invalid server URL. Make sure the address in .env file is correct.")
             }
             
-            let options = ConfigurationOptions(
-                authToken: configurationOptions?["authToken"] as? String,
-                stunServerUrl: configurationOptions?["stunServerUrl"] as? String,
-                audioEnabled: configurationOptions?["audioEnabled"] as? Bool ?? true,
-                videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,
-                videoParameters: try! getVideoParametersFromOptions(createOptions: configurationOptions?["videoParameters"] as? String ?? "HD43"))
-
-            ReactNativeMobileWhepClientModule.whepClient = WhepClient(serverUrl: url, configurationOptions: options, reconnectionListener: self)
+            let options = WhepConfigurationOptions(
+              audioEnabled: configurationOptions?["audioEnabled"] as? Bool ?? true,
+              videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,
+              stunServerUrl: configurationOptions?["stunServerUrl"] as? String
+            )
+          
+            ReactNativeMobileWhepClientModule.whepClient = WhepClient(configOptions: options)
             ReactNativeMobileWhepClientModule.whepClient?.delegate = self
+            ReactNativeMobileWhepClientModule.whepClient?.reconnectionListener = self
             ReactNativeMobileWhepClientModule.whepClient?.onConnectionStateChanged = { [weak self] newState in
               self?.emit(event: .whepPeerConnectionStateChanged(status: newState))
             }
         }
 
-        AsyncFunction("connectWhep") {
+        AsyncFunction("connectWhep") { (serverUrl: String, authToken: String?) in
             guard let client = ReactNativeMobileWhepClientModule.whepClient else {
                 throw Exception(
                                 name: "E_WHEP_CLIENT_NOT_FOUND",
                                 description: "WHEP client not found. Make sure it was initialized properly.")
             }
-            try await client.connect()
+          guard let url = URL(string: serverUrl) else {
+            throw Exception(
+              name: "E_INVALID_SERVER_URL",
+              description: "Invalid server URL. Make sure the address is correct.")
+          }
+          try await client.connect(.init(serverUrl: url, authToken: authToken))
         }
 
         Function("disconnectWhep") {
@@ -128,24 +133,24 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
             client.unpause()
         }
 
-        AsyncFunction("createWhipClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?, videoDevice: String) in
+        AsyncFunction("createWhipClient") { (configurationOptions: [String: AnyObject]?) in
             guard ReactNativeMobileWhepClientModule.whipClient == nil else {
               emit(event: .warning(message: "WHIP client already exists. You must disconnect before creating a new one."))
               return
             }
-            guard let url = URL(string: serverUrl) else {
-                throw Exception(
-                                name: "E_INVALID_URL",
-                                description: "Invalid server URL. Make sure the address in .env file is correct.")
-            }
-
-            let options = ConfigurationOptions(
-                authToken: configurationOptions?["authToken"] as? String,
-                stunServerUrl: configurationOptions?["stunServerUrl"] as? String,
-                audioEnabled: configurationOptions?["audioEnabled"] as? Bool ?? true,
-                videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,
-                videoParameters: configurationOptions?["videoParameters"] as? VideoParameters ?? VideoParameters.presetFHD43
-            )
+          
+          guard let deviceId = configurationOptions?["videoDeviceId"] as? String, let avCaptureDevice = AVCaptureDevice(uniqueID: deviceId) else {
+            throw Exception(
+              name: "E_INVALID_VIDEO_DEVICE_ID",
+              description: "Invalid video device ID. Make sure the device ID is correct.")
+          }
+          
+          let options = WhipConfigurationOptions(
+            audioEnabled: configurationOptions?["audioEnabled"] as? Bool ?? true,
+            videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,
+            videoDevice: avCaptureDevice,
+            videoParameters: configurationOptions?["videoParameters"] as? VideoParameters ?? VideoParameters.presetHD169,
+            stunServerUrl: configurationOptions?["stunServerUrl"] as? String)
           
           guard options.videoEnabled, await PermissionUtils.requestCameraPermission() else {
               emit(event: .warning(message: "Camera permission not granted. Cannot initialize WhipClient."))
@@ -157,20 +162,26 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
               return
           }
 
-            ReactNativeMobileWhepClientModule.whipClient = WhipClient(serverUrl: url, configurationOptions: options, videoDevice: AVCaptureDevice(uniqueID: videoDevice))
+            ReactNativeMobileWhepClientModule.whipClient = WhipClient(configOptions: options)
             ReactNativeMobileWhepClientModule.whipClient?.delegate = self
             ReactNativeMobileWhepClientModule.whipClient?.onConnectionStateChanged = { [weak self] newState in
               self?.emit(event: .whipPeerConnectionStateChanged(status: newState))
             }
         }
 
-        AsyncFunction("connectWhip") {
-            guard let client = ReactNativeMobileWhepClientModule.whipClient else {
-                throw Exception(
-                                name: "E_WHIP_CLIENT_NOT_FOUND",
-                                description: "WHIP client not found. Make sure it was initialized properly.")
-            }
-            try await client.connect()
+        AsyncFunction("connectWhip") { (serverUrl: String, authToken: String?) in
+          guard let client = ReactNativeMobileWhepClientModule.whipClient else {
+            throw Exception(
+              name: "E_WHIP_CLIENT_NOT_FOUND",
+              description: "WHIP client not found. Make sure it was initialized properly.")
+          }
+          
+          guard let url = URL(string: serverUrl) else {
+            throw Exception(
+              name: "E_INVALID_SERVER_URL",
+              description: "Invalid server URL. Make sure the address is correct.")
+          }
+          try await client.connect(.init(serverUrl: url, authToken: authToken))
         }
 
         Function("disconnectWhip") {

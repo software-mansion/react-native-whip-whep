@@ -1,15 +1,50 @@
-/** Defines initial connection and stream options. */
-export type ConfigurationOptions = {
+// branded types are useful for restricting where given value can be passed
+declare const brand: unique symbol;
+export type Brand<T, TBrand extends string> = T & { [brand]: TBrand };
+
+/** A unique ID of the camera.  */
+export type CameraId = Brand<string, "CameraId">;
+
+// /** Defines initial connection and stream options. */
+// export type ConfigurationOptions = {
+
+//   /** A variable deciding whether the audio should be streamed or not. Defaults to true. */
+//   audioEnabled?: boolean;
+//   /** A variable deciding whether the video should be streamed or not. Defaults to true. */
+//   videoEnabled?: boolean;
+//   /** Defines the parameters of the video. Defaults to HD43. */
+//   videoParameters?: VideoParameters;
+// };
+
+export type ConnectOptions = {
   /** Authorization token that might be required to access the server. */
   authToken?: string;
-  /** URL address of the STUN server. The default one is `stun.l.google.com`. */
-  stunServerUrl?: string;
+  /** URL address of the server. */
+  serverUrl: string;
+};
+
+/** Defines initial WHIP Client options. */
+export type WhipConfigurationOptions = {
   /** A variable deciding whether the audio should be streamed or not. Defaults to true. */
   audioEnabled?: boolean;
   /** A variable deciding whether the video should be streamed or not. Defaults to true. */
   videoEnabled?: boolean;
+  /** ID of the camera.  */
+  videoDeviceId?: CameraId;
   /** Defines the parameters of the video. Defaults to HD43. */
   videoParameters?: VideoParameters;
+  /** URL address of the STUN server. The default one is `stun.l.google.com`. */
+  stunServerUrl?: string;
+};
+
+/** Defines initial WHEP Client options. */
+export type WhepConfigurationOptions = {
+  /** A variable deciding whether the audio should be streamed or not. Defaults to true. */
+  audioEnabled?: boolean;
+  /** A variable deciding whether the video should be streamed or not. Defaults to true. */
+  videoEnabled?: boolean;
+  /** URL address of the STUN server. The default one is `stun.l.google.com`. */
+  stunServerUrl?: string;
 };
 
 /**

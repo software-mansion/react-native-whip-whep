@@ -6,6 +6,7 @@ import {
   connectWhipClient,
   createWhipClient,
   disconnectWhipClient,
+  VideoParameters,
   WhipClientView,
 } from 'react-native-whip-whep';
 import { checkPermissions } from '@/utils/CheckPermissions';
@@ -21,7 +22,10 @@ export default function HomeScreen() {
     setShouldShowStreamBtn(false);
     try {
       setIsLoading(true);
-      await connectWhipClient();
+      await connectWhipClient({
+        serverUrl: process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
+        authToken: 'example',
+      });
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to connect to WHIP Client', error);
@@ -30,14 +34,12 @@ export default function HomeScreen() {
 
   const initialize = async () => {
     await checkPermissions();
-    const availableDevices = cameras;
-    createWhipClient(
-      process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
-      {
-        authToken: 'example',
-      },
-      availableDevices[0].id,
-    );
+    createWhipClient({
+      audioEnabled: true,
+      videoEnabled: true,
+      videoParameters: VideoParameters.presetFHD169,
+      videoDeviceId: cameras[0].id,
+    });
   };
 
   useEffect(() => {

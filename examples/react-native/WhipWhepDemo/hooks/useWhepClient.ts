@@ -17,7 +17,9 @@ export const useWhepClient = (serverUrl: string) => {
     setShouldShowPlayBtn(false);
     setIsLoading(true);
     try {
-      await connectWhepClient();
+      await connectWhepClient({
+        serverUrl,
+      });
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to connect to WHEP Client', error);
@@ -45,8 +47,9 @@ export const useWhepClient = (serverUrl: string) => {
   useEffect(() => {
     const initialize = async () => {
       await checkPermissions();
-      createWhepClient(serverUrl, {
-        authToken: 'example',
+      createWhepClient({
+        audioEnabled: true,
+        videoEnabled: true,
       });
     };
     initialize();

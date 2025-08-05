@@ -1,11 +1,27 @@
 import WebRTC
 import os
 
-public class WhipClient: ClientBase & Connectable {
-    var videoCapturer: RTCCameraVideoCapturer?
-    var videoSource: RTCVideoSource?
-    var videoDevice: AVCaptureDevice?
+public struct WhipConfigurationOptions {
+  public let audioEnabled: Bool
+  public let videoEnabled: Bool
+  public let videoDevice: AVCaptureDevice
+  public let videoParameters: VideoParameters
+  public let stunServerUrl: String?
+  
+  public init(audioEnabled: Bool = true, videoEnabled: Bool = true, videoDevice: AVCaptureDevice, videoParameters: VideoParameters, stunServerUrl: String?) {
+    self.audioEnabled = audioEnabled
+    self.videoEnabled = videoEnabled
+    self.videoDevice = videoDevice
+    self.videoParameters = videoParameters
+    self.stunServerUrl = stunServerUrl
+  }
+}
 
+public class WhipClient: ClientBase {
+    private let configOptions: WhipConfigurationOptions
+    private var videoCapturer: RTCCameraVideoCapturer?
+    private var videoSource: RTCVideoSource?
+  
     override func setUpPeerConnection() {
         super.setUpPeerConnection()
 
@@ -32,13 +48,13 @@ public class WhipClient: ClientBase & Connectable {
     - Returns: A `WhipClient` object.
     */
     public init(
-        serverUrl: URL, configurationOptions: ConfigurationOptions? = nil,
-        videoDevice: AVCaptureDevice? = nil
+      configOptions: WhipConfigurationOptions
     ) {
-        self.videoDevice = videoDevice
-        super.init(serverUrl: serverUrl, configurationOptions: configurationOptions)
+        self.configOptions = configOptions
+        super.init(stunServerUrl: configOptions.stunServerUrl)
         setUpPeerConnection()
     }
+  
 
     /**
     Connects the client to the WHIP server using WebRTC Peer Connection.
@@ -46,7 +62,8 @@ public class WhipClient: ClientBase & Connectable {
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
         of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
-    public func connect() async throws {
+  public override func connect(_ connectOptions: ClientConnectOptions) async throws {
+      try await super.connect(connectOptions)
         if !self.isConnectionSetUp {
             setUpPeerConnection()
         } else if self.isConnectionSetUp && self.peerConnection == nil {
@@ -57,7 +74,7 @@ public class WhipClient: ClientBase & Connectable {
         let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
         let offer = try await peerConnection!.offer(for: constraints)
         try await peerConnection!.setLocalDescription(offer)
-        let sdpAnswer = try await sendSdpOffer(sdpOffer: offer.sdp)
+        let sdpAnswer = try await send(sdpOffer: offer.sdp)
 
         for candidate in iceCandidates {
             try await sendCandidate(candidate: candidate)
@@ -90,30 +107,23 @@ public class WhipClient: ClientBase & Connectable {
     
     - Throws: `AVCaptureDeviceError.VideoDeviceNotAvailable` if there is no video device available.
     */
-    private func setUpVideoAndAudioDevices() throws {
-        var audioEnabled = true
-        var videoEnabled = true
-
-        if let configOptions = configurationOptions {
-            audioEnabled = configOptions.audioEnabled
-            videoEnabled = configOptions.videoEnabled
-
-            if !audioEnabled && !videoEnabled {
-                logger.warning(
-                    "Both audioEnabled and videoEnabled are set to false, what will result in no stream at all. Consider changing one of the options to true."
-                )
-            }
-        }
+  private func setUpVideoAndAudioDevices() throws {
+    let
+    audioEnabled = configOptions.audioEnabled,
+    videoEnabled = configOptions.videoEnabled,
+    videoDevice = configOptions.videoDevice,
+    videoParameters = configOptions.videoParameters
+    
+    if !audioEnabled && !videoEnabled {
+        logger.warning(
+            "Both audioEnabled and videoEnabled are set to false, what will result in no stream at all. Consider changing one of the options to true."
+        )
+    }
 
         let sendEncodings = [RTCRtpEncodingParameters.create(active: true)]
         let localStreamId = UUID().uuidString
 
         if videoEnabled {
-            guard let videoDevice = self.videoDevice else {
-                throw CaptureDeviceError.VideoDeviceNotAvailable(
-                    description: "Video device not found. Check if it can be accessed and passed to the constructor.")
-            }
-
             let videoSource = peerConnectionFactory!.videoSource()
             self.videoSource = videoSource
             let videoCapturer = RTCCameraVideoCapturer(delegate: videoSource)
@@ -122,33 +132,20 @@ public class WhipClient: ClientBase & Connectable {
 
             let videoTrack = peerConnectionFactory!.videoTrack(with: videoSource, trackId: videoTrackId)
             videoTrack.isEnabled = true
-
-            if configurationOptions != nil && configurationOptions?.videoParameters != nil {
-                let (format, fps) = setVideoSize(
-                    device: videoDevice, videoParameters: (configurationOptions?.videoParameters)!)
-
-                videoCapturer.startCapture(with: videoDevice, format: format, fps: fps) { error in
-                    if let error = error {
-                        print("Error starting the video capture: \(error)")
-                    } else {
-                        print("Video capturing started")
-                        DispatchQueue.main.async {
-                            self.videoTrack = videoTrack
-                        }
-                    }
-                }
+          
+          let (format, fps) = setVideoSize(
+              device: videoDevice, videoParameters: (videoParameters))
+          
+          videoCapturer.startCapture(with: videoDevice, format: format, fps: fps) { error in
+            if let error = error {
+              print("Error starting the video capture: \(error)")
             } else {
-                videoCapturer.startCapture(with: videoDevice, format: videoDevice.activeFormat, fps: 30) { error in
-                    if let error = error {
-                        print("Error starting the video capture: \(error)")
-                    } else {
-                        print("Video capturing started")
-                        DispatchQueue.main.async {
-                            self.videoTrack = videoTrack
-                        }
-                    }
-                }
+              print("Video capturing started")
+              DispatchQueue.main.async {
+                self.videoTrack = videoTrack
+              }
             }
+          }
 
             let transceiverInit = RTCRtpTransceiverInit()
             transceiverInit.direction = RTCRtpTransceiverDirection.sendOnly

@@ -1,9 +1,23 @@
 import WebRTC
 import os
 
+public struct WhepConfigurationOptions {
+  public let audioEnabled: Bool
+  public let videoEnabled: Bool
+  public let stunServerUrl: String?
+  
+  public init(audioEnabled: Bool = true, videoEnabled: Bool = true, stunServerUrl: String?) {
+    self.audioEnabled = audioEnabled
+    self.videoEnabled = videoEnabled
+    self.stunServerUrl = stunServerUrl
+  }
+}
+
 @available(macOS 12.0, *)
-public class WhepClient: ClientBase & Connectable {
+public class WhepClient: ClientBase {
+    let configOptions: WhepConfigurationOptions
     private var reconnectionManager: ReconnectionManager?
+    public weak var reconnectionListener: ReconnectionManagerListener?
 
     /**
     Initializes a `WhepClient` object.
@@ -13,28 +27,10 @@ public class WhepClient: ClientBase & Connectable {
     
     - Returns: A `WhepClient` object.
     */
-    public init(
-        serverUrl: URL, configurationOptions: ConfigurationOptions? = nil,
-        reconnectionListener: ReconnectionManagerListener
-    ) {
-        super.init(serverUrl: serverUrl, configurationOptions: configurationOptions)
+    public init(configOptions: WhepConfigurationOptions) {
+        self.configOptions = configOptions
+        super.init(stunServerUrl: configOptions.stunServerUrl)
         setUpPeerConnection()
-
-        let config = ReconnectConfig()
-
-        self.reconnectionManager = ReconnectionManager(
-            reconnectConfig: config,
-            connect: {
-                Task { [weak self] in
-                    do {
-                        try await self?.connect()
-                    } catch {
-                        self?.logger.error("Reconnection failed: \(error)")
-                    }
-                }
-            },
-            listener: reconnectionListener
-        )
     }
 
     /**
@@ -43,27 +39,37 @@ public class WhepClient: ClientBase & Connectable {
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
         of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
      */
-    public func connect() async throws {
+  public override func connect(_ connectOptions: ClientConnectOptions) async throws {
+      try await super.connect(connectOptions)
         if !self.isConnectionSetUp {
             setUpPeerConnection()
         } else if self.isConnectionSetUp && self.peerConnection == nil {
             throw SessionNetworkError.ConfigurationError(
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")
         }
-
-        var audioEnabled = true
-        var videoEnabled = true
-
-        if let configOptions = configurationOptions {
-            audioEnabled = configOptions.audioEnabled
-            videoEnabled = configOptions.videoEnabled
-
-            if !audioEnabled && !videoEnabled {
-                logger.warning(
-                    "Both audioEnabled and videoEnabled are set to false, what will result in no stream at all. Consider changing one of the options to true."
-                )
+    
+    self.reconnectionManager = ReconnectionManager(
+        reconnectConfig: ReconnectConfig(),
+        connect: {
+            Task { [weak self] in
+                do {
+                    try await self?.connect(connectOptions)
+                } catch {
+                    self?.logger.error("Reconnection failed: \(error)")
+                }
             }
-        }
+        },
+        listener: reconnectionListener
+    )
+
+    let audioEnabled = configOptions.audioEnabled
+    let videoEnabled = configOptions.videoEnabled
+
+    if !audioEnabled && !videoEnabled {
+        logger.warning(
+            "Both audioEnabled and videoEnabled are set to false, what will result in no stream at all. Consider changing one of the options to true."
+        )
+    }
 
         var error: NSError?
 
@@ -81,7 +87,7 @@ public class WhepClient: ClientBase & Connectable {
         let offer = try await peerConnection!.offer(for: constraints)
         try await peerConnection!.setLocalDescription(offer)
 
-        let sdpAnswer = try await sendSdpOffer(sdpOffer: offer.sdp)
+        let sdpAnswer = try await send(sdpOffer: offer.sdp)
 
         for candidate in iceCandidates {
             try await sendCandidate(candidate: candidate)
