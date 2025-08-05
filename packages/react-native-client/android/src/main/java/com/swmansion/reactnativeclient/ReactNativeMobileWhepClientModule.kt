@@ -1,12 +1,14 @@
 package com.swmansion.reactnativeclient
 
 import android.content.Context
+import android.util.Log
 import com.mobilewhep.client.ClientBaseListener
 import com.mobilewhep.client.ConfigurationOptions
 import com.mobilewhep.client.ReconnectionManagerListener
 import com.mobilewhep.client.VideoParameters
 import com.mobilewhep.client.WhepClient
 import com.mobilewhep.client.WhipClient
+import com.swmansion.reactnativeclient.helpers.PermissionUtils
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -71,7 +73,7 @@ class ReactNativeMobileWhepClientModule :
     ModuleDefinition {
       Name("ReactNativeMobileWhepClient")
 
-      Events("trackAdded", "reconnectionStatusChanged")
+      Events(EmitableEvent.allEvents)
 
       Function("createWhepClient") { serverUrl: String, configurationOptions: Map<String, Any>? ->
         val context: Context =
@@ -89,6 +91,9 @@ class ReactNativeMobileWhepClientModule :
         whepClient = WhepClient(context, serverUrl, options)
         whepClient?.addReconnectionListener(this@ReactNativeMobileWhepClientModule)
         whepClient?.addTrackListener(this@ReactNativeMobileWhepClientModule)
+        whepClient?.onConnectionStateChanged = { newState ->
+          emit(EmitableEvent.whepPeerConnectionStateChanged(newState))
+        }
       }
 
       AsyncFunction("connectWhep") Coroutine { ->
@@ -112,7 +117,7 @@ class ReactNativeMobileWhepClientModule :
         whepClient?.unpause()
       }
 
-      Function("createWhipClient") { serverUrl: String, configurationOptions: Map<String, Any>?, videoDevice: String ->
+      AsyncFunction("createWhipClient") Coroutine { serverUrl: String, configurationOptions: Map<String, Any>?, videoDevice: String ->
         val context: Context =
           appContext.reactContext ?: throw IllegalStateException("React context is not available")
         val options =
@@ -124,8 +129,22 @@ class ReactNativeMobileWhepClientModule :
             videoParameters = configurationOptions?.get("videoParameters") as? VideoParameters
               ?: VideoParameters.presetFHD43,
           )
+
+        if (options.videoEnabled == true && !PermissionUtils.requestCameraPermission(appContext)) {
+          emit(EmitableEvent.warning("Camera permission not granted. Cannot initialize WhipClient."))
+          return@Coroutine
+        }
+
+        if (options.audioEnabled == true && !PermissionUtils.requestMicrophonePermission(appContext)) {
+          emit(EmitableEvent.warning("Microphone permission not granted. Cannot initialize WhipClient."))
+          return@Coroutine
+        }
+
         whipClient = WhipClient(context, serverUrl, options, videoDevice)
         whipClient?.addTrackListener(this@ReactNativeMobileWhepClientModule)
+        whipClient?.onConnectionStateChanged = { newState ->
+            emit(EmitableEvent.whipPeerConnectionStateChanged(newState))
+        }
       }
 
       AsyncFunction("connectWhip") Coroutine { ->
@@ -146,23 +165,26 @@ class ReactNativeMobileWhepClientModule :
       }
     }
 
+  fun emit(event: EmitableEvent) {
+    sendEvent(event.name, event.data)
+  }
+
   override fun onTrackAdded(track: VideoTrack) {
-    sendEvent("trackAdded", mapOf(track.id() to track.kind()))
     onTrackUpdateListeners.forEach { it.onTrackUpdate(track) }
   }
 
   override fun onReconnectionStarted() {
     super.onReconnectionStarted()
-    sendEvent("reconnectionStatusChanged", mapOf("status" to "reconnectionStarted"))
+    emit(EmitableEvent.reconnectionStatusChanged(ReconnectionStatus.ReconnectionStarted))
   }
 
   override fun onReconnected() {
     super.onReconnected()
-    sendEvent("reconnectionStatusChanged", mapOf("status" to "reconnected"))
+    emit(EmitableEvent.reconnectionStatusChanged(ReconnectionStatus.Reconnected))
   }
 
   override fun onReconnectionRetriesLimitReached() {
     super.onReconnectionRetriesLimitReached()
-    sendEvent("reconnectionStatusChanged", mapOf("status" to "reconnectionRetriesLimitReached"))
+    emit(EmitableEvent.reconnectionStatusChanged(ReconnectionStatus.ReconnectionRetriesLimitReached))
   }
 }

@@ -36,7 +36,7 @@ type RNMobileWhepClientModule = {
     serverUrl: string,
     configurationOptions?: ConfigurationOptions,
     videoDevice?: CameraId,
-  ) => void;
+  ) => Promise<void>;
   connectWhip: () => Promise<void>;
   disconnectWhip: () => void;
   cameras: readonly Camera[];
@@ -116,7 +116,7 @@ export function unpauseWhepClient() {
  * Allows user to choose a streaming device from all available cameras.
  *  It is a first step before connecting to the server.
  */
-export function createWhipClient(
+export async function createWhipClient(
   serverUrl: string,
   configurationOptions?: ConfigurationOptions,
   videoDevice?: CameraId,

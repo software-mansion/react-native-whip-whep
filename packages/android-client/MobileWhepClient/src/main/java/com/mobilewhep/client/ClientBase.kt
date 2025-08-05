@@ -45,6 +45,9 @@ open class ClientBase(
 ) : PeerConnection.Observer {
   protected var peerConnectionFactory: PeerConnectionFactory
   protected var peerConnection: PeerConnection
+  val peerConnectionState: PeerConnection.PeerConnectionState
+    get() = peerConnection.connectionState()
+
   val eglBase = EglBase.create()
 
   private var patchEndpoint: String? = null
@@ -65,6 +68,7 @@ open class ClientBase(
   open var videoTrack: VideoTrack? = null
   private var listeners = mutableListOf<ClientBaseListener>()
   var onTrackAdded: (() -> Unit)? = null
+  var onConnectionStateChanged: ((PeerConnection.PeerConnectionState) -> Unit)? = null
 
   init {
     val iceServers =
@@ -347,7 +351,8 @@ open class ClientBase(
   /**
    Reacts to changes in the Peer Connection state and logs a message depending on the current state
    */
-  override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {
+  override fun onConnectionChange(newState: PeerConnection.PeerConnectionState) {
+    onConnectionStateChanged?.invoke(newState)
     when (newState) {
       PeerConnection.PeerConnectionState.NEW -> Log.d(CLIENT_TAG, "New connection")
       PeerConnection.PeerConnectionState.CONNECTING -> Log.d(CLIENT_TAG, "Connecting")
@@ -365,7 +370,6 @@ open class ClientBase(
         )
 
       PeerConnection.PeerConnectionState.CLOSED -> Log.d(CLIENT_TAG, "Connection has been closed")
-      null -> Log.d(CLIENT_TAG, "Connection is null")
     }
   }
 

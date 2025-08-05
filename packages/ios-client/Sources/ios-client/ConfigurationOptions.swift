@@ -1,11 +1,11 @@
 import Foundation
 
 public struct ConfigurationOptions {
-    let authToken: String?
-    let stunServerUrl: String?
-    let videoParameters: VideoParameters?
-    let audioEnabled: Bool
-    let videoEnabled: Bool
+    public let authToken: String?
+    public let stunServerUrl: String?
+    public let videoParameters: VideoParameters?
+    public let audioEnabled: Bool
+    public let videoEnabled: Bool
 
     public init(
         authToken: String? = nil, stunServerUrl: String? = nil, audioEnabled: Bool = true, videoEnabled: Bool = true,

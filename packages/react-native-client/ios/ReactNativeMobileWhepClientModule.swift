@@ -128,7 +128,7 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
             client.unpause()
         }
 
-        Function("createWhipClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?, videoDevice: String) in
+        AsyncFunction("createWhipClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?, videoDevice: String) in
             guard ReactNativeMobileWhepClientModule.whipClient == nil else {
               emit(event: .warning(message: "WHIP client already exists. You must disconnect before creating a new one."))
               return
@@ -146,6 +146,16 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
                 videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,
                 videoParameters: configurationOptions?["videoParameters"] as? VideoParameters ?? VideoParameters.presetFHD43
             )
+          
+          guard options.videoEnabled, await PermissionUtils.requestCameraPermission() else {
+              emit(event: .warning(message: "Camera permission not granted. Cannot initialize WhipClient."))
+              return
+          }
+          
+          guard options.audioEnabled, await PermissionUtils.requestMicrophonePermission() else {
+              emit(event: .warning(message: "Microphone permission not granted. Cannot initialize WhipClient."))
+              return
+          }
 
             ReactNativeMobileWhepClientModule.whipClient = WhipClient(serverUrl: url, configurationOptions: options, videoDevice: AVCaptureDevice(uniqueID: videoDevice))
             ReactNativeMobileWhepClientModule.whipClient?.delegate = self
