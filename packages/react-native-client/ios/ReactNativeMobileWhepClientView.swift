@@ -20,12 +20,6 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
         }
     }
   
-    public var orientation = Orientation.portrait {
-        didSet {
-            hostingController?.orientation = self.orientation
-        }
-    }
-  
   public var pipEnabled = false {
     didSet {
       setupPip()

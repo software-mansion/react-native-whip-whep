@@ -11,6 +11,7 @@ import org.webrtc.CameraEnumerationAndroid
 import org.webrtc.CameraEnumerator
 import org.webrtc.CameraVideoCapturer
 import org.webrtc.MediaConstraints
+import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
 import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
@@ -110,7 +111,7 @@ class WhipClient(
       this.videoCapturer = videoCapturer
 
       val transceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
-      peerConnection.addTransceiver(videoTrack, transceiverInit)
+      val newTranseiver = peerConnection.addTransceiver(videoTrack, transceiverInit)
 
       videoTrack.setEnabled(true)
       this.videoTrack = videoTrack
@@ -224,6 +225,12 @@ class WhipClient(
       }
     }
     return true
+  }
+
+  fun getSupportedSenderVideoCodecsNames(): List<String> {
+      val capabilities = peerConnectionFactory.getRtpSenderCapabilities(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)
+
+      return capabilities.codecs.map { it.name }
   }
 
   companion object {

@@ -117,7 +117,7 @@ class ReactNativeMobileWhepClientModule :
         whepClient?.unpause()
       }
 
-      AsyncFunction("createWhipClient") Coroutine {  configurationOptions: Map<String, Any>? ->
+      Function("createWhipClient") {  configurationOptions: Map<String, Any>? ->
         val context: Context =
           appContext.reactContext ?: throw IllegalStateException("React context is not available")
         val options =
@@ -130,14 +130,14 @@ class ReactNativeMobileWhepClientModule :
             videoDevice = configurationOptions?.get("videoDeviceId") as? String
           )
 
-        if (options.videoEnabled == true && !PermissionUtils.requestCameraPermission(appContext)) {
+        if (options.videoEnabled == true && !PermissionUtils.hasCameraPermission(appContext)) {
           emit(EmitableEvent.warning("Camera permission not granted. Cannot initialize WhipClient."))
-          return@Coroutine
+          return@Function
         }
 
-        if (options.audioEnabled == true && !PermissionUtils.requestMicrophonePermission(appContext)) {
+        if (options.audioEnabled == true && !PermissionUtils.hasMicrophonePermission(appContext)) {
           emit(EmitableEvent.warning("Microphone permission not granted. Cannot initialize WhipClient."))
-          return@Coroutine
+          return@Function
         }
 
         whipClient = WhipClient(context, options)
@@ -161,6 +161,10 @@ class ReactNativeMobileWhepClientModule :
         whipClient = null
 
         return@Function Unit
+      }
+
+      Function("getSupportedSenderVideoCodecsNames") {
+        return@Function whipClient?.getSupportedSenderVideoCodecsNames() ?: listOf<String>()
       }
 
       Property("cameras") {

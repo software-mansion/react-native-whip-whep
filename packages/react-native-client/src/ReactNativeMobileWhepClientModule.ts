@@ -27,14 +27,13 @@ type RNMobileWhepClientModule = {
   disconnectWhep: () => void;
   pauseWhep: () => void;
   unpauseWhep: () => void;
-  createWhipClient: (
-    configurationOptions?: WhipConfigurationOptions,
-  ) => Promise<void>;
+  createWhipClient: (configurationOptions: WhipConfigurationOptions) => void;
   connectWhip: (serverUrl: string, authToken?: string) => Promise<void>;
   disconnectWhip: () => void;
   cameras: readonly Camera[];
   whepPeerConnectionState: PeerConnectionState | null;
   whipPeerConnectionState: PeerConnectionState | null;
+  getSupportedSenderVideoCodecsNames: () => Promise<string[]>;
 };
 
 export const ReceivableEvents = {
@@ -106,31 +105,33 @@ export function unpauseWhepClient() {
   return nativeModule.unpauseWhep();
 }
 
-/** Creates a WHIP client based on the provided `configurationOptions`.
- * Allows user to choose a streaming device from all available cameras.
- *  It is a first step before connecting to the server.
- */
-export async function createWhipClient(
-  configurationOptions?: WhipConfigurationOptions,
-) {
-  return nativeModule.createWhipClient(configurationOptions);
-}
+export class WhipClient {
+  private isInitialized = false;
 
-/** Connects to the WHIP server defined while creating WHIP client.
- * Allows user to stream video and audio.
- */
-export async function connectWhipClient(connectOptions: ConnectOptions) {
-  return await nativeModule.connectWhip(
-    connectOptions.serverUrl,
-    connectOptions.authToken,
-  );
-}
+  constructor(private readonly configurationOptions: WhipConfigurationOptions) {
+    this.initializeIfNeeded();
+    console.warn("WhipClient constructor");
+  }
 
-/** Disconnects from the WHIP server defined while creating WHIP client.
- * Frees the resources.
- */
-export function disconnectWhipClient() {
-  return nativeModule.disconnectWhip();
+  private initializeIfNeeded() {
+    if (!this.isInitialized) {
+      nativeModule.createWhipClient(this.configurationOptions);
+      this.isInitialized = true;
+    }
+  }
+
+  async connect(connectOptions: ConnectOptions) {
+    this.initializeIfNeeded();
+    await nativeModule.connectWhip(
+      connectOptions.serverUrl,
+      connectOptions.authToken,
+    );
+  }
+
+  disconnect() {
+    nativeModule.disconnectWhip();
+    this.isInitialized = false;
+  }
 }
 
 /** Gives access to the cameras available on the device.*/

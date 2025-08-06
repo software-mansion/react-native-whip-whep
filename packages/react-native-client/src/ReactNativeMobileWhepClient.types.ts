@@ -76,11 +76,6 @@ export type ReactNativeMobileWhepClientViewProps = {
    * It should be a valid CSS object for style properties.
    */
   style: React.CSSProperties;
-  /**
-   * Used to set the orientation of the video.
-   * Defaults to "portrait".
-   */
-  orientation?: "landscape" | "portrait";
 
   /**
    * A variable deciding whether the Picture-in-Picture is enabled.

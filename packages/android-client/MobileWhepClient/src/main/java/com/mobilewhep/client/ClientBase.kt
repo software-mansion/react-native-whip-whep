@@ -132,7 +132,7 @@ open class ClientBase(
         return@suspendCoroutine
       }
 
-      var requestBuilder = Request
+      var requestBuilder: Request.Builder = Request
           .Builder()
           .url(connectOptions!!.serverUrl)
           .post(sdpOffer.toRequestBody())

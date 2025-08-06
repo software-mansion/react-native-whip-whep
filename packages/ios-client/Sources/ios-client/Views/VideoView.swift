@@ -3,11 +3,6 @@ import SwiftUI
 import UIKit
 import WebRTC
 
-public enum Orientation: String {
-    case portrait
-    case landscape
-}
-
 public struct VideoView: UIViewRepresentable {
     public var player: ClientBase
 
@@ -84,12 +79,6 @@ public class VideoViewController: UIViewController {
 
     public private(set) var pipController: PictureInPictureController?
 
-    public var orientation = Orientation.portrait {
-        didSet {
-            videoView.rotationOverride = getRTCVideoRotation(for: orientation).nsNumber
-        }
-    }
-
     public init(player: ClientBase) {
         self.player = player
         super.init(nibName: nil, bundle: nil)
@@ -101,7 +90,6 @@ public class VideoViewController: UIViewController {
 
     public override func viewDidLoad() {
         super.viewDidLoad()
-        videoView.rotationOverride = getRTCVideoRotation(for: orientation).nsNumber
         view.addSubview(videoView)
         videoView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -136,17 +124,6 @@ public class VideoViewController: UIViewController {
 
     public func disablePictureInPicture() {
         self.pipController = nil
-    }
-
-    private func getRTCVideoRotation(for orientation: Orientation) -> RTCVideoRotation {
-        switch orientation {
-        case .portrait:
-            return RTCVideoRotation._0
-        case .landscape:
-            return RTCVideoRotation._90
-        @unknown default:
-            return RTCVideoRotation._0
-        }
     }
 }
 

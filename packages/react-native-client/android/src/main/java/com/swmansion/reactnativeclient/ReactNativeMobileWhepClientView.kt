@@ -18,7 +18,6 @@ import expo.modules.kotlin.views.ExpoView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.webrtc.VideoFrame
 import org.webrtc.VideoTrack
 
 enum class Orientation {
@@ -33,7 +32,6 @@ class ReactNativeMobileWhepClientView(
   ReactNativeMobileWhepClientModule.OnTrackUpdateListener {
   private val videoView: VideoView
   private var playerType: String = "WHEP"
-  private var orientation: Orientation = Orientation.PORTRAIT
 
   init {
     ReactNativeMobileWhepClientModule.onTrackUpdateListeners.add(this)
@@ -45,11 +43,6 @@ class ReactNativeMobileWhepClientView(
     this.playerType = playerType
   }
 
-  fun setOrientation(orientation: Orientation) {
-    this.orientation = orientation
-    reinitializeVideoTrackSink()
-  }
-
   private fun setupTrack(videoTrack: VideoTrack) {
     videoView.post {
       if (playerType == "WHIP") {
@@ -59,7 +52,9 @@ class ReactNativeMobileWhepClientView(
       }
 
       videoView.player?.videoTrack = videoTrack
-      reinitializeVideoTrackSink()
+      videoView.player?.videoTrack?.removeSink(videoView)
+      videoTrack.addSink(videoView)
+
     }
   }
 
@@ -143,21 +138,6 @@ class ReactNativeMobileWhepClientView(
     }
     rootViewChildrenOriginalVisibility.clear()
     this.addView(videoView)
-  }
-
-  private fun reinitializeVideoTrackSink() {
-    videoView.player?.videoTrack?.let { track ->
-      track.removeSink(videoView)
-      track.addSink {
-        val rotation = when (orientation) {
-          Orientation.PORTRAIT -> 0
-          Orientation.LANDSCAPE -> -90
-        }
-
-        videoView.onFrame(VideoFrame(it.buffer, rotation, -1))
-      }
-
-    }
   }
 
   private fun update(track: VideoTrack) {
