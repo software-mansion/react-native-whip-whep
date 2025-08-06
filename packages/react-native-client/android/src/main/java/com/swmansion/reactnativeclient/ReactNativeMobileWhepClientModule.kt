@@ -103,11 +103,9 @@ class ReactNativeMobileWhepClientModule :
         }
       }
 
-      Function("disconnectWhep") {
+      AsyncFunction("disconnectWhep") Coroutine { ->
         whepClient?.disconnect()
         whepClient = null
-
-        return@Function Unit
       }
 
       Function("pauseWhep") {
@@ -157,11 +155,9 @@ class ReactNativeMobileWhepClientModule :
         }
       }
 
-      Function("disconnectWhip") {
+      AsyncFunction("disconnectWhip") Coroutine { ->
         whipClient?.disconnect()
         whipClient = null
-
-        return@Function Unit
       }
 
       Function("getSupportedSenderVideoCodecsNames") {

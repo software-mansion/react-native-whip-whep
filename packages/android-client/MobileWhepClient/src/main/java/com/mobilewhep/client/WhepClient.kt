@@ -95,7 +95,7 @@ class WhepClient(
    *  or in any other case where there has been an error in creating the peerConnection
    *
    */
-  public fun disconnect() {
+  override suspend fun disconnect() {
     peerConnection.dispose()
     peerConnectionFactory.dispose()
     eglBase.release()

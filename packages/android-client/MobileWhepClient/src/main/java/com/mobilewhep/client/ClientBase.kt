@@ -6,6 +6,7 @@ import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.OkHttpClient
@@ -110,6 +111,78 @@ open class ClientBase(
 
   open suspend fun connect(connectOptions: ClientConnectOptions) {
     this.connectOptions = connectOptions
+  }
+
+  open suspend fun disconnect() {
+    suspendCancellableCoroutine { continuation ->
+      if (connectOptions == null) {
+        continuation.resumeWithException(
+          SessionNetworkError.ConnectionError(
+            "Cannot DELETE. Connection not setup. Remember to call connect first."
+          )
+        )
+        return@suspendCancellableCoroutine
+      }
+
+      val serverUrl = URL(connectOptions!!.serverUrl)
+
+      val requestURL =
+        URI(serverUrl.protocol, null, serverUrl.host, serverUrl.port, patchEndpoint, null, null)
+
+      var requestBuilder: Request.Builder =
+        Request
+          .Builder()
+          .url(requestURL.toURL())
+          .delete()
+      if (connectOptions!!.authToken != null) {
+        requestBuilder =
+          requestBuilder.header("Authorization", "Bearer " + connectOptions!!.authToken)
+      }
+
+      val request = requestBuilder.build()
+      val requestCall = client.newCall(request)
+
+      continuation.invokeOnCancellation {
+        requestCall.cancel()
+      }
+
+      requestCall.enqueue(
+        object : Callback {
+          override fun onFailure(
+            call: Call,
+            e: IOException
+          ) {
+            if (e is ConnectException) {
+              continuation.resumeWithException(
+                SessionNetworkError.ConnectionError(
+                  "DELETE Failed, network error. Check if the server is up and running and the token and the server url is correct."
+                )
+              )
+            } else {
+              Log.e(CLIENT_TAG, e.toString())
+              continuation.resumeWithException(e)
+              e.printStackTrace()
+            }
+          }
+
+          override fun onResponse(
+            call: Call,
+            response: Response
+          ) {
+            response.use {
+              if (!response.isSuccessful) {
+                val exception =
+                  AttributeNotFoundError.ResponseNotFound("DELETE Failed, invalid response. Check if the server is up and running and the token and the server url is correct.")
+                continuation.resumeWithException(exception)
+              } else {
+                continuation.resume(Unit)
+              }
+
+            }
+          }
+        }
+      )
+    }
   }
 
   /**

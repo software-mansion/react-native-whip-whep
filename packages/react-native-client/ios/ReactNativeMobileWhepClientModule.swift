@@ -104,8 +104,8 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
           try await client.connect(.init(serverUrl: url, authToken: authToken))
         }
 
-        Function("disconnectWhep") {
-          ReactNativeMobileWhepClientModule.whepClient?.disconnect()
+        AsyncFunction("disconnectWhep") {
+          try await ReactNativeMobileWhepClientModule.whepClient?.disconnect()
           ReactNativeMobileWhepClientModule.whepClient = nil
         }
 
@@ -178,8 +178,8 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
           try await client.connect(.init(serverUrl: url, authToken: authToken))
         }
 
-        Function("disconnectWhip") {
-          ReactNativeMobileWhepClientModule.whipClient?.disconnect()
+        AsyncFunction("disconnectWhip") {
+          try await ReactNativeMobileWhepClientModule.whipClient?.disconnect()
           ReactNativeMobileWhepClientModule.whipClient = nil
         }
 

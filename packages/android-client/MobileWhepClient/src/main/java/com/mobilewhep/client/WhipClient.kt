@@ -173,13 +173,14 @@ class WhipClient(
    *  or in any other case where there has been an error in creating the peerConnection
    *
    */
-  public fun disconnect() {
+  override suspend fun disconnect() {
     peerConnection.dispose()
     peerConnectionFactory.dispose()
     eglBase.release()
     videoCapturer?.stopCapture()
     videoCapturer?.dispose()
     videoSource?.dispose()
+    super.disconnect()
   }
 
   private fun PeerConnection.enforceSendOnlyDirection() {

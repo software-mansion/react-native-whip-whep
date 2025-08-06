@@ -31,12 +31,12 @@ type RNMobileWhepClientModule = {
   whipPeerConnectionState: PeerConnectionState | null;
   createWhepClient: (configurationOptions?: WhepConfigurationOptions) => void;
   connectWhep: (serverUrl: string, authToken?: string) => Promise<void>;
-  disconnectWhep: () => void;
+  disconnectWhep: () => Promise<void>;
   pauseWhep: () => void;
   unpauseWhep: () => void;
   createWhipClient: (configurationOptions: WhipConfigurationOptions) => void;
   connectWhip: (serverUrl: string, authToken?: string) => Promise<void>;
-  disconnectWhip: () => void;
+  disconnectWhip: () => Promise<void>;
 
   // Codecs
   getSupportedSenderVideoCodecsNames: () => SenderVideoCodecName[];
@@ -103,10 +103,11 @@ export class WhipClient {
       connectOptions.authToken,
     );
   }
-
-  disconnect() {
-    nativeModule.disconnectWhip();
+  async disconnect() {
+    console.log("WhipClient disconnecting");
+    await nativeModule.disconnectWhip();
     this.isInitialized = false;
+    console.log("WhipClient disconnected");
   }
 
   getSupportedAudioCodecs() {
@@ -156,8 +157,8 @@ export class WhepClient {
    * Disconnects from the WHEP server defined while creating WHEP client.
    * Frees the resources.
    */
-  disconnect() {
-    nativeModule.disconnectWhep();
+  async disconnect() {
+    await nativeModule.disconnectWhep();
     this.isInitialized = false;
   }
 
