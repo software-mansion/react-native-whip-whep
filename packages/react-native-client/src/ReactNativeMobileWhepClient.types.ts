@@ -5,16 +5,11 @@ export type Brand<T, TBrand extends string> = T & { [brand]: TBrand };
 /** A unique ID of the camera.  */
 export type CameraId = Brand<string, "CameraId">;
 
-// /** Defines initial connection and stream options. */
-// export type ConfigurationOptions = {
-
-//   /** A variable deciding whether the audio should be streamed or not. Defaults to true. */
-//   audioEnabled?: boolean;
-//   /** A variable deciding whether the video should be streamed or not. Defaults to true. */
-//   videoEnabled?: boolean;
-//   /** Defines the parameters of the video. Defaults to HD43. */
-//   videoParameters?: VideoParameters;
-// };
+/** Name of the codec.  */
+export type SenderAudioCodecName = Brand<string, "SenderAudioCodecName">;
+export type SenderVideoCodecName = Brand<string, "SenderVideoCodecName">;
+export type ReceiverAudioCodecName = Brand<string, "ReceiverAudioCodecName">;
+export type ReceiverVideoCodecName = Brand<string, "ReceiverVideoCodecName">;
 
 export type ConnectOptions = {
   /** Authorization token that might be required to access the server. */

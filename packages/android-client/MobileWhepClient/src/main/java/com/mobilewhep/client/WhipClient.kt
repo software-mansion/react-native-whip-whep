@@ -111,7 +111,7 @@ class WhipClient(
       this.videoCapturer = videoCapturer
 
       val transceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
-      val newTranseiver = peerConnection.addTransceiver(videoTrack, transceiverInit)
+      peerConnection.addTransceiver(videoTrack, transceiverInit)
 
       videoTrack.setEnabled(true)
       this.videoTrack = videoTrack
@@ -124,6 +124,8 @@ class WhipClient(
 
       val audioTransceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
       peerConnection.addTransceiver(audioTrack, audioTransceiverInit)
+
+
     }
 
     peerConnection.enforceSendOnlyDirection()
@@ -231,6 +233,44 @@ class WhipClient(
       val capabilities = peerConnectionFactory.getRtpSenderCapabilities(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)
 
       return capabilities.codecs.map { it.name }
+  }
+
+  fun getSupportedSenderAudioCodecsNames(): List<String> {
+    val capabilities = peerConnectionFactory.getRtpSenderCapabilities(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)
+
+    return capabilities.codecs.map { it.name }
+  }
+
+  fun setPrefferedVideoCodecs(preferredCodecs: List<String>?) {
+    if (preferredCodecs?.isEmpty() == true) {
+      return
+    }
+
+    peerConnection.transceivers.forEach { transceiver ->
+      if (transceiver.mediaType.equals(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)) {
+        setCodecPreferencesIfAvailable(
+          transceiver,
+          preferredCodecs!!,
+          MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO
+        )
+      }
+    }
+  }
+
+  fun setPreferredAudioCodecs(preferredCodecs: List<String>?) {
+    if (preferredCodecs?.isEmpty() == true) {
+      return
+    }
+
+    peerConnection.transceivers.forEach { transceiver ->
+      if (transceiver.mediaType.equals(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)) {
+        setCodecPreferencesIfAvailable(
+          transceiver,
+          preferredCodecs!!,
+          MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO
+        )
+      }
+    }
   }
 
   companion object {

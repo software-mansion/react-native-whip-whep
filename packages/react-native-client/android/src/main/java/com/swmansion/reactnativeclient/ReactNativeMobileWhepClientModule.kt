@@ -84,6 +84,7 @@ class ReactNativeMobileWhepClientModule :
             stunServerUrl = configurationOptions?.get("stunServerUrl") as? String,
             audioEnabled = configurationOptions?.get("audioEnabled") as? Boolean ?: true,
             videoEnabled = configurationOptions?.get("videoEnabled") as? Boolean ?: true,
+
           )
         whepClient = WhepClient(context, options)
         whepClient?.addReconnectionListener(this@ReactNativeMobileWhepClientModule)
@@ -165,6 +166,34 @@ class ReactNativeMobileWhepClientModule :
 
       Function("getSupportedSenderVideoCodecsNames") {
         return@Function whipClient?.getSupportedSenderVideoCodecsNames() ?: listOf<String>()
+      }
+
+      Function("getSupportedSenderAudioCodecsNames") {
+        return@Function whipClient?.getSupportedSenderAudioCodecsNames() ?: listOf<String>()
+      }
+
+      Function("getSupportedReceiverVideoCodecsNames") {
+        return@Function whepClient?.getSupportedReceiverVideoCodecsNames() ?: listOf<String>()
+      }
+
+      Function("getSupportedReceiverAudioCodecsNames") {
+        return@Function whepClient?.getSupportedReceiverAudioCodecsNames() ?: listOf<String>()
+      }
+
+      Function("setPreferredSenderVideoCodecs") { preferredCodecs: List<String>? ->
+        whipClient?.setPrefferedVideoCodecs(preferredCodecs)
+      }
+
+      Function("setPreferredSenderAudioCodecs") { preferredCodecs: List<String>? ->
+        whipClient?.setPreferredAudioCodecs(preferredCodecs)
+      }
+
+      Function("setPreferredReceiverVideoCodecs") { preferredCodecs: List<String>? ->
+        whepClient?.setPreferredVideoCodecs(preferredCodecs)
+      }
+
+      Function("setPreferredReceiverAudioCodecs") { preferredCodecs: List<String>? ->
+        whepClient?.setPreferredAudioCodecs(preferredCodecs)
       }
 
       Property("cameras") {

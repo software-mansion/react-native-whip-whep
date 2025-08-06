@@ -123,6 +123,50 @@ class WhepClient(
     this.videoTrack?.setEnabled(true)
   }
 
+  fun getSupportedReceiverVideoCodecsNames(): List<String> {
+    val capabilities = peerConnectionFactory.getRtpReceiverCapabilities(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)
+
+    return capabilities.codecs.map { it.name }
+  }
+
+  fun getSupportedReceiverAudioCodecsNames(): List<String> {
+    val capabilities = peerConnectionFactory.getRtpReceiverCapabilities(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)
+
+    return capabilities.codecs.map { it.name }
+  }
+
+  fun setPreferredVideoCodecs(preferredCodecs: List<String>?) {
+    if (preferredCodecs?.isEmpty() == true) {
+      return
+    }
+
+    peerConnection.transceivers.forEach { transceiver ->
+      if (transceiver.mediaType.equals(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)) {
+        setCodecPreferencesIfAvailable(
+          transceiver,
+          preferredCodecs!!,
+          MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO
+        )
+      }
+    }
+  }
+
+  fun setPreferredAudioCodecs(preferredCodecs: List<String>?) {
+    if (preferredCodecs?.isEmpty() == true) {
+      return
+    }
+
+    peerConnection.transceivers.forEach { transceiver ->
+      if (transceiver.mediaType.equals(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)) {
+        setCodecPreferencesIfAvailable(
+          transceiver,
+          preferredCodecs!!,
+          MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO
+        )
+      }
+    }
+  }
+
   override fun onIceConnectionChange(connectionState: PeerConnection.IceConnectionState?) {
     super.onIceConnectionChange(connectionState)
 

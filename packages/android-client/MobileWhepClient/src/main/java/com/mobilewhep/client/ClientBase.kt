@@ -19,9 +19,12 @@ import org.webrtc.DefaultVideoEncoderFactory
 import org.webrtc.EglBase
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
+import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnectionFactory
+import org.webrtc.RtpCapabilities
 import org.webrtc.RtpReceiver
+import org.webrtc.RtpTransceiver
 import org.webrtc.VideoTrack
 import org.webrtc.audio.AudioDeviceModule
 import java.io.IOException
@@ -279,6 +282,31 @@ open class ClientBase(
 
   override fun onSignalingChange(p0: PeerConnection.SignalingState?) {
     Log.d(CLIENT_TAG, "RTC signaling state changed:: ${p0?.name}")
+  }
+
+  protected fun getMatchedCodecs(
+    preferredCodecs: List<String>,
+    mediaType: MediaStreamTrack.MediaType
+  ): List<RtpCapabilities.CodecCapability> {
+    if (preferredCodecs.isEmpty()) {
+      return emptyList()
+    }
+
+    val availableCodecs = peerConnectionFactory.getRtpSenderCapabilities(mediaType).codecs
+    return preferredCodecs.mapNotNull { preferredCodec ->
+      availableCodecs.firstOrNull { it.name.equals(preferredCodec, ignoreCase = true) }
+    }
+  }
+
+  protected fun setCodecPreferencesIfAvailable(
+    transceiver: RtpTransceiver?,
+    preferredCodecs: List<String>,
+    mediaType: MediaStreamTrack.MediaType
+  ) {
+    val matchedCodecs = getMatchedCodecs(preferredCodecs, mediaType)
+    if (matchedCodecs.isNotEmpty()) {
+      transceiver?.setCodecPreferences(matchedCodecs)
+    }
   }
 
   /**

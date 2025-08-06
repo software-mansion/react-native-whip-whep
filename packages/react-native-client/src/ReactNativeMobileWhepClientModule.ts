@@ -6,6 +6,10 @@ import {
   CameraId,
   ConnectOptions,
   WhepConfigurationOptions,
+  SenderAudioCodecName,
+  SenderVideoCodecName,
+  ReceiverAudioCodecName,
+  ReceiverVideoCodecName,
 } from "./ReactNativeMobileWhepClient.types";
 
 /** Describes whether the camera is front-facing or back-facing. */
@@ -22,6 +26,9 @@ export type Camera = {
 };
 
 type RNMobileWhepClientModule = {
+  cameras: readonly Camera[];
+  whepPeerConnectionState: PeerConnectionState | null;
+  whipPeerConnectionState: PeerConnectionState | null;
   createWhepClient: (configurationOptions?: WhepConfigurationOptions) => void;
   connectWhep: (serverUrl: string, authToken?: string) => Promise<void>;
   disconnectWhep: () => void;
@@ -30,10 +37,16 @@ type RNMobileWhepClientModule = {
   createWhipClient: (configurationOptions: WhipConfigurationOptions) => void;
   connectWhip: (serverUrl: string, authToken?: string) => Promise<void>;
   disconnectWhip: () => void;
-  cameras: readonly Camera[];
-  whepPeerConnectionState: PeerConnectionState | null;
-  whipPeerConnectionState: PeerConnectionState | null;
-  getSupportedSenderVideoCodecsNames: () => Promise<string[]>;
+
+  // Codecs
+  getSupportedSenderVideoCodecsNames: () => SenderVideoCodecName[];
+  getSupportedReceiverVideoCodecsNames: () => ReceiverVideoCodecName[];
+  getSupportedReceiverAudioCodecsNames: () => ReceiverAudioCodecName[];
+  getSupportedSenderAudioCodecsNames: () => SenderAudioCodecName[];
+  setPreferredSenderAudioCodecs: (codecs: SenderAudioCodecName[]) => void;
+  setPreferredSenderVideoCodecs: (codecs: SenderVideoCodecName[]) => void;
+  setPreferredReceiverAudioCodecs: (codecs: ReceiverAudioCodecName[]) => void;
+  setPreferredReceiverVideoCodecs: (codecs: ReceiverVideoCodecName[]) => void;
 };
 
 export const ReceivableEvents = {
@@ -95,6 +108,22 @@ export class WhipClient {
     nativeModule.disconnectWhip();
     this.isInitialized = false;
   }
+
+  getSupportedAudioCodecs() {
+    return nativeModule.getSupportedSenderAudioCodecsNames();
+  }
+
+  getSupportedVideoCodecs() {
+    return nativeModule.getSupportedSenderVideoCodecsNames();
+  }
+
+  setPreferredAudioCodecs(codecs: SenderAudioCodecName[]) {
+    nativeModule.setPreferredSenderAudioCodecs(codecs);
+  }
+
+  setPreferredVideoCodecs(codecs: SenderVideoCodecName[]) {
+    nativeModule.setPreferredSenderVideoCodecs(codecs);
+  }
 }
 
 export class WhepClient {
@@ -130,6 +159,22 @@ export class WhepClient {
   disconnect() {
     nativeModule.disconnectWhep();
     this.isInitialized = false;
+  }
+
+  getSupportedAudioCodecs() {
+    return nativeModule.getSupportedReceiverAudioCodecsNames();
+  }
+
+  getSupportedVideoCodecs() {
+    return nativeModule.getSupportedReceiverVideoCodecsNames();
+  }
+
+  setPreferredAudioCodecs(codecs: ReceiverAudioCodecName[]) {
+    nativeModule.setPreferredReceiverAudioCodecs(codecs);
+  }
+
+  setPreferredVideoCodecs(codecs: ReceiverVideoCodecName[]) {
+    nativeModule.setPreferredReceiverVideoCodecs(codecs);
   }
 }
 
