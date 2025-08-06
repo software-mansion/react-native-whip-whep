@@ -135,16 +135,17 @@ open class ClientBase(
         return@suspendCoroutine
       }
 
-      var requestBuilder: Request.Builder = Request
+      var requestBuilder: Request.Builder =
+        Request
           .Builder()
           .url(connectOptions!!.serverUrl)
           .post(sdpOffer.toRequestBody())
           .header("Accept", "application/sdp")
           .header("Content-Type", "application/sdp")
-          if (connectOptions!!.authToken != null) {
-            requestBuilder =
-              requestBuilder.header("Authorization", "Bearer " + connectOptions!!.authToken)
-          }
+      if (connectOptions!!.authToken != null) {
+        requestBuilder =
+          requestBuilder.header("Authorization", "Bearer " + connectOptions!!.authToken)
+      }
 
       val request = requestBuilder.build()
 
@@ -293,11 +294,12 @@ open class ClientBase(
       return emptyList()
     }
 
-    val availableCodecs = if (useReceiver) {
-      peerConnectionFactory.getRtpReceiverCapabilities(mediaType).codecs
-    } else {
-      peerConnectionFactory.getRtpSenderCapabilities(mediaType).codecs
-    }
+    val availableCodecs =
+      if (useReceiver) {
+        peerConnectionFactory.getRtpReceiverCapabilities(mediaType).codecs
+      } else {
+        peerConnectionFactory.getRtpSenderCapabilities(mediaType).codecs
+      }
     return preferredCodecs.mapNotNull { preferredCodec ->
       availableCodecs.firstOrNull { it.name.equals(preferredCodec, ignoreCase = true) }
     }

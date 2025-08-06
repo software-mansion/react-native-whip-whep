@@ -87,23 +87,23 @@ class WhipClient(
         peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
       val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
       videoCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
-        val videoSize =
-          setVideoSize(
-            cameraEnumerator,
-            configOptions.videoDevice,
-            configOptions.videoParameters
-          )
-        try {
-          videoCapturer.startCapture(
-            videoSize!!.width,
-            videoSize.height,
-            configOptions.videoParameters.maxFps
-          )
-        } catch (e: Exception) {
-          throw CaptureDeviceError.VideoSizeNotSupported(
-            "VideoSize ${configOptions.videoParameters} is not supported by this device. Consider switching to another preset."
-          )
-        }
+      val videoSize =
+        setVideoSize(
+          cameraEnumerator,
+          configOptions.videoDevice,
+          configOptions.videoParameters
+        )
+      try {
+        videoCapturer.startCapture(
+          videoSize!!.width,
+          videoSize.height,
+          configOptions.videoParameters.maxFps
+        )
+      } catch (e: Exception) {
+        throw CaptureDeviceError.VideoSizeNotSupported(
+          "VideoSize ${configOptions.videoParameters} is not supported by this device. Consider switching to another preset."
+        )
+      }
 
       val videoTrack: VideoTrack = peerConnectionFactory.createVideoTrack(videoTrackId, videoSource)
 
@@ -124,8 +124,6 @@ class WhipClient(
 
       val audioTransceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
       peerConnection.addTransceiver(audioTrack, audioTransceiverInit)
-
-
     }
 
     peerConnection.enforceSendOnlyDirection()
@@ -230,9 +228,9 @@ class WhipClient(
   }
 
   fun getSupportedSenderVideoCodecsNames(): List<String> {
-      val capabilities = peerConnectionFactory.getRtpSenderCapabilities(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)
+    val capabilities = peerConnectionFactory.getRtpSenderCapabilities(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)
 
-      return capabilities.codecs.map { it.name }
+    return capabilities.codecs.map { it.name }
   }
 
   fun getSupportedSenderAudioCodecsNames(): List<String> {

@@ -114,10 +114,10 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
 
         self.isConnectionSetUp = true
     }
-  
-  public func connect(_ connectOptions: ClientConnectOptions) async throws {
-    self.connectOptions = connectOptions
-  }
+
+    public func connect(_ connectOptions: ClientConnectOptions) async throws {
+        self.connectOptions = connectOptions
+    }
 
     /**
     Sends an SDP offer to the WHIP/WHEP server.
@@ -132,13 +132,13 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
     - Returns: A SDP response.
     */
     func send(sdpOffer: String) async throws -> String {
-      guard let connectOptions else {
-        throw SessionNetworkError.ConnectionError(
-          description:
-            "Cannot send the SDP Offer. Connection not setup. Remember to call connect first.")
-      }
-      
-      var request = URLRequest(url: connectOptions.serverUrl)
+        guard let connectOptions else {
+            throw SessionNetworkError.ConnectionError(
+                description:
+                    "Cannot send the SDP Offer. Connection not setup. Remember to call connect first.")
+        }
+
+        var request = URLRequest(url: connectOptions.serverUrl)
         request.httpMethod = "POST"
         request.httpBody = sdpOffer.data(using: .utf8)
         request.addValue("application/sdp", forHTTPHeaderField: "Accept")
@@ -191,12 +191,12 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
       `NSError` for when the candidate data dictionary could not be serialized to JSON.
     */
     func sendCandidate(candidate: RTCIceCandidate) async throws {
-      guard let connectOptions else {
-        throw SessionNetworkError.ConnectionError(
-          description:
-            "Cannot send ICE Candidate. Connection not setup. Remember to call connect first.")
-      }
-      
+        guard let connectOptions else {
+            throw SessionNetworkError.ConnectionError(
+                description:
+                    "Cannot send ICE Candidate. Connection not setup. Remember to call connect first.")
+        }
+
         guard patchEndpoint != nil else {
             throw AttributeNotFoundError.PatchEndpointNotFound(
                 description: "Patch endpoint not found. Make sure the SDP answer is correct.")
@@ -334,45 +334,51 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
             logger.debug("Some other state: \(stateChanged.rawValue)")
         }
     }
-    
+
     // MARK: - Codec Management
-    
+
     /**
      Gets matched codecs from the preferred codec list that are available in the peer connection factory.
-     
+    
      - Parameter preferredCodecs: List of preferred codec names
      - Parameter mediaType: The media type (audio or video)
      - Parameter useReceiver: Whether to use receiver capabilities instead of sender capabilities
-     
+    
      - Returns: Array of matched codec capabilities
      */
-    func getMatchedCodecs(preferredCodecs: [String], mediaType: String, useReceiver: Bool = false) -> [RTCRtpCodecCapability] {
+    func getMatchedCodecs(preferredCodecs: [String], mediaType: String, useReceiver: Bool = false)
+        -> [RTCRtpCodecCapability]
+    {
         if preferredCodecs.isEmpty {
             return []
         }
-        
-        let capabilities = useReceiver 
+
+        let capabilities =
+            useReceiver
             ? peerConnectionFactory?.rtpReceiverCapabilities(forKind: mediaType)
             : peerConnectionFactory?.rtpSenderCapabilities(forKind: mediaType)
         let availableCodecs = capabilities?.codecs ?? []
-        
+
         return preferredCodecs.compactMap { preferredCodec in
             availableCodecs.first { codec in
                 codec.name.caseInsensitiveCompare(preferredCodec) == .orderedSame
             }
         }
     }
-    
+
     /**
      Sets codec preferences for a transceiver if matched codecs are available.
-     
+    
      - Parameter transceiver: The RTP transceiver to set preferences for
      - Parameter preferredCodecs: List of preferred codec names
      - Parameter mediaType: The media type (audio or video)
      - Parameter useReceiver: Whether to use receiver capabilities instead of sender capabilities
      */
-    func setCodecPreferencesIfAvailable(transceiver: RTCRtpTransceiver?, preferredCodecs: [String], mediaType: String, useReceiver: Bool = false) {
-        let matchedCodecs = getMatchedCodecs(preferredCodecs: preferredCodecs, mediaType: mediaType, useReceiver: useReceiver)
+    func setCodecPreferencesIfAvailable(
+        transceiver: RTCRtpTransceiver?, preferredCodecs: [String], mediaType: String, useReceiver: Bool = false
+    ) {
+        let matchedCodecs = getMatchedCodecs(
+            preferredCodecs: preferredCodecs, mediaType: mediaType, useReceiver: useReceiver)
         if !matchedCodecs.isEmpty {
             transceiver?.codecPreferences = matchedCodecs
         }

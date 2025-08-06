@@ -16,7 +16,7 @@ data class WhepConfigurationOptions(
   val audioEnabled: Boolean? = true,
   val videoEnabled: Boolean? = true,
   val stunServerUrl: String? = null
-  )
+)
 
 class WhepClient(
   appContext: Context,

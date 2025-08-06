@@ -2,15 +2,15 @@ import WebRTC
 import os
 
 public struct WhepConfigurationOptions {
-  public let audioEnabled: Bool
-  public let videoEnabled: Bool
-  public let stunServerUrl: String?
-  
-  public init(audioEnabled: Bool = true, videoEnabled: Bool = true, stunServerUrl: String?) {
-    self.audioEnabled = audioEnabled
-    self.videoEnabled = videoEnabled
-    self.stunServerUrl = stunServerUrl
-  }
+    public let audioEnabled: Bool
+    public let videoEnabled: Bool
+    public let stunServerUrl: String?
+
+    public init(audioEnabled: Bool = true, videoEnabled: Bool = true, stunServerUrl: String?) {
+        self.audioEnabled = audioEnabled
+        self.videoEnabled = videoEnabled
+        self.stunServerUrl = stunServerUrl
+    }
 }
 
 @available(macOS 12.0, *)
@@ -31,23 +31,25 @@ public class WhepClient: ClientBase {
         self.configOptions = configOptions
         super.init(stunServerUrl: configOptions.stunServerUrl)
         setUpPeerConnection()
-      
-      self.reconnectionManager = ReconnectionManager(
-          reconnectConfig: ReconnectConfig(),
-          connect: {
-              Task { [weak self] in
-                  do {
-                    guard let connectOptions = self?.connectOptions else { throw SessionNetworkError.ConnectionError(
-                      description:
-                        "Connection not setup. Cannot reconnect on a non existing connection.") }
-                      try await self?.connect(connectOptions)
-                  } catch {
-                      self?.logger.error("Reconnection failed: \(error)")
-                  }
-              }
-          },
-          listener: reconnectionListener
-      )
+
+        self.reconnectionManager = ReconnectionManager(
+            reconnectConfig: ReconnectConfig(),
+            connect: {
+                Task { [weak self] in
+                    do {
+                        guard let connectOptions = self?.connectOptions else {
+                            throw SessionNetworkError.ConnectionError(
+                                description:
+                                    "Connection not setup. Cannot reconnect on a non existing connection.")
+                        }
+                        try await self?.connect(connectOptions)
+                    } catch {
+                        self?.logger.error("Reconnection failed: \(error)")
+                    }
+                }
+            },
+            listener: reconnectionListener
+        )
     }
 
     /**
@@ -56,8 +58,8 @@ public class WhepClient: ClientBase {
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
         of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
      */
-  public override func connect(_ connectOptions: ClientConnectOptions) async throws {
-      try await super.connect(connectOptions)
+    public override func connect(_ connectOptions: ClientConnectOptions) async throws {
+        try await super.connect(connectOptions)
         if !self.isConnectionSetUp {
             setUpPeerConnection()
         } else if self.isConnectionSetUp && self.peerConnection == nil {
@@ -65,14 +67,14 @@ public class WhepClient: ClientBase {
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")
         }
 
-    let audioEnabled = configOptions.audioEnabled
-    let videoEnabled = configOptions.videoEnabled
+        let audioEnabled = configOptions.audioEnabled
+        let videoEnabled = configOptions.videoEnabled
 
-    if !audioEnabled && !videoEnabled {
-        logger.warning(
-            "Both audioEnabled and videoEnabled are set to false, what will result in no stream at all. Consider changing one of the options to true."
-        )
-    }
+        if !audioEnabled && !videoEnabled {
+            logger.warning(
+                "Both audioEnabled and videoEnabled are set to false, what will result in no stream at all. Consider changing one of the options to true."
+            )
+        }
 
         var error: NSError?
 
@@ -147,49 +149,51 @@ public class WhepClient: ClientBase {
         audioTrack?.isEnabled = true
         self.videoTrack?.isEnabled = true
     }
-    
+
     // MARK: - Codec Management
-    
+
     /**
      Gets the names of supported receiver video codecs.
-     
+    
      - Returns: Array of supported video codec names
      */
     public func getSupportedReceiverVideoCodecsNames() -> [String] {
-        guard let capabilities = peerConnectionFactory?.rtpReceiverCapabilities(forKind: kRTCMediaStreamTrackKindVideo) else {
+        guard let capabilities = peerConnectionFactory?.rtpReceiverCapabilities(forKind: kRTCMediaStreamTrackKindVideo)
+        else {
             return []
         }
-        
+
         return capabilities.codecs.map { $0.name }
     }
-    
+
     /**
      Gets the names of supported receiver audio codecs.
-     
+    
      - Returns: Array of supported audio codec names
      */
     public func getSupportedReceiverAudioCodecsNames() -> [String] {
-        guard let capabilities = peerConnectionFactory?.rtpReceiverCapabilities(forKind: kRTCMediaStreamTrackKindAudio) else {
+        guard let capabilities = peerConnectionFactory?.rtpReceiverCapabilities(forKind: kRTCMediaStreamTrackKindAudio)
+        else {
             return []
         }
-        
+
         return capabilities.codecs.map { $0.name }
     }
-    
+
     /**
      Sets preferred video codecs for receiving.
-     
+    
      - Parameter preferredCodecs: Array of preferred video codec names, or nil to skip setting
      */
     public func setPreferredVideoCodecs(preferredCodecs: [String]?) {
         guard let preferredCodecs = preferredCodecs, !preferredCodecs.isEmpty else {
             return
         }
-        
+
         guard let peerConnection = peerConnection else {
             return
         }
-        
+
         for transceiver in peerConnection.transceivers {
             if transceiver.mediaType == .video {
                 setCodecPreferencesIfAvailable(
@@ -201,21 +205,21 @@ public class WhepClient: ClientBase {
             }
         }
     }
-    
+
     /**
      Sets preferred audio codecs for receiving.
-     
+    
      - Parameter preferredCodecs: Array of preferred audio codec names, or nil to skip setting
      */
     public func setPreferredAudioCodecs(preferredCodecs: [String]?) {
         guard let preferredCodecs = preferredCodecs, !preferredCodecs.isEmpty else {
             return
         }
-        
+
         guard let peerConnection = peerConnection else {
             return
         }
-        
+
         for transceiver in peerConnection.transceivers {
             if transceiver.mediaType == .audio {
                 setCodecPreferencesIfAvailable(
