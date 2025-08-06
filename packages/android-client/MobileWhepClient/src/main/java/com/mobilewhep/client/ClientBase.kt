@@ -172,12 +172,13 @@ open class ClientBase(
             response.use {
               if (!response.isSuccessful) {
                 val exception =
-                  AttributeNotFoundError.ResponseNotFound("DELETE Failed, invalid response. Check if the server is up and running and the token and the server url is correct.")
+                  AttributeNotFoundError.ResponseNotFound(
+                    "DELETE Failed, invalid response. Check if the server is up and running and the token and the server url is correct."
+                  )
                 continuation.resumeWithException(exception)
               } else {
                 continuation.resume(Unit)
               }
-
             }
           }
         }

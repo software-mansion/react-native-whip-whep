@@ -118,39 +118,40 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
     public func connect(_ connectOptions: ClientConnectOptions) async throws {
         self.connectOptions = connectOptions
     }
-  
-  public func disconnect() async throws {
-    guard let connectOptions else {
-      throw SessionNetworkError.ConnectionError(
-        description:
-          "Connection not setup. Remember to call connect first.")
-    }
-    guard let patchEndpoint = self.patchEndpoint else {
-        throw AttributeNotFoundError.PatchEndpointNotFound(
-            description: "Patch endpoint not found. Make sure the SDP answer is correct.")
-    }
-    var components = URLComponents(string: connectOptions.serverUrl.absoluteString)
-    components?.path = patchEndpoint
-    
-    let url = components?.url
-    var request = URLRequest(url: url!)
-    request.httpMethod = "DELETE"
 
-    if let token = connectOptions.authToken {
-      request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+    public func disconnect() async throws {
+        guard let connectOptions else {
+            throw SessionNetworkError.ConnectionError(
+                description:
+                    "Connection not setup. Remember to call connect first.")
+        }
+        guard let patchEndpoint = self.patchEndpoint else {
+            throw AttributeNotFoundError.PatchEndpointNotFound(
+                description: "Patch endpoint not found. Make sure the SDP answer is correct.")
+        }
+        var components = URLComponents(string: connectOptions.serverUrl.absoluteString)
+        components?.path = patchEndpoint
+
+        let url = components?.url
+        var request = URLRequest(url: url!)
+        request.httpMethod = "DELETE"
+
+        if let token = connectOptions.authToken {
+            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+
+        let response: URLResponse
+        (_, response) = try await URLSession.shared.data(for: request)
+        guard let httpResponse = response as? HTTPURLResponse else {
+            return
+        }
+        if httpResponse.statusCode < 200 || httpResponse.statusCode >= 300 {
+            throw SessionNetworkError.ConnectionError(
+                description:
+                    "DELETE Failed, invalid response. Check if the server is up and running and the token and the server url is correct."
+            )
+        }
     }
-    
-    let response: URLResponse
-    (_, response) = try await URLSession.shared.data(for: request)
-    guard let httpResponse = response as? HTTPURLResponse else {
-      return
-    }
-    if httpResponse.statusCode < 200 || httpResponse.statusCode >= 300 {
-      throw SessionNetworkError.ConnectionError(
-        description:
-          "DELETE Failed, invalid response. Check if the server is up and running and the token and the server url is correct.")
-    }
-  }
 
     /**
     Sends an SDP offer to the WHIP/WHEP server.

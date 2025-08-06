@@ -92,7 +92,7 @@ public class WhipClient: ClientBase {
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
     of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
-  public override func disconnect() async throws {
+    public override func disconnect() async throws {
         DispatchQueue.main.async { [weak self] in
             self?.peerConnection?.close()
             self?.peerConnection = nil
@@ -102,7 +102,7 @@ public class WhipClient: ClientBase {
             self?.videoSource = nil
             self?.videoTrack = nil
         }
-      try await super.disconnect()
+        try await super.disconnect()
     }
 
     /**
@@ -128,7 +128,7 @@ public class WhipClient: ClientBase {
         if videoEnabled {
             let videoSource = peerConnectionFactory!.videoSource()
             self.videoSource = videoSource
-          let videoCapturer = RTCCameraVideoCapturer(delegate: videoSource, captureSession: AVCaptureSession())
+            let videoCapturer = RTCCameraVideoCapturer(delegate: videoSource, captureSession: AVCaptureSession())
             self.videoCapturer = videoCapturer
             let videoTrackId = UUID().uuidString
 

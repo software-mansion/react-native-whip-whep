@@ -120,7 +120,7 @@ public class WhepClient: ClientBase {
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
     of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
-  public override func disconnect() async throws {
+    public override func disconnect() async throws {
         DispatchQueue.main.async { [weak self] in
             self?.peerConnection?.close()
             self?.peerConnection = nil
