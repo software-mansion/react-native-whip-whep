@@ -104,6 +104,9 @@ class ReactNativeMobileWhepClientModule :
 
       Function("disconnectWhep") {
         whepClient?.disconnect()
+        whepClient = null
+
+        return@Function Unit
       }
 
       Function("pauseWhep") {
@@ -155,6 +158,9 @@ class ReactNativeMobileWhepClientModule :
 
       Function("disconnectWhip") {
         whipClient?.disconnect()
+        whipClient = null
+
+        return@Function Unit
       }
 
       Property("cameras") {
