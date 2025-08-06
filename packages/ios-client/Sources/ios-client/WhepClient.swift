@@ -147,4 +147,84 @@ public class WhepClient: ClientBase {
         audioTrack?.isEnabled = true
         self.videoTrack?.isEnabled = true
     }
+    
+    // MARK: - Codec Management
+    
+    /**
+     Gets the names of supported receiver video codecs.
+     
+     - Returns: Array of supported video codec names
+     */
+    public func getSupportedReceiverVideoCodecsNames() -> [String] {
+        guard let capabilities = peerConnectionFactory?.rtpReceiverCapabilities(forKind: kRTCMediaStreamTrackKindVideo) else {
+            return []
+        }
+        
+        return capabilities.codecs.map { $0.name }
+    }
+    
+    /**
+     Gets the names of supported receiver audio codecs.
+     
+     - Returns: Array of supported audio codec names
+     */
+    public func getSupportedReceiverAudioCodecsNames() -> [String] {
+        guard let capabilities = peerConnectionFactory?.rtpReceiverCapabilities(forKind: kRTCMediaStreamTrackKindAudio) else {
+            return []
+        }
+        
+        return capabilities.codecs.map { $0.name }
+    }
+    
+    /**
+     Sets preferred video codecs for receiving.
+     
+     - Parameter preferredCodecs: Array of preferred video codec names, or nil to skip setting
+     */
+    public func setPreferredVideoCodecs(preferredCodecs: [String]?) {
+        guard let preferredCodecs = preferredCodecs, !preferredCodecs.isEmpty else {
+            return
+        }
+        
+        guard let peerConnection = peerConnection else {
+            return
+        }
+        
+        for transceiver in peerConnection.transceivers {
+            if transceiver.mediaType == .video {
+                setCodecPreferencesIfAvailable(
+                    transceiver: transceiver,
+                    preferredCodecs: preferredCodecs,
+                    mediaType: kRTCMediaStreamTrackKindVideo,
+                    useReceiver: true
+                )
+            }
+        }
+    }
+    
+    /**
+     Sets preferred audio codecs for receiving.
+     
+     - Parameter preferredCodecs: Array of preferred audio codec names, or nil to skip setting
+     */
+    public func setPreferredAudioCodecs(preferredCodecs: [String]?) {
+        guard let preferredCodecs = preferredCodecs, !preferredCodecs.isEmpty else {
+            return
+        }
+        
+        guard let peerConnection = peerConnection else {
+            return
+        }
+        
+        for transceiver in peerConnection.transceivers {
+            if transceiver.mediaType == .audio {
+                setCodecPreferencesIfAvailable(
+                    transceiver: transceiver,
+                    preferredCodecs: preferredCodecs,
+                    mediaType: kRTCMediaStreamTrackKindAudio,
+                    useReceiver: true
+                )
+            }
+        }
+    }
 }

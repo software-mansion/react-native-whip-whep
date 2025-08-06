@@ -181,7 +181,7 @@ class ReactNativeMobileWhepClientModule :
       }
 
       Function("setPreferredSenderVideoCodecs") { preferredCodecs: List<String>? ->
-        whipClient?.setPrefferedVideoCodecs(preferredCodecs)
+        whipClient?.setPreferredVideoCodecs(preferredCodecs)
       }
 
       Function("setPreferredSenderAudioCodecs") { preferredCodecs: List<String>? ->

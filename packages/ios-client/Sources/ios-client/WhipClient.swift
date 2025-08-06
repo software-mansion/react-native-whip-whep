@@ -151,8 +151,9 @@ public class WhipClient: ClientBase {
             transceiverInit.direction = RTCRtpTransceiverDirection.sendOnly
             transceiverInit.streamIds = [localStreamId]
             transceiverInit.sendEncodings = sendEncodings
+            
             peerConnection?.addTransceiver(with: videoTrack, init: transceiverInit)
-
+        
             self.videoTrack = videoTrack
         }
 
@@ -216,5 +217,83 @@ public class WhipClient: ClientBase {
 
     public static func getCaptureDevices() -> [AVCaptureDevice] {
         return RTCCameraVideoCapturer.captureDevices()
+    }
+    
+    // MARK: - Codec Management
+    
+    /**
+     Gets the names of supported sender video codecs.
+     
+     - Returns: Array of supported video codec names
+     */
+    public func getSupportedSenderVideoCodecsNames() -> [String] {
+        guard let capabilities = peerConnectionFactory?.rtpSenderCapabilities(forKind: kRTCMediaStreamTrackKindVideo) else {
+            return []
+        }
+        
+        return capabilities.codecs.map { $0.name }
+    }
+    
+    /**
+     Gets the names of supported sender audio codecs.
+     
+     - Returns: Array of supported audio codec names
+     */
+    public func getSupportedSenderAudioCodecsNames() -> [String] {
+        guard let capabilities = peerConnectionFactory?.rtpSenderCapabilities(forKind: kRTCMediaStreamTrackKindAudio) else {
+            return []
+        }
+        
+        return capabilities.codecs.map { $0.name }
+    }
+    
+    /**
+     Sets preferred video codecs for sending.
+     
+     - Parameter preferredCodecs: Array of preferred video codec names, or nil to skip setting
+     */
+    public func setPreferredVideoCodecs(preferredCodecs: [String]?) {
+        guard let preferredCodecs = preferredCodecs, !preferredCodecs.isEmpty else {
+            return
+        }
+        
+        guard let peerConnection = peerConnection else {
+            return
+        }
+        
+        for transceiver in peerConnection.transceivers {
+            if transceiver.mediaType == .video {
+                setCodecPreferencesIfAvailable(
+                    transceiver: transceiver,
+                    preferredCodecs: preferredCodecs,
+                    mediaType: kRTCMediaStreamTrackKindVideo
+                )
+            }
+        }
+    }
+    
+    /**
+     Sets preferred audio codecs for sending.
+     
+     - Parameter preferredCodecs: Array of preferred audio codec names, or nil to skip setting
+     */
+    public func setPreferredAudioCodecs(preferredCodecs: [String]?) {
+        guard let preferredCodecs = preferredCodecs, !preferredCodecs.isEmpty else {
+            return
+        }
+        
+        guard let peerConnection = peerConnection else {
+            return
+        }
+        
+        for transceiver in peerConnection.transceivers {
+            if transceiver.mediaType == .audio {
+                setCodecPreferencesIfAvailable(
+                    transceiver: transceiver,
+                    preferredCodecs: preferredCodecs,
+                    mediaType: kRTCMediaStreamTrackKindAudio
+                )
+            }
+        }
     }
 }

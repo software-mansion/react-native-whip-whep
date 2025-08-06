@@ -286,13 +286,18 @@ open class ClientBase(
 
   protected fun getMatchedCodecs(
     preferredCodecs: List<String>,
-    mediaType: MediaStreamTrack.MediaType
+    mediaType: MediaStreamTrack.MediaType,
+    useReceiver: Boolean = false
   ): List<RtpCapabilities.CodecCapability> {
     if (preferredCodecs.isEmpty()) {
       return emptyList()
     }
 
-    val availableCodecs = peerConnectionFactory.getRtpSenderCapabilities(mediaType).codecs
+    val availableCodecs = if (useReceiver) {
+      peerConnectionFactory.getRtpReceiverCapabilities(mediaType).codecs
+    } else {
+      peerConnectionFactory.getRtpSenderCapabilities(mediaType).codecs
+    }
     return preferredCodecs.mapNotNull { preferredCodec ->
       availableCodecs.firstOrNull { it.name.equals(preferredCodec, ignoreCase = true) }
     }
@@ -301,9 +306,10 @@ open class ClientBase(
   protected fun setCodecPreferencesIfAvailable(
     transceiver: RtpTransceiver?,
     preferredCodecs: List<String>,
-    mediaType: MediaStreamTrack.MediaType
+    mediaType: MediaStreamTrack.MediaType,
+    useReceiver: Boolean = false
   ) {
-    val matchedCodecs = getMatchedCodecs(preferredCodecs, mediaType)
+    val matchedCodecs = getMatchedCodecs(preferredCodecs, mediaType, useReceiver)
     if (matchedCodecs.isNotEmpty()) {
       transceiver?.setCodecPreferences(matchedCodecs)
     }

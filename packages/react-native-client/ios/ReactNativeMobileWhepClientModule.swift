@@ -182,6 +182,52 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
           ReactNativeMobileWhepClientModule.whipClient?.disconnect()
           ReactNativeMobileWhepClientModule.whipClient = nil
         }
+
+        // MARK: - Codec Methods
+        
+        Function("getSupportedSenderVideoCodecsNames") {
+            guard let client = ReactNativeMobileWhepClientModule.whipClient else {
+                return []
+            }
+            return client.getSupportedSenderVideoCodecsNames()
+        }
+
+        Function("getSupportedSenderAudioCodecsNames") {
+            guard let client = ReactNativeMobileWhepClientModule.whipClient else {
+                return []
+            }
+            return client.getSupportedSenderAudioCodecsNames()
+        }
+
+        Function("getSupportedReceiverVideoCodecsNames") {
+            guard let client = ReactNativeMobileWhepClientModule.whepClient else {
+                return []
+            }
+            return client.getSupportedReceiverVideoCodecsNames()
+        }
+
+        Function("getSupportedReceiverAudioCodecsNames") {
+            guard let client = ReactNativeMobileWhepClientModule.whepClient else {
+                return []
+            }
+            return client.getSupportedReceiverAudioCodecsNames()
+        }
+
+        Function("setPreferredSenderVideoCodecs") { (preferredCodecs: [String]?) in
+            ReactNativeMobileWhepClientModule.whipClient?.setPreferredVideoCodecs(preferredCodecs: preferredCodecs)
+        }
+
+        Function("setPreferredSenderAudioCodecs") { (preferredCodecs: [String]?) in
+            ReactNativeMobileWhepClientModule.whipClient?.setPreferredAudioCodecs(preferredCodecs: preferredCodecs)
+        }
+
+        Function("setPreferredReceiverVideoCodecs") { (preferredCodecs: [String]?) in
+            ReactNativeMobileWhepClientModule.whepClient?.setPreferredVideoCodecs(preferredCodecs: preferredCodecs)
+        }
+
+        Function("setPreferredReceiverAudioCodecs") { (preferredCodecs: [String]?) in
+            ReactNativeMobileWhepClientModule.whepClient?.setPreferredAudioCodecs(preferredCodecs: preferredCodecs)
+        }
         
     }
     

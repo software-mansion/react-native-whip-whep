@@ -334,5 +334,48 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
             logger.debug("Some other state: \(stateChanged.rawValue)")
         }
     }
+    
+    // MARK: - Codec Management
+    
+    /**
+     Gets matched codecs from the preferred codec list that are available in the peer connection factory.
+     
+     - Parameter preferredCodecs: List of preferred codec names
+     - Parameter mediaType: The media type (audio or video)
+     - Parameter useReceiver: Whether to use receiver capabilities instead of sender capabilities
+     
+     - Returns: Array of matched codec capabilities
+     */
+    func getMatchedCodecs(preferredCodecs: [String], mediaType: String, useReceiver: Bool = false) -> [RTCRtpCodecCapability] {
+        if preferredCodecs.isEmpty {
+            return []
+        }
+        
+        let capabilities = useReceiver 
+            ? peerConnectionFactory?.rtpReceiverCapabilities(forKind: mediaType)
+            : peerConnectionFactory?.rtpSenderCapabilities(forKind: mediaType)
+        let availableCodecs = capabilities?.codecs ?? []
+        
+        return preferredCodecs.compactMap { preferredCodec in
+            availableCodecs.first { codec in
+                codec.name.caseInsensitiveCompare(preferredCodec) == .orderedSame
+            }
+        }
+    }
+    
+    /**
+     Sets codec preferences for a transceiver if matched codecs are available.
+     
+     - Parameter transceiver: The RTP transceiver to set preferences for
+     - Parameter preferredCodecs: List of preferred codec names
+     - Parameter mediaType: The media type (audio or video)
+     - Parameter useReceiver: Whether to use receiver capabilities instead of sender capabilities
+     */
+    func setCodecPreferencesIfAvailable(transceiver: RTCRtpTransceiver?, preferredCodecs: [String], mediaType: String, useReceiver: Bool = false) {
+        let matchedCodecs = getMatchedCodecs(preferredCodecs: preferredCodecs, mediaType: mediaType, useReceiver: useReceiver)
+        if !matchedCodecs.isEmpty {
+            transceiver?.codecPreferences = matchedCodecs
+        }
+    }
 
 }

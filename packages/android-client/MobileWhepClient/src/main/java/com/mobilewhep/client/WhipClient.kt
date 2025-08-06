@@ -241,7 +241,7 @@ class WhipClient(
     return capabilities.codecs.map { it.name }
   }
 
-  fun setPrefferedVideoCodecs(preferredCodecs: List<String>?) {
+  fun setPreferredVideoCodecs(preferredCodecs: List<String>?) {
     if (preferredCodecs?.isEmpty() == true) {
       return
     }

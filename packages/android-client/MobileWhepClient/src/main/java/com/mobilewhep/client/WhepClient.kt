@@ -145,7 +145,8 @@ class WhepClient(
         setCodecPreferencesIfAvailable(
           transceiver,
           preferredCodecs!!,
-          MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO
+          MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
+          useReceiver = true
         )
       }
     }
@@ -161,7 +162,8 @@ class WhepClient(
         setCodecPreferencesIfAvailable(
           transceiver,
           preferredCodecs!!,
-          MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO
+          MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
+          useReceiver = true
         )
       }
     }

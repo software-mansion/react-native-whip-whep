@@ -13,6 +13,10 @@ export {
   ConnectOptions,
   WhipConfigurationOptions,
   WhepConfigurationOptions,
+  SenderAudioCodecName,
+  SenderVideoCodecName,
+  ReceiverAudioCodecName,
+  ReceiverVideoCodecName,
 } from "./ReactNativeMobileWhepClient.types";
 
 export {
