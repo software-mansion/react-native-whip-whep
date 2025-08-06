@@ -1,23 +1,18 @@
-import { useEffect, useState } from 'react';
-import {
-  connectWhepClient,
-  createWhepClient,
-  disconnectWhepClient,
-  pauseWhepClient,
-  unpauseWhepClient,
-} from 'react-native-whip-whep';
+import { useEffect, useRef, useState } from 'react';
+import { WhepClient } from 'react-native-whip-whep';
 import { checkPermissions } from '@/utils/CheckPermissions';
 
 export const useWhepClient = (serverUrl: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowPlayBtn, setShouldShowPlayBtn] = useState(true);
-  const [isPaused, setIsPaused] = useState(false);
+
+  const whepClient = useRef<WhepClient | null>(null);
 
   const handlePlayBtnClick = async () => {
     setShouldShowPlayBtn(false);
     setIsLoading(true);
     try {
-      await connectWhepClient({
+      await whepClient.current?.connect({
         serverUrl,
       });
       setIsLoading(false);
@@ -26,28 +21,10 @@ export const useWhepClient = (serverUrl: string) => {
     }
   };
 
-  const handlePauseBtnClick = async () => {
-    try {
-      pauseWhepClient();
-      setIsPaused(true);
-    } catch (error) {
-      console.error('Failed to pause WHEP Client', error);
-    }
-  };
-
-  const handleRestartBtnClick = async () => {
-    try {
-      unpauseWhepClient();
-      setIsPaused(false);
-    } catch (error) {
-      console.error('Failed to unpause WHEP Client', error);
-    }
-  };
-
   useEffect(() => {
     const initialize = async () => {
       await checkPermissions();
-      createWhepClient({
+      whepClient.current = new WhepClient({
         audioEnabled: true,
         videoEnabled: true,
       });
@@ -55,16 +32,13 @@ export const useWhepClient = (serverUrl: string) => {
     initialize();
 
     return () => {
-      disconnectWhepClient();
+      whepClient.current?.disconnect();
     };
   }, [serverUrl]);
 
   return {
     isLoading,
     shouldShowPlayBtn,
-    isPaused,
     handlePlayBtnClick,
-    handlePauseBtnClick,
-    handleRestartBtnClick,
   };
 };

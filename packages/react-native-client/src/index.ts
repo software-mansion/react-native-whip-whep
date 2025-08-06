@@ -16,11 +16,7 @@ export {
 } from "./ReactNativeMobileWhepClient.types";
 
 export {
-  createWhepClient,
-  connectWhepClient,
-  disconnectWhepClient,
-  pauseWhepClient,
-  unpauseWhepClient,
+  WhepClient,
   WhipClient,
   cameras,
   Camera,

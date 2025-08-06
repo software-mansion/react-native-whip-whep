@@ -68,43 +68,6 @@ const nativeModule = requireNativeModule(
 ) as RNMobileWhepClientModule &
   NativeModule<Record<keyof typeof ReceivableEvents, (payload: any) => void>>;
 
-/** Creates a WHEP client based on the `configurationOptions`.
- *  It is a first step before connecting to the server.
- */
-export function createWhepClient(
-  /** Additional configuration options. */
-  configurationOptions?: WhepConfigurationOptions,
-) {
-  return nativeModule.createWhepClient(configurationOptions);
-}
-
-/** Connects to the WHEP server defined while creating WHEP client.
- * Allows user to receive video and audio stream.
- */
-export async function connectWhepClient(connectOptions: ConnectOptions) {
-  return await nativeModule.connectWhep(
-    connectOptions.serverUrl,
-    connectOptions.authToken,
-  );
-}
-
-/** Disconnects from the WHEP server defined while creating WHEP client.
- * Frees the resources.
- */
-export function disconnectWhepClient() {
-  return nativeModule.disconnectWhep();
-}
-
-/** Pauses the WHEP stream, making the view black and disabling the sound. */
-export function pauseWhepClient() {
-  return nativeModule.pauseWhep();
-}
-
-/** Restarts the WHEP stream. Makes the view reappear along with sound. */
-export function unpauseWhepClient() {
-  return nativeModule.unpauseWhep();
-}
-
 export class WhipClient {
   private isInitialized = false;
 
@@ -130,6 +93,42 @@ export class WhipClient {
 
   disconnect() {
     nativeModule.disconnectWhip();
+    this.isInitialized = false;
+  }
+}
+
+export class WhepClient {
+  private isInitialized = false;
+
+  constructor(private readonly configurationOptions: WhepConfigurationOptions) {
+    this.initializeIfNeeded();
+  }
+
+  private initializeIfNeeded() {
+    if (!this.isInitialized) {
+      nativeModule.createWhepClient(this.configurationOptions);
+      this.isInitialized = true;
+    }
+  }
+
+  /**
+   * Connects to the WHEP server defined while creating WHEP client.
+   * Allows user to receive video and audio stream.
+   */
+  async connect(connectOptions: ConnectOptions) {
+    this.initializeIfNeeded();
+    await nativeModule.connectWhep(
+      connectOptions.serverUrl,
+      connectOptions.authToken,
+    );
+  }
+
+  /**
+   * Disconnects from the WHEP server defined while creating WHEP client.
+   * Frees the resources.
+   */
+  disconnect() {
+    nativeModule.disconnectWhep();
     this.isInitialized = false;
   }
 }
