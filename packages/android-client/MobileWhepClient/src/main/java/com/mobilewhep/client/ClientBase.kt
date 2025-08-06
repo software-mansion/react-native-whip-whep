@@ -40,11 +40,12 @@ interface ClientBaseListener {
 
 open class ClientBase(
   val appContext: Context,
-  private val serverUrl: String,
-  private val configurationOptions: ConfigurationOptions?
+  val stunServerUrl: String?
 ) : PeerConnection.Observer {
   protected var peerConnectionFactory: PeerConnectionFactory
   protected var peerConnection: PeerConnection
+  var connectOptions: ClientConnectOptions? = null
+
   val peerConnectionState: PeerConnection.PeerConnectionState
     get() = peerConnection.connectionState()
 
@@ -74,7 +75,7 @@ open class ClientBase(
     val iceServers =
       listOf(
         PeerConnection.IceServer
-          .builder(configurationOptions?.stunServerUrl ?: "stun:stun.l.google.com:19302")
+          .builder(stunServerUrl ?: "stun:stun.l.google.com:19302")
           .createIceServer()
       )
 
@@ -104,6 +105,10 @@ open class ClientBase(
     }
   }
 
+  open suspend fun connect(connectOptions: ClientConnectOptions) {
+    this.connectOptions = connectOptions
+  }
+
   /**
    * Sends an SDP offer to the WHIP/WHEP server.
    *
@@ -118,15 +123,27 @@ open class ClientBase(
    */
   suspend fun sendSdpOffer(sdpOffer: String) =
     suspendCoroutine { continuation ->
-      val request =
-        Request
+      if (connectOptions == null) {
+        continuation.resumeWithException(
+          SessionNetworkError.ConnectionError(
+            "Cannot send the SDP Offer. Connection not setup. Remember to call connect first."
+          )
+        )
+        return@suspendCoroutine
+      }
+
+      var requestBuilder = Request
           .Builder()
-          .url(serverUrl)
+          .url(connectOptions!!.serverUrl)
           .post(sdpOffer.toRequestBody())
           .header("Accept", "application/sdp")
           .header("Content-Type", "application/sdp")
-          .header("Authorization", "Bearer " + configurationOptions?.authToken)
-          .build()
+          if (connectOptions!!.authToken != null) {
+            requestBuilder =
+              requestBuilder.header("Authorization", "Bearer " + connectOptions!!.authToken)
+          }
+
+      val request = requestBuilder.build()
 
       client.newCall(request).enqueue(
         object : Callback {
@@ -188,6 +205,15 @@ open class ClientBase(
    */
   suspend fun sendCandidate(candidate: IceCandidate) =
     suspendCoroutine { continuation ->
+      if (connectOptions == null) {
+        continuation.resumeWithException(
+          SessionNetworkError.ConnectionError(
+            "Cannot send the send ICE Candidate. Connection not setup. Remember to call connect first."
+          )
+        )
+        return@suspendCoroutine
+      }
+
       if (patchEndpoint == null) {
         continuation.resumeWithException(
           AttributeNotFoundError.PatchEndpointNotFound("Patch endpoint not found. Make sure the SDP answer is correct.")
@@ -211,7 +237,7 @@ open class ClientBase(
       // TODO: is ufrag necessary or is it just elixir webrtc thing?
       jsonObject.put("usernameFragment", ufrag)
 
-      val serverUrl = URL(serverUrl)
+      val serverUrl = URL(connectOptions!!.serverUrl)
       val requestURL =
         URI(serverUrl.protocol, null, serverUrl.host, serverUrl.port, patchEndpoint, null, null)
 

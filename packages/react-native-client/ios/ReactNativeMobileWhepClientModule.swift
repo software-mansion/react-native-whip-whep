@@ -71,17 +71,11 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
         return ReactNativeMobileWhepClientModule.whipClient?.peerConnectionState?.stringValue
       }
 
-        Function("createWhepClient") { (serverUrl: String, configurationOptions: [String: AnyObject]?) in
+        Function("createWhepClient") { (configurationOptions: [String: AnyObject]?) in
           guard ReactNativeMobileWhepClientModule.whepClient == nil else {
             emit(event: .warning(message: "WHEP client already exists. You must disconnect before creating a new one."))
             return
           }
-            guard let url = URL(string: serverUrl) else {
-                throw Exception(
-                                name: "E_INVALID_URL",
-                                description: "Invalid server URL. Make sure the address in .env file is correct.")
-            }
-            
             let options = WhepConfigurationOptions(
               audioEnabled: configurationOptions?["audioEnabled"] as? Bool ?? true,
               videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,

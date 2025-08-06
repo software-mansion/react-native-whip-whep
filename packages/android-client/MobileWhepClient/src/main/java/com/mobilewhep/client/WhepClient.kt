@@ -12,14 +12,18 @@ import org.webrtc.PeerConnection
 import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
 
+data class WhepConfigurationOptions(
+  val audioEnabled: Boolean? = true,
+  val videoEnabled: Boolean? = true,
+  val stunServerUrl: String? = null
+  )
+
 class WhepClient(
   appContext: Context,
-  serverUrl: String,
-  private val configurationOptions: ConfigurationOptions? = null
+  private val configurationOptions: WhepConfigurationOptions
 ) : ClientBase(
     appContext,
-    serverUrl,
-    configurationOptions
+    configurationOptions.stunServerUrl
   ) {
   private var reconnectionManager: ReconnectionManager
 
@@ -28,7 +32,9 @@ class WhepClient(
     this.reconnectionManager =
       ReconnectionManager(config) {
         CoroutineScope(Dispatchers.Default).launch {
-          connect()
+          connectOptions?.let {
+            connect(it)
+          }
         }
       }
   }
@@ -40,7 +46,8 @@ class WhepClient(
    *  of the initial configuration is incorrect, which leads to peerConnection being nil
    *  or in any other case where there has been an error in creating the peerConnection
    */
-  public suspend fun connect() {
+  public override suspend fun connect(connectOptions: ClientConnectOptions) {
+    super.connect(connectOptions)
     var audioEnabled = configurationOptions?.audioEnabled ?: true
     var videoEnabled = configurationOptions?.videoEnabled ?: true
 

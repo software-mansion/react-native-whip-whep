@@ -21,15 +21,20 @@ import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
 import java.util.UUID
 
+data class WhipConfigurationOptions(
+  val audioEnabled: Boolean? = true,
+  val videoEnabled: Boolean? = true,
+  val stunServerUrl: String? = null,
+  val videoParameters: VideoParameters = VideoParameters.presetHD169,
+  val videoDevice: String? = null
+)
+
 class WhipClient(
   appContext: Context,
-  serverUrl: String,
-  private val configurationOptions: ConfigurationOptions? = null,
-  private var videoDevice: String? = null
+  private val configOptions: WhipConfigurationOptions
 ) : ClientBase(
     appContext,
-    serverUrl,
-    configurationOptions
+    stunServerUrl = configOptions.stunServerUrl
   ) {
   override var videoTrack: VideoTrack? = null
   private var videoCapturer: VideoCapturer? = null
@@ -45,12 +50,12 @@ class WhipClient(
    * @throws CaptureDeviceError.VideoDeviceNotAvailable if there is no video device.
    */
   private fun setUpVideoAndAudioDevices() {
-    if (videoDevice == null) {
+    if (configOptions.videoDevice == null) {
       throw CaptureDeviceError.VideoDeviceNotAvailable("Video device not found. Check if it can be accessed and passed to the constructor.")
     }
 
-    val audioEnabled = configurationOptions?.audioEnabled ?: true
-    val videoEnabled = configurationOptions?.videoEnabled ?: true
+    val audioEnabled = configOptions.audioEnabled ?: true
+    val videoEnabled = configOptions.videoEnabled ?: true
 
     if (!audioEnabled && !videoEnabled) {
       Log.d(
@@ -73,7 +78,7 @@ class WhipClient(
         }
 
       val videoCapturer: CameraVideoCapturer? =
-        videoDevice.let {
+        configOptions.videoDevice.let {
           cameraEnumerator.createCapturer(it, null)
         }
 
@@ -81,43 +86,24 @@ class WhipClient(
         peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
       val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
       videoCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
-      if (configurationOptions?.videoParameters != null) {
         val videoSize =
           setVideoSize(
             cameraEnumerator,
-            videoDevice!!,
-            configurationOptions.videoParameters
+            configOptions.videoDevice,
+            configOptions.videoParameters
           )
         try {
           videoCapturer.startCapture(
             videoSize!!.width,
             videoSize.height,
-            configurationOptions.videoParameters.maxFps
+            configOptions.videoParameters.maxFps
           )
         } catch (e: Exception) {
           throw CaptureDeviceError.VideoSizeNotSupported(
-            "VideoSize ${configurationOptions.videoParameters} is not supported by this device. Consider switching to another preset."
+            "VideoSize ${configOptions.videoParameters} is not supported by this device. Consider switching to another preset."
           )
         }
-      } else {
-        val videoSize =
-          setVideoSize(
-            cameraEnumerator,
-            videoDevice!!,
-            VideoParameters.presetHD43
-          )
-        try {
-          videoCapturer.startCapture(
-            videoSize!!.width,
-            videoSize.height,
-            VideoParameters.presetHD43.maxFps
-          )
-        } catch (e: Exception) {
-          throw CaptureDeviceError.VideoSizeNotSupported(
-            "VideoSize ${VideoParameters.presetHD43} is not supported by this device. Consider switching to another preset."
-          )
-        }
-      }
+
       val videoTrack: VideoTrack = peerConnectionFactory.createVideoTrack(videoTrackId, videoSource)
 
       this.videoSource = videoSource
@@ -153,7 +139,9 @@ class WhipClient(
    *  or in any other case where there has been an error in creating the peerConnection
    *
    */
-  suspend fun connect() {
+  override suspend fun connect(connectOptions: ClientConnectOptions) {
+    super.connect(connectOptions)
+
     if (!hasPermissions(appContext, REQUIRED_PERMISSIONS)) {
       throw PermissionError.PermissionsNotGrantedError(
         "Permissions for camera and audio recording have not been granted. Please check your application settings."
@@ -203,7 +191,7 @@ class WhipClient(
 
   private fun setVideoSize(
     enumerator: CameraEnumerator,
-    deviceName: String,
+    deviceName: String?,
     videoParameters: VideoParameters
   ): Size? {
     val sizes =

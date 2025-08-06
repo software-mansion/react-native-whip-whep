@@ -31,6 +31,23 @@ public class WhepClient: ClientBase {
         self.configOptions = configOptions
         super.init(stunServerUrl: configOptions.stunServerUrl)
         setUpPeerConnection()
+      
+      self.reconnectionManager = ReconnectionManager(
+          reconnectConfig: ReconnectConfig(),
+          connect: {
+              Task { [weak self] in
+                  do {
+                    guard let connectOptions = self?.connectOptions else { throw SessionNetworkError.ConnectionError(
+                      description:
+                        "Connection not setup. Cannot reconnect on a non existing connection.") }
+                      try await self?.connect(connectOptions)
+                  } catch {
+                      self?.logger.error("Reconnection failed: \(error)")
+                  }
+              }
+          },
+          listener: reconnectionListener
+      )
     }
 
     /**
@@ -47,20 +64,6 @@ public class WhepClient: ClientBase {
             throw SessionNetworkError.ConfigurationError(
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")
         }
-    
-    self.reconnectionManager = ReconnectionManager(
-        reconnectConfig: ReconnectConfig(),
-        connect: {
-            Task { [weak self] in
-                do {
-                    try await self?.connect(connectOptions)
-                } catch {
-                    self?.logger.error("Reconnection failed: \(error)")
-                }
-            }
-        },
-        listener: reconnectionListener
-    )
 
     let audioEnabled = configOptions.audioEnabled
     let videoEnabled = configOptions.videoEnabled

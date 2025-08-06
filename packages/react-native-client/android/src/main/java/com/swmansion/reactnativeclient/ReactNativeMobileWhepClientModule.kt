@@ -1,13 +1,14 @@
 package com.swmansion.reactnativeclient
 
 import android.content.Context
-import android.util.Log
 import com.mobilewhep.client.ClientBaseListener
-import com.mobilewhep.client.ConfigurationOptions
+import com.mobilewhep.client.ClientConnectOptions
 import com.mobilewhep.client.ReconnectionManagerListener
 import com.mobilewhep.client.VideoParameters
 import com.mobilewhep.client.WhepClient
+import com.mobilewhep.client.WhepConfigurationOptions
 import com.mobilewhep.client.WhipClient
+import com.mobilewhep.client.WhipConfigurationOptions
 import com.swmansion.reactnativeclient.helpers.PermissionUtils
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
@@ -75,20 +76,16 @@ class ReactNativeMobileWhepClientModule :
 
       Events(EmitableEvent.allEvents)
 
-      Function("createWhepClient") { serverUrl: String, configurationOptions: Map<String, Any>? ->
+      Function("createWhepClient") { configurationOptions: Map<String, Any>? ->
         val context: Context =
           appContext.reactContext ?: throw IllegalStateException("React context is not available")
         val options =
-          ConfigurationOptions(
-            authToken = configurationOptions?.get("authToken") as? String,
+          WhepConfigurationOptions(
             stunServerUrl = configurationOptions?.get("stunServerUrl") as? String,
             audioEnabled = configurationOptions?.get("audioEnabled") as? Boolean ?: true,
             videoEnabled = configurationOptions?.get("videoEnabled") as? Boolean ?: true,
-            videoParameters = getVideoParametersFromOptions(
-              configurationOptions?.get("videoParameters") as? String ?: "HD43"
-            ),
           )
-        whepClient = WhepClient(context, serverUrl, options)
+        whepClient = WhepClient(context, options)
         whepClient?.addReconnectionListener(this@ReactNativeMobileWhepClientModule)
         whepClient?.addTrackListener(this@ReactNativeMobileWhepClientModule)
         whepClient?.onConnectionStateChanged = { newState ->
@@ -96,12 +93,12 @@ class ReactNativeMobileWhepClientModule :
         }
       }
 
-      AsyncFunction("connectWhep") Coroutine { ->
+      AsyncFunction("connectWhep") Coroutine { serverUrl: String, authToken: String? ->
         if (whepClient == null) {
           throw IllegalStateException("React context is not available")
         }
         withContext(Dispatchers.IO) {
-          whepClient?.connect()
+          whepClient?.connect(ClientConnectOptions(serverUrl = serverUrl, authToken = authToken))
         }
       }
 
@@ -117,17 +114,17 @@ class ReactNativeMobileWhepClientModule :
         whepClient?.unpause()
       }
 
-      AsyncFunction("createWhipClient") Coroutine { serverUrl: String, configurationOptions: Map<String, Any>?, videoDevice: String ->
+      AsyncFunction("createWhipClient") Coroutine {  configurationOptions: Map<String, Any>? ->
         val context: Context =
           appContext.reactContext ?: throw IllegalStateException("React context is not available")
         val options =
-          ConfigurationOptions(
-            authToken = configurationOptions?.get("authToken") as? String,
+          WhipConfigurationOptions(
             stunServerUrl = configurationOptions?.get("stunServerUrl") as? String,
             audioEnabled = configurationOptions?.get("audioEnabled") as? Boolean ?: true,
             videoEnabled = configurationOptions?.get("videoEnabled") as? Boolean ?: true,
             videoParameters = configurationOptions?.get("videoParameters") as? VideoParameters
-              ?: VideoParameters.presetFHD43,
+              ?: VideoParameters.presetFHD169,
+            videoDevice = configurationOptions?.get("videoDeviceId") as? String
           )
 
         if (options.videoEnabled == true && !PermissionUtils.requestCameraPermission(appContext)) {
@@ -140,19 +137,19 @@ class ReactNativeMobileWhepClientModule :
           return@Coroutine
         }
 
-        whipClient = WhipClient(context, serverUrl, options, videoDevice)
+        whipClient = WhipClient(context, options)
         whipClient?.addTrackListener(this@ReactNativeMobileWhepClientModule)
         whipClient?.onConnectionStateChanged = { newState ->
             emit(EmitableEvent.whipPeerConnectionStateChanged(newState))
         }
       }
 
-      AsyncFunction("connectWhip") Coroutine { ->
+      AsyncFunction("connectWhip") Coroutine { serverUrl: String, authToken: String? ->
         withContext(Dispatchers.IO) {
           if (whipClient == null) {
             throw IllegalStateException("WHIP client not found. Make sure it was initialized properly.")
           }
-          whipClient?.connect()
+          whipClient?.connect(ClientConnectOptions(serverUrl = serverUrl, authToken = authToken))
         }
       }
 
