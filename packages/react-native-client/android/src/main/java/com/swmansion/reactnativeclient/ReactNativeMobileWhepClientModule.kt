@@ -9,12 +9,14 @@ import com.mobilewhep.client.WhepClient
 import com.mobilewhep.client.WhepConfigurationOptions
 import com.mobilewhep.client.WhipClient
 import com.mobilewhep.client.WhipConfigurationOptions
+import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
 import com.swmansion.reactnativeclient.helpers.PermissionUtils
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.webrtc.MediaStreamTrack
 import org.webrtc.VideoTrack
 
 class ReactNativeMobileWhepClientModule :
@@ -70,13 +72,15 @@ class ReactNativeMobileWhepClientModule :
     }
   }
 
+
+
   override fun definition() =
     ModuleDefinition {
       Name("ReactNativeMobileWhepClient")
 
       Events(EmitableEvent.allEvents)
 
-      Function("createWhepClient") { configurationOptions: Map<String, Any>? ->
+      Function("createWhepClient") { configurationOptions: Map<String, Any>?, preferredVideoCodecs: List<String>?, preferredAudioCodecs: List<String>? ->
         val context: Context =
           appContext.reactContext ?: throw IllegalStateException("React context is not available")
         val options =
@@ -84,7 +88,8 @@ class ReactNativeMobileWhepClientModule :
             stunServerUrl = configurationOptions?.get("stunServerUrl") as? String,
             audioEnabled = configurationOptions?.get("audioEnabled") as? Boolean ?: true,
             videoEnabled = configurationOptions?.get("videoEnabled") as? Boolean ?: true,
-
+            preferredAudioCodecs = preferredAudioCodecs ?: listOf(),
+            preferredVideoCodecs = preferredVideoCodecs ?: listOf()
           )
         whepClient = WhepClient(context, options)
         whepClient?.addReconnectionListener(this@ReactNativeMobileWhepClientModule)
@@ -116,7 +121,7 @@ class ReactNativeMobileWhepClientModule :
         whepClient?.unpause()
       }
 
-      Function("createWhipClient") {  configurationOptions: Map<String, Any>? ->
+      Function("createWhipClient") {  configurationOptions: Map<String, Any>?, preferredVideoCodecs: List<String>?, preferredAudioCodecs: List<String>? ->
         val context: Context =
           appContext.reactContext ?: throw IllegalStateException("React context is not available")
         val options =
@@ -126,7 +131,9 @@ class ReactNativeMobileWhepClientModule :
             videoEnabled = configurationOptions?.get("videoEnabled") as? Boolean ?: true,
             videoParameters = configurationOptions?.get("videoParameters") as? VideoParameters
               ?: VideoParameters.presetFHD169,
-            videoDevice = configurationOptions?.get("videoDeviceId") as? String
+            videoDevice = configurationOptions?.get("videoDeviceId") as? String,
+            preferredAudioCodecs = preferredAudioCodecs ?: listOf(),
+            preferredVideoCodecs = preferredVideoCodecs ?: listOf()
           )
 
         if (options.videoEnabled == true && !PermissionUtils.hasCameraPermission(appContext)) {
@@ -157,39 +164,32 @@ class ReactNativeMobileWhepClientModule :
 
       AsyncFunction("disconnectWhip") Coroutine { ->
         whipClient?.disconnect()
+      }
+
+      Function("cleanupWhip") {
+        whipClient?.cleanup()
         whipClient = null
+        return@Function Unit
       }
 
       Function("getSupportedSenderVideoCodecsNames") {
-        return@Function whipClient?.getSupportedSenderVideoCodecsNames() ?: listOf<String>()
+        val context: Context =
+          appContext.reactContext ?: throw IllegalStateException("React context is not available")
+
+        val capabilities = PeerConnectionFactoryHelper.getFactory(context).getRtpSenderCapabilities(
+          MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)
+
+        return@Function capabilities.codecs.map { it.name }
       }
 
       Function("getSupportedSenderAudioCodecsNames") {
-        return@Function whipClient?.getSupportedSenderAudioCodecsNames() ?: listOf<String>()
-      }
+        val context: Context =
+          appContext.reactContext ?: throw IllegalStateException("React context is not available")
 
-      Function("getSupportedReceiverVideoCodecsNames") {
-        return@Function whepClient?.getSupportedReceiverVideoCodecsNames() ?: listOf<String>()
-      }
+        val capabilities = PeerConnectionFactoryHelper.getFactory(context).getRtpSenderCapabilities(
+          MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)
 
-      Function("getSupportedReceiverAudioCodecsNames") {
-        return@Function whepClient?.getSupportedReceiverAudioCodecsNames() ?: listOf<String>()
-      }
-
-      Function("setPreferredSenderVideoCodecs") { preferredCodecs: List<String>? ->
-        whipClient?.setPreferredVideoCodecs(preferredCodecs)
-      }
-
-      Function("setPreferredSenderAudioCodecs") { preferredCodecs: List<String>? ->
-        whipClient?.setPreferredAudioCodecs(preferredCodecs)
-      }
-
-      Function("setPreferredReceiverVideoCodecs") { preferredCodecs: List<String>? ->
-        whepClient?.setPreferredVideoCodecs(preferredCodecs)
-      }
-
-      Function("setPreferredReceiverAudioCodecs") { preferredCodecs: List<String>? ->
-        whepClient?.setPreferredAudioCodecs(preferredCodecs)
+        return@Function capabilities.codecs.map { it.name }
       }
 
       Property("cameras") {

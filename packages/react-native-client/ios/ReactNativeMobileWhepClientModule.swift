@@ -71,7 +71,7 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
         return ReactNativeMobileWhepClientModule.whipClient?.peerConnectionState?.stringValue
       }
 
-        Function("createWhepClient") { (configurationOptions: [String: AnyObject]?) in
+        Function("createWhepClient") { (configurationOptions: [String: AnyObject]?, preferredVideoCodecs: [String]?, preferredAudioCodecs: [String]?) in
           guard ReactNativeMobileWhepClientModule.whepClient == nil else {
             emit(event: .warning(message: "WHEP client already exists. You must disconnect before creating a new one."))
             return

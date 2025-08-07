@@ -3,6 +3,7 @@ package com.mobilewhep.client
 import android.content.Context
 import android.media.AudioAttributes
 import android.util.Log
+import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -14,6 +15,7 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
+import org.webrtc.AudioTrack
 import org.webrtc.DataChannel
 import org.webrtc.DefaultVideoDecoderFactory
 import org.webrtc.DefaultVideoEncoderFactory
@@ -46,19 +48,20 @@ open class ClientBase(
   val appContext: Context,
   val stunServerUrl: String?
 ) : PeerConnection.Observer {
-  protected var peerConnectionFactory: PeerConnectionFactory
-  protected var peerConnection: PeerConnection
+
+  protected val peerConnectionFactory = PeerConnectionFactoryHelper.getFactory(appContext)
+
+  protected var peerConnection: PeerConnection? = null
   var connectOptions: ClientConnectOptions? = null
 
-  val peerConnectionState: PeerConnection.PeerConnectionState
-    get() = peerConnection.connectionState()
+  val peerConnectionState: PeerConnection.PeerConnectionState?
+    get() = peerConnection?.connectionState()
 
-  val eglBase = EglBase.create()
 
-  private var patchEndpoint: String? = null
+  protected var patchEndpoint: String? = null
   protected val iceCandidates = mutableListOf<IceCandidate>()
 
-  private val client = OkHttpClient()
+  protected val client = OkHttpClient()
   private val audioAttributes: AudioAttributes =
     AudioAttributes
       .Builder()
@@ -71,11 +74,12 @@ open class ClientBase(
     CoroutineScope(Dispatchers.Default)
 
   open var videoTrack: VideoTrack? = null
+  open var audioTrack: AudioTrack? = null
   private var listeners = mutableListOf<ClientBaseListener>()
   var onTrackAdded: (() -> Unit)? = null
   var onConnectionStateChanged: ((PeerConnection.PeerConnectionState) -> Unit)? = null
 
-  init {
+  open fun setupPeerConnection() {
     val iceServers =
       listOf(
         PeerConnection.IceServer
@@ -90,20 +94,9 @@ open class ClientBase(
     config.candidateNetworkPolicy = PeerConnection.CandidateNetworkPolicy.ALL
     config.tcpCandidatePolicy = PeerConnection.TcpCandidatePolicy.DISABLED
 
-    PeerConnectionFactory.initialize(
-      PeerConnectionFactory.InitializationOptions.builder(appContext).createInitializationOptions()
-    )
-
-    peerConnectionFactory =
-      PeerConnectionFactory
-        .builder()
-        .setAudioDeviceModule(audioDeviceModule)
-        .setVideoDecoderFactory(DefaultVideoDecoderFactory(eglBase.eglBaseContext))
-        .setVideoEncoderFactory(DefaultVideoEncoderFactory(eglBase.eglBaseContext, true, true))
-        .createPeerConnectionFactory()
-
     try {
       peerConnection = peerConnectionFactory.createPeerConnection(config, this)!!
+
     } catch (e: NullPointerException) {
       throw SessionNetworkError.ConfigurationError("Failed to establish RTCPeerConnection. Check initial configuration")
     }
@@ -111,79 +104,6 @@ open class ClientBase(
 
   open suspend fun connect(connectOptions: ClientConnectOptions) {
     this.connectOptions = connectOptions
-  }
-
-  open suspend fun disconnect() {
-    suspendCancellableCoroutine { continuation ->
-      if (connectOptions == null) {
-        continuation.resumeWithException(
-          SessionNetworkError.ConnectionError(
-            "Cannot DELETE. Connection not setup. Remember to call connect first."
-          )
-        )
-        return@suspendCancellableCoroutine
-      }
-
-      val serverUrl = URL(connectOptions!!.serverUrl)
-
-      val requestURL =
-        URI(serverUrl.protocol, null, serverUrl.host, serverUrl.port, patchEndpoint, null, null)
-
-      var requestBuilder: Request.Builder =
-        Request
-          .Builder()
-          .url(requestURL.toURL())
-          .delete()
-      if (connectOptions!!.authToken != null) {
-        requestBuilder =
-          requestBuilder.header("Authorization", "Bearer " + connectOptions!!.authToken)
-      }
-
-      val request = requestBuilder.build()
-      val requestCall = client.newCall(request)
-
-      continuation.invokeOnCancellation {
-        requestCall.cancel()
-      }
-
-      requestCall.enqueue(
-        object : Callback {
-          override fun onFailure(
-            call: Call,
-            e: IOException
-          ) {
-            if (e is ConnectException) {
-              continuation.resumeWithException(
-                SessionNetworkError.ConnectionError(
-                  "DELETE Failed, network error. Check if the server is up and running and the token and the server url is correct."
-                )
-              )
-            } else {
-              Log.e(CLIENT_TAG, e.toString())
-              continuation.resumeWithException(e)
-              e.printStackTrace()
-            }
-          }
-
-          override fun onResponse(
-            call: Call,
-            response: Response
-          ) {
-            response.use {
-              if (!response.isSuccessful) {
-                val exception =
-                  AttributeNotFoundError.ResponseNotFound(
-                    "DELETE Failed, invalid response. Check if the server is up and running and the token and the server url is correct."
-                  )
-                continuation.resumeWithException(exception)
-              } else {
-                continuation.resume(Unit)
-              }
-            }
-          }
-        }
-      )
-    }
   }
 
   /**

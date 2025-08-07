@@ -15,7 +15,9 @@ import org.webrtc.SessionDescription
 data class WhepConfigurationOptions(
   val audioEnabled: Boolean? = true,
   val videoEnabled: Boolean? = true,
-  val stunServerUrl: String? = null
+  val stunServerUrl: String? = null,
+  val preferredVideoCodecs: List<String>,
+  val preferredAudioCodecs: List<String>
 )
 
 class WhepClient(
@@ -48,6 +50,11 @@ class WhepClient(
    */
   public override suspend fun connect(connectOptions: ClientConnectOptions) {
     super.connect(connectOptions)
+
+    if (peerConnection == null) {
+      setupPeerConnection()
+    }
+
     var audioEnabled = configurationOptions?.audioEnabled ?: true
     var videoEnabled = configurationOptions?.videoEnabled ?: true
 
@@ -60,18 +67,32 @@ class WhepClient(
     }
 
     if (videoEnabled) {
-      peerConnection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO).direction =
-        RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
+      val transceiver = peerConnection?.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)
+      transceiver?.direction = RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
+
+      setCodecPreferencesIfAvailable(
+        transceiver,
+        configurationOptions.preferredVideoCodecs,
+        MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
+        useReceiver = true
+      )
     }
 
     if (audioEnabled) {
-      peerConnection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO).direction =
-        RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
+      val transceiver =peerConnection?.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)
+      transceiver?.direction = RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
+
+      setCodecPreferencesIfAvailable(
+        transceiver,
+        configurationOptions.preferredAudioCodecs,
+        MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
+        useReceiver = true
+      )
     }
 
     val constraints = MediaConstraints()
-    val sdpOffer = peerConnection.createOffer(constraints).getOrThrow()
-    peerConnection.setLocalDescription(sdpOffer).getOrThrow()
+    val sdpOffer = peerConnection!!.createOffer(constraints).getOrThrow()
+    peerConnection?.setLocalDescription(sdpOffer)?.getOrThrow()
 
     val sdp = sendSdpOffer(sdpOffer.description)
 
@@ -82,7 +103,7 @@ class WhepClient(
         SessionDescription.Type.ANSWER,
         sdp
       )
-    peerConnection.setRemoteDescription(answer)
+    peerConnection?.setRemoteDescription(answer)
 
     reconnectionManager.onReconnected()
   }
@@ -95,78 +116,18 @@ class WhepClient(
    *  or in any other case where there has been an error in creating the peerConnection
    *
    */
-  override suspend fun disconnect() {
-    peerConnection.dispose()
-    peerConnectionFactory.dispose()
-    eglBase.release()
-  }
-
-  private fun getAudioTrack(): AudioTrack? {
-    peerConnection?.transceivers?.forEach { transceiver ->
-      val track = transceiver.receiver.track()
-      if (track is AudioTrack) {
-        return track
-      }
-    }
-    return null
+  fun disconnect() {
+    peerConnection?.dispose()
   }
 
   public fun pause() {
-    var track = getAudioTrack()
-    track?.setEnabled(false)
+    audioTrack?.setEnabled(false)
     this.videoTrack?.setEnabled(false)
   }
 
   public fun unpause() {
-    var track = getAudioTrack()
-    track?.setEnabled(true)
+    audioTrack?.setEnabled(true)
     this.videoTrack?.setEnabled(true)
-  }
-
-  fun getSupportedReceiverVideoCodecsNames(): List<String> {
-    val capabilities = peerConnectionFactory.getRtpReceiverCapabilities(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)
-
-    return capabilities.codecs.map { it.name }
-  }
-
-  fun getSupportedReceiverAudioCodecsNames(): List<String> {
-    val capabilities = peerConnectionFactory.getRtpReceiverCapabilities(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)
-
-    return capabilities.codecs.map { it.name }
-  }
-
-  fun setPreferredVideoCodecs(preferredCodecs: List<String>?) {
-    if (preferredCodecs?.isEmpty() == true) {
-      return
-    }
-
-    peerConnection.transceivers.forEach { transceiver ->
-      if (transceiver.mediaType.equals(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)) {
-        setCodecPreferencesIfAvailable(
-          transceiver,
-          preferredCodecs!!,
-          MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
-          useReceiver = true
-        )
-      }
-    }
-  }
-
-  fun setPreferredAudioCodecs(preferredCodecs: List<String>?) {
-    if (preferredCodecs?.isEmpty() == true) {
-      return
-    }
-
-    peerConnection.transceivers.forEach { transceiver ->
-      if (transceiver.mediaType.equals(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)) {
-        setCodecPreferencesIfAvailable(
-          transceiver,
-          preferredCodecs!!,
-          MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
-          useReceiver = true
-        )
-      }
-    }
   }
 
   override fun onIceConnectionChange(connectionState: PeerConnection.IceConnectionState?) {
