@@ -43,7 +43,6 @@ open class ClientBase(
   val appContext: Context,
   val stunServerUrl: String?
 ) : PeerConnection.Observer {
-
   protected val peerConnectionFactory = PeerConnectionFactoryHelper.getFactory(appContext)
 
   protected var peerConnection: PeerConnection? = null
@@ -51,7 +50,6 @@ open class ClientBase(
 
   val peerConnectionState: PeerConnection.PeerConnectionState?
     get() = peerConnection?.connectionState()
-
 
   protected var patchEndpoint: String? = null
   protected val iceCandidates = mutableListOf<IceCandidate>()
@@ -91,7 +89,6 @@ open class ClientBase(
 
     try {
       peerConnection = peerConnectionFactory.createPeerConnection(config, this)!!
-
     } catch (e: NullPointerException) {
       throw SessionNetworkError.ConfigurationError("Failed to establish RTCPeerConnection. Check initial configuration")
     }

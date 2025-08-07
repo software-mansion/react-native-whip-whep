@@ -160,7 +160,6 @@ class WhipClient(
       val audioTrack = this.peerConnectionFactory.createAudioTrack(audioTrackId, audioSource)
 
       this.audioTrack = audioTrack
-
     }
 
     peerConnection?.enforceSendOnlyDirection()
@@ -345,8 +344,6 @@ class WhipClient(
     }
     return true
   }
-
-
 
   companion object {
     private fun getEnumerator(context: Context): CameraEnumerator =

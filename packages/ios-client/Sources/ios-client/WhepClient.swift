@@ -158,8 +158,9 @@ public class WhepClient: ClientBase {
      - Returns: Array of supported video codec names
      */
     public static func getSupportedReceiverVideoCodecsNames() -> [String] {
-      let capabilities = WhepClient.peerConnectionFactory.rtpReceiverCapabilities(forKind: kRTCMediaStreamTrackKindVideo)
-       
+        let capabilities = WhepClient.peerConnectionFactory.rtpReceiverCapabilities(
+            forKind: kRTCMediaStreamTrackKindVideo)
+
         return capabilities.codecs.map { $0.name }
     }
 
@@ -169,7 +170,8 @@ public class WhepClient: ClientBase {
      - Returns: Array of supported audio codec names
      */
     public static func getSupportedReceiverAudioCodecsNames() -> [String] {
-      let capabilities = WhepClient.peerConnectionFactory.rtpReceiverCapabilities(forKind: kRTCMediaStreamTrackKindAudio)
+        let capabilities = WhepClient.peerConnectionFactory.rtpReceiverCapabilities(
+            forKind: kRTCMediaStreamTrackKindAudio)
 
         return capabilities.codecs.map { $0.name }
     }

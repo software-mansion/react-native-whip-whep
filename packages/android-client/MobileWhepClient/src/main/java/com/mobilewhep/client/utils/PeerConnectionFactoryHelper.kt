@@ -1,5 +1,6 @@
 package com.mobilewhep.client.utils
 
+import android.content.Context
 import android.media.AudioAttributes
 import com.mobilewhep.client.createAudioDeviceModule
 import org.webrtc.DefaultVideoDecoderFactory
@@ -7,7 +8,6 @@ import org.webrtc.DefaultVideoEncoderFactory
 import org.webrtc.EglBase
 import org.webrtc.PeerConnectionFactory
 import org.webrtc.audio.AudioDeviceModule
-import android.content.Context
 
 class PeerConnectionFactoryHelper private constructor() {
   companion object {
@@ -26,7 +26,6 @@ class PeerConnectionFactoryHelper private constructor() {
         PeerConnectionFactory.InitializationOptions.builder(appContext).createInitializationOptions()
       )
 
-
       val audioAttributes: AudioAttributes =
         AudioAttributes
           .Builder()
@@ -34,7 +33,6 @@ class PeerConnectionFactoryHelper private constructor() {
           .setContentType(AudioAttributes.CONTENT_TYPE_MOVIE)
           .build()
       val audioDeviceModule: AudioDeviceModule = createAudioDeviceModule(appContext, audioAttributes)
-
 
       return PeerConnectionFactory
         .builder()

@@ -3,7 +3,6 @@ import Logging
 import WebRTC
 import os
 
-
 extension RTCPeerConnection {
     // currently `Membrane RTC Engine` can't handle track of diretion `sendRecv` therefore
     // we need to change all `sendRecv` to `sendOnly`.
@@ -68,19 +67,18 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
             }
         }
     }
-  
+
     public var audioTrack: RTCAudioTrack?
 
     public weak var delegate: PlayerListener?
     public var onConnectionStateChanged: ((RTCPeerConnectionState) -> Void)?
 
     let logger = Logger(label: "com.swmansion.whipwhepclient")
-  
-    static var peerConnectionFactory = RTCPeerConnectionFactory(
-      encoderFactory: RTCDefaultVideoEncoderFactory(),
-      decoderFactory: RTCDefaultVideoDecoderFactory()
-    )
 
+    static var peerConnectionFactory = RTCPeerConnectionFactory(
+        encoderFactory: RTCDefaultVideoEncoderFactory(),
+        decoderFactory: RTCDefaultVideoDecoderFactory()
+    )
 
     public init(stunServerUrl: String?) {
         self.stunServerUrl = stunServerUrl ?? "stun:stun.l.google.com:19302"
@@ -351,9 +349,9 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
 
         let capabilities =
             useReceiver
-      ? ClientBase.peerConnectionFactory.rtpReceiverCapabilities(forKind: mediaType)
-      : ClientBase.peerConnectionFactory.rtpSenderCapabilities(forKind: mediaType)
-        let availableCodecs = capabilities.codecs 
+            ? ClientBase.peerConnectionFactory.rtpReceiverCapabilities(forKind: mediaType)
+            : ClientBase.peerConnectionFactory.rtpSenderCapabilities(forKind: mediaType)
+        let availableCodecs = capabilities.codecs
 
         return preferredCodecs.compactMap { preferredCodec in
             availableCodecs.first { codec in

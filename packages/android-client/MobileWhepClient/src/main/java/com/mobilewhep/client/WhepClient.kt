@@ -5,7 +5,6 @@ import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.webrtc.AudioTrack
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
@@ -79,7 +78,7 @@ class WhepClient(
     }
 
     if (audioEnabled) {
-      val transceiver =peerConnection?.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)
+      val transceiver = peerConnection?.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)
       transceiver?.direction = RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
 
       setCodecPreferencesIfAvailable(
