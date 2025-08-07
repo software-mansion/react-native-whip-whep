@@ -3,11 +3,6 @@ import Logging
 import WebRTC
 import os
 
-protocol RTCPeerConnectionFactoryType: AnyObject, RTCPeerConnectionDelegate {
-    var peerConnectionFactory: RTCPeerConnectionFactory? { get set }
-    var peerConnection: RTCPeerConnection? { get set }
-    var isConnectionSetUp: Bool { get set }
-}
 
 extension RTCPeerConnection {
     // currently `Membrane RTC Engine` can't handle track of diretion `sendRecv` therefore
@@ -49,10 +44,9 @@ protocol Player {
     func disconnect()
 }
 
-public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionFactoryType {
+public class ClientBase: NSObject, RTCPeerConnectionDelegate {
     private let stunServerUrl: String
     var patchEndpoint: String?
-    var peerConnectionFactory: RTCPeerConnectionFactory?
     var peerConnection: RTCPeerConnection?
     var iceCandidates: [RTCIceCandidate] = []
     var isConnectionSetUp: Bool = false
@@ -74,22 +68,25 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
             }
         }
     }
+  
+    public var audioTrack: RTCAudioTrack?
 
     public var delegate: PlayerListener?
     public var onConnectionStateChanged: ((RTCPeerConnectionState) -> Void)?
 
     let logger = Logger(label: "com.swmansion.whipwhepclient")
+  
+    static var peerConnectionFactory = RTCPeerConnectionFactory(
+      encoderFactory: RTCDefaultVideoEncoderFactory(),
+      decoderFactory: RTCDefaultVideoDecoderFactory())
+
 
     public init(stunServerUrl: String?) {
         self.stunServerUrl = stunServerUrl ?? "stun:stun.l.google.com:19302"
     }
 
     func setUpPeerConnection() {
-        let encoderFactory = RTCDefaultVideoEncoderFactory()
-        let decoderFactory = RTCDefaultVideoDecoderFactory()
-        self.peerConnectionFactory = RTCPeerConnectionFactory(
-            encoderFactory: encoderFactory,
-            decoderFactory: decoderFactory)
+
 
         let stunServerUrl = stunServerUrl
         let stunServer = RTCIceServer(urlStrings: [stunServerUrl])
@@ -103,7 +100,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
         config.tcpCandidatePolicy = .disabled
 
         let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
-        self.peerConnection = self.peerConnectionFactory!.peerConnection(
+        self.peerConnection = ClientBase.peerConnectionFactory.peerConnection(
             with: config,
             constraints: constraints,
             delegate: self)
@@ -117,40 +114,6 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
 
     public func connect(_ connectOptions: ClientConnectOptions) async throws {
         self.connectOptions = connectOptions
-    }
-
-    public func disconnect() async throws {
-        guard let connectOptions else {
-            throw SessionNetworkError.ConnectionError(
-                description:
-                    "Connection not setup. Remember to call connect first.")
-        }
-        guard let patchEndpoint = self.patchEndpoint else {
-            throw AttributeNotFoundError.PatchEndpointNotFound(
-                description: "Patch endpoint not found. Make sure the SDP answer is correct.")
-        }
-        var components = URLComponents(string: connectOptions.serverUrl.absoluteString)
-        components?.path = patchEndpoint
-
-        let url = components?.url
-        var request = URLRequest(url: url!)
-        request.httpMethod = "DELETE"
-
-        if let token = connectOptions.authToken {
-            request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
-        }
-
-        let response: URLResponse
-        (_, response) = try await URLSession.shared.data(for: request)
-        guard let httpResponse = response as? HTTPURLResponse else {
-            return
-        }
-        if httpResponse.statusCode < 200 || httpResponse.statusCode >= 300 {
-            throw SessionNetworkError.ConnectionError(
-                description:
-                    "DELETE Failed, invalid response. Check if the server is up and running and the token and the server url is correct."
-            )
-        }
     }
 
     /**
@@ -389,9 +352,9 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
 
         let capabilities =
             useReceiver
-            ? peerConnectionFactory?.rtpReceiverCapabilities(forKind: mediaType)
-            : peerConnectionFactory?.rtpSenderCapabilities(forKind: mediaType)
-        let availableCodecs = capabilities?.codecs ?? []
+      ? ClientBase.peerConnectionFactory.rtpReceiverCapabilities(forKind: mediaType)
+      : ClientBase.peerConnectionFactory.rtpSenderCapabilities(forKind: mediaType)
+        let availableCodecs = capabilities.codecs 
 
         return preferredCodecs.compactMap { preferredCodec in
             availableCodecs.first { codec in

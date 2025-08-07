@@ -7,16 +7,20 @@ public struct WhipConfigurationOptions {
     public let videoDevice: AVCaptureDevice
     public let videoParameters: VideoParameters
     public let stunServerUrl: String?
+    public let preferredVideoCodecs: [String]
+    public let preferredAudioCodecs: [String]
 
     public init(
         audioEnabled: Bool = true, videoEnabled: Bool = true, videoDevice: AVCaptureDevice,
-        videoParameters: VideoParameters, stunServerUrl: String?
+        videoParameters: VideoParameters, stunServerUrl: String?, preferredVideoCodecs: [String] = [], preferredAudioCodecs: [String] = []
     ) {
         self.audioEnabled = audioEnabled
         self.videoEnabled = videoEnabled
         self.videoDevice = videoDevice
         self.videoParameters = videoParameters
         self.stunServerUrl = stunServerUrl
+        self.preferredVideoCodecs = preferredVideoCodecs
+        self.preferredAudioCodecs = preferredAudioCodecs
     }
 }
 
@@ -24,22 +28,6 @@ public class WhipClient: ClientBase {
     private let configOptions: WhipConfigurationOptions
     private var videoCapturer: RTCCameraVideoCapturer?
     private var videoSource: RTCVideoSource?
-
-    override func setUpPeerConnection() {
-        super.setUpPeerConnection()
-
-        do {
-            try setUpVideoAndAudioDevices()
-        } catch let error as CaptureDeviceError {
-            switch error {
-            case .VideoDeviceNotAvailable(let description),
-                .VideoSizeNotSupported(let description):
-                print(description)
-            }
-        } catch {
-            print("Unexpected error: \(error)")
-        }
-    }
 
     /**
     Initializes a `WhipClient` object.
@@ -55,8 +43,67 @@ public class WhipClient: ClientBase {
     ) {
         self.configOptions = configOptions
         super.init(stunServerUrl: configOptions.stunServerUrl)
-        setUpPeerConnection()
+      
+      do {
+          try setUpVideoAndAudioDevices()
+      } catch let error as CaptureDeviceError {
+          switch error {
+          case .VideoDeviceNotAvailable(let description),
+              .VideoSizeNotSupported(let description):
+              print(description)
+          }
+      } catch {
+          print("Unexpected error: \(error)")
+      }
+      
     }
+  
+    deinit {
+      cleanup()
+    }
+  
+  override func setUpPeerConnection() {
+      super.setUpPeerConnection()
+
+    let audioEnabled = configOptions.audioEnabled
+    let videoEnabled = configOptions.videoEnabled
+
+    if !audioEnabled && !videoEnabled {
+        logger.warning(
+            "Both audioEnabled and videoEnabled are set to false, what will result in no stream at all. Consider changing one of the options to true."
+        )
+    }
+
+    let sendEncodings = [RTCRtpEncodingParameters.create(active: true)]
+    let localStreamId = UUID().uuidString
+    
+    if let videoTrack = self.videoTrack, videoEnabled {
+      let transceiverInit = RTCRtpTransceiverInit()
+      transceiverInit.direction = RTCRtpTransceiverDirection.sendOnly
+      transceiverInit.streamIds = [localStreamId]
+      transceiverInit.sendEncodings = sendEncodings
+
+      let transceiver = peerConnection?.addTransceiver(with: videoTrack, init: transceiverInit)
+      setCodecPreferencesIfAvailable(
+          transceiver: transceiver,
+          preferredCodecs: configOptions.preferredVideoCodecs,
+          mediaType: kRTCMediaStreamTrackKindVideo
+      )
+    }
+
+    if let audioTrack = self.audioTrack, audioEnabled {
+      let audioTransceiverInit = RTCRtpTransceiverInit()
+      audioTransceiverInit.direction = RTCRtpTransceiverDirection.sendOnly
+      audioTransceiverInit.streamIds = [localStreamId]
+      let transceiver = peerConnection?.addTransceiver(with: audioTrack, init: audioTransceiverInit)
+      peerConnection?.enforceSendOnlyDirection()
+      setCodecPreferencesIfAvailable(
+          transceiver: transceiver,
+          preferredCodecs: configOptions.preferredAudioCodecs,
+          mediaType: kRTCMediaStreamTrackKindAudio
+      )
+    }
+  }
 
     /**
     Connects the client to the WHIP server using WebRTC Peer Connection.
@@ -92,24 +139,54 @@ public class WhipClient: ClientBase {
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
     of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
-    public override func disconnect() async throws {
-        DispatchQueue.main.async { [weak self] in
-            self?.peerConnection?.close()
-            self?.peerConnection = nil
-            self?.isConnectionSetUp = false
-            self?.videoCapturer?.stopCapture()
-            self?.videoCapturer = nil
-            self?.videoSource = nil
-            self?.videoTrack = nil
-        }
-        try await super.disconnect()
+    public func disconnect() async throws {
+      DispatchQueue.main.sync { [weak self] in
+        self?.peerConnection?.close()
+        self?.peerConnection = nil
+        self?.isConnectionSetUp = false
+      }
+      try await disconnectResource()
     }
+  
+  public func cleanup() {
+      peerConnection?.close()
+      videoCapturer?.stopCapture()
+  }
+  
+  public func disconnectResource() async throws {
+      guard let connectOptions else {
+          throw SessionNetworkError.ConnectionError(
+              description:
+                  "Connection not setup. Remember to call connect first.")
+      }
+      guard let patchEndpoint = self.patchEndpoint else {
+          throw AttributeNotFoundError.PatchEndpointNotFound(
+              description: "Patch endpoint not found. Make sure the SDP answer is correct.")
+      }
+      var components = URLComponents(string: connectOptions.serverUrl.absoluteString)
+      components?.path = patchEndpoint
 
-    /**
-    Gets the video and audio devices, prepares them, starts capture and adds it to the Peer Connection.
-    
-    - Throws: `AVCaptureDeviceError.VideoDeviceNotAvailable` if there is no video device available.
-    */
+      let url = components?.url
+      var request = URLRequest(url: url!)
+      request.httpMethod = "DELETE"
+
+      if let token = connectOptions.authToken {
+          request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+      }
+
+      let response: URLResponse
+      (_, response) = try await URLSession.shared.data(for: request)
+      guard let httpResponse = response as? HTTPURLResponse else {
+          return
+      }
+      if httpResponse.statusCode < 200 || httpResponse.statusCode >= 300 {
+          throw SessionNetworkError.ConnectionError(
+              description:
+                  "DELETE Failed, invalid response. Check if the server is up and running and the token and the server url is correct."
+          )
+      }
+  }
+
     private func setUpVideoAndAudioDevices() throws {
         let audioEnabled = configOptions.audioEnabled
         let videoEnabled = configOptions.videoEnabled
@@ -122,17 +199,14 @@ public class WhipClient: ClientBase {
             )
         }
 
-        let sendEncodings = [RTCRtpEncodingParameters.create(active: true)]
-        let localStreamId = UUID().uuidString
-
         if videoEnabled {
-            let videoSource = peerConnectionFactory!.videoSource()
+          let videoSource = WhipClient.peerConnectionFactory.videoSource()
             self.videoSource = videoSource
             let videoCapturer = RTCCameraVideoCapturer(delegate: videoSource, captureSession: AVCaptureSession())
             self.videoCapturer = videoCapturer
             let videoTrackId = UUID().uuidString
 
-            let videoTrack = peerConnectionFactory!.videoTrack(with: videoSource, trackId: videoTrackId)
+          let videoTrack = WhipClient.peerConnectionFactory.videoTrack(with: videoSource, trackId: videoTrackId)
             videoTrack.isEnabled = true
 
             let (format, fps) = setVideoSize(
@@ -149,26 +223,16 @@ public class WhipClient: ClientBase {
                 }
             }
 
-            let transceiverInit = RTCRtpTransceiverInit()
-            transceiverInit.direction = RTCRtpTransceiverDirection.sendOnly
-            transceiverInit.streamIds = [localStreamId]
-            transceiverInit.sendEncodings = sendEncodings
-
-            peerConnection?.addTransceiver(with: videoTrack, init: transceiverInit)
-
             self.videoTrack = videoTrack
         }
 
         if audioEnabled {
             let audioTrackId = UUID().uuidString
-            let audioSource = self.peerConnectionFactory!.audioSource(with: nil)
-            let audioTrack = self.peerConnectionFactory!.audioTrack(with: audioSource, trackId: audioTrackId)
+          let audioSource = WhipClient.peerConnectionFactory.audioSource(with: nil)
+          let audioTrack = WhipClient.peerConnectionFactory.audioTrack(with: audioSource, trackId: audioTrackId)
+          
+          self.audioTrack = audioTrack
 
-            let audioTransceiverInit = RTCRtpTransceiverInit()
-            audioTransceiverInit.direction = RTCRtpTransceiverDirection.sendOnly
-            audioTransceiverInit.streamIds = [localStreamId]
-            peerConnection?.addTransceiver(with: audioTrack, init: audioTransceiverInit)
-            peerConnection?.enforceSendOnlyDirection()
         }
 
     }
@@ -185,7 +249,6 @@ public class WhipClient: ClientBase {
 
         var currentDiff = Int32.max
         var selectedFormat: AVCaptureDevice.Format = formats[0]
-        var selectedDimension: Dimensions?
         for format in formats {
             let dimension = CMVideoFormatDescriptionGetDimensions(format.formatDescription)
 
@@ -193,12 +256,7 @@ public class WhipClient: ClientBase {
             if diff < currentDiff {
                 selectedFormat = format
                 currentDiff = diff
-                selectedDimension = dimension
             }
-        }
-
-        guard let dimension = selectedDimension else {
-            fatalError("Could not get dimensions for video capture")
         }
 
         let fps = videoParameters.maxFps
@@ -228,11 +286,9 @@ public class WhipClient: ClientBase {
     
      - Returns: Array of supported video codec names
      */
-    public func getSupportedSenderVideoCodecsNames() -> [String] {
-        guard let capabilities = peerConnectionFactory?.rtpSenderCapabilities(forKind: kRTCMediaStreamTrackKindVideo)
-        else {
-            return []
-        }
+    public static func getSupportedSenderVideoCodecsNames() -> [String] {
+      let capabilities = WhipClient.peerConnectionFactory.rtpSenderCapabilities(forKind: kRTCMediaStreamTrackKindVideo)
+ 
 
         return capabilities.codecs.map { $0.name }
     }
@@ -242,12 +298,9 @@ public class WhipClient: ClientBase {
     
      - Returns: Array of supported audio codec names
      */
-    public func getSupportedSenderAudioCodecsNames() -> [String] {
-        guard let capabilities = peerConnectionFactory?.rtpSenderCapabilities(forKind: kRTCMediaStreamTrackKindAudio)
-        else {
-            return []
-        }
-
+    public static func getSupportedSenderAudioCodecsNames() -> [String] {
+      let capabilities = WhipClient.peerConnectionFactory.rtpSenderCapabilities(forKind: kRTCMediaStreamTrackKindAudio)
+        
         return capabilities.codecs.map { $0.name }
     }
 

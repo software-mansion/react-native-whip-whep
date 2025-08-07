@@ -127,12 +127,7 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
             client.unpause()
         }
 
-        Function("createWhipClient") { (configurationOptions: [String: AnyObject]?) in
-            guard ReactNativeMobileWhepClientModule.whipClient == nil else {
-              emit(event: .warning(message: "WHIP client already exists. You must disconnect before creating a new one."))
-              return
-            }
-          
+      Function("createWhipClient") { (configurationOptions: [String: Any]?, preferredVideoCodecs: [String]?, preferredAudioCodecs: [String]?) in
           guard let deviceId = configurationOptions?["videoDeviceId"] as? String, let avCaptureDevice = AVCaptureDevice(uniqueID: deviceId) else {
             throw Exception(
               name: "E_INVALID_VIDEO_DEVICE_ID",
@@ -144,7 +139,10 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
             videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,
             videoDevice: avCaptureDevice,
             videoParameters: configurationOptions?["videoParameters"] as? VideoParameters ?? VideoParameters.presetHD169,
-            stunServerUrl: configurationOptions?["stunServerUrl"] as? String)
+            stunServerUrl: configurationOptions?["stunServerUrl"] as? String,
+            preferredVideoCodecs: preferredVideoCodecs ?? [],
+            preferredAudioCodecs: preferredAudioCodecs ?? []
+          )
           
           guard options.videoEnabled, PermissionUtils.hasCameraPermission() else {
               emit(event: .warning(message: "Camera permission not granted. Cannot initialize WhipClient."))
@@ -186,31 +184,19 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
         // MARK: - Codec Methods
         
         Function("getSupportedSenderVideoCodecsNames") {
-            guard let client = ReactNativeMobileWhepClientModule.whipClient else {
-                return []
-            }
-            return client.getSupportedSenderVideoCodecsNames()
+          return WhipClient.getSupportedSenderVideoCodecsNames()
         }
 
         Function("getSupportedSenderAudioCodecsNames") {
-            guard let client = ReactNativeMobileWhepClientModule.whipClient else {
-                return []
-            }
-            return client.getSupportedSenderAudioCodecsNames()
+          return WhipClient.getSupportedSenderAudioCodecsNames()
         }
 
         Function("getSupportedReceiverVideoCodecsNames") {
-            guard let client = ReactNativeMobileWhepClientModule.whepClient else {
-                return []
-            }
-            return client.getSupportedReceiverVideoCodecsNames()
+          return WhepClient.getSupportedReceiverVideoCodecsNames()
         }
 
         Function("getSupportedReceiverAudioCodecsNames") {
-            guard let client = ReactNativeMobileWhepClientModule.whepClient else {
-                return []
-            }
-            return client.getSupportedReceiverAudioCodecsNames()
+          return WhepClient.getSupportedReceiverAudioCodecsNames()
         }
 
         Function("setPreferredSenderVideoCodecs") { (preferredCodecs: [String]?) in

@@ -120,7 +120,7 @@ public class WhepClient: ClientBase {
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
     of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
-    public override func disconnect() async throws {
+    public func disconnect() {
         DispatchQueue.main.async { [weak self] in
             self?.peerConnection?.close()
             self?.peerConnection = nil
@@ -157,12 +157,9 @@ public class WhepClient: ClientBase {
     
      - Returns: Array of supported video codec names
      */
-    public func getSupportedReceiverVideoCodecsNames() -> [String] {
-        guard let capabilities = peerConnectionFactory?.rtpReceiverCapabilities(forKind: kRTCMediaStreamTrackKindVideo)
-        else {
-            return []
-        }
-
+    public static func getSupportedReceiverVideoCodecsNames() -> [String] {
+      let capabilities = WhepClient.peerConnectionFactory.rtpReceiverCapabilities(forKind: kRTCMediaStreamTrackKindVideo)
+       
         return capabilities.codecs.map { $0.name }
     }
 
@@ -171,11 +168,8 @@ public class WhepClient: ClientBase {
     
      - Returns: Array of supported audio codec names
      */
-    public func getSupportedReceiverAudioCodecsNames() -> [String] {
-        guard let capabilities = peerConnectionFactory?.rtpReceiverCapabilities(forKind: kRTCMediaStreamTrackKindAudio)
-        else {
-            return []
-        }
+    public static func getSupportedReceiverAudioCodecsNames() -> [String] {
+      let capabilities = WhepClient.peerConnectionFactory.rtpReceiverCapabilities(forKind: kRTCMediaStreamTrackKindAudio)
 
         return capabilities.codecs.map { $0.name }
     }

@@ -34,7 +34,11 @@ type RNMobileWhepClientModule = {
   disconnectWhep: () => Promise<void>;
   pauseWhep: () => void;
   unpauseWhep: () => void;
-  createWhipClient: (configurationOptions: WhipConfigurationOptions) => void;
+  createWhipClient: (
+    configurationOptions: WhipConfigurationOptions,
+    preferredVideoCodecs: SenderVideoCodecName[],
+    preferredAudioCodecs: SenderAudioCodecName[],
+  ) => void;
   connectWhip: (serverUrl: string, authToken?: string) => Promise<void>;
   disconnectWhip: () => Promise<void>;
 
@@ -84,14 +88,21 @@ const nativeModule = requireNativeModule(
 export class WhipClient {
   private isInitialized = false;
 
-  constructor(private readonly configurationOptions: WhipConfigurationOptions) {
+  constructor(
+    private readonly configurationOptions: WhipConfigurationOptions,
+    private readonly preferredVideoCodecs: SenderVideoCodecName[] = [],
+    private readonly preferredAudioCodecs: SenderAudioCodecName[] = [],
+  ) {
     this.initializeIfNeeded();
-    console.warn("WhipClient constructor");
   }
 
   private initializeIfNeeded() {
     if (!this.isInitialized) {
-      nativeModule.createWhipClient(this.configurationOptions);
+      nativeModule.createWhipClient(
+        this.configurationOptions,
+        this.preferredVideoCodecs,
+        this.preferredAudioCodecs,
+      );
       this.isInitialized = true;
     }
   }
@@ -108,25 +119,19 @@ export class WhipClient {
     this.isInitialized = false;
   }
 
-  getSupportedAudioCodecs() {
+  static getSupportedAudioCodecs() {
     return nativeModule.getSupportedSenderAudioCodecsNames();
   }
 
-  getSupportedVideoCodecs() {
+  static getSupportedVideoCodecs() {
     return nativeModule.getSupportedSenderVideoCodecsNames();
-  }
-
-  setPreferredAudioCodecs(codecs: SenderAudioCodecName[]) {
-    nativeModule.setPreferredSenderAudioCodecs(codecs);
-  }
-
-  setPreferredVideoCodecs(codecs: SenderVideoCodecName[]) {
-    nativeModule.setPreferredSenderVideoCodecs(codecs);
   }
 }
 
 export class WhepClient {
   private isInitialized = false;
+  private preferredAudioCodecs: ReceiverAudioCodecName[] = [];
+  private preferredVideoCodecs: ReceiverVideoCodecName[] = [];
 
   constructor(private readonly configurationOptions: WhepConfigurationOptions) {
     this.initializeIfNeeded();
@@ -135,6 +140,8 @@ export class WhepClient {
   private initializeIfNeeded() {
     if (!this.isInitialized) {
       nativeModule.createWhepClient(this.configurationOptions);
+      this.setPreferredAudioCodecs(this.preferredAudioCodecs);
+      this.setPreferredVideoCodecs(this.preferredVideoCodecs);
       this.isInitialized = true;
     }
   }
@@ -169,10 +176,12 @@ export class WhepClient {
   }
 
   setPreferredAudioCodecs(codecs: ReceiverAudioCodecName[]) {
+    this.preferredAudioCodecs = codecs;
     nativeModule.setPreferredReceiverAudioCodecs(codecs);
   }
 
   setPreferredVideoCodecs(codecs: ReceiverVideoCodecName[]) {
+    this.preferredVideoCodecs = codecs;
     nativeModule.setPreferredReceiverVideoCodecs(codecs);
   }
 }
