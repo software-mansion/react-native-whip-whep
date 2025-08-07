@@ -29,7 +29,11 @@ type RNMobileWhepClientModule = {
   cameras: readonly Camera[];
   whepPeerConnectionState: PeerConnectionState | null;
   whipPeerConnectionState: PeerConnectionState | null;
-  createWhepClient: (configurationOptions?: WhepConfigurationOptions) => void;
+  createWhepClient: (
+    configurationOptions: WhepConfigurationOptions,
+    preferredVideoCodecs: ReceiverVideoCodecName[],
+    preferredAudioCodecs: ReceiverAudioCodecName[],
+  ) => void;
   connectWhep: (serverUrl: string, authToken?: string) => Promise<void>;
   disconnectWhep: () => Promise<void>;
   pauseWhep: () => void;
@@ -48,10 +52,6 @@ type RNMobileWhepClientModule = {
   getSupportedReceiverVideoCodecsNames: () => ReceiverVideoCodecName[];
   getSupportedReceiverAudioCodecsNames: () => ReceiverAudioCodecName[];
   getSupportedSenderAudioCodecsNames: () => SenderAudioCodecName[];
-  setPreferredSenderAudioCodecs: (codecs: SenderAudioCodecName[]) => void;
-  setPreferredSenderVideoCodecs: (codecs: SenderVideoCodecName[]) => void;
-  setPreferredReceiverAudioCodecs: (codecs: ReceiverAudioCodecName[]) => void;
-  setPreferredReceiverVideoCodecs: (codecs: ReceiverVideoCodecName[]) => void;
 };
 
 export const ReceivableEvents = {
@@ -135,18 +135,22 @@ export class WhipClient {
 
 export class WhepClient {
   private isInitialized = false;
-  private preferredAudioCodecs: ReceiverAudioCodecName[] = [];
-  private preferredVideoCodecs: ReceiverVideoCodecName[] = [];
 
-  constructor(private readonly configurationOptions: WhepConfigurationOptions) {
+  constructor(
+    private readonly configurationOptions: WhepConfigurationOptions,
+    private readonly preferredVideoCodecs: ReceiverVideoCodecName[] = [],
+    private readonly preferredAudioCodecs: ReceiverAudioCodecName[] = [],
+  ) {
     this.initializeIfNeeded();
   }
 
   private initializeIfNeeded() {
     if (!this.isInitialized) {
-      nativeModule.createWhepClient(this.configurationOptions);
-      this.setPreferredAudioCodecs(this.preferredAudioCodecs);
-      this.setPreferredVideoCodecs(this.preferredVideoCodecs);
+      nativeModule.createWhepClient(
+        this.configurationOptions,
+        this.preferredVideoCodecs,
+        this.preferredAudioCodecs,
+      );
       this.isInitialized = true;
     }
   }
@@ -170,24 +174,6 @@ export class WhepClient {
   async disconnect() {
     await nativeModule.disconnectWhep();
     this.isInitialized = false;
-  }
-
-  getSupportedAudioCodecs() {
-    return nativeModule.getSupportedReceiverAudioCodecsNames();
-  }
-
-  getSupportedVideoCodecs() {
-    return nativeModule.getSupportedReceiverVideoCodecsNames();
-  }
-
-  setPreferredAudioCodecs(codecs: ReceiverAudioCodecName[]) {
-    this.preferredAudioCodecs = codecs;
-    nativeModule.setPreferredReceiverAudioCodecs(codecs);
-  }
-
-  setPreferredVideoCodecs(codecs: ReceiverVideoCodecName[]) {
-    this.preferredVideoCodecs = codecs;
-    nativeModule.setPreferredReceiverVideoCodecs(codecs);
   }
 }
 

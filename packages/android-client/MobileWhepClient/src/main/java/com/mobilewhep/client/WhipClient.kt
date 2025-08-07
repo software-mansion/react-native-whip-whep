@@ -97,8 +97,8 @@ class WhipClient(
       throw CaptureDeviceError.VideoDeviceNotAvailable("Video device not found. Check if it can be accessed and passed to the constructor.")
     }
 
-    val audioEnabled = configOptions.audioEnabled ?: true
-    val videoEnabled = configOptions.videoEnabled ?: true
+    val audioEnabled = configOptions.audioEnabled
+    val videoEnabled = configOptions.videoEnabled
 
     if (!audioEnabled && !videoEnabled) {
       Log.d(
@@ -107,7 +107,6 @@ class WhipClient(
           "Consider changing one of the options to true."
       )
     }
-
 
     if (videoEnabled) {
       val videoTrackId = UUID.randomUUID().toString()
@@ -185,7 +184,6 @@ class WhipClient(
       setupPeerConnection()
     }
 
-
     if (!hasPermissions(appContext, REQUIRED_PERMISSIONS)) {
       throw PermissionError.PermissionsNotGrantedError(
         "Permissions for camera and audio recording have not been granted. Please check your application settings."
@@ -226,10 +224,8 @@ class WhipClient(
 
   fun cleanup() {
     peerConnection?.close()
-    peerConnection?.dispose()
+    peerConnection = null
     videoCapturer?.stopCapture()
-    videoCapturer?.dispose()
-    videoSource?.dispose()
   }
 
   private suspend fun disconnectResource() {

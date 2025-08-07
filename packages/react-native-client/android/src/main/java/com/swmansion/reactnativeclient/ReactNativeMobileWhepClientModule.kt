@@ -168,7 +168,6 @@ class ReactNativeMobileWhepClientModule :
 
       Function("cleanupWhip") {
         whipClient?.cleanup()
-        whipClient = null
         return@Function Unit
       }
 
