@@ -104,10 +104,8 @@ export class WhipClient {
     );
   }
   async disconnect() {
-    console.log("WhipClient disconnecting");
     await nativeModule.disconnectWhip();
     this.isInitialized = false;
-    console.log("WhipClient disconnected");
   }
 
   getSupportedAudioCodecs() {
