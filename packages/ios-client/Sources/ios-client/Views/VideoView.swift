@@ -69,7 +69,7 @@ public struct VideoView: UIViewRepresentable {
 }
 
 public class VideoViewController: UIViewController {
-    private var player: ClientBase
+    public weak var player: ClientBase?
 
     private let videoView: RTCMTLVideoView = {
         let videoView = RTCMTLVideoView(frame: .zero)
@@ -79,8 +79,7 @@ public class VideoViewController: UIViewController {
 
     public private(set) var pipController: PictureInPictureController?
 
-    public init(player: ClientBase) {
-        self.player = player
+    public init() {
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -99,9 +98,9 @@ public class VideoViewController: UIViewController {
             videoView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
 
-        player.delegate = self
+        player?.delegate = self
 
-        if let track = player.videoTrack {
+        if let track = player?.videoTrack {
             track.add(videoView)
             pipController?.videoTrack = track
         }
@@ -110,14 +109,14 @@ public class VideoViewController: UIViewController {
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
 
-        if let track = player.videoTrack {
+        if let track = player?.videoTrack {
             track.remove(videoView)
         }
     }
 
     public func setup(pictureInPictureWith controller: PictureInPictureController) {
         self.pipController = controller
-        if let track = player.videoTrack {
+        if let track = player?.videoTrack {
             pipController?.videoTrack = track
         }
     }

@@ -41,6 +41,7 @@ type RNMobileWhepClientModule = {
   ) => void;
   connectWhip: (serverUrl: string, authToken?: string) => Promise<void>;
   disconnectWhip: () => Promise<void>;
+  cleanupWhip: () => void;
 
   // Codecs
   getSupportedSenderVideoCodecsNames: () => SenderVideoCodecName[];
@@ -117,6 +118,10 @@ export class WhipClient {
   async disconnect() {
     await nativeModule.disconnectWhip();
     this.isInitialized = false;
+  }
+
+  async cleanup() {
+    nativeModule.cleanupWhip();
   }
 
   static getSupportedAudioCodecs() {

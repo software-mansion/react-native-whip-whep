@@ -55,7 +55,6 @@ public class WhipClient: ClientBase {
       } catch {
           print("Unexpected error: \(error)")
       }
-      
     }
   
     deinit {

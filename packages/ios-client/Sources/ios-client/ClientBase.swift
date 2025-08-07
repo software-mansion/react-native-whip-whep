@@ -71,14 +71,15 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
   
     public var audioTrack: RTCAudioTrack?
 
-    public var delegate: PlayerListener?
+    public weak var delegate: PlayerListener?
     public var onConnectionStateChanged: ((RTCPeerConnectionState) -> Void)?
 
     let logger = Logger(label: "com.swmansion.whipwhepclient")
   
     static var peerConnectionFactory = RTCPeerConnectionFactory(
       encoderFactory: RTCDefaultVideoEncoderFactory(),
-      decoderFactory: RTCDefaultVideoDecoderFactory())
+      decoderFactory: RTCDefaultVideoDecoderFactory()
+    )
 
 
     public init(stunServerUrl: String?) {
@@ -86,8 +87,6 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
     }
 
     func setUpPeerConnection() {
-
-
         let stunServerUrl = stunServerUrl
         let stunServer = RTCIceServer(urlStrings: [stunServerUrl])
         let iceServers = [stunServer]
