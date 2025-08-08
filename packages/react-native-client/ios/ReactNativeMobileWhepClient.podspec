@@ -24,6 +24,6 @@ Pod::Spec.new do |s|
   }
 
   s.source_files = "**/*.{h,m,swift}"
-  s.dependency 'MobileWhipWhepClient', "0.2.3"
+  s.dependency 'MobileWhipWhepClient', "0.3.0"
 
 end
