@@ -5,21 +5,26 @@ import android.util.Log
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.webrtc.AudioTrack
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
 import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
 
+data class WhepConfigurationOptions(
+  val audioEnabled: Boolean? = true,
+  val videoEnabled: Boolean? = true,
+  val stunServerUrl: String? = null,
+  val preferredVideoCodecs: List<String>,
+  val preferredAudioCodecs: List<String>
+)
+
 class WhepClient(
   appContext: Context,
-  serverUrl: String,
-  private val configurationOptions: ConfigurationOptions? = null
+  private val configurationOptions: WhepConfigurationOptions
 ) : ClientBase(
     appContext,
-    serverUrl,
-    configurationOptions
+    configurationOptions.stunServerUrl
   ) {
   private var reconnectionManager: ReconnectionManager
 
@@ -28,7 +33,9 @@ class WhepClient(
     this.reconnectionManager =
       ReconnectionManager(config) {
         CoroutineScope(Dispatchers.Default).launch {
-          connect()
+          connectOptions?.let {
+            connect(it)
+          }
         }
       }
   }
@@ -40,7 +47,13 @@ class WhepClient(
    *  of the initial configuration is incorrect, which leads to peerConnection being nil
    *  or in any other case where there has been an error in creating the peerConnection
    */
-  public suspend fun connect() {
+  public override suspend fun connect(connectOptions: ClientConnectOptions) {
+    super.connect(connectOptions)
+
+    if (peerConnection == null) {
+      setupPeerConnection()
+    }
+
     var audioEnabled = configurationOptions?.audioEnabled ?: true
     var videoEnabled = configurationOptions?.videoEnabled ?: true
 
@@ -53,18 +66,32 @@ class WhepClient(
     }
 
     if (videoEnabled) {
-      peerConnection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO).direction =
-        RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
+      val transceiver = peerConnection?.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)
+      transceiver?.direction = RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
+
+      setCodecPreferencesIfAvailable(
+        transceiver,
+        configurationOptions.preferredVideoCodecs,
+        MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
+        useReceiver = true
+      )
     }
 
     if (audioEnabled) {
-      peerConnection.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO).direction =
-        RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
+      val transceiver = peerConnection?.addTransceiver(MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)
+      transceiver?.direction = RtpTransceiver.RtpTransceiverDirection.RECV_ONLY
+
+      setCodecPreferencesIfAvailable(
+        transceiver,
+        configurationOptions.preferredAudioCodecs,
+        MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
+        useReceiver = true
+      )
     }
 
     val constraints = MediaConstraints()
-    val sdpOffer = peerConnection.createOffer(constraints).getOrThrow()
-    peerConnection.setLocalDescription(sdpOffer).getOrThrow()
+    val sdpOffer = peerConnection!!.createOffer(constraints).getOrThrow()
+    peerConnection?.setLocalDescription(sdpOffer)?.getOrThrow()
 
     val sdp = sendSdpOffer(sdpOffer.description)
 
@@ -75,7 +102,7 @@ class WhepClient(
         SessionDescription.Type.ANSWER,
         sdp
       )
-    peerConnection.setRemoteDescription(answer)
+    peerConnection?.setRemoteDescription(answer)
 
     reconnectionManager.onReconnected()
   }
@@ -88,31 +115,17 @@ class WhepClient(
    *  or in any other case where there has been an error in creating the peerConnection
    *
    */
-  public fun disconnect() {
-    peerConnection.dispose()
-    peerConnectionFactory.dispose()
-    eglBase.release()
-  }
-
-  private fun getAudioTrack(): AudioTrack? {
-    peerConnection?.transceivers?.forEach { transceiver ->
-      val track = transceiver.receiver.track()
-      if (track is AudioTrack) {
-        return track
-      }
-    }
-    return null
+  fun disconnect() {
+    peerConnection?.dispose()
   }
 
   public fun pause() {
-    var track = getAudioTrack()
-    track?.setEnabled(false)
+    audioTrack?.setEnabled(false)
     this.videoTrack?.setEnabled(false)
   }
 
   public fun unpause() {
-    var track = getAudioTrack()
-    track?.setEnabled(true)
+    audioTrack?.setEnabled(true)
     this.videoTrack?.setEnabled(true)
   }
 

@@ -20,12 +20,6 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
         }
     }
   
-    public var orientation = Orientation.portrait {
-        didSet {
-            hostingController?.orientation = self.orientation
-        }
-    }
-  
   public var pipEnabled = false {
     didSet {
       setupPip()
@@ -36,7 +30,14 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
     hostingController?.pipController
   }
       
-    private var player: ClientBase?
+  private var player: ClientBase? {
+    guard let playerType = self.playerType else { return nil }
+    if (playerType == "WHIP") {
+        return ReactNativeMobileWhepClientModule.whipClient
+    } else {
+        return ReactNativeMobileWhepClientModule.whepClient
+    }
+  }
     private var hostingController: VideoViewController?
 
     required init(appContext: AppContext? = nil) {
@@ -47,15 +48,10 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
 
     private func setupPlayer() {
         removeOldPlayer()
-        guard let playerType = self.playerType else { return }
-        if (playerType == "WHIP") {
-            self.player = ReactNativeMobileWhepClientModule.whipClient
-        } else {
-            self.player = ReactNativeMobileWhepClientModule.whepClient
-        }
         
         guard let player = self.player else { return }
-        let hostingController = VideoViewController(player: player)
+        let hostingController = VideoViewController()
+        hostingController.player = player
         hostingController.view.backgroundColor = nil
         self.addSubview(hostingController.view)
         

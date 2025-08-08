@@ -36,6 +36,9 @@
   "author": "Software Mansion",
   "license": "MIT",
   "homepage": "https://github.com/software-mansion/react-native-whip-whep",
+  "dependencies": {
+    "zod": "^3.25.71"
+  },
   "devDependencies": {
     "@types/react": "~18.3.12",
     "expo-module-scripts": "~4.0.5",

@@ -5,12 +5,19 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
+import kotlinx.coroutines.suspendCancellableCoroutine
+import okhttp3.Call
+import okhttp3.Callback
+import okhttp3.Request
+import okhttp3.Response
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraEnumerationAndroid
 import org.webrtc.CameraEnumerator
 import org.webrtc.CameraVideoCapturer
 import org.webrtc.MediaConstraints
+import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
 import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
@@ -19,17 +26,30 @@ import org.webrtc.SurfaceTextureHelper
 import org.webrtc.VideoCapturer
 import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
+import java.io.IOException
+import java.net.ConnectException
+import java.net.URI
+import java.net.URL
 import java.util.UUID
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
+
+data class WhipConfigurationOptions(
+  val audioEnabled: Boolean = true,
+  val videoEnabled: Boolean = true,
+  val stunServerUrl: String? = null,
+  val videoParameters: VideoParameters = VideoParameters.presetHD169,
+  val videoDevice: String? = null,
+  val preferredVideoCodecs: List<String>,
+  val preferredAudioCodecs: List<String>
+)
 
 class WhipClient(
   appContext: Context,
-  serverUrl: String,
-  private val configurationOptions: ConfigurationOptions? = null,
-  private var videoDevice: String? = null
+  private val configOptions: WhipConfigurationOptions
 ) : ClientBase(
     appContext,
-    serverUrl,
-    configurationOptions
+    stunServerUrl = configOptions.stunServerUrl
   ) {
   override var videoTrack: VideoTrack? = null
   private var videoCapturer: VideoCapturer? = null
@@ -39,18 +59,46 @@ class WhipClient(
     setUpVideoAndAudioDevices()
   }
 
+  override fun setupPeerConnection() {
+    super.setupPeerConnection()
+
+    val audioEnabled = configOptions.audioEnabled
+    val videoEnabled = configOptions.videoEnabled
+    val direction = RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
+
+    if (videoEnabled) {
+      val transceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
+      val transceiver = peerConnection?.addTransceiver(videoTrack, transceiverInit)
+      setCodecPreferencesIfAvailable(
+        transceiver,
+        configOptions.preferredVideoCodecs,
+        MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO
+      )
+    }
+
+    if (audioEnabled) {
+      val audioTransceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
+      val transceiver = peerConnection?.addTransceiver(audioTrack, audioTransceiverInit)
+      setCodecPreferencesIfAvailable(
+        transceiver,
+        configOptions.preferredAudioCodecs,
+        MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO
+      )
+    }
+  }
+
   /**
    * Gets the video and audio devices, prepares them, starts capture and adds it to the Peer Connection.
    *
    * @throws CaptureDeviceError.VideoDeviceNotAvailable if there is no video device.
    */
   private fun setUpVideoAndAudioDevices() {
-    if (videoDevice == null) {
+    if (configOptions.videoDevice == null) {
       throw CaptureDeviceError.VideoDeviceNotAvailable("Video device not found. Check if it can be accessed and passed to the constructor.")
     }
 
-    val audioEnabled = configurationOptions?.audioEnabled ?: true
-    val videoEnabled = configurationOptions?.videoEnabled ?: true
+    val audioEnabled = configOptions.audioEnabled
+    val videoEnabled = configOptions.videoEnabled
 
     if (!audioEnabled && !videoEnabled) {
       Log.d(
@@ -59,8 +107,6 @@ class WhipClient(
           "Consider changing one of the options to true."
       )
     }
-
-    val direction = RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
 
     if (videoEnabled) {
       val videoTrackId = UUID.randomUUID().toString()
@@ -73,58 +119,36 @@ class WhipClient(
         }
 
       val videoCapturer: CameraVideoCapturer? =
-        videoDevice.let {
+        configOptions.videoDevice.let {
           cameraEnumerator.createCapturer(it, null)
         }
 
       val videoSource: VideoSource =
         peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
-      val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
+      val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", PeerConnectionFactoryHelper.eglBase.eglBaseContext)
       videoCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
-      if (configurationOptions?.videoParameters != null) {
-        val videoSize =
-          setVideoSize(
-            cameraEnumerator,
-            videoDevice!!,
-            configurationOptions.videoParameters
-          )
-        try {
-          videoCapturer.startCapture(
-            videoSize!!.width,
-            videoSize.height,
-            configurationOptions.videoParameters.maxFps
-          )
-        } catch (e: Exception) {
-          throw CaptureDeviceError.VideoSizeNotSupported(
-            "VideoSize ${configurationOptions.videoParameters} is not supported by this device. Consider switching to another preset."
-          )
-        }
-      } else {
-        val videoSize =
-          setVideoSize(
-            cameraEnumerator,
-            videoDevice!!,
-            VideoParameters.presetHD43
-          )
-        try {
-          videoCapturer.startCapture(
-            videoSize!!.width,
-            videoSize.height,
-            VideoParameters.presetHD43.maxFps
-          )
-        } catch (e: Exception) {
-          throw CaptureDeviceError.VideoSizeNotSupported(
-            "VideoSize ${VideoParameters.presetHD43} is not supported by this device. Consider switching to another preset."
-          )
-        }
+      val videoSize =
+        setVideoSize(
+          cameraEnumerator,
+          configOptions.videoDevice,
+          configOptions.videoParameters
+        )
+      try {
+        videoCapturer.startCapture(
+          videoSize!!.width,
+          videoSize.height,
+          configOptions.videoParameters.maxFps
+        )
+      } catch (e: Exception) {
+        throw CaptureDeviceError.VideoSizeNotSupported(
+          "VideoSize ${configOptions.videoParameters} is not supported by this device. Consider switching to another preset."
+        )
       }
+
       val videoTrack: VideoTrack = peerConnectionFactory.createVideoTrack(videoTrackId, videoSource)
 
       this.videoSource = videoSource
       this.videoCapturer = videoCapturer
-
-      val transceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
-      peerConnection.addTransceiver(videoTrack, transceiverInit)
 
       videoTrack.setEnabled(true)
       this.videoTrack = videoTrack
@@ -135,11 +159,10 @@ class WhipClient(
       val audioSource = this.peerConnectionFactory.createAudioSource(MediaConstraints())
       val audioTrack = this.peerConnectionFactory.createAudioTrack(audioTrackId, audioSource)
 
-      val audioTransceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
-      peerConnection.addTransceiver(audioTrack, audioTransceiverInit)
+      this.audioTrack = audioTrack
     }
 
-    peerConnection.enforceSendOnlyDirection()
+    peerConnection?.enforceSendOnlyDirection()
   }
 
   private val REQUIRED_PERMISSIONS =
@@ -153,7 +176,13 @@ class WhipClient(
    *  or in any other case where there has been an error in creating the peerConnection
    *
    */
-  suspend fun connect() {
+  override suspend fun connect(connectOptions: ClientConnectOptions) {
+    super.connect(connectOptions)
+
+    if (peerConnection == null) {
+      setupPeerConnection()
+    }
+
     if (!hasPermissions(appContext, REQUIRED_PERMISSIONS)) {
       throw PermissionError.PermissionsNotGrantedError(
         "Permissions for camera and audio recording have not been granted. Please check your application settings."
@@ -161,8 +190,8 @@ class WhipClient(
     }
 
     val constraints = MediaConstraints()
-    val sdpOffer = peerConnection.createOffer(constraints).getOrThrow()
-    peerConnection.setLocalDescription(sdpOffer).getOrThrow()
+    val sdpOffer = peerConnection!!.createOffer(constraints).getOrThrow()
+    peerConnection?.setLocalDescription(sdpOffer)?.getOrThrow()
 
     val sdp = sendSdpOffer(sdpOffer.description)
 
@@ -173,7 +202,7 @@ class WhipClient(
         SessionDescription.Type.ANSWER,
         sdp
       )
-    peerConnection.setRemoteDescription(answer)
+    peerConnection!!.setRemoteDescription(answer)
   }
 
   /**
@@ -184,13 +213,91 @@ class WhipClient(
    *  or in any other case where there has been an error in creating the peerConnection
    *
    */
-  public fun disconnect() {
-    peerConnection.dispose()
-    peerConnectionFactory.dispose()
-    eglBase.release()
+  suspend fun disconnect() {
+    peerConnection?.close()
+    peerConnection?.dispose()
+    peerConnection = null
+
+    disconnectResource()
+  }
+
+  fun cleanup() {
+    peerConnection?.close()
+    peerConnection = null
     videoCapturer?.stopCapture()
-    videoCapturer?.dispose()
-    videoSource?.dispose()
+  }
+
+  private suspend fun disconnectResource() {
+    suspendCancellableCoroutine { continuation ->
+      if (connectOptions == null) {
+        continuation.resumeWithException(
+          SessionNetworkError.ConnectionError(
+            "Cannot DELETE. Connection not setup. Remember to call connect first."
+          )
+        )
+        return@suspendCancellableCoroutine
+      }
+
+      val serverUrl = URL(connectOptions!!.serverUrl)
+
+      val requestURL =
+        URI(serverUrl.protocol, null, serverUrl.host, serverUrl.port, patchEndpoint, null, null)
+
+      var requestBuilder: Request.Builder =
+        Request
+          .Builder()
+          .url(requestURL.toURL())
+          .delete()
+      if (connectOptions!!.authToken != null) {
+        requestBuilder =
+          requestBuilder.header("Authorization", "Bearer " + connectOptions!!.authToken)
+      }
+
+      val request = requestBuilder.build()
+      val requestCall = client.newCall(request)
+
+      continuation.invokeOnCancellation {
+        requestCall.cancel()
+      }
+
+      requestCall.enqueue(
+        object : Callback {
+          override fun onFailure(
+            call: Call,
+            e: IOException
+          ) {
+            if (e is ConnectException) {
+              continuation.resumeWithException(
+                SessionNetworkError.ConnectionError(
+                  "DELETE Failed, network error. Check if the server is up and running and the token and the server url is correct."
+                )
+              )
+            } else {
+              Log.e(CLIENT_TAG, e.toString())
+              continuation.resumeWithException(e)
+              e.printStackTrace()
+            }
+          }
+
+          override fun onResponse(
+            call: Call,
+            response: Response
+          ) {
+            response.use {
+              if (!response.isSuccessful) {
+                val exception =
+                  AttributeNotFoundError.ResponseNotFound(
+                    "DELETE Failed, invalid response. Check if the server is up and running and the token and the server url is correct."
+                  )
+                continuation.resumeWithException(exception)
+              } else {
+                continuation.resume(Unit)
+              }
+            }
+          }
+        }
+      )
+    }
   }
 
   private fun PeerConnection.enforceSendOnlyDirection() {
@@ -203,7 +310,7 @@ class WhipClient(
 
   private fun setVideoSize(
     enumerator: CameraEnumerator,
-    deviceName: String,
+    deviceName: String?,
     videoParameters: VideoParameters
   ): Size? {
     val sizes =

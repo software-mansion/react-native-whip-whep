@@ -1,14 +1,16 @@
 import { requireNativeModule } from "expo-modules-core";
 import type { NativeModule } from "expo-modules-core/types";
 
-import { ConfigurationOptions } from "./ReactNativeMobileWhepClient.types";
-
-// branded types are useful for restricting where given value can be passed
-declare const brand: unique symbol;
-export type Brand<T, TBrand extends string> = T & { [brand]: TBrand };
-
-/** A unique ID of the camera.  */
-export type CameraId = Brand<string, "CameraId">;
+import {
+  WhipConfigurationOptions,
+  CameraId,
+  ConnectOptions,
+  WhepConfigurationOptions,
+  SenderAudioCodecName,
+  SenderVideoCodecName,
+  ReceiverAudioCodecName,
+  ReceiverVideoCodecName,
+} from "./ReactNativeMobileWhepClient.types";
 
 /** Describes whether the camera is front-facing or back-facing. */
 export type CameraFacingDirection = "front" | "back" | "unspecified";
@@ -24,35 +26,59 @@ export type Camera = {
 };
 
 type RNMobileWhepClientModule = {
+  cameras: readonly Camera[];
+  whepPeerConnectionState: PeerConnectionState | null;
+  whipPeerConnectionState: PeerConnectionState | null;
   createWhepClient: (
-    serverUrl: string,
-    configurationOptions?: ConfigurationOptions,
+    configurationOptions: WhepConfigurationOptions,
+    preferredVideoCodecs: ReceiverVideoCodecName[],
+    preferredAudioCodecs: ReceiverAudioCodecName[],
   ) => void;
-  connectWhep: () => Promise<void>;
-  disconnectWhep: () => void;
+  connectWhep: (serverUrl: string, authToken?: string) => Promise<void>;
+  disconnectWhep: () => Promise<void>;
   pauseWhep: () => void;
   unpauseWhep: () => void;
   createWhipClient: (
-    serverUrl: string,
-    configurationOptions?: ConfigurationOptions,
-    videoDevice?: CameraId,
+    configurationOptions: WhipConfigurationOptions,
+    preferredVideoCodecs: SenderVideoCodecName[],
+    preferredAudioCodecs: SenderAudioCodecName[],
   ) => void;
-  connectWhip: () => Promise<void>;
-  disconnectWhip: () => void;
-  cameras: readonly Camera[];
+  connectWhip: (serverUrl: string, authToken?: string) => Promise<void>;
+  disconnectWhip: () => Promise<void>;
+  cleanupWhip: () => void;
+
+  // Codecs
+  getSupportedSenderVideoCodecsNames: () => SenderVideoCodecName[];
+  getSupportedReceiverVideoCodecsNames: () => ReceiverVideoCodecName[];
+  getSupportedReceiverAudioCodecsNames: () => ReceiverAudioCodecName[];
+  getSupportedSenderAudioCodecsNames: () => SenderAudioCodecName[];
 };
 
 export const ReceivableEvents = {
-  reconnectionStatusChanged: "reconnectionStatusChanged",
+  WhepPeerConnectionStateChanged: "WhepPeerConnectionStateChanged",
+  WhipPeerConnectionStateChanged: "WhipPeerConnectionStateChanged",
+  ReconnectionStatusChanged: "ReconnectionStatusChanged",
+  Warning: "Warning",
 } as const;
 
+export type PeerConnectionState =
+  | "new"
+  | "connecting"
+  | "connected"
+  | "disconnected"
+  | "failed"
+  | "closed"
+  | "unknown";
+
 export type ReceivableEventPayloads = {
-  [ReceivableEvents.reconnectionStatusChanged]: {
-    status:
-      | "reconnectionStarted"
-      | "reconnected"
-      | "reconnectionRetriesLimitReached";
-  };
+  [ReceivableEvents.ReconnectionStatusChanged]:
+    | "reconnectionStarted"
+    | "reconnected"
+    | "reconnectionRetriesLimitReached";
+
+  [ReceivableEvents.WhepPeerConnectionStateChanged]: PeerConnectionState;
+  [ReceivableEvents.WhipPeerConnectionStateChanged]: PeerConnectionState;
+  [ReceivableEvents.Warning]: string;
 };
 
 const nativeModule = requireNativeModule(
@@ -60,73 +86,104 @@ const nativeModule = requireNativeModule(
 ) as RNMobileWhepClientModule &
   NativeModule<Record<keyof typeof ReceivableEvents, (payload: any) => void>>;
 
-/** Creates a WHEP client based on the provided server URL and optional additional `configurationOptions`.
- *  It is a first step before connecting to the server.
- */
-export function createWhepClient(
-  /** URL of the WHEP server from which the stream should be received. */
-  serverUrl: string,
-  /** Additional configuration options. */
-  configurationOptions?: ConfigurationOptions,
-) {
-  return nativeModule.createWhepClient(serverUrl, configurationOptions);
+export class WhipClient {
+  private isInitialized = false;
+
+  constructor(
+    private readonly configurationOptions: WhipConfigurationOptions,
+    private readonly preferredVideoCodecs: SenderVideoCodecName[] = [],
+    private readonly preferredAudioCodecs: SenderAudioCodecName[] = [],
+  ) {
+    this.initializeIfNeeded();
+  }
+
+  private initializeIfNeeded() {
+    if (!this.isInitialized) {
+      nativeModule.createWhipClient(
+        this.configurationOptions,
+        this.preferredVideoCodecs,
+        this.preferredAudioCodecs,
+      );
+      this.isInitialized = true;
+    }
+  }
+
+  async connect(connectOptions: ConnectOptions) {
+    this.initializeIfNeeded();
+    await nativeModule.connectWhip(
+      connectOptions.serverUrl,
+      connectOptions.authToken,
+    );
+  }
+  async disconnect() {
+    await nativeModule.disconnectWhip();
+    this.isInitialized = false;
+  }
+
+  async cleanup() {
+    nativeModule.cleanupWhip();
+  }
+
+  static getSupportedAudioCodecs() {
+    return nativeModule.getSupportedSenderAudioCodecsNames();
+  }
+
+  static getSupportedVideoCodecs() {
+    return nativeModule.getSupportedSenderVideoCodecsNames();
+  }
 }
 
-/** Connects to the WHEP server defined while creating WHEP client.
- * Allows user to receive video and audio stream.
- */
-export async function connectWhepClient() {
-  return await nativeModule.connectWhep();
-}
+export class WhepClient {
+  private isInitialized = false;
 
-/** Disconnects from the WHEP server defined while creating WHEP client.
- * Frees the resources.
- */
-export function disconnectWhepClient() {
-  return nativeModule.disconnectWhep();
-}
+  constructor(
+    private readonly configurationOptions: WhepConfigurationOptions,
+    private readonly preferredVideoCodecs: ReceiverVideoCodecName[] = [],
+    private readonly preferredAudioCodecs: ReceiverAudioCodecName[] = [],
+  ) {
+    this.initializeIfNeeded();
+  }
 
-/** Pauses the WHEP stream, making the view black and disabling the sound. */
-export function pauseWhepClient() {
-  return nativeModule.pauseWhep();
-}
+  private initializeIfNeeded() {
+    if (!this.isInitialized) {
+      nativeModule.createWhepClient(
+        this.configurationOptions,
+        this.preferredVideoCodecs,
+        this.preferredAudioCodecs,
+      );
+      this.isInitialized = true;
+    }
+  }
 
-/** Restarts the WHEP stream. Makes the view reappear along with sound. */
-export function unpauseWhepClient() {
-  return nativeModule.unpauseWhep();
-}
+  /**
+   * Connects to the WHEP server defined while creating WHEP client.
+   * Allows user to receive video and audio stream.
+   */
+  async connect(connectOptions: ConnectOptions) {
+    this.initializeIfNeeded();
+    await nativeModule.connectWhep(
+      connectOptions.serverUrl,
+      connectOptions.authToken,
+    );
+  }
 
-/** Creates a WHIP client based on the provided server URL and optional additional `configurationOptions`.
- * Allows user to choose a streaming device from all available cameras.
- *  It is a first step before connecting to the server.
- */
-export function createWhipClient(
-  serverUrl: string,
-  configurationOptions?: ConfigurationOptions,
-  videoDevice?: CameraId,
-) {
-  return nativeModule.createWhipClient(
-    serverUrl,
-    configurationOptions,
-    videoDevice,
-  );
-}
-
-/** Connects to the WHIP server defined while creating WHIP client.
- * Allows user to stream video and audio.
- */
-export async function connectWhipClient() {
-  return await nativeModule.connectWhip();
-}
-
-/** Disconnects from the WHIP server defined while creating WHIP client.
- * Frees the resources.
- */
-export function disconnectWhipClient() {
-  return nativeModule.disconnectWhip();
+  /**
+   * Disconnects from the WHEP server defined while creating WHEP client.
+   * Frees the resources.
+   */
+  async disconnect() {
+    await nativeModule.disconnectWhep();
+    this.isInitialized = false;
+  }
 }
 
 /** Gives access to the cameras available on the device.*/
 export const cameras = nativeModule.cameras;
+
+/** Gives access to the current state of the WHEP peer connection. */
+export const whepPeerConnectionState = nativeModule.whepPeerConnectionState;
+
+/** Gives access to the current state of the WHIP peer connection. */
+export const whipPeerConnectionState = nativeModule.whipPeerConnectionState;
 
 export default nativeModule;

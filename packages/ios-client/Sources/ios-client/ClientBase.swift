@@ -3,12 +3,6 @@ import Logging
 import WebRTC
 import os
 
-protocol RTCPeerConnectionFactoryType: AnyObject, RTCPeerConnectionDelegate {
-    var peerConnectionFactory: RTCPeerConnectionFactory? { get set }
-    var peerConnection: RTCPeerConnection? { get set }
-    var isConnectionSetUp: Bool { get set }
-}
-
 extension RTCPeerConnection {
     // currently `Membrane RTC Engine` can't handle track of diretion `sendRecv` therefore
     // we need to change all `sendRecv` to `sendOnly`.
@@ -49,15 +43,18 @@ protocol Player {
     func disconnect()
 }
 
-public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionFactoryType {
-    var serverUrl: URL
-    var authToken: String?
-    var configurationOptions: ConfigurationOptions?
+public class ClientBase: NSObject, RTCPeerConnectionDelegate {
+    private let stunServerUrl: String
     var patchEndpoint: String?
-    var peerConnectionFactory: RTCPeerConnectionFactory?
     var peerConnection: RTCPeerConnection?
     var iceCandidates: [RTCIceCandidate] = []
     var isConnectionSetUp: Bool = false
+    var connectOptions: ClientConnectOptions?
+
+    public var peerConnectionState: RTCPeerConnectionState? {
+        return peerConnection?.connectionState
+    }
+
     @Published public var videoTrack: RTCVideoTrack? {
         willSet {
             if let track = videoTrack {
@@ -71,24 +68,24 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
         }
     }
 
-    public var delegate: PlayerListener?
+    public var audioTrack: RTCAudioTrack?
+
+    public weak var delegate: PlayerListener?
+    public var onConnectionStateChanged: ((RTCPeerConnectionState) -> Void)?
 
     let logger = Logger(label: "com.swmansion.whipwhepclient")
 
-    public init(serverUrl: URL, configurationOptions: ConfigurationOptions? = nil) {
-        self.serverUrl = serverUrl
-        self.authToken = configurationOptions?.authToken
-        self.configurationOptions = configurationOptions
+    static var peerConnectionFactory = RTCPeerConnectionFactory(
+        encoderFactory: RTCDefaultVideoEncoderFactory(),
+        decoderFactory: RTCDefaultVideoDecoderFactory()
+    )
+
+    public init(stunServerUrl: String?) {
+        self.stunServerUrl = stunServerUrl ?? "stun:stun.l.google.com:19302"
     }
 
     func setUpPeerConnection() {
-        let encoderFactory = RTCDefaultVideoEncoderFactory()
-        let decoderFactory = RTCDefaultVideoDecoderFactory()
-        self.peerConnectionFactory = RTCPeerConnectionFactory(
-            encoderFactory: encoderFactory,
-            decoderFactory: decoderFactory)
-
-        let stunServerUrl = configurationOptions?.stunServerUrl ?? "stun:stun.l.google.com:19302"
+        let stunServerUrl = stunServerUrl
         let stunServer = RTCIceServer(urlStrings: [stunServerUrl])
         let iceServers = [stunServer]
 
@@ -100,7 +97,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
         config.tcpCandidatePolicy = .disabled
 
         let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
-        self.peerConnection = self.peerConnectionFactory!.peerConnection(
+        self.peerConnection = ClientBase.peerConnectionFactory.peerConnection(
             with: config,
             constraints: constraints,
             delegate: self)
@@ -110,6 +107,10 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
         }
 
         self.isConnectionSetUp = true
+    }
+
+    public func connect(_ connectOptions: ClientConnectOptions) async throws {
+        self.connectOptions = connectOptions
     }
 
     /**
@@ -124,13 +125,19 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
     
     - Returns: A SDP response.
     */
-    func sendSdpOffer(sdpOffer: String) async throws -> String {
-        var request = URLRequest(url: serverUrl)
+    func send(sdpOffer: String) async throws -> String {
+        guard let connectOptions else {
+            throw SessionNetworkError.ConnectionError(
+                description:
+                    "Cannot send the SDP Offer. Connection not setup. Remember to call connect first.")
+        }
+
+        var request = URLRequest(url: connectOptions.serverUrl)
         request.httpMethod = "POST"
         request.httpBody = sdpOffer.data(using: .utf8)
         request.addValue("application/sdp", forHTTPHeaderField: "Accept")
         request.addValue("application/sdp", forHTTPHeaderField: "Content-Type")
-        if let token = authToken {
+        if let token = connectOptions.authToken {
             request.addValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         }
 
@@ -178,6 +185,12 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
       `NSError` for when the candidate data dictionary could not be serialized to JSON.
     */
     func sendCandidate(candidate: RTCIceCandidate) async throws {
+        guard let connectOptions else {
+            throw SessionNetworkError.ConnectionError(
+                description:
+                    "Cannot send ICE Candidate. Connection not setup. Remember to call connect first.")
+        }
+
         guard patchEndpoint != nil else {
             throw AttributeNotFoundError.PatchEndpointNotFound(
                 description: "Patch endpoint not found. Make sure the SDP answer is correct.")
@@ -202,7 +215,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
             throw NSError(domain: "", code: -1, userInfo: [NSLocalizedDescriptionKey: "JSON serialization error"])
         }
 
-        var components = URLComponents(string: serverUrl.absoluteString)
+        var components = URLComponents(string: connectOptions.serverUrl.absoluteString)
         components?.path = ""
         components?.path = patchEndpoint!
         let url = components?.url
@@ -297,6 +310,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
      Reacts to changes in the Peer Connection state and logs a message depending on the current state
     */
     public func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCPeerConnectionState) {
+        onConnectionStateChanged?(stateChanged)
         switch stateChanged {
         case .connected:
             logger.debug("Connection is fully connected")
@@ -312,6 +326,55 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate, RTCPeerConnectionF
             logger.debug("Connecting")
         default:
             logger.debug("Some other state: \(stateChanged.rawValue)")
+        }
+    }
+
+    // MARK: - Codec Management
+
+    /**
+     Gets matched codecs from the preferred codec list that are available in the peer connection factory.
+    
+     - Parameter preferredCodecs: List of preferred codec names
+     - Parameter mediaType: The media type (audio or video)
+     - Parameter useReceiver: Whether to use receiver capabilities instead of sender capabilities
+    
+     - Returns: Array of matched codec capabilities
+     */
+    func getMatchedCodecs(preferredCodecs: [String], mediaType: String, useReceiver: Bool = false)
+        -> [RTCRtpCodecCapability]
+    {
+        if preferredCodecs.isEmpty {
+            return []
+        }
+
+        let capabilities =
+            useReceiver
+            ? ClientBase.peerConnectionFactory.rtpReceiverCapabilities(forKind: mediaType)
+            : ClientBase.peerConnectionFactory.rtpSenderCapabilities(forKind: mediaType)
+        let availableCodecs = capabilities.codecs
+
+        return preferredCodecs.compactMap { preferredCodec in
+            availableCodecs.first { codec in
+                codec.name.caseInsensitiveCompare(preferredCodec) == .orderedSame
+            }
+        }
+    }
+
+    /**
+     Sets codec preferences for a transceiver if matched codecs are available.
+    
+     - Parameter transceiver: The RTP transceiver to set preferences for
+     - Parameter preferredCodecs: List of preferred codec names
+     - Parameter mediaType: The media type (audio or video)
+     - Parameter useReceiver: Whether to use receiver capabilities instead of sender capabilities
+     */
+    func setCodecPreferencesIfAvailable(
+        transceiver: RTCRtpTransceiver?, preferredCodecs: [String], mediaType: String, useReceiver: Bool = false
+    ) {
+        let matchedCodecs = getMatchedCodecs(
+            preferredCodecs: preferredCodecs, mediaType: mediaType, useReceiver: useReceiver)
+        if !matchedCodecs.isEmpty {
+            transceiver?.codecPreferences = matchedCodecs
         }
     }
 

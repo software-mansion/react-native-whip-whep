@@ -3,6 +3,7 @@ package com.mobilewhep.client
 import android.content.Context
 import android.media.AudioAttributes
 import android.util.Log
+import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -13,15 +14,15 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.Response
 import org.json.JSONObject
+import org.webrtc.AudioTrack
 import org.webrtc.DataChannel
-import org.webrtc.DefaultVideoDecoderFactory
-import org.webrtc.DefaultVideoEncoderFactory
-import org.webrtc.EglBase
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
+import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
-import org.webrtc.PeerConnectionFactory
+import org.webrtc.RtpCapabilities
 import org.webrtc.RtpReceiver
+import org.webrtc.RtpTransceiver
 import org.webrtc.VideoTrack
 import org.webrtc.audio.AudioDeviceModule
 import java.io.IOException
@@ -40,17 +41,20 @@ interface ClientBaseListener {
 
 open class ClientBase(
   val appContext: Context,
-  private val serverUrl: String,
-  private val configurationOptions: ConfigurationOptions?
+  val stunServerUrl: String?
 ) : PeerConnection.Observer {
-  protected var peerConnectionFactory: PeerConnectionFactory
-  protected var peerConnection: PeerConnection
-  val eglBase = EglBase.create()
+  protected val peerConnectionFactory = PeerConnectionFactoryHelper.getFactory(appContext)
 
-  private var patchEndpoint: String? = null
+  protected var peerConnection: PeerConnection? = null
+  var connectOptions: ClientConnectOptions? = null
+
+  val peerConnectionState: PeerConnection.PeerConnectionState?
+    get() = peerConnection?.connectionState()
+
+  protected var patchEndpoint: String? = null
   protected val iceCandidates = mutableListOf<IceCandidate>()
 
-  private val client = OkHttpClient()
+  protected val client = OkHttpClient()
   private val audioAttributes: AudioAttributes =
     AudioAttributes
       .Builder()
@@ -63,14 +67,16 @@ open class ClientBase(
     CoroutineScope(Dispatchers.Default)
 
   open var videoTrack: VideoTrack? = null
+  open var audioTrack: AudioTrack? = null
   private var listeners = mutableListOf<ClientBaseListener>()
   var onTrackAdded: (() -> Unit)? = null
+  var onConnectionStateChanged: ((PeerConnection.PeerConnectionState) -> Unit)? = null
 
-  init {
+  open fun setupPeerConnection() {
     val iceServers =
       listOf(
         PeerConnection.IceServer
-          .builder(configurationOptions?.stunServerUrl ?: "stun:stun.l.google.com:19302")
+          .builder(stunServerUrl ?: "stun:stun.l.google.com:19302")
           .createIceServer()
       )
 
@@ -81,23 +87,15 @@ open class ClientBase(
     config.candidateNetworkPolicy = PeerConnection.CandidateNetworkPolicy.ALL
     config.tcpCandidatePolicy = PeerConnection.TcpCandidatePolicy.DISABLED
 
-    PeerConnectionFactory.initialize(
-      PeerConnectionFactory.InitializationOptions.builder(appContext).createInitializationOptions()
-    )
-
-    peerConnectionFactory =
-      PeerConnectionFactory
-        .builder()
-        .setAudioDeviceModule(audioDeviceModule)
-        .setVideoDecoderFactory(DefaultVideoDecoderFactory(eglBase.eglBaseContext))
-        .setVideoEncoderFactory(DefaultVideoEncoderFactory(eglBase.eglBaseContext, true, true))
-        .createPeerConnectionFactory()
-
     try {
       peerConnection = peerConnectionFactory.createPeerConnection(config, this)!!
     } catch (e: NullPointerException) {
       throw SessionNetworkError.ConfigurationError("Failed to establish RTCPeerConnection. Check initial configuration")
     }
+  }
+
+  open suspend fun connect(connectOptions: ClientConnectOptions) {
+    this.connectOptions = connectOptions
   }
 
   /**
@@ -114,15 +112,28 @@ open class ClientBase(
    */
   suspend fun sendSdpOffer(sdpOffer: String) =
     suspendCoroutine { continuation ->
-      val request =
+      if (connectOptions == null) {
+        continuation.resumeWithException(
+          SessionNetworkError.ConnectionError(
+            "Cannot send the SDP Offer. Connection not setup. Remember to call connect first."
+          )
+        )
+        return@suspendCoroutine
+      }
+
+      var requestBuilder: Request.Builder =
         Request
           .Builder()
-          .url(serverUrl)
+          .url(connectOptions!!.serverUrl)
           .post(sdpOffer.toRequestBody())
           .header("Accept", "application/sdp")
           .header("Content-Type", "application/sdp")
-          .header("Authorization", "Bearer " + configurationOptions?.authToken)
-          .build()
+      if (connectOptions!!.authToken != null) {
+        requestBuilder =
+          requestBuilder.header("Authorization", "Bearer " + connectOptions!!.authToken)
+      }
+
+      val request = requestBuilder.build()
 
       client.newCall(request).enqueue(
         object : Callback {
@@ -184,6 +195,15 @@ open class ClientBase(
    */
   suspend fun sendCandidate(candidate: IceCandidate) =
     suspendCoroutine { continuation ->
+      if (connectOptions == null) {
+        continuation.resumeWithException(
+          SessionNetworkError.ConnectionError(
+            "Cannot send the send ICE Candidate. Connection not setup. Remember to call connect first."
+          )
+        )
+        return@suspendCoroutine
+      }
+
       if (patchEndpoint == null) {
         continuation.resumeWithException(
           AttributeNotFoundError.PatchEndpointNotFound("Patch endpoint not found. Make sure the SDP answer is correct.")
@@ -207,7 +227,7 @@ open class ClientBase(
       // TODO: is ufrag necessary or is it just elixir webrtc thing?
       jsonObject.put("usernameFragment", ufrag)
 
-      val serverUrl = URL(serverUrl)
+      val serverUrl = URL(connectOptions!!.serverUrl)
       val requestURL =
         URI(serverUrl.protocol, null, serverUrl.host, serverUrl.port, patchEndpoint, null, null)
 
@@ -249,6 +269,38 @@ open class ClientBase(
 
   override fun onSignalingChange(p0: PeerConnection.SignalingState?) {
     Log.d(CLIENT_TAG, "RTC signaling state changed:: ${p0?.name}")
+  }
+
+  protected fun getMatchedCodecs(
+    preferredCodecs: List<String>,
+    mediaType: MediaStreamTrack.MediaType,
+    useReceiver: Boolean = false
+  ): List<RtpCapabilities.CodecCapability> {
+    if (preferredCodecs.isEmpty()) {
+      return emptyList()
+    }
+
+    val availableCodecs =
+      if (useReceiver) {
+        peerConnectionFactory.getRtpReceiverCapabilities(mediaType).codecs
+      } else {
+        peerConnectionFactory.getRtpSenderCapabilities(mediaType).codecs
+      }
+    return preferredCodecs.mapNotNull { preferredCodec ->
+      availableCodecs.firstOrNull { it.name.equals(preferredCodec, ignoreCase = true) }
+    }
+  }
+
+  protected fun setCodecPreferencesIfAvailable(
+    transceiver: RtpTransceiver?,
+    preferredCodecs: List<String>,
+    mediaType: MediaStreamTrack.MediaType,
+    useReceiver: Boolean = false
+  ) {
+    val matchedCodecs = getMatchedCodecs(preferredCodecs, mediaType, useReceiver)
+    if (matchedCodecs.isNotEmpty()) {
+      transceiver?.setCodecPreferences(matchedCodecs)
+    }
   }
 
   /**
@@ -347,7 +399,8 @@ open class ClientBase(
   /**
    Reacts to changes in the Peer Connection state and logs a message depending on the current state
    */
-  override fun onConnectionChange(newState: PeerConnection.PeerConnectionState?) {
+  override fun onConnectionChange(newState: PeerConnection.PeerConnectionState) {
+    onConnectionStateChanged?.invoke(newState)
     when (newState) {
       PeerConnection.PeerConnectionState.NEW -> Log.d(CLIENT_TAG, "New connection")
       PeerConnection.PeerConnectionState.CONNECTING -> Log.d(CLIENT_TAG, "Connecting")
@@ -365,7 +418,6 @@ open class ClientBase(
         )
 
       PeerConnection.PeerConnectionState.CLOSED -> Log.d(CLIENT_TAG, "Connection has been closed")
-      null -> Log.d(CLIENT_TAG, "Connection is null")
     }
   }
 

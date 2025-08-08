@@ -2,28 +2,36 @@ import {
   WhipClientView,
   WhepClientView,
 } from "./ReactNativeMobileWhepClientView";
+import { initializeWarningListener } from "./utils/errorListener";
 
 export { WhipClientView, WhepClientView };
 export {
   VideoParameters,
-  ConfigurationOptions,
   ReactNativeMobileWhepClientViewProps,
   WhepClientViewRef,
+  CameraId,
+  ConnectOptions,
+  WhipConfigurationOptions,
+  WhepConfigurationOptions,
+  SenderAudioCodecName,
+  SenderVideoCodecName,
+  ReceiverAudioCodecName,
+  ReceiverVideoCodecName,
 } from "./ReactNativeMobileWhepClient.types";
 
 export {
-  createWhepClient,
-  connectWhepClient,
-  disconnectWhepClient,
-  pauseWhepClient,
-  unpauseWhepClient,
-  createWhipClient,
-  connectWhipClient,
-  disconnectWhipClient,
+  WhepClient,
+  WhipClient,
   cameras,
   Camera,
   CameraFacingDirection,
-  CameraId,
 } from "./ReactNativeMobileWhepClientModule";
 
 export { useEvent } from "./hooks/useEvent";
+export { useEventState } from "./hooks/useEventState";
+export {
+  useWhepConnectionState,
+  useWhipConnectionState,
+} from "./hooks/useConnectionState";
+
+initializeWarningListener();

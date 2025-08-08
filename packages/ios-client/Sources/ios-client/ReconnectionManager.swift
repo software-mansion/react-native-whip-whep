@@ -29,9 +29,9 @@ class ReconnectionManager {
     private var reconnectAttempts = 0
     private var reconnectionStatus: ReconnectionStatus = .idle
     private let connect: () -> Void
-    private weak var listener: ReconnectionManagerListener!
+    private weak var listener: ReconnectionManagerListener?
 
-    init(reconnectConfig: ReconnectConfig, connect: @escaping () -> Void, listener: ReconnectionManagerListener) {
+    init(reconnectConfig: ReconnectConfig, connect: @escaping () -> Void, listener: ReconnectionManagerListener?) {
         self.reconnectConfig = reconnectConfig
         self.connect = connect
         self.listener = listener
@@ -40,13 +40,13 @@ class ReconnectionManager {
     func onDisconnected() {
         guard reconnectAttempts < reconnectConfig.maxAttempts else {
             reconnectionStatus = .error
-            listener.onReconnectionRetriesLimitReached()
+            listener?.onReconnectionRetriesLimitReached()
             return
         }
 
         guard reconnectionStatus != .reconnecting else { return }
         reconnectionStatus = .reconnecting
-        listener.onReconnectionStarted()
+        listener?.onReconnectionStarted()
 
         let delay = reconnectConfig.initialDelayMs + reconnectAttempts * reconnectConfig.delayMs
         reconnectAttempts += 1
@@ -59,7 +59,7 @@ class ReconnectionManager {
     func onReconnected() {
         guard reconnectionStatus == .reconnecting else { return }
         reset()
-        listener.onReconnected()
+        listener?.onReconnected()
     }
 
     func reset() {

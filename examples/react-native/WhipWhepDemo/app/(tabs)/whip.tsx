@@ -1,11 +1,10 @@
 import { StyleSheet, Button, View, ActivityIndicator } from 'react-native';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   cameras,
-  connectWhipClient,
-  createWhipClient,
-  disconnectWhipClient,
+  VideoParameters,
+  WhipClient,
   WhipClientView,
 } from 'react-native-whip-whep';
 import { checkPermissions } from '@/utils/CheckPermissions';
@@ -15,35 +14,36 @@ export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
 
+  const whipClient = useRef<WhipClient>(
+    new WhipClient({
+      audioEnabled: true,
+      videoEnabled: true,
+      videoParameters: VideoParameters.presetFHD169,
+      videoDeviceId: cameras[0].id,
+    }),
+  );
+
   const { tint } = useThemeColor();
 
   const handleStreamBtnClick = async () => {
     setShouldShowStreamBtn(false);
     try {
       setIsLoading(true);
-      await connectWhipClient();
+      await whipClient.current.connect({
+        serverUrl: process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
+        authToken: 'example',
+      });
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to connect to WHIP Client', error);
     }
   };
 
-  const initialize = async () => {
-    await checkPermissions();
-    const availableDevices = cameras;
-    createWhipClient(
-      process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
-      {
-        authToken: 'example',
-      },
-      availableDevices[0].id,
-    );
-  };
-
   useEffect(() => {
-    initialize();
+    checkPermissions();
     return () => {
-      disconnectWhipClient();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      whipClient.current.disconnect();
     };
   }, []);
 

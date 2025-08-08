@@ -9,9 +9,6 @@ public class ReactNativeMobileWhepClientViewModule: Module {
       Prop("playerType") { (view: ReactNativeMobileWhepClientView, playerType: String) in
         view.playerType = playerType
       }
-      Prop("orientation") { (view: ReactNativeMobileWhepClientView, orientation: String) in
-        view.orientation = Orientation(rawValue: orientation) ?? .portrait
-      }
       Prop("pipEnabled") { (view: ReactNativeMobileWhepClientView, pipEnabled: Bool) in
         view.pipEnabled = pipEnabled
       }

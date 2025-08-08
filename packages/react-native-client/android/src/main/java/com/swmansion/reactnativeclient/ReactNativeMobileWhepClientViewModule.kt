@@ -26,10 +26,6 @@ class ReactNativeMobileWhepClientViewModule : Module() {
           view.init(playerType)
         }
 
-        Prop("orientation") { view: ReactNativeMobileWhepClientView, orientation: String ->
-          view.setOrientation(if (orientation.lowercase() == "landscape") Orientation.LANDSCAPE else Orientation.PORTRAIT)
-        }
-
         Prop("pipEnabled") { view: ReactNativeMobileWhepClientView, pipEnabled: Boolean ->
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             view.setPictureInPictureEnabled(pipEnabled)
