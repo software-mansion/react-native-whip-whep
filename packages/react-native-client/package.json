@@ -41,9 +41,9 @@
   },
   "devDependencies": {
     "@types/react": "~18.3.12",
-    "expo-module-scripts": "~4.0.5",
-    "typedoc": "^0.28.2",
-    "typescript": "^5.8.3"
+    "expo-module-scripts": "~4.1.9",
+    "typedoc": "^0.28.9",
+    "typescript": "^5.9.2"
   },
   "peerDependencies": {
     "expo": "*",
