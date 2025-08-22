@@ -54,7 +54,7 @@
     "build/**",
     "android/build.gradle",
     "android/src/**",
-    "ios/*.swift",
+    "ios/**/*.swift",
     "ios/ReactNativeMobileWhepClient.podspec",
     "expo-module.config.json",
     "README.md",
