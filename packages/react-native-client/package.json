@@ -1,6 +1,6 @@
 {
   "name": "react-native-whip-whep",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "An implementation of WHIP and WHEP protocols functionalities for React Native.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -54,7 +54,7 @@
     "build/**",
     "android/build.gradle",
     "android/src/**",
-    "ios/*.swift",
+    "ios/**/*.swift",
     "ios/ReactNativeMobileWhepClient.podspec",
     "expo-module.config.json",
     "README.md",
