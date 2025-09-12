@@ -11,7 +11,11 @@ export const useWhepClient = (serverUrl: string) => {
   const handlePlayBtnClick = async () => {
     setShouldShowPlayBtn(false);
     setIsLoading(true);
+
     try {
+      console.log(
+        '### useWhepClient handlePlayBtnClick - connecting whep client',
+      );
       await whepClient.current?.connect({
         serverUrl,
       });
@@ -21,24 +25,29 @@ export const useWhepClient = (serverUrl: string) => {
     }
   };
 
+  const disconnect = () => {
+    console.log('### useWhepClient disconnecting in disconnect');
+    whepClient.current?.disconnect();
+  };
+
   useEffect(() => {
     const initialize = async () => {
+      console.log('### useWhepClient initialize - checking permissisons');
       await checkPermissions();
+
+      console.log('### useWhepClient initialize - creating whep client');
       whepClient.current = new WhepClient({
         audioEnabled: true,
         videoEnabled: true,
       });
     };
     initialize();
-
-    return () => {
-      whepClient.current?.disconnect();
-    };
   }, [serverUrl]);
 
   return {
     isLoading,
     shouldShowPlayBtn,
     handlePlayBtnClick,
+    disconnect,
   };
 };

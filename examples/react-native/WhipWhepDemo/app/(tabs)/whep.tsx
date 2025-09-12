@@ -5,12 +5,21 @@ import { WhepClientView } from 'react-native-whip-whep';
 import { useWhepClient } from '@/hooks/useWhepClient';
 import { styles } from '../../styles/styles';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
 
 export default function HomeScreen() {
-  const { isLoading, shouldShowPlayBtn, handlePlayBtnClick } = useWhepClient(
-    process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? '',
-  );
+  const { isLoading, shouldShowPlayBtn, handlePlayBtnClick, disconnect } =
+    useWhepClient(process.env.EXPO_PUBLIC_WHEP_SERVER_URL ?? '');
   const { tint } = useThemeColor();
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        disconnect();
+      };
+    }, [disconnect]),
+  );
 
   return (
     <View style={styles.container}>

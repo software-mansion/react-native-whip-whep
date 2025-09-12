@@ -3,12 +3,21 @@ import { useWhepClient } from '@/hooks/useWhepClient';
 import { WhepClientView } from 'react-native-whip-whep';
 import { styles } from '../../styles/styles';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useFocusEffect } from 'expo-router';
+import { useCallback } from 'react';
 
 export default function HomeScreen() {
-  const { isLoading, shouldShowPlayBtn, handlePlayBtnClick } = useWhepClient(
-    'https://broadcaster.elixir-webrtc.org/api/whep',
-  );
+  const { isLoading, shouldShowPlayBtn, handlePlayBtnClick, disconnect } =
+    useWhepClient('https://broadcaster.elixir-webrtc.org/api/whep');
   const { tint } = useThemeColor();
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        disconnect();
+      };
+    }, [disconnect]),
+  );
 
   return (
     <View style={styles.container}>
