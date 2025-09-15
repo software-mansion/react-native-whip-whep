@@ -52,7 +52,7 @@ class WhipClient(
     stunServerUrl = configOptions.stunServerUrl
   ) {
   override var videoTrack: VideoTrack? = null
-  private var videoCapturer: VideoCapturer? = null
+  private var videoCapturer: CameraVideoCapturer? = null
   private var videoSource: VideoSource? = null
 
   init {
@@ -225,6 +225,14 @@ class WhipClient(
     peerConnection?.close()
     peerConnection = null
     videoCapturer?.stopCapture()
+  }
+
+  fun flipCamera() {
+    try {
+      videoCapturer?.switchCamera(null)
+    } catch (e: Exception) {
+      Log.e(CLIENT_TAG, "Failed to flip camera: ${e.message}")
+    }
   }
 
   private suspend fun disconnectResource() {

@@ -166,6 +166,10 @@ class ReactNativeMobileWhepClientModule :
         whipClient?.disconnect()
       }
 
+      Function("flipCamera") {
+        whipClient?.flipCamera()
+      }
+
       Function("cleanupWhip") {
         whipClient?.cleanup()
         return@Function Unit
