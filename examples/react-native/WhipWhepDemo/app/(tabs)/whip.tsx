@@ -40,7 +40,7 @@ export default function HomeScreen() {
   };
 
   const handleToggleCamera = useCallback(() => {
-    whipClient.current.flipCamera()
+    whipClient.current.flipCamera();
   }, []);
 
   useEffect(() => {

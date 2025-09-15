@@ -126,7 +126,7 @@ export class WhipClient {
   }
 
   async flipCamera() {
-    nativeModule.flipCamera()
+    nativeModule.flipCamera();
   }
 
   static getSupportedAudioCodecs() {

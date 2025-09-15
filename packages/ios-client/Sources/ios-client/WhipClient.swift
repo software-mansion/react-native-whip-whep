@@ -187,27 +187,27 @@ public class WhipClient: ClientBase {
             )
         }
     }
-  
+
     public func flipCamera() {
         print("Flipping camera in client")
-        
-      guard let videoCapturer else {
-        print("No capturer")
-        return
-      }
-      videoCapturer.stopCapture()
-      
-      isFront = !isFront
 
-      let devices = RTCCameraVideoCapturer.captureDevices()
+        guard let videoCapturer else {
+            print("No capturer")
+            return
+        }
+        videoCapturer.stopCapture()
 
-      let position: AVCaptureDevice.Position = isFront ? .front : .back
-      
-      if let device = devices.first(where: { $0.position == position }) {
-        configOptions.videoDevice = device
-      }
+        isFront = !isFront
 
-      startCapture()
+        let devices = RTCCameraVideoCapturer.captureDevices()
+
+        let position: AVCaptureDevice.Position = isFront ? .front : .back
+
+        if let device = devices.first(where: { $0.position == position }) {
+            configOptions.videoDevice = device
+        }
+
+        startCapture()
     }
 
     private func setUpVideoAndAudioDevices() throws {
@@ -245,27 +245,27 @@ public class WhipClient: ClientBase {
         }
 
     }
-  
-  private func startCapture() {
-    let videoDevice = configOptions.videoDevice
-    let videoParameters = configOptions.videoParameters
-    
-    let (format, fps) = setVideoSize(
-        device: videoDevice, videoParameters: (videoParameters))
-    
-    guard let videoCapturer else {
-      logger.warning("No video capturer to start")
-      return
-    }
-    
-    videoCapturer.startCapture(with: videoDevice, format: format, fps: fps) { error in
-        if let error = error {
-            print("Error starting the video capture: \(error)")
-        } else {
-            print("Video capturing started")
+
+    private func startCapture() {
+        let videoDevice = configOptions.videoDevice
+        let videoParameters = configOptions.videoParameters
+
+        let (format, fps) = setVideoSize(
+            device: videoDevice, videoParameters: (videoParameters))
+
+        guard let videoCapturer else {
+            logger.warning("No video capturer to start")
+            return
+        }
+
+        videoCapturer.startCapture(with: videoDevice, format: format, fps: fps) { error in
+            if let error = error {
+                print("Error starting the video capture: \(error)")
+            } else {
+                print("Video capturing started")
+            }
         }
     }
-  }
 
     private func setVideoSize(device: AVCaptureDevice, videoParameters: VideoParameters) -> (
         selectedFormat: AVCaptureDevice.Format, fps: Int

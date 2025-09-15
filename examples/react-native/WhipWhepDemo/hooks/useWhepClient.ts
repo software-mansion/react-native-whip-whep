@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { WhepClient } from 'react-native-whip-whep';
 import { checkPermissions } from '@/utils/CheckPermissions';
 
@@ -25,10 +25,10 @@ export const useWhepClient = (serverUrl: string) => {
     }
   };
 
-  const disconnect = () => {
+  const disconnect = useCallback(() => {
     console.log('### useWhepClient disconnecting in disconnect');
     whepClient.current?.disconnect();
-  };
+  }, [whepClient]);
 
   useEffect(() => {
     const initialize = async () => {
