@@ -4,7 +4,7 @@ import os
 public struct WhipConfigurationOptions {
     public let audioEnabled: Bool
     public let videoEnabled: Bool
-    public let videoDevice: AVCaptureDevice
+    public var videoDevice: AVCaptureDevice
     public let videoParameters: VideoParameters
     public let stunServerUrl: String?
     public let preferredVideoCodecs: [String]
@@ -26,9 +26,10 @@ public struct WhipConfigurationOptions {
 }
 
 public class WhipClient: ClientBase {
-    private let configOptions: WhipConfigurationOptions
+    private var configOptions: WhipConfigurationOptions
     private var videoCapturer: RTCCameraVideoCapturer?
     private var videoSource: RTCVideoSource?
+    internal var isFront: Bool = false
 
     /**
     Initializes a `WhipClient` object.
@@ -186,12 +187,32 @@ public class WhipClient: ClientBase {
             )
         }
     }
+  
+    public func flipCamera() {
+        print("Flipping camera in client")
+        
+      guard let videoCapturer else {
+        print("No capturer")
+        return
+      }
+      videoCapturer.stopCapture()
+      
+      isFront = !isFront
+
+      let devices = RTCCameraVideoCapturer.captureDevices()
+
+      let position: AVCaptureDevice.Position = isFront ? .front : .back
+      
+      if let device = devices.first(where: { $0.position == position }) {
+        configOptions.videoDevice = device
+      }
+
+      startCapture()
+    }
 
     private func setUpVideoAndAudioDevices() throws {
         let audioEnabled = configOptions.audioEnabled
         let videoEnabled = configOptions.videoEnabled
-        let videoDevice = configOptions.videoDevice
-        let videoParameters = configOptions.videoParameters
 
         if !audioEnabled && !videoEnabled {
             logger.warning(
@@ -209,19 +230,7 @@ public class WhipClient: ClientBase {
             let videoTrack = WhipClient.peerConnectionFactory.videoTrack(with: videoSource, trackId: videoTrackId)
             videoTrack.isEnabled = true
 
-            let (format, fps) = setVideoSize(
-                device: videoDevice, videoParameters: (videoParameters))
-
-            videoCapturer.startCapture(with: videoDevice, format: format, fps: fps) { error in
-                if let error = error {
-                    print("Error starting the video capture: \(error)")
-                } else {
-                    print("Video capturing started")
-                    DispatchQueue.main.async {
-                        self.videoTrack = videoTrack
-                    }
-                }
-            }
+            startCapture()
 
             self.videoTrack = videoTrack
         }
@@ -236,6 +245,27 @@ public class WhipClient: ClientBase {
         }
 
     }
+  
+  private func startCapture() {
+    let videoDevice = configOptions.videoDevice
+    let videoParameters = configOptions.videoParameters
+    
+    let (format, fps) = setVideoSize(
+        device: videoDevice, videoParameters: (videoParameters))
+    
+    guard let videoCapturer else {
+      logger.warning("No video capturer to start")
+      return
+    }
+    
+    videoCapturer.startCapture(with: videoDevice, format: format, fps: fps) { error in
+        if let error = error {
+            print("Error starting the video capture: \(error)")
+        } else {
+            print("Video capturing started")
+        }
+    }
+  }
 
     private func setVideoSize(device: AVCaptureDevice, videoParameters: VideoParameters) -> (
         selectedFormat: AVCaptureDevice.Format, fps: Int

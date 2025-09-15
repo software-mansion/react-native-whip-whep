@@ -175,6 +175,16 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
           }
           try await client.connect(.init(serverUrl: url, authToken: authToken))
         }
+        
+        AsyncFunction("flipCamera") {
+          print("FLIP CAMERA IN MODULE")
+          guard let client = ReactNativeMobileWhepClientModule.whipClient else {
+            throw Exception(
+              name: "E_WHIP_CLIENT_NOT_FOUND",
+              description: "WHIP client not found. Make sure it was initialized properly.")
+          }
+          client.flipCamera()
+        }
 
         AsyncFunction("disconnectWhip") {
           try await ReactNativeMobileWhepClientModule.whipClient?.disconnect()

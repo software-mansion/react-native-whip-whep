@@ -1,6 +1,6 @@
 import { StyleSheet, Button, View, ActivityIndicator } from 'react-native';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import {
   cameras,
   VideoParameters,
@@ -39,18 +39,23 @@ export default function HomeScreen() {
     }
   };
 
+  const handleToggleCamera = useCallback(() => {
+    whipClient.current.flipCamera()
+  }, []);
+
   useEffect(() => {
     checkPermissions();
     return () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
       whipClient.current.disconnect();
     };
-  }, []);
+  }, [whipClient]);
 
   return (
     <View style={styles.container}>
       <View style={styles.box}>
         <WhipClientView style={styles.clientView} />
+        <Button title="Toggle Camera" onPress={handleToggleCamera} />
         {shouldShowStreamBtn && (
           <Button title="Stream" onPress={handleStreamBtnClick} color={tint} />
         )}
