@@ -13,9 +13,6 @@ export const useWhepClient = (serverUrl: string) => {
     setIsLoading(true);
 
     try {
-      console.log(
-        '### useWhepClient handlePlayBtnClick - connecting whep client',
-      );
       await whepClient.current?.connect({
         serverUrl,
       });
@@ -26,16 +23,13 @@ export const useWhepClient = (serverUrl: string) => {
   };
 
   const disconnect = useCallback(() => {
-    console.log('### useWhepClient disconnecting in disconnect');
     whepClient.current?.disconnect();
   }, [whepClient]);
 
   useEffect(() => {
     const initialize = async () => {
-      console.log('### useWhepClient initialize - checking permissisons');
       await checkPermissions();
 
-      console.log('### useWhepClient initialize - creating whep client');
       whepClient.current = new WhepClient({
         audioEnabled: true,
         videoEnabled: true,
