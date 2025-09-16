@@ -14,14 +14,22 @@ export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
 
-  const whipClient = useRef<WhipClient>(
-    new WhipClient({
+  const whipClient = useRef<WhipClient | null>();
+
+  useEffect(() => {
+    whipClient.current = new WhipClient({
       audioEnabled: true,
       videoEnabled: true,
       videoParameters: VideoParameters.presetFHD169,
       videoDeviceId: cameras[0].id,
-    }),
-  );
+    });
+
+    return () => {
+      whipClient.current?.disconnect();
+      whipClient.current?.cleanup();
+      whipClient.current = null;
+    };
+  }, []);
 
   const { tint } = useThemeColor();
 
@@ -29,7 +37,7 @@ export default function HomeScreen() {
     setShouldShowStreamBtn(false);
     try {
       setIsLoading(true);
-      await whipClient.current.connect({
+      await whipClient.current?.connect({
         serverUrl: process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
         authToken: 'example',
       });
@@ -40,14 +48,14 @@ export default function HomeScreen() {
   };
 
   const handleToggleCamera = useCallback(() => {
-    whipClient.current.flipCamera();
+    whipClient.current?.flipCamera();
   }, []);
 
   useEffect(() => {
     checkPermissions();
     return () => {
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      whipClient.current.disconnect();
+      whipClient.current?.disconnect();
     };
   }, [whipClient]);
 
