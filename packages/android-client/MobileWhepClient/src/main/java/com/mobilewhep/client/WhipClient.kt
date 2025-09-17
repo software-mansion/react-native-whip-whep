@@ -54,7 +54,6 @@ class WhipClient(
   override var videoTrack: VideoTrack? = null
   private var videoCapturer: CameraVideoCapturer? = null
   private var videoSource: VideoSource? = null
-  private var currentDeviceName: String? = null
 
   init {
     setUpVideoAndAudioDevices()
@@ -150,7 +149,6 @@ class WhipClient(
 
       this.videoSource = videoSource
       this.videoCapturer = videoCapturer
-      this.currentDeviceName = configOptions.videoDevice
 
       videoTrack.setEnabled(true)
       this.videoTrack = videoTrack
@@ -243,7 +241,7 @@ class WhipClient(
       videoCapturer?.switchCamera(
         object : CameraVideoCapturer.CameraSwitchHandler {
           override fun onCameraSwitchDone(isFrontCamera: Boolean) {
-            currentDeviceName = deviceId
+            // Camera switch completed successfully
           }
 
           override fun onCameraSwitchError(errorDescription: String?) {
