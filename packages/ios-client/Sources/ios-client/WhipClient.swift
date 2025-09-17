@@ -188,21 +188,21 @@ public class WhipClient: ClientBase {
         }
     }
 
-    public func flipCamera() {
+    public func switchCamera(deviceId: String) {
         guard let videoCapturer else {
             print("No capturer")
             return
         }
         videoCapturer.stopCapture()
 
-        isFront = !isFront
-
         let devices = RTCCameraVideoCapturer.captureDevices()
-
-        let position: AVCaptureDevice.Position = isFront ? .front : .back
-
-        if let device = devices.first(where: { $0.position == position }) {
+        
+        if let device = devices.first(where: { $0.uniqueID == deviceId }) {
             configOptions.videoDevice = device
+            isFront = device.position == .front
+        } else {
+            print("Device with ID \(deviceId) not found")
+            return
         }
 
         startCapture()

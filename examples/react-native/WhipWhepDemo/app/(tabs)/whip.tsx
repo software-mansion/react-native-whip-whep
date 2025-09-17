@@ -13,6 +13,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
+  const [currentDeviceId, setCurrentDeviceId] = useState(cameras[0].id)
 
   const whipClient = useRef<WhipClient | null>();
 
@@ -21,7 +22,7 @@ export default function HomeScreen() {
       audioEnabled: true,
       videoEnabled: true,
       videoParameters: VideoParameters.presetFHD169,
-      videoDeviceId: cameras[0].id,
+      videoDeviceId: currentDeviceId,
     });
 
     return () => {
@@ -47,9 +48,19 @@ export default function HomeScreen() {
     }
   };
 
-  const handleToggleCamera = useCallback(() => {
-    whipClient.current?.flipCamera();
-  }, []);
+  const handleSwitchCamera = useCallback(() => {
+    // Find the opposite camera (front/back)
+    const currentCamera = cameras.find(cam => cam.id === currentDeviceId);
+    const oppositeCamera = cameras.find(cam => 
+      cam.facingDirection !== currentCamera?.facingDirection && 
+      cam.facingDirection !== 'unspecified'
+    );
+    
+    if (oppositeCamera && whipClient.current) {
+      whipClient.current?.switchCamera(oppositeCamera.id);
+      setCurrentDeviceId(oppositeCamera.id)
+    }
+  }, [currentDeviceId]);
 
   useEffect(() => {
     checkPermissions();
@@ -65,7 +76,7 @@ export default function HomeScreen() {
         <View style={styles.videoWrapper}>
           <WhipClientView style={styles.clientView} />
         </View>
-        <Button title="Toggle Camera" onPress={handleToggleCamera} />
+        <Button title="Switch Camera" onPress={handleSwitchCamera} />
         {shouldShowStreamBtn && (
           <Button title="Stream" onPress={handleStreamBtnClick} color={tint} />
         )}

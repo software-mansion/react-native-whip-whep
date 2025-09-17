@@ -176,13 +176,13 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
           try await client.connect(.init(serverUrl: url, authToken: authToken))
         }
         
-        AsyncFunction("flipCamera") {
+        AsyncFunction("switchCamera") { (deviceId: String) in
           guard let client = ReactNativeMobileWhepClientModule.whipClient else {
             throw Exception(
               name: "E_WHIP_CLIENT_NOT_FOUND",
               description: "WHIP client not found. Make sure it was initialized properly.")
           }
-          client.flipCamera()
+          client.switchCamera(deviceId: deviceId)
         }
 
         AsyncFunction("disconnectWhip") {

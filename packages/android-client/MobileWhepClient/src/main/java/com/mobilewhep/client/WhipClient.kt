@@ -229,29 +229,13 @@ class WhipClient(
     videoCapturer?.stopCapture()
   }
 
-  fun flipCamera() {
+  fun switchCamera(deviceId: String) {
     val enumerator: CameraEnumerator =
       if (Camera2Enumerator.isSupported(appContext)) Camera2Enumerator(appContext) else Camera1Enumerator(false)
 
-    val currentName = currentDeviceName
-    if (currentName == null) {
-      // Fallback: best-effort toggle
-      try {
-        videoCapturer?.switchCamera(null)
-      } catch (e: Exception) {
-        Log.e(CLIENT_TAG, "Failed to flip camera (fallback): ${e.message}")
-      }
-      return
-    }
-
-    val isCurrentFront = enumerator.isFrontFacing(currentName)
-    val targetDeviceName =
-      enumerator.deviceNames.firstOrNull { name ->
-        if (isCurrentFront) enumerator.isBackFacing(name) else enumerator.isFrontFacing(name)
-      }
-
-    if (targetDeviceName == null) {
-      Log.w(CLIENT_TAG, "No opposite-facing camera found; staying on $currentName")
+    val availableDevices = enumerator.deviceNames
+    if (!availableDevices.contains(deviceId)) {
+      Log.w(CLIENT_TAG, "Device with ID $deviceId not found. Available devices: $availableDevices")
       return
     }
 
@@ -259,17 +243,17 @@ class WhipClient(
       videoCapturer?.switchCamera(
         object : CameraVideoCapturer.CameraSwitchHandler {
           override fun onCameraSwitchDone(isFrontCamera: Boolean) {
-            currentDeviceName = targetDeviceName
+            currentDeviceName = deviceId
           }
 
           override fun onCameraSwitchError(errorDescription: String?) {
             Log.e(CLIENT_TAG, "Camera switch error: $errorDescription")
           }
         },
-        targetDeviceName
+        deviceId
       )
     } catch (e: Exception) {
-      Log.e(CLIENT_TAG, "Failed to flip camera to $targetDeviceName: ${e.message}")
+      Log.e(CLIENT_TAG, "Failed to switch camera to $deviceId: ${e.message}")
     }
   }
 

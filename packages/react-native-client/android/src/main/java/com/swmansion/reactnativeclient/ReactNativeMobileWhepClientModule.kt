@@ -166,8 +166,8 @@ class ReactNativeMobileWhepClientModule :
         whipClient?.disconnect()
       }
 
-      Function("flipCamera") {
-        whipClient?.flipCamera()
+      Function("switchCamera") { deviceId: String ->
+        whipClient?.switchCamera(deviceId)
       }
 
       Function("cleanupWhip") {
