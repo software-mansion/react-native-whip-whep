@@ -62,7 +62,9 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.box}>
-        <WhipClientView style={styles.clientView} />
+        <View style={styles.videoWrapper}>
+          <WhipClientView style={styles.clientView} />
+        </View>
         <Button title="Toggle Camera" onPress={handleToggleCamera} />
         {shouldShowStreamBtn && (
           <Button title="Stream" onPress={handleStreamBtnClick} color={tint} />
@@ -83,9 +85,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  clientView: {
+  videoWrapper: {
     width: '100%',
-    height: 200,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+  },
+  clientView: {
+    alignSelf: 'center',
+    height: '80%',
+    aspectRatio: 9 / 16,
     marginBottom: 20,
   },
 });
