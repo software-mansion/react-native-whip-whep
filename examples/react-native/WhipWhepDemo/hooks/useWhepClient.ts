@@ -8,7 +8,7 @@ export const useWhepClient = (serverUrl: string) => {
 
   const whepClient = useRef<WhepClient | null>(null);
 
-  const handlePlayBtnClick = async () => {
+  const handlePlayBtnClick = useCallback(async () => {
     setShouldShowPlayBtn(false);
     setIsLoading(true);
 
@@ -20,7 +20,7 @@ export const useWhepClient = (serverUrl: string) => {
     } catch (error) {
       console.error('Failed to connect to WHEP Client', error);
     }
-  };
+  }, [serverUrl]);
 
   const disconnect = useCallback(() => {
     whepClient.current?.disconnect();

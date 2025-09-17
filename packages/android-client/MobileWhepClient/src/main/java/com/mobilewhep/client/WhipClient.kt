@@ -245,9 +245,10 @@ class WhipClient(
     }
 
     val isCurrentFront = enumerator.isFrontFacing(currentName)
-    val targetDeviceName = enumerator.deviceNames.firstOrNull { name ->
-      if (isCurrentFront) enumerator.isBackFacing(name) else enumerator.isFrontFacing(name)
-    }
+    val targetDeviceName =
+      enumerator.deviceNames.firstOrNull { name ->
+        if (isCurrentFront) enumerator.isBackFacing(name) else enumerator.isFrontFacing(name)
+      }
 
     if (targetDeviceName == null) {
       Log.w(CLIENT_TAG, "No opposite-facing camera found; staying on $currentName")
@@ -265,13 +266,13 @@ class WhipClient(
             Log.e(CLIENT_TAG, "Camera switch error: $errorDescription")
           }
         },
-        targetDeviceName,
+        targetDeviceName
       )
     } catch (e: Exception) {
       Log.e(CLIENT_TAG, "Failed to flip camera to $targetDeviceName: ${e.message}")
     }
   }
-  
+
   private suspend fun disconnectResource() {
     suspendCancellableCoroutine { continuation ->
       if (connectOptions == null) {

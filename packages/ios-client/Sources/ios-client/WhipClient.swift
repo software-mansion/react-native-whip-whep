@@ -189,8 +189,6 @@ public class WhipClient: ClientBase {
     }
 
     public func flipCamera() {
-        print("Flipping camera in client")
-
         guard let videoCapturer else {
             print("No capturer")
             return

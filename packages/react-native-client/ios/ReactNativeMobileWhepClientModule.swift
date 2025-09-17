@@ -177,7 +177,6 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
         }
         
         AsyncFunction("flipCamera") {
-          print("FLIP CAMERA IN MODULE")
           guard let client = ReactNativeMobileWhepClientModule.whipClient else {
             throw Exception(
               name: "E_WHIP_CLIENT_NOT_FOUND",
