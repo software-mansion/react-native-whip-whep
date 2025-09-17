@@ -13,7 +13,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
-  const [currentDeviceId, setCurrentDeviceId] = useState(cameras[0].id)
+  const [currentDeviceId, setCurrentDeviceId] = useState(cameras[0].id);
 
   const whipClient = useRef<WhipClient | null>();
 
@@ -30,7 +30,7 @@ export default function HomeScreen() {
       whipClient.current?.cleanup();
       whipClient.current = null;
     };
-  }, []);
+  }, [currentDeviceId]);
 
   const { tint } = useThemeColor();
 
@@ -50,15 +50,16 @@ export default function HomeScreen() {
 
   const handleSwitchCamera = useCallback(() => {
     // Find the opposite camera (front/back)
-    const currentCamera = cameras.find(cam => cam.id === currentDeviceId);
-    const oppositeCamera = cameras.find(cam => 
-      cam.facingDirection !== currentCamera?.facingDirection && 
-      cam.facingDirection !== 'unspecified'
+    const currentCamera = cameras.find((cam) => cam.id === currentDeviceId);
+    const oppositeCamera = cameras.find(
+      (cam) =>
+        cam.facingDirection !== currentCamera?.facingDirection &&
+        cam.facingDirection !== 'unspecified',
     );
-    
+
     if (oppositeCamera && whipClient.current) {
       whipClient.current?.switchCamera(oppositeCamera.id);
-      setCurrentDeviceId(oppositeCamera.id)
+      setCurrentDeviceId(oppositeCamera.id);
     }
   }, [currentDeviceId]);
 

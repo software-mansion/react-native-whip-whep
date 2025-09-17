@@ -196,7 +196,7 @@ public class WhipClient: ClientBase {
         videoCapturer.stopCapture()
 
         let devices = RTCCameraVideoCapturer.captureDevices()
-        
+
         if let device = devices.first(where: { $0.uniqueID == deviceId }) {
             configOptions.videoDevice = device
             isFront = device.position == .front
