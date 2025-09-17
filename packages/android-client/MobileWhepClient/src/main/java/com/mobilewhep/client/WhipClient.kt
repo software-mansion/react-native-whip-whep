@@ -54,6 +54,7 @@ class WhipClient(
   override var videoTrack: VideoTrack? = null
   private var videoCapturer: CameraVideoCapturer? = null
   private var videoSource: VideoSource? = null
+  private var currentDeviceName: String? = null
 
   init {
     setUpVideoAndAudioDevices()
@@ -149,6 +150,7 @@ class WhipClient(
 
       this.videoSource = videoSource
       this.videoCapturer = videoCapturer
+      this.currentDeviceName = configOptions.videoDevice
 
       videoTrack.setEnabled(true)
       this.videoTrack = videoTrack
@@ -228,13 +230,48 @@ class WhipClient(
   }
 
   fun flipCamera() {
+    val enumerator: CameraEnumerator =
+      if (Camera2Enumerator.isSupported(appContext)) Camera2Enumerator(appContext) else Camera1Enumerator(false)
+
+    val currentName = currentDeviceName
+    if (currentName == null) {
+      // Fallback: best-effort toggle
+      try {
+        videoCapturer?.switchCamera(null)
+      } catch (e: Exception) {
+        Log.e(CLIENT_TAG, "Failed to flip camera (fallback): ${e.message}")
+      }
+      return
+    }
+
+    val isCurrentFront = enumerator.isFrontFacing(currentName)
+    val targetDeviceName = enumerator.deviceNames.firstOrNull { name ->
+      if (isCurrentFront) enumerator.isBackFacing(name) else enumerator.isFrontFacing(name)
+    }
+
+    if (targetDeviceName == null) {
+      Log.w(CLIENT_TAG, "No opposite-facing camera found; staying on $currentName")
+      return
+    }
+
     try {
-      videoCapturer?.switchCamera(null)
+      videoCapturer?.switchCamera(
+        object : CameraVideoCapturer.CameraSwitchHandler {
+          override fun onCameraSwitchDone(isFrontCamera: Boolean) {
+            currentDeviceName = targetDeviceName
+          }
+
+          override fun onCameraSwitchError(errorDescription: String?) {
+            Log.e(CLIENT_TAG, "Camera switch error: $errorDescription")
+          }
+        },
+        targetDeviceName,
+      )
     } catch (e: Exception) {
-      Log.e(CLIENT_TAG, "Failed to flip camera: ${e.message}")
+      Log.e(CLIENT_TAG, "Failed to flip camera to $targetDeviceName: ${e.message}")
     }
   }
-
+  
   private suspend fun disconnectResource() {
     suspendCancellableCoroutine { continuation ->
       if (connectOptions == null) {
