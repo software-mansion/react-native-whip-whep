@@ -129,7 +129,7 @@ export class WhipClient {
     nativeModule.switchCamera(deviceId);
   }
 
-  async flipCamera(): Promise<string | undefined> {
+  async flipCamera(): Promise<CameraId | undefined> {
     // Find the opposite camera (front/back)
     const currentCamera = cameras.find(
       (cam) => cam.id === this.configurationOptions.videoDeviceId,

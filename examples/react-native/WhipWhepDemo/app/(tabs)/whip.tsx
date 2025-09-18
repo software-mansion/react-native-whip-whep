@@ -73,7 +73,7 @@ export default function HomeScreen() {
       try {
         const newCameraId = await whipClient.current.flipCamera();
         if (newCameraId) {
-          setCurrentDeviceId(newCameraId as CameraId);
+          setCurrentDeviceId(newCameraId);
         }
       } catch (error) {
         console.error('Failed to flip camera:', error);

@@ -29,7 +29,6 @@ public class WhipClient: ClientBase {
     private var configOptions: WhipConfigurationOptions
     private var videoCapturer: RTCCameraVideoCapturer?
     private var videoSource: RTCVideoSource?
-    internal var isFront: Bool = false
 
     /**
     Initializes a `WhipClient` object.
@@ -199,7 +198,6 @@ public class WhipClient: ClientBase {
 
         if let device = devices.first(where: { $0.uniqueID == deviceId }) {
             configOptions.videoDevice = device
-            isFront = device.position == .front
         } else {
             print("Device with ID \(deviceId) not found")
             return
