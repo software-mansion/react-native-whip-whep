@@ -22,10 +22,6 @@ export const useWhepClient = (serverUrl: string) => {
     }
   }, [serverUrl]);
 
-  const disconnect = useCallback(() => {
-    whepClient.current?.disconnect();
-  }, [whepClient]);
-
   useEffect(() => {
     const initialize = async () => {
       await checkPermissions();
@@ -42,6 +38,5 @@ export const useWhepClient = (serverUrl: string) => {
     isLoading,
     shouldShowPlayBtn,
     handlePlayBtnClick,
-    disconnect,
   };
 };
