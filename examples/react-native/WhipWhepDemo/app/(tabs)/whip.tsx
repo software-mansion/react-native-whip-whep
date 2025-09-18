@@ -6,16 +6,19 @@ import {
   VideoParameters,
   WhipClient,
   WhipClientView,
+  CameraId,
 } from 'react-native-whip-whep';
 import { checkPermissions } from '@/utils/CheckPermissions';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
-const INITIAL_CAMERA_DEVICE_ID = cameras[0].id
+const INITIAL_CAMERA_DEVICE_ID = cameras[0].id;
 
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
-  const [currentDeviceId, setCurrentDeviceId] = useState(INITIAL_CAMERA_DEVICE_ID);
+  const [currentDeviceId, setCurrentDeviceId] = useState(
+    INITIAL_CAMERA_DEVICE_ID,
+  );
 
   const whipClient = useRef<WhipClient | null>();
 
@@ -65,6 +68,19 @@ export default function HomeScreen() {
     }
   }, [currentDeviceId]);
 
+  const handleFlipCamera = useCallback(async () => {
+    if (whipClient.current) {
+      try {
+        const newCameraId = await whipClient.current.flipCamera();
+        if (newCameraId) {
+          setCurrentDeviceId(newCameraId as CameraId);
+        }
+      } catch (error) {
+        console.error('Failed to flip camera:', error);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     checkPermissions();
     return () => {
@@ -80,6 +96,7 @@ export default function HomeScreen() {
           <WhipClientView style={styles.clientView} />
         </View>
         <Button title="Switch Camera" onPress={handleSwitchCamera} />
+        <Button title="Flip Camera" onPress={handleFlipCamera} />
         {shouldShowStreamBtn && (
           <Button title="Stream" onPress={handleStreamBtnClick} color={tint} />
         )}
