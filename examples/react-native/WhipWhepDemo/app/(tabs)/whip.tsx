@@ -6,7 +6,6 @@ import {
   VideoParameters,
   WhipClient,
   WhipClientView,
-  CameraId,
 } from 'react-native-whip-whep';
 import { checkPermissions } from '@/utils/CheckPermissions';
 import { useThemeColor } from '@/hooks/useThemeColor';
