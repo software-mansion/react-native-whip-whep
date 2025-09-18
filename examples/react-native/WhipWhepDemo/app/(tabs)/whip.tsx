@@ -10,10 +10,12 @@ import {
 import { checkPermissions } from '@/utils/CheckPermissions';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
+const INITIAL_CAMERA_DEVICE_ID = cameras[0].id
+
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
-  const [currentDeviceId, setCurrentDeviceId] = useState(cameras[0].id);
+  const [currentDeviceId, setCurrentDeviceId] = useState(INITIAL_CAMERA_DEVICE_ID);
 
   const whipClient = useRef<WhipClient | null>();
 
@@ -22,7 +24,7 @@ export default function HomeScreen() {
       audioEnabled: true,
       videoEnabled: true,
       videoParameters: VideoParameters.presetFHD169,
-      videoDeviceId: currentDeviceId,
+      videoDeviceId: INITIAL_CAMERA_DEVICE_ID,
     });
 
     return () => {
@@ -30,7 +32,7 @@ export default function HomeScreen() {
       whipClient.current?.cleanup();
       whipClient.current = null;
     };
-  }, [currentDeviceId]);
+  }, []);
 
   const { tint } = useThemeColor();
 
