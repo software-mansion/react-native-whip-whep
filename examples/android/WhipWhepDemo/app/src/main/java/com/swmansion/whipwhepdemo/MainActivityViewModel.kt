@@ -77,8 +77,10 @@ class MainActivityViewModel(
             ),
           configurationOptions = ConfigurationOptions(authToken = "example"),
           videoDevice =
-            WhipClient.getCaptureDevices(getApplication<Application>().applicationContext)
-              .first().deviceName
+            WhipClient
+              .getCaptureDevices(getApplication<Application>().applicationContext)
+              .first()
+              .deviceName
         )
     } catch (e: Exception) {
       Log.e(TAG, "Error when creating client: ${e.message}")

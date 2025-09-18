@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { WhepClient } from 'react-native-whip-whep';
 import { checkPermissions } from '@/utils/CheckPermissions';
 
@@ -8,9 +8,10 @@ export const useWhepClient = (serverUrl: string) => {
 
   const whepClient = useRef<WhepClient | null>(null);
 
-  const handlePlayBtnClick = async () => {
+  const handlePlayBtnClick = useCallback(async () => {
     setShouldShowPlayBtn(false);
     setIsLoading(true);
+
     try {
       await whepClient.current?.connect({
         serverUrl,
@@ -19,18 +20,18 @@ export const useWhepClient = (serverUrl: string) => {
     } catch (error) {
       console.error('Failed to connect to WHEP Client', error);
     }
-  };
+  }, [serverUrl]);
 
   useEffect(() => {
     const initialize = async () => {
       await checkPermissions();
+
       whepClient.current = new WhepClient({
         audioEnabled: true,
         videoEnabled: true,
       });
     };
     initialize();
-
     return () => {
       whepClient.current?.disconnect();
     };

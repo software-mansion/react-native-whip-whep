@@ -166,6 +166,10 @@ class ReactNativeMobileWhepClientModule :
         whipClient?.disconnect()
       }
 
+      Function("switchCamera") { deviceId: String ->
+        whipClient?.switchCamera(deviceId)
+      }
+
       Function("cleanupWhip") {
         whipClient?.cleanup()
         return@Function Unit
@@ -193,6 +197,10 @@ class ReactNativeMobileWhepClientModule :
 
       Property("cameras") {
         return@Property getCaptureDevices()
+      }
+
+      Property("currentCameraDeviceId") {
+        return@Property whipClient?.currentCameraDeviceId
       }
     }
 

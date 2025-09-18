@@ -52,8 +52,10 @@ class WhipClient(
     stunServerUrl = configOptions.stunServerUrl
   ) {
   override var videoTrack: VideoTrack? = null
-  private var videoCapturer: VideoCapturer? = null
+  private var videoCapturer: CameraVideoCapturer? = null
   private var videoSource: VideoSource? = null
+
+  public var currentCameraDeviceId: String? = null
 
   init {
     setUpVideoAndAudioDevices()
@@ -149,6 +151,7 @@ class WhipClient(
 
       this.videoSource = videoSource
       this.videoCapturer = videoCapturer
+      this.currentCameraDeviceId = configOptions.videoDevice
 
       videoTrack.setEnabled(true)
       this.videoTrack = videoTrack
@@ -225,6 +228,35 @@ class WhipClient(
     peerConnection?.close()
     peerConnection = null
     videoCapturer?.stopCapture()
+  }
+
+  fun switchCamera(deviceId: String) {
+    val enumerator: CameraEnumerator =
+      if (Camera2Enumerator.isSupported(appContext)) Camera2Enumerator(appContext) else Camera1Enumerator(false)
+
+    val availableDevices = enumerator.deviceNames
+    if (!availableDevices.contains(deviceId)) {
+      Log.w(CLIENT_TAG, "Device with ID $deviceId not found. Available devices: $availableDevices")
+      return
+    }
+
+    try {
+      videoCapturer?.switchCamera(
+        object : CameraVideoCapturer.CameraSwitchHandler {
+          override fun onCameraSwitchDone(isFrontCamera: Boolean) {
+            // Camera switch completed successfully
+            currentCameraDeviceId = deviceId
+          }
+
+          override fun onCameraSwitchError(errorDescription: String?) {
+            Log.e(CLIENT_TAG, "Camera switch error: $errorDescription")
+          }
+        },
+        deviceId
+      )
+    } catch (e: Exception) {
+      Log.e(CLIENT_TAG, "Failed to switch camera to $deviceId: ${e.message}")
+    }
   }
 
   private suspend fun disconnectResource() {

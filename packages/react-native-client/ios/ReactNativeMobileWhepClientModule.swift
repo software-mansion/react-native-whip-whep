@@ -62,6 +62,10 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
         Property("cameras") {
             return self.getCaptureDevices()
         }
+
+        Property("currentCameraDeviceId") {
+          return ReactNativeMobileWhepClientModule.whipClient?.currentCameraDeviceId
+        }
       
       Property("whepPeerConnectionState") {
         return ReactNativeMobileWhepClientModule.whepClient?.peerConnectionState?.stringValue
@@ -174,6 +178,15 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
               description: "Invalid server URL. Make sure the address is correct.")
           }
           try await client.connect(.init(serverUrl: url, authToken: authToken))
+        }
+        
+        AsyncFunction("switchCamera") { (deviceId: String) in
+          guard let client = ReactNativeMobileWhepClientModule.whipClient else {
+            throw Exception(
+              name: "E_WHIP_CLIENT_NOT_FOUND",
+              description: "WHIP client not found. Make sure it was initialized properly.")
+          }
+          client.switchCamera(deviceId: deviceId)
         }
 
         AsyncFunction("disconnectWhip") {
