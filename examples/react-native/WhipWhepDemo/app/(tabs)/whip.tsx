@@ -49,7 +49,9 @@ export default function HomeScreen() {
 
   const handleSwitchCamera = useCallback(() => {
     // Find the opposite camera (front/back)
-    const currentCamera = cameras.find((cam) => cam.id === whipClient.current?.getCurrentCameraDeviceId());
+    const currentCamera = cameras.find(
+      (cam) => cam.id === whipClient.current?.getCurrentCameraDeviceId(),
+    );
     const oppositeCamera = cameras.find(
       (cam) =>
         cam.facingDirection !== currentCamera?.facingDirection &&
@@ -64,7 +66,7 @@ export default function HomeScreen() {
   const handleFlipCamera = useCallback(async () => {
     if (whipClient.current) {
       try {
-         await whipClient.current.flipCamera();
+        await whipClient.current.flipCamera();
       } catch (error) {
         console.error('Failed to flip camera:', error);
       }

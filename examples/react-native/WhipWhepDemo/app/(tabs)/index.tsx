@@ -6,11 +6,10 @@ import { styles } from '../../styles/styles';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function HomeScreen() {
-  const { isLoading, shouldShowPlayBtn, handlePlayBtnClick } =
-    useWhepClient(
-      process.env.EXPO_PUBLIC_WHEP_SERVER_URL ??
-        'https://broadcaster.elixir-webrtc.org/api/whep',
-    );
+  const { isLoading, shouldShowPlayBtn, handlePlayBtnClick } = useWhepClient(
+    process.env.EXPO_PUBLIC_WHEP_SERVER_URL ??
+      'https://broadcaster.elixir-webrtc.org/api/whep',
+  );
   const { tint } = useThemeColor();
 
   return (
