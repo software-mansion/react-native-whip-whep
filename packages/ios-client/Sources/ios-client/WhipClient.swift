@@ -191,7 +191,7 @@ public class WhipClient: ClientBase {
 
     public func switchCamera(deviceId: String) {
         guard let videoCapturer else {
-            print("No capturer")
+            logger.error("Switch camera failed, videoCapturer is nil")
             return
         }
         videoCapturer.stopCapture()
