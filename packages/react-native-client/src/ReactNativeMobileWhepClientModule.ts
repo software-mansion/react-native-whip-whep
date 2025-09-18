@@ -131,19 +131,21 @@ export class WhipClient {
 
   async flipCamera(): Promise<string | undefined> {
     // Find the opposite camera (front/back)
-    const currentCamera = cameras.find((cam) => cam.id === this.configurationOptions.videoDeviceId);
+    const currentCamera = cameras.find(
+      (cam) => cam.id === this.configurationOptions.videoDeviceId,
+    );
     const oppositeCamera = cameras.find(
       (cam) =>
         cam.facingDirection !== currentCamera?.facingDirection &&
-        cam.facingDirection !== 'unspecified',
+        cam.facingDirection !== "unspecified",
     );
 
     if (oppositeCamera) {
       await this.switchCamera(oppositeCamera.id);
-      this.configurationOptions.videoDeviceId = oppositeCamera.id
+      this.configurationOptions.videoDeviceId = oppositeCamera.id;
       return oppositeCamera.id;
     } else {
-      console.warn('Unable to find opposite camera to switch to');
+      console.warn("Unable to find opposite camera to switch to");
       return undefined;
     }
   }
