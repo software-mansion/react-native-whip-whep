@@ -32,6 +32,9 @@ export const useWhepClient = (serverUrl: string) => {
       });
     };
     initialize();
+    return () => {
+      whepClient.current?.disconnect();
+    };
   }, [serverUrl]);
 
   return {
