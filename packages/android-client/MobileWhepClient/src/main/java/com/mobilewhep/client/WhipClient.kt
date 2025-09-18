@@ -333,7 +333,7 @@ class WhipClient(
   }
 
   private fun PeerConnection.enforceSendOnlyDirection() {
-    for (transceiver in transceivers) {
+    transceivers.forEach { transceiver ->
       if (transceiver.direction == RtpTransceiver.RtpTransceiverDirection.SEND_RECV) {
         transceiver.direction = RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
       }
