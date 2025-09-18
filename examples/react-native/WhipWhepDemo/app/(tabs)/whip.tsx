@@ -10,14 +10,9 @@ import {
 import { checkPermissions } from '@/utils/CheckPermissions';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
-const INITIAL_CAMERA_DEVICE_ID = cameras[0].id;
-
 export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
-  const [currentDeviceId, setCurrentDeviceId] = useState(
-    INITIAL_CAMERA_DEVICE_ID,
-  );
 
   const whipClient = useRef<WhipClient | null>();
 
@@ -26,7 +21,7 @@ export default function HomeScreen() {
       audioEnabled: true,
       videoEnabled: true,
       videoParameters: VideoParameters.presetFHD169,
-      videoDeviceId: INITIAL_CAMERA_DEVICE_ID,
+      videoDeviceId: cameras[0].id,
     });
 
     return () => {
@@ -54,7 +49,7 @@ export default function HomeScreen() {
 
   const handleSwitchCamera = useCallback(() => {
     // Find the opposite camera (front/back)
-    const currentCamera = cameras.find((cam) => cam.id === currentDeviceId);
+    const currentCamera = cameras.find((cam) => cam.id === whipClient.current?.getCurrentCameraDeviceId());
     const oppositeCamera = cameras.find(
       (cam) =>
         cam.facingDirection !== currentCamera?.facingDirection &&
@@ -62,18 +57,14 @@ export default function HomeScreen() {
     );
 
     if (oppositeCamera && whipClient.current) {
-      whipClient.current?.switchCamera(oppositeCamera.id);
-      setCurrentDeviceId(oppositeCamera.id);
+      whipClient.current.switchCamera(oppositeCamera.id);
     }
-  }, [currentDeviceId]);
+  }, []);
 
   const handleFlipCamera = useCallback(async () => {
     if (whipClient.current) {
       try {
-        const newCameraId = await whipClient.current.flipCamera();
-        if (newCameraId) {
-          setCurrentDeviceId(newCameraId);
-        }
+         await whipClient.current.flipCamera();
       } catch (error) {
         console.error('Failed to flip camera:', error);
       }

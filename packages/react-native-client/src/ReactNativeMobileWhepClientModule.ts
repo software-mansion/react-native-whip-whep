@@ -27,6 +27,7 @@ export type Camera = {
 
 type RNMobileWhepClientModule = {
   cameras: readonly Camera[];
+  currentCameraDeviceId: CameraId | null;
   whepPeerConnectionState: PeerConnectionState | null;
   whipPeerConnectionState: PeerConnectionState | null;
   createWhepClient: (
@@ -129,10 +130,10 @@ export class WhipClient {
     nativeModule.switchCamera(deviceId);
   }
 
-  async flipCamera(): Promise<CameraId | undefined> {
+  async flipCamera() {
     // Find the opposite camera (front/back)
     const currentCamera = cameras.find(
-      (cam) => cam.id === this.configurationOptions.videoDeviceId,
+      (cam) => cam.id === nativeModule.currentCameraDeviceId,
     );
     const oppositeCamera = cameras.find(
       (cam) =>
@@ -142,11 +143,8 @@ export class WhipClient {
 
     if (oppositeCamera) {
       await this.switchCamera(oppositeCamera.id);
-      this.configurationOptions.videoDeviceId = oppositeCamera.id;
-      return oppositeCamera.id;
     } else {
       console.warn("Unable to find opposite camera to switch to");
-      return undefined;
     }
   }
 
@@ -156,6 +154,10 @@ export class WhipClient {
 
   static getSupportedVideoCodecs() {
     return nativeModule.getSupportedSenderVideoCodecsNames();
+  }
+
+  getCurrentCameraDeviceId() {
+    return nativeModule.currentCameraDeviceId;
   }
 }
 

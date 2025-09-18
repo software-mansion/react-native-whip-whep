@@ -62,6 +62,10 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
         Property("cameras") {
             return self.getCaptureDevices()
         }
+
+        Property("currentCameraDeviceId") {
+          return ReactNativeMobileWhepClientModule.whipClient?.currentCameraDeviceId
+        }
       
       Property("whepPeerConnectionState") {
         return ReactNativeMobileWhepClientModule.whepClient?.peerConnectionState?.stringValue

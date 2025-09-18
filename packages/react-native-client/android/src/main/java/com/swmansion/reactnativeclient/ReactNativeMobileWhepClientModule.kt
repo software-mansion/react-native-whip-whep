@@ -198,6 +198,10 @@ class ReactNativeMobileWhepClientModule :
       Property("cameras") {
         return@Property getCaptureDevices()
       }
+
+      Property("currentCameraDeviceId") {
+        return@Property whipClient?.currentCameraDeviceId
+      }
     }
 
   fun emit(event: EmitableEvent) {

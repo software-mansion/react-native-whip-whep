@@ -30,6 +30,8 @@ public class WhipClient: ClientBase {
     private var videoCapturer: RTCCameraVideoCapturer?
     private var videoSource: RTCVideoSource?
 
+    public var currentCameraDeviceId: String?
+
     /**
     Initializes a `WhipClient` object.
     
@@ -254,11 +256,12 @@ public class WhipClient: ClientBase {
             return
         }
 
-        videoCapturer.startCapture(with: videoDevice, format: format, fps: fps) { error in
+        videoCapturer.startCapture(with: videoDevice, format: format, fps: fps) { [weak self] error in
             if let error = error {
                 print("Error starting the video capture: \(error)")
             } else {
                 print("Video capturing started")
+                self?.currentCameraDeviceId = videoDevice.uniqueID
             }
         }
     }
