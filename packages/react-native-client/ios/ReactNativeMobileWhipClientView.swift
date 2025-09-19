@@ -28,11 +28,7 @@ public class ReactNativeMobileWhipClientView: ExpoView, OnTrackUpdateListener {
       
   private var player: ClientBase? {
     guard let playerType = self.playerType else { return nil }
-    if (playerType == "WHIP") {
-        return ReactNativeMobileWhepClientModule.whipClient
-    } else {
-        return ReactNativeMobileWhepClientModule.whepClient
-    }
+    return ReactNativeMobileWhepClientModule.whipClient
   }
     private var hostingController: VideoViewController?
 
