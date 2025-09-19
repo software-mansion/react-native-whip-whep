@@ -1,14 +1,18 @@
 import {
-  WhipClientView,
   WhepClientView,
 } from "./ReactNativeMobileWhepClientView";
+import {
+  WhipClientView,
+} from "./ReactNativeMobileWhipClientView";
 import { initializeWarningListener } from "./utils/errorListener";
 
 export { WhipClientView, WhepClientView };
 export {
   VideoParameters,
   ReactNativeMobileWhepClientViewProps,
+  ReactNativeMobileWhipClientViewProps,
   WhepClientViewRef,
+  WhipClientViewRef,
   CameraId,
   ConnectOptions,
   WhipConfigurationOptions,

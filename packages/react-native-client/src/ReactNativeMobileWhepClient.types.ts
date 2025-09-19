@@ -64,8 +64,63 @@ export type WhepClientViewRef = {
   togglePip: () => void;
 };
 
+/**
+ * A type that represents the ref to the WhepClientView component.
+ * It contains methods to start, stop, and toggle Picture-in-Picture mode.
+ */
+export type WhipClientViewRef = {
+  /**
+   * Starts the Picture-in-Picture mode.
+   * On android enters the Picture-in-Picture mode and background the app.
+   */
+  startPip: () => void;
+  /**
+   * Stops the Picture-in-Picture mode.
+   * Does nothing on Android as PiP is not supported in foreground.
+   */
+  stopPip: () => void;
+  /**
+   * Toggles the Picture-in-Picture mode.
+   * On android enters the Picture-in-Picture mode and background the app.
+   */
+  togglePip: () => void;
+};
+
 /** Describes props that can be passed to the module view. */
 export type ReactNativeMobileWhepClientViewProps = {
+  /**
+   * Used to apply custom styles to the component.
+   * It should be a valid CSS object for style properties.
+   */
+  style: React.CSSProperties;
+
+  /**
+   * A variable deciding whether the Picture-in-Picture is enabled.
+   * Defaults to true.
+   */
+  pipEnabled?: boolean;
+
+  /**
+   * A variable deciding whether the Picture-in-Picture mode should be started automatically after the app is backgrounded.
+   * Defaults to false.
+   */
+  autoStartPip?: boolean;
+
+  /**
+   * A variable deciding whether the Picture-in-Picture mode should be stopped automatically on iOS after the app is foregrounded.
+   * Always enabled on Android as PiP is not supported in foreground.
+   * Defaults to false.
+   */
+  autoStopPip?: boolean;
+
+  /**
+   * A variable deciding the size of the Picture-in-Picture mode.
+   */
+  pipSize?: { width: number; height: number };
+};
+
+/** Describes props that can be passed to the module view. */
+export type ReactNativeMobileWhipClientViewProps = {
   /**
    * Used to apply custom styles to the component.
    * It should be a valid CSS object for style properties.

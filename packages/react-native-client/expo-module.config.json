@@ -3,7 +3,8 @@
   "ios": {
     "modules": [
       "ReactNativeMobileWhepClientModule",
-      "ReactNativeMobileWhepClientViewModule"
+      "ReactNativeMobileWhepClientViewModule",
+      "ReactNativeMobileWhipClientViewModule"
     ]
   },
   "android": {
