@@ -3,23 +3,23 @@ import * as React from "react";
 
 import {
   PlayerType,
-  ReactNativeMobileWhepClientViewProps,
-  WhepClientViewRef,
+  ReactNativeMobileWhipClientViewProps,
+  WhipClientViewRef,
 } from "./ReactNativeMobileWhepClient.types";
 
 const NativeViewBase: React.ComponentType<
-  ReactNativeMobileWhepClientViewProps & { playerType: PlayerType }
-> = requireNativeViewManager("ReactNativeMobileWhepClientViewModule");
+  ReactNativeMobileWhipClientViewProps & { playerType: PlayerType }
+> = requireNativeViewManager("ReactNativeMobileWhipClientViewModule");
 
 const NativeView = NativeViewBase as React.ComponentType<
-  ReactNativeMobileWhepClientViewProps & {
+  ReactNativeMobileWhipClientViewProps & {
     playerType: PlayerType;
-    ref?: React.Ref<WhepClientViewRef>;
+    ref?: React.Ref<WhipClientViewRef>;
   }
 >;
 
 /**
- * A component that renders a native view for WHEP player type.
+ * A component that renders a native view for WHIP player type.
  *
  * This component forwards a ref to the native view, allowing for direct manipulation
  * of the component instance. It accepts style and other props defined in
@@ -29,9 +29,9 @@ const NativeView = NativeViewBase as React.ComponentType<
  * @param {React.ForwardedRef<WhepClientViewRef>} ref - Ref to the component instance.
  * @returns {JSX.Element} The rendered component.
  */
-export const WhepClientView = React.forwardRef<
-  WhepClientViewRef,
-  ReactNativeMobileWhepClientViewProps
+export const WhipClientView = React.forwardRef<
+  WhipClientViewRef,
+  ReactNativeMobileWhipClientViewProps
 >((props, ref) => (
-  <NativeView {...props} playerType={PlayerType.WHEP} ref={ref} />
+  <NativeView {...props} playerType={PlayerType.WHIP} ref={ref} />
 ));
