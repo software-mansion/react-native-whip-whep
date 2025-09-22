@@ -2,16 +2,18 @@ import { requireNativeViewManager } from "expo-modules-core";
 import * as React from "react";
 
 import {
+  PlayerType,
   ReactNativeMobileWhepClientViewProps,
   WhepClientViewRef,
 } from "./ReactNativeMobileWhepClient.types";
 
 const NativeViewBase: React.ComponentType<
-  ReactNativeMobileWhepClientViewProps
+  ReactNativeMobileWhepClientViewProps & { playerType: PlayerType }
 > = requireNativeViewManager("ReactNativeMobileWhepClientViewModule");
 
 const NativeView = NativeViewBase as React.ComponentType<
   ReactNativeMobileWhepClientViewProps & {
+    playerType: PlayerType;
     ref?: React.Ref<WhepClientViewRef>;
   }
 >;
@@ -31,5 +33,5 @@ export const WhepClientView = React.forwardRef<
   WhepClientViewRef,
   ReactNativeMobileWhepClientViewProps
 >((props, ref) => (
-  <NativeView {...props} ref={ref} />
+  <NativeView {...props} playerType={PlayerType.WHEP} ref={ref} />
 ));

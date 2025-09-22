@@ -16,9 +16,14 @@ class ReactNativeMobileWhipClientView(
 ) : ExpoView(context, appContext),
   ReactNativeMobileWhepClientModule.OnTrackUpdateListener {
   private var videoView: VideoView? = null
+  private var playerType: String = "WHEP"
 
   init {
     ReactNativeMobileWhepClientModule.onWhipTrackUpdateListeners.add(this)
+  }
+
+  fun init(playerType: String) {
+    this.playerType = playerType
   }
 
   private fun setupTrack(videoTrack: VideoTrack) {

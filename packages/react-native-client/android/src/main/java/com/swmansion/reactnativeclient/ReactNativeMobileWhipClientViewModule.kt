@@ -10,6 +10,10 @@ class ReactNativeMobileWhipClientViewModule : Module() {
     ModuleDefinition {
       Name("ReactNativeMobileWhipClientViewModule")
 
-      View(ReactNativeMobileWhipClientView::class) {}
+      View(ReactNativeMobileWhipClientView::class) {
+        Prop("playerType") { view: ReactNativeMobileWhipClientView, playerType: String ->
+          view.init(playerType)
+        }
+      }
     }
 }

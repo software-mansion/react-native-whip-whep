@@ -2,6 +2,7 @@ package com.swmansion.reactnativeclient
 
 import android.os.Build
 import android.util.Rational
+import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
@@ -21,6 +22,10 @@ class ReactNativeMobileWhepClientViewModule : Module() {
       Name("ReactNativeMobileWhepClientViewModule")
 
       View(ReactNativeMobileWhepClientView::class) {
+        Prop("playerType") { view: ReactNativeMobileWhipClientView, playerType: String ->
+          view.init(playerType)
+        }
+
         Prop("pipEnabled") { view: ReactNativeMobileWhepClientView, pipEnabled: Boolean ->
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             view.setPictureInPictureEnabled(pipEnabled)

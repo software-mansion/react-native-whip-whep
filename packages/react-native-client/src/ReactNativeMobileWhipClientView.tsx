@@ -2,15 +2,18 @@ import { requireNativeViewManager } from "expo-modules-core";
 import * as React from "react";
 
 import {
+  PlayerType,
   ReactNativeMobileWhipClientViewProps,
 } from "./ReactNativeMobileWhepClient.types";
 
 const NativeViewBase: React.ComponentType<
-  ReactNativeMobileWhipClientViewProps
+  ReactNativeMobileWhipClientViewProps  & { playerType: PlayerType }
 > = requireNativeViewManager("ReactNativeMobileWhipClientViewModule");
 
 const NativeView = NativeViewBase as React.ComponentType<
-  ReactNativeMobileWhipClientViewProps
+  ReactNativeMobileWhipClientViewProps  & {
+    playerType: PlayerType;
+  }
 >;
 
 /**
@@ -23,5 +26,5 @@ const NativeView = NativeViewBase as React.ComponentType<
  * @returns {JSX.Element} The rendered component.
  */
 export const WhipClientView: React.FC<ReactNativeMobileWhipClientViewProps> = (props) => (
-  <NativeView {...props} />
+  <NativeView {...props} playerType={PlayerType.WHIP} />
 );
