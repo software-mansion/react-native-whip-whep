@@ -3,7 +3,6 @@ package com.swmansion.reactnativeclient
 import android.app.PictureInPictureParams
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import android.util.Rational
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,6 @@ import androidx.annotation.RequiresApi
 import androidx.fragment.app.FragmentActivity
 import com.mobilewhep.client.VideoView
 import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whepClient
-import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whipClient
 import com.swmansion.reactnativeclient.helpers.PictureInPictureHelperFragment
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
@@ -26,20 +24,13 @@ class ReactNativeMobileWhepClientView(
   appContext: AppContext,
 ) : ExpoView(context, appContext),
   ReactNativeMobileWhepClientModule.OnTrackUpdateListener {
-  private var playerType: String = "WHEP"
   private var videoView: VideoView? = null
 
   init {
     ReactNativeMobileWhepClientModule.onWhepTrackUpdateListeners.add(this)
   }
 
-  fun init(playerType: String) {
-    Log.d("TEST", "Init WHEP with $playerType")
-    this.playerType = playerType
-  }
-
   private fun setupTrack(videoTrack: VideoTrack) {
-    Log.d("TEST", "setupTrack in WHEP")
     if (videoView == null) {
       videoView = VideoView(context, whepClient!!.eglBase)
       videoView!!.player = whepClient
@@ -144,7 +135,6 @@ class ReactNativeMobileWhepClientView(
   }
 
   override fun onTrackUpdate(track: VideoTrack) {
-    Log.d("TEST", "onTrackUpdate in WHEP with $track")
     update(track)
   }
 }

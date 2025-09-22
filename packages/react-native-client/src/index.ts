@@ -12,7 +12,6 @@ export {
   ReactNativeMobileWhepClientViewProps,
   ReactNativeMobileWhipClientViewProps,
   WhepClientViewRef,
-  WhipClientViewRef,
   CameraId,
   ConnectOptions,
   WhipConfigurationOptions,
