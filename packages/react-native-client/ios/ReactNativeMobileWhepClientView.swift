@@ -31,14 +31,13 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
   }
       
   private var player: ClientBase? {
-    guard let playerType = self.playerType else { return nil }
+    guard let _ = self.playerType else { return nil }
     return ReactNativeMobileWhepClientModule.whepClient
   }
     private var hostingController: VideoViewController?
 
     required init(appContext: AppContext? = nil) {
         super.init(appContext: appContext)
-        ReactNativeMobileWhepClientModule.onTrackUpdateListeners = []
         ReactNativeMobileWhepClientModule.onTrackUpdateListeners.append(self)
     }
 
