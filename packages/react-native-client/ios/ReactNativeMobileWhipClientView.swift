@@ -16,25 +16,14 @@ public class ReactNativeMobileWhipClientView: ExpoView, OnTrackUpdateListener {
         }
     }
   
-  public var pipEnabled = false {
-    didSet {
-      setupPip()
-    }
-  }
-  
-  public var pipController: PictureInPictureController? {
-    hostingController?.pipController
-  }
-      
   private var player: ClientBase? {
-    guard let playerType = self.playerType else { return nil }
+    guard let _ = self.playerType else { return nil }
     return ReactNativeMobileWhepClientModule.whipClient
   }
     private var hostingController: VideoViewController?
 
     required init(appContext: AppContext? = nil) {
         super.init(appContext: appContext)
-        ReactNativeMobileWhepClientModule.onTrackUpdateListeners = []
         ReactNativeMobileWhepClientModule.onTrackUpdateListeners.append(self)
     }
 
@@ -56,17 +45,7 @@ public class ReactNativeMobileWhipClientView: ExpoView, OnTrackUpdateListener {
         ])
         
         self.hostingController = hostingController
-      
-      setupPip()
     }
-  
-  private func setupPip() {
-    if pipEnabled {
-      hostingController?.setup(pictureInPictureWith: PictureInPictureController(sourceView: self))
-    } else {
-      hostingController?.disablePictureInPicture()
-    }
-  }
     
     private func removeOldPlayer() {
         hostingController?.view.removeFromSuperview()
