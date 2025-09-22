@@ -427,10 +427,8 @@ open class ClientBase(
     receiver: RtpReceiver?,
     mediaStreams: Array<out MediaStream>?
   ) {
-    Log.d("TEST", "onAddTrack in ClientBase ")
     coroutineScope.launch(Dispatchers.Main) {
       val videoTrack = receiver?.track() as? VideoTrack?
-      Log.d("TEST", "onAddTrack in ClientBase track: $videoTrack")
       this@ClientBase.videoTrack = videoTrack
       listeners.forEach { listener -> videoTrack?.let { listener.onTrackAdded(it) } }
     }

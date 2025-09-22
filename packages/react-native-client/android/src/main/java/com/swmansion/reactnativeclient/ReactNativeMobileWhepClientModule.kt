@@ -1,7 +1,6 @@
 package com.swmansion.reactnativeclient
 
 import android.content.Context
-import android.util.Log
 import com.mobilewhep.client.ClientBaseListener
 import com.mobilewhep.client.ClientConnectOptions
 import com.mobilewhep.client.ReconnectionManagerListener

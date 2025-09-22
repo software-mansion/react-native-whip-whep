@@ -18,18 +18,3 @@ class PictureInPictureHelperFragment(private val videoView: ReactNativeMobileWhe
     }
   }
 }
-
-
-class PictureInPictureWhipHelperFragment(private val videoView: ReactNativeMobileWhipClientView) : Fragment() {
-  val id = "${PictureInPictureHelperFragment::class.java.simpleName}_${UUID.randomUUID()}"
-
-  override fun onPictureInPictureModeChanged(isInPictureInPictureMode: Boolean) {
-    super.onPictureInPictureModeChanged(isInPictureInPictureMode)
-
-    if (isInPictureInPictureMode) {
-      videoView.layoutForPiPEnter()
-    } else {
-      videoView.layoutForPiPExit()
-    }
-  }
-}

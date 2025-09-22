@@ -12,7 +12,6 @@ import org.webrtc.audio.AudioDeviceModule
 class PeerConnectionFactoryHelper private constructor() {
   companion object {
     private var peerConnectionFactory: PeerConnectionFactory? = null
-//    val eglBase = EglBase.create()
 
     fun getFactory(appContext: Context, eglBase: EglBase): PeerConnectionFactory {
       if (peerConnectionFactory == null) {

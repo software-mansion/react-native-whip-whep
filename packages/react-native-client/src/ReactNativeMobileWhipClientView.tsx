@@ -2,36 +2,26 @@ import { requireNativeViewManager } from "expo-modules-core";
 import * as React from "react";
 
 import {
-  PlayerType,
   ReactNativeMobileWhipClientViewProps,
-  WhipClientViewRef,
 } from "./ReactNativeMobileWhepClient.types";
 
 const NativeViewBase: React.ComponentType<
-  ReactNativeMobileWhipClientViewProps & { playerType: PlayerType }
+  ReactNativeMobileWhipClientViewProps
 > = requireNativeViewManager("ReactNativeMobileWhipClientViewModule");
 
 const NativeView = NativeViewBase as React.ComponentType<
-  ReactNativeMobileWhipClientViewProps & {
-    playerType: PlayerType;
-    ref?: React.Ref<WhipClientViewRef>;
-  }
+  ReactNativeMobileWhipClientViewProps
 >;
 
 /**
  * A component that renders a native view for WHIP player type.
  *
- * This component forwards a ref to the native view, allowing for direct manipulation
- * of the component instance. It accepts style and other props defined in
- * ReactNativeMobileWhepClientViewProps.
+ * This component accepts style and other props defined in
+ * ReactNativeMobileWhipClientViewProps.
  *
- * @param {ReactNativeMobileWhepClientViewProps} props - The properties to customize the component.
- * @param {React.ForwardedRef<WhepClientViewRef>} ref - Ref to the component instance.
+ * @param {ReactNativeMobileWhipClientViewProps} props - The properties to customize the component.
  * @returns {JSX.Element} The rendered component.
  */
-export const WhipClientView = React.forwardRef<
-  WhipClientViewRef,
-  ReactNativeMobileWhipClientViewProps
->((props, ref) => (
-  <NativeView {...props} playerType={PlayerType.WHIP} ref={ref} />
-));
+export const WhipClientView: React.FC<ReactNativeMobileWhipClientViewProps> = (props) => (
+  <NativeView {...props} />
+);
