@@ -1,6 +1,7 @@
 package com.swmansion.reactnativeclient
 
 import android.content.Context
+import android.util.Log
 import com.mobilewhep.client.ClientBaseListener
 import com.mobilewhep.client.ClientConnectOptions
 import com.mobilewhep.client.ReconnectionManagerListener
@@ -16,19 +17,20 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.webrtc.EglBase
 import org.webrtc.MediaStreamTrack
 import org.webrtc.VideoTrack
 
 class ReactNativeMobileWhepClientModule :
   Module(),
-  ClientBaseListener,
   ReconnectionManagerListener {
   interface OnTrackUpdateListener {
     fun onTrackUpdate(track: VideoTrack)
   }
 
   companion object {
-    var onTrackUpdateListeners: MutableList<OnTrackUpdateListener> = mutableListOf()
+    var onWhipTrackUpdateListeners: MutableList<OnTrackUpdateListener> = mutableListOf()
+    var onWhepTrackUpdateListeners: MutableList<OnTrackUpdateListener> = mutableListOf()
     var whepClient: WhepClient? = null
     var whipClient: WhipClient? = null
   }
@@ -93,7 +95,11 @@ class ReactNativeMobileWhepClientModule :
           )
         whepClient = WhepClient(context, options)
         whepClient?.addReconnectionListener(this@ReactNativeMobileWhepClientModule)
-        whepClient?.addTrackListener(this@ReactNativeMobileWhepClientModule)
+        whepClient?.addTrackListener(object : ClientBaseListener {
+          override fun onTrackAdded(track: VideoTrack) {
+            onWhepTrackUpdateListeners.forEach { it.onTrackUpdate(track) }
+          }
+        })
         whepClient?.onConnectionStateChanged = { newState ->
           emit(EmitableEvent.whepPeerConnectionStateChanged(newState))
         }
@@ -147,7 +153,11 @@ class ReactNativeMobileWhepClientModule :
         }
 
         whipClient = WhipClient(context, options)
-        whipClient?.addTrackListener(this@ReactNativeMobileWhepClientModule)
+        whipClient?.addTrackListener(object : ClientBaseListener {
+          override fun onTrackAdded(track: VideoTrack) {
+            onWhipTrackUpdateListeners.forEach { it.onTrackUpdate(track) }
+          }
+        })
         whipClient?.onConnectionStateChanged = { newState ->
             emit(EmitableEvent.whipPeerConnectionStateChanged(newState))
         }
@@ -179,7 +189,10 @@ class ReactNativeMobileWhepClientModule :
         val context: Context =
           appContext.reactContext ?: throw IllegalStateException("React context is not available")
 
-        val capabilities = PeerConnectionFactoryHelper.getFactory(context).getRtpSenderCapabilities(
+        val eglBase: EglBase =
+          whipClient?.eglBase ?: throw IllegalStateException("Whip client is not available")
+
+        val capabilities = PeerConnectionFactoryHelper.getFactory(context, eglBase).getRtpSenderCapabilities(
           MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)
 
         return@Function capabilities.codecs.map { it.name }
@@ -188,8 +201,10 @@ class ReactNativeMobileWhepClientModule :
       Function("getSupportedSenderAudioCodecsNames") {
         val context: Context =
           appContext.reactContext ?: throw IllegalStateException("React context is not available")
+        val eglBase: EglBase =
+          whipClient?.eglBase ?: throw IllegalStateException("Whip client is not available")
 
-        val capabilities = PeerConnectionFactoryHelper.getFactory(context).getRtpSenderCapabilities(
+        val capabilities = PeerConnectionFactoryHelper.getFactory(context, eglBase).getRtpSenderCapabilities(
           MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)
 
         return@Function capabilities.codecs.map { it.name }
@@ -208,9 +223,6 @@ class ReactNativeMobileWhepClientModule :
     sendEvent(event.name, event.data)
   }
 
-  override fun onTrackAdded(track: VideoTrack) {
-    onTrackUpdateListeners.forEach { it.onTrackUpdate(track) }
-  }
 
   override fun onReconnectionStarted() {
     super.onReconnectionStarted()
