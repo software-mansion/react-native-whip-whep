@@ -7112,6 +7112,38 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-av@npm:~15.0.2":
+  version: 15.0.2
+  resolution: "expo-av@npm:15.0.2"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+    react-native-web: "*"
+  peerDependenciesMeta:
+    react-native-web:
+      optional: true
+  checksum: 10c0/dbb1be237a1b200eb62d53cef06f15a6ed6da272ef7d6229a36cdbf84d8990aaf87b80c3f5c53ae126d0e70c7b8a3ca01eb558bca5df1784764b7896c4cd7486
+  languageName: node
+  linkType: hard
+
+"expo-camera@npm:~16.0.18":
+  version: 16.0.18
+  resolution: "expo-camera@npm:16.0.18"
+  dependencies:
+    invariant: "npm:^2.2.4"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+    react-native: "*"
+    react-native-web: "*"
+  peerDependenciesMeta:
+    react-native-web:
+      optional: true
+  checksum: 10c0/19d6f27af22d6e148b0bd7dc1dc37778b155ce0454515045a07e7dcc2b0474aa3d0d0986684fcbfe16837cffa41b33128d23376454d975b09b592c3dd92fe803
+  languageName: node
+  linkType: hard
+
 "expo-constants@npm:17.0.8, expo-constants@npm:~17.0.3, expo-constants@npm:~17.0.8":
   version: 17.0.8
   resolution: "expo-constants@npm:17.0.8"
@@ -13997,6 +14029,8 @@ __metadata:
     "@types/react": "npm:~18.3.12"
     "@types/react-test-renderer": "npm:^18.0.7"
     expo: "npm:52.0.19"
+    expo-av: "npm:~15.0.2"
+    expo-camera: "npm:~16.0.18"
     expo-constants: "npm:17.0.8"
     expo-font: "npm:13.0.4"
     expo-linking: "npm:7.0.5"

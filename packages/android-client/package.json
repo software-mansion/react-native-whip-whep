@@ -1,6 +1,6 @@
 {
   "name": "android-client",
-  "packageManager": "yarn@3.6.4",
+  "packageManager": "yarn@4.4.1",
   "scripts": {
     "lint": "ktlint -F **/*.kt",
     "lint:check": "ktlint **/*.kt"

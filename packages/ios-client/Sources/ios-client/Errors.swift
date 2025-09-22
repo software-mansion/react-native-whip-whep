@@ -10,8 +10,19 @@ public enum AttributeNotFoundError: Error {
     case ResponseNotFound(description: String)
 }
 
-public enum SessionNetworkError: Error {
+public enum SessionNetworkError: LocalizedError {
     case CandidateSendingError(description: String)
     case ConnectionError(description: String)
     case ConfigurationError(description: String)
+
+    public var errorDescription: String? {
+        switch self {
+        case .CandidateSendingError(let description):
+            return "Candidate sending error: \(description)"
+        case .ConnectionError(let description):
+            return "Connection error: \(description)"
+        case .ConfigurationError(let description):
+            return "Configuration error: \(description)"
+        }
+    }
 }
