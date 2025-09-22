@@ -103,8 +103,16 @@ export type ReactNativeMobileWhipClientViewProps = {
    * Used to apply custom styles to the component.
    * It should be a valid CSS object for style properties.
    */
-  style?: React.CSSProperties;
+  style: React.CSSProperties;
 };
+
+/** Internal enum telling native views whether the stream will come from the server or device camera*/
+export enum PlayerType {
+  /** An indicator that a WHEP client will be used, so the stream will come from the server */
+  WHEP = "WHEP",
+  /** An indicator that a WHIP client will be used, so device camera will generate the stream */
+  WHIP = "WHIP",
+}
 
 /** Enum that defines video track dimensions and aspect ratio. */
 export enum VideoParameters {
