@@ -14,6 +14,7 @@ import com.mobilewhep.client.VideoView
 import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whepClient
 import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whipClient
 import com.swmansion.reactnativeclient.helpers.PictureInPictureHelperFragment
+import com.swmansion.reactnativeclient.helpers.PictureInPictureWhipHelperFragment
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
 import kotlinx.coroutines.CoroutineScope
@@ -21,35 +22,39 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.webrtc.VideoTrack
 
-class ReactNativeMobileWhepClientView(
+enum class Orientation {
+    PORTRAIT,
+    LANDSCAPE
+}
+
+class ReactNativeMobileWhipClientView(
   context: Context,
   appContext: AppContext,
 ) : ExpoView(context, appContext),
   ReactNativeMobileWhepClientModule.OnTrackUpdateListener {
-  private var playerType: String = "WHEP"
   private var videoView: VideoView? = null
+  private var playerType: String = "WHIP"
 
   init {
-    ReactNativeMobileWhepClientModule.onWhepTrackUpdateListeners.add(this)
+    ReactNativeMobileWhepClientModule.onWhipTrackUpdateListeners.add(this)
   }
 
   fun init(playerType: String) {
-    Log.d("TEST", "Init WHEP with $playerType")
+    Log.d("TEST", "Init WHIP with $playerType")
     this.playerType = playerType
   }
 
   private fun setupTrack(videoTrack: VideoTrack) {
-    Log.d("TEST", "setupTrack in WHEP")
+    Log.d("TEST", "setupTrack in WHIP")
     if (videoView == null) {
-      videoView = VideoView(context, whepClient!!.eglBase)
-      videoView!!.player = whepClient
-
+      videoView = VideoView(context, whipClient!!.eglBase)
       addView(videoView)
     }
     videoView!!.post {
+      videoView!!.player = whipClient
 
-      videoView!!.player?.videoTrack?.removeSink(videoView)
       videoView!!.player?.videoTrack = videoTrack
+      videoView!!.player?.videoTrack?.removeSink(videoView)
       videoTrack.addSink(videoView)
 
     }
@@ -98,7 +103,7 @@ class ReactNativeMobileWhepClientView(
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
     (currentActivity as? FragmentActivity)?.let {
-      val fragment = PictureInPictureHelperFragment(this)
+      val fragment = PictureInPictureWhipHelperFragment(this)
       pictureInPictureHelperTag = fragment.id
       it.supportFragmentManager.beginTransaction()
         .add(fragment, fragment.id)
@@ -144,7 +149,7 @@ class ReactNativeMobileWhepClientView(
   }
 
   override fun onTrackUpdate(track: VideoTrack) {
-    Log.d("TEST", "onTrackUpdate in WHEP with $track")
+    Log.d("TEST", "onTrackUpdate in WHIP with $track")
     update(track)
   }
 }

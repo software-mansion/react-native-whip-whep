@@ -10,9 +10,15 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  clientView: {
+  videoWrapper: {
     width: '100%',
-    height: 200,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+  },
+  clientView: {
+    alignSelf: 'center',
+    height: '80%',
+    aspectRatio: 9 / 16,
     marginBottom: 20,
   },
 });
