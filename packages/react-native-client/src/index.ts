@@ -1,9 +1,5 @@
-import {
-  WhepClientView,
-} from "./ReactNativeMobileWhepClientView";
-import {
-  WhipClientView,
-} from "./ReactNativeMobileWhipClientView";
+import { WhepClientView } from "./ReactNativeMobileWhepClientView";
+import { WhipClientView } from "./ReactNativeMobileWhipClientView";
 import { initializeWarningListener } from "./utils/errorListener";
 
 export { WhipClientView, WhepClientView };

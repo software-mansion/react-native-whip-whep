@@ -13,14 +13,20 @@ class PeerConnectionFactoryHelper private constructor() {
   companion object {
     private var peerConnectionFactory: PeerConnectionFactory? = null
 
-    fun getFactory(appContext: Context, eglBase: EglBase): PeerConnectionFactory {
+    fun getFactory(
+      appContext: Context,
+      eglBase: EglBase
+    ): PeerConnectionFactory {
       if (peerConnectionFactory == null) {
         peerConnectionFactory = create(appContext, eglBase)
       }
       return peerConnectionFactory!!
     }
 
-    private fun create(appContext: Context, eglBase: EglBase): PeerConnectionFactory {
+    private fun create(
+      appContext: Context,
+      eglBase: EglBase
+    ): PeerConnectionFactory {
       PeerConnectionFactory.initialize(
         PeerConnectionFactory.InitializationOptions.builder(appContext).createInitializationOptions()
       )

@@ -7,11 +7,11 @@ import {
 } from "./ReactNativeMobileWhepClient.types";
 
 const NativeViewBase: React.ComponentType<
-  ReactNativeMobileWhipClientViewProps  & { playerType: PlayerType }
+  ReactNativeMobileWhipClientViewProps & { playerType: PlayerType }
 > = requireNativeViewManager("ReactNativeMobileWhipClientViewModule");
 
 const NativeView = NativeViewBase as React.ComponentType<
-  ReactNativeMobileWhipClientViewProps  & {
+  ReactNativeMobileWhipClientViewProps & {
     playerType: PlayerType;
   }
 >;
@@ -25,6 +25,6 @@ const NativeView = NativeViewBase as React.ComponentType<
  * @param {ReactNativeMobileWhipClientViewProps} props - The properties to customize the component.
  * @returns {JSX.Element} The rendered component.
  */
-export const WhipClientView: React.FC<ReactNativeMobileWhipClientViewProps> = (props) => (
-  <NativeView {...props} playerType={PlayerType.WHIP} />
-);
+export const WhipClientView: React.FC<ReactNativeMobileWhipClientViewProps> = (
+  props,
+) => <NativeView {...props} playerType={PlayerType.WHIP} />;
