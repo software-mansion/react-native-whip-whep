@@ -97,6 +97,15 @@ export type ReactNativeMobileWhepClientViewProps = {
   pipSize?: { width: number; height: number };
 };
 
+/** Describes props that can be passed to the module view. */
+export type ReactNativeMobileWhipClientViewProps = {
+  /**
+   * Used to apply custom styles to the component.
+   * It should be a valid CSS object for style properties.
+   */
+  style: React.CSSProperties;
+};
+
 /** Internal enum telling native views whether the stream will come from the server or device camera*/
 export enum PlayerType {
   /** An indicator that a WHEP client will be used, so the stream will come from the server */

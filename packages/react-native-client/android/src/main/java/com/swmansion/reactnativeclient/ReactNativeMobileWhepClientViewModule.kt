@@ -22,7 +22,7 @@ class ReactNativeMobileWhepClientViewModule : Module() {
       Name("ReactNativeMobileWhepClientViewModule")
 
       View(ReactNativeMobileWhepClientView::class) {
-        Prop("playerType") { view: ReactNativeMobileWhepClientView, playerType: String ->
+        Prop("playerType") { view: ReactNativeMobileWhipClientView, playerType: String ->
           view.init(playerType)
         }
 

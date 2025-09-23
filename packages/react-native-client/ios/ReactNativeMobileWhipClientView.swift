@@ -4,12 +4,8 @@ import Foundation
 import ExpoModulesCore
 import MobileWhipWhepClient
 
-protocol OnTrackUpdateListener {
-    func onTrackUpdate()
-}
-
-@objc(ReactNativeMobileWhepClientView)
-public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
+@objc(ReactNativeMobileWhipClientView)
+public class ReactNativeMobileWhipClientView: ExpoView, OnTrackUpdateListener {
     func onTrackUpdate() {
         setupPlayer()
     }
@@ -20,19 +16,9 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
         }
     }
   
-  public var pipEnabled = false {
-    didSet {
-      setupPip()
-    }
-  }
-  
-  public var pipController: PictureInPictureController? {
-    hostingController?.pipController
-  }
-      
   private var player: ClientBase? {
     guard let _ = self.playerType else { return nil }
-    return ReactNativeMobileWhepClientModule.whepClient
+    return ReactNativeMobileWhepClientModule.whipClient
   }
     private var hostingController: VideoViewController?
 
@@ -59,17 +45,7 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
         ])
         
         self.hostingController = hostingController
-      
-      setupPip()
     }
-  
-  private func setupPip() {
-    if pipEnabled {
-      hostingController?.setup(pictureInPictureWith: PictureInPictureController(sourceView: self))
-    } else {
-      hostingController?.disablePictureInPicture()
-    }
-  }
     
     private func removeOldPlayer() {
         hostingController?.view.removeFromSuperview()

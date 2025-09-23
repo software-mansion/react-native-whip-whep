@@ -108,10 +108,6 @@ public class VideoViewController: UIViewController {
 
     public override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-
-        if let track = player?.videoTrack {
-            track.remove(videoView)
-        }
     }
 
     public func setup(pictureInPictureWith controller: PictureInPictureController) {

@@ -16,6 +16,7 @@ import okhttp3.Response
 import org.json.JSONObject
 import org.webrtc.AudioTrack
 import org.webrtc.DataChannel
+import org.webrtc.EglBase
 import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
 import org.webrtc.MediaStreamTrack
@@ -43,7 +44,8 @@ open class ClientBase(
   val appContext: Context,
   val stunServerUrl: String?
 ) : PeerConnection.Observer {
-  protected val peerConnectionFactory = PeerConnectionFactoryHelper.getFactory(appContext)
+  public val eglBase = EglBase.create()
+  protected val peerConnectionFactory = PeerConnectionFactoryHelper.getFactory(appContext, eglBase)
 
   protected var peerConnection: PeerConnection? = null
   var connectOptions: ClientConnectOptions? = null

@@ -3,13 +3,15 @@
   "ios": {
     "modules": [
       "ReactNativeMobileWhepClientModule",
-      "ReactNativeMobileWhepClientViewModule"
+      "ReactNativeMobileWhepClientViewModule",
+      "ReactNativeMobileWhipClientViewModule"
     ]
   },
   "android": {
     "modules": [
       "com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule",
-      "com.swmansion.reactnativeclient.ReactNativeMobileWhepClientViewModule"
+      "com.swmansion.reactnativeclient.ReactNativeMobileWhepClientViewModule",
+      "com.swmansion.reactnativeclient.ReactNativeMobileWhipClientViewModule"
     ]
   }
 }
