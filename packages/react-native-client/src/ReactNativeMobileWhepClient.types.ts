@@ -104,7 +104,23 @@ export type ReactNativeMobileWhipClientViewProps = {
    * It should be a valid CSS object for style properties.
    */
   style: React.CSSProperties;
+
+  videoDeviceId: String,
+  udioEnabled?: Boolean,
+  videoEnabled?: Boolean,
+  videoParameters?: VideoParameters,
+  stunServerUrl?: String,
+  preferredVideoCodecs?: SenderVideoCodecName[],
+  preferredAudioCodecs?: SenderAudioCodecName[],
 };
+
+export type WhipClientViewRef = {
+  connect: (serverUrl: string, authToken?: string) => Promise<void>;
+  disconnect: () => Promise<void>;
+  switchCamera: (deviceId: string) => Promise<void>;
+  flipCamera: () => Promise<void>;
+  cleanup: () => void;
+}
 
 /** Internal enum telling native views whether the stream will come from the server or device camera*/
 export enum PlayerType {

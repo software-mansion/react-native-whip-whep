@@ -3,9 +3,11 @@ import { StyleSheet, Button, View, ActivityIndicator } from 'react-native';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import {
   cameras,
+  getCurrentCameraDeviceId,
   VideoParameters,
   WhipClient,
   WhipClientView,
+  WhipClientViewRef,
 } from 'react-native-whip-whep';
 import { checkPermissions } from '@/utils/CheckPermissions';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -14,20 +16,11 @@ export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
 
-  const whipClient = useRef<WhipClient | null>();
+  const whipClient = useRef<WhipClientViewRef>(null);
 
   useEffect(() => {
-    whipClient.current = new WhipClient({
-      audioEnabled: true,
-      videoEnabled: true,
-      videoParameters: VideoParameters.presetFHD169,
-      videoDeviceId: cameras[0].id,
-    });
-
     return () => {
-      whipClient.current?.disconnect();
       whipClient.current?.cleanup();
-      whipClient.current = null;
     };
   }, []);
 
@@ -37,10 +30,10 @@ export default function HomeScreen() {
     setShouldShowStreamBtn(false);
     try {
       setIsLoading(true);
-      await whipClient.current?.connect({
-        serverUrl: process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
-        authToken: 'example',
-      });
+      await whipClient.current?.connect(
+        process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
+        'example',
+      );
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to connect to WHIP Client', error);
@@ -50,8 +43,9 @@ export default function HomeScreen() {
   const handleSwitchCamera = useCallback(() => {
     // Find the opposite camera (front/back)
     const currentCamera = cameras.find(
-      (cam) => cam.id === whipClient.current?.getCurrentCameraDeviceId(),
+      (cam) => cam.id === getCurrentCameraDeviceId(),
     );
+
     const oppositeCamera = cameras.find(
       (cam) =>
         cam.facingDirection !== currentCamera?.facingDirection &&
@@ -85,7 +79,11 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <View style={styles.box}>
         <View style={styles.videoWrapper}>
-          <WhipClientView style={styles.clientView} />
+          <WhipClientView
+            videoDeviceId={cameras[0].id}
+            style={styles.clientView}
+            ref={whipClient}
+          />
         </View>
         <Button title="Switch Camera" onPress={handleSwitchCamera} />
         <Button title="Flip Camera" onPress={handleFlipCamera} />

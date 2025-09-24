@@ -4,6 +4,7 @@ import * as React from "react";
 import {
   PlayerType,
   ReactNativeMobileWhipClientViewProps,
+  WhipClientViewRef,
 } from "./ReactNativeMobileWhepClient.types";
 
 const NativeViewBase: React.ComponentType<
@@ -13,6 +14,7 @@ const NativeViewBase: React.ComponentType<
 const NativeView = NativeViewBase as React.ComponentType<
   ReactNativeMobileWhipClientViewProps & {
     playerType: PlayerType;
+    ref?: React.Ref<WhipClientViewRef>;
   }
 >;
 
@@ -23,8 +25,12 @@ const NativeView = NativeViewBase as React.ComponentType<
  * ReactNativeMobileWhipClientViewProps.
  *
  * @param {ReactNativeMobileWhipClientViewProps} props - The properties to customize the component.
+ * @param {React.ForwardedRef<WhipClientViewRef>} ref - Ref to the component instance.
  * @returns {JSX.Element} The rendered component.
  */
-export const WhipClientView: React.FC<ReactNativeMobileWhipClientViewProps> = (
-  props,
-) => <NativeView {...props} playerType={PlayerType.WHIP} />;
+export const WhipClientView = React.forwardRef<
+  WhipClientViewRef,
+  ReactNativeMobileWhipClientViewProps
+  >((props, ref) => (
+    <NativeView {...props} playerType={PlayerType.WHIP} ref={ref} />
+  ));

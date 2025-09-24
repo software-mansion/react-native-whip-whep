@@ -12,24 +12,9 @@ import {
   ReceiverVideoCodecName,
 } from "./ReactNativeMobileWhepClient.types";
 
-/** Describes whether the camera is front-facing or back-facing. */
-export type CameraFacingDirection = "front" | "back" | "unspecified";
-
-/** Contains information about the camera available on the device. */
-export type Camera = {
-  /** A unique ID of the camera.  */
-  id: CameraId;
-  /** A string describing camera name. */
-  name: string;
-  /** Information about the camera being a front one or back one. */
-  facingDirection: CameraFacingDirection;
-};
 
 type RNMobileWhepClientModule = {
-  cameras: readonly Camera[];
-  currentCameraDeviceId: CameraId | null;
   whepPeerConnectionState: PeerConnectionState | null;
-  whipPeerConnectionState: PeerConnectionState | null;
   createWhepClient: (
     configurationOptions: WhepConfigurationOptions,
     preferredVideoCodecs: ReceiverVideoCodecName[],
@@ -39,15 +24,7 @@ type RNMobileWhepClientModule = {
   disconnectWhep: () => Promise<void>;
   pauseWhep: () => void;
   unpauseWhep: () => void;
-  createWhipClient: (
-    configurationOptions: WhipConfigurationOptions,
-    preferredVideoCodecs: SenderVideoCodecName[],
-    preferredAudioCodecs: SenderAudioCodecName[],
-  ) => void;
-  connectWhip: (serverUrl: string, authToken?: string) => Promise<void>;
-  disconnectWhip: () => Promise<void>;
-  switchCamera: (deviceId: string) => Promise<void>;
-  cleanupWhip: () => void;
+  
 
   // Codecs
   getSupportedSenderVideoCodecsNames: () => SenderVideoCodecName[];
@@ -110,43 +87,43 @@ export class WhipClient {
     }
   }
 
-  async connect(connectOptions: ConnectOptions) {
-    this.initializeIfNeeded();
-    await nativeModule.connectWhip(
-      connectOptions.serverUrl,
-      connectOptions.authToken,
-    );
-  }
-  async disconnect() {
-    await nativeModule.disconnectWhip();
-    this.isInitialized = false;
-  }
+  // async connect(connectOptions: ConnectOptions) {
+  //   this.initializeIfNeeded();
+  //   await nativeModule.connectWhip(
+  //     connectOptions.serverUrl,
+  //     connectOptions.authToken,
+  //   );
+  // }
+  // async disconnect() {
+  //   await nativeModule.disconnectWhip();
+  //   this.isInitialized = false;
+  // }
 
-  async cleanup() {
-    nativeModule.cleanupWhip();
-  }
+  // async cleanup() {
+  //   nativeModule.cleanupWhip();
+  // }
 
-  async switchCamera(deviceId: string) {
-    nativeModule.switchCamera(deviceId);
-  }
+  // async switchCamera(deviceId: string) {
+  //   nativeModule.switchCamera(deviceId);
+  // }
 
-  async flipCamera() {
-    // Find the opposite camera (front/back)
-    const currentCamera = cameras.find(
-      (cam) => cam.id === nativeModule.currentCameraDeviceId,
-    );
-    const oppositeCamera = cameras.find(
-      (cam) =>
-        cam.facingDirection !== currentCamera?.facingDirection &&
-        cam.facingDirection !== "unspecified",
-    );
+  // async flipCamera() {
+  //   // Find the opposite camera (front/back)
+  //   const currentCamera = cameras.find(
+  //     (cam) => cam.id === nativeModule.currentCameraDeviceId,
+  //   );
+  //   const oppositeCamera = cameras.find(
+  //     (cam) =>
+  //       cam.facingDirection !== currentCamera?.facingDirection &&
+  //       cam.facingDirection !== "unspecified",
+  //   );
 
-    if (oppositeCamera) {
-      await this.switchCamera(oppositeCamera.id);
-    } else {
-      console.warn("Unable to find opposite camera to switch to");
-    }
-  }
+  //   if (oppositeCamera) {
+  //     await this.switchCamera(oppositeCamera.id);
+  //   } else {
+  //     console.warn("Unable to find opposite camera to switch to");
+  //   }
+  // }
 
   static getSupportedAudioCodecs() {
     return nativeModule.getSupportedSenderAudioCodecsNames();
