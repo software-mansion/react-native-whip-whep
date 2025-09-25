@@ -18,18 +18,32 @@ export default function HomeScreen() {
 
   const whipClient = useRef<WhipClientViewRef>(null);
 
-  useEffect(() => {
-    return () => {
-      whipClient.current?.cleanup();
-    };
-  }, []);
-
   const { tint } = useThemeColor();
+
+  const initializeCamera = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      
+      // Initialize camera with configuration when view appears
+      await whipClient.current?.initializeCamera(
+        true,
+        true,
+        cameras[0].id,
+        VideoParameters.presetHD169,
+      );
+      
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Failed to initialize camera', error);
+      setIsLoading(false);
+    }
+  }, []);
 
   const handleStreamBtnClick = async () => {
     setShouldShowStreamBtn(false);
     try {
       setIsLoading(true);
+      
       await whipClient.current?.connect(
         process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
         'example',
@@ -37,6 +51,7 @@ export default function HomeScreen() {
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to connect to WHIP Client', error);
+      setIsLoading(false);
     }
   };
 
@@ -69,18 +84,18 @@ export default function HomeScreen() {
 
   useEffect(() => {
     checkPermissions();
+    initializeCamera();
     return () => {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
       whipClient.current?.disconnect();
+      whipClient.current?.cleanup();
     };
-  }, [whipClient]);
+  }, [whipClient, initializeCamera]);
 
   return (
     <View style={styles.container}>
       <View style={styles.box}>
         <View style={styles.videoWrapper}>
           <WhipClientView
-            videoDeviceId={cameras[0].id}
             style={styles.clientView}
             ref={whipClient}
           />

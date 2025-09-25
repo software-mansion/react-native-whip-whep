@@ -104,17 +104,18 @@ export type ReactNativeMobileWhipClientViewProps = {
    * It should be a valid CSS object for style properties.
    */
   style: React.CSSProperties;
-
-  videoDeviceId: String,
-  udioEnabled?: Boolean,
-  videoEnabled?: Boolean,
-  videoParameters?: VideoParameters,
-  stunServerUrl?: String,
-  preferredVideoCodecs?: SenderVideoCodecName[],
-  preferredAudioCodecs?: SenderAudioCodecName[],
 };
 
 export type WhipClientViewRef = {
+  initializeCamera: (
+    audioEnabled: boolean,
+    videoEnabled: boolean,
+    videoDeviceId?: string,
+    videoParameters?: VideoParameters,
+    stunServerUrl?: string,
+    preferredVideoCodecs?: SenderVideoCodecName[],
+    preferredAudioCodecs?: SenderAudioCodecName[]
+  ) => Promise<void>;
   connect: (serverUrl: string, authToken?: string) => Promise<void>;
   disconnect: () => Promise<void>;
   switchCamera: (deviceId: string) => Promise<void>;

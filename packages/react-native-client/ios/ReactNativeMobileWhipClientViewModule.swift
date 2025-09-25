@@ -99,14 +99,6 @@ public class ReactNativeMobileWhipClientViewModule: Module {
       return preset
   }
   
-  private var audioEnabled: Bool = true
-  private var videoEnabled: Bool = true
-  private var videoDeviceId: String?
-  private var videoParameters: VideoParameters = .presetHD169
-  private var stunServerUrl: String?
-  private var preferredVideoCodecs: [String] = []
-  private var preferredAudioCodecs: [String] = []
-  
   public func definition() -> ModuleDefinition {
     Name("ReactNativeMobileWhipClientViewModule")
     
@@ -117,7 +109,6 @@ public class ReactNativeMobileWhipClientViewModule: Module {
     }
     
     Property("currentCameraDeviceId") {
-      print("Getting currentCameraDeviceId: \(whipClient?.currentCameraDeviceId)")
       return whipClient?.currentCameraDeviceId
     }
     
@@ -126,56 +117,41 @@ public class ReactNativeMobileWhipClientViewModule: Module {
     }
     
     View(ReactNativeMobileWhipClientView.self) {
-      OnViewDidUpdateProps { view in
-        print("## OnViewDidUpdateProps WHIP")
-        print("## audioEnabled: \(self.audioEnabled)")
-        print("## videoEnabled: \(self.videoEnabled)")
-        print("## videoDeviceId: \(self.videoDeviceId)")
-        print("## videoParameters: \(self.videoParameters)")
-        print("## stunServerUrl: \(self.stunServerUrl)")
-        print("## preferredVideoCodecs: \(self.preferredVideoCodecs)")
-        print("## preferredAudioCodecs: \(self.preferredAudioCodecs)")
+      AsyncFunction("initializeCamera") { (
+        view: ReactNativeMobileWhipClientView,
+        audioEnabled: Bool,
+        videoEnabled: Bool,
+        videoDeviceId: String?,
+        videoParameters: String,
+        stunServerUrl: String?,
+        preferredVideoCodecs: [String]?,
+        preferredAudioCodecs: [String]?
+      ) in
+        let parsedVideoParameters: VideoParameters
+        do {
+          parsedVideoParameters = try self.getVideoParametersFromOptions(createOptions: videoParameters)
+        } catch {
+          parsedVideoParameters = VideoParameters.presetHD169
+        }
+        
         do {
           try self.createWhipClient(
-            audioEnabled: self.audioEnabled,
-            videoEnabled: self.videoEnabled,
-            videoDeviceId: self.videoDeviceId,
-            videoParameters: self.videoParameters,
-            stunServerUrl: self.stunServerUrl,
-            preferredVideoCodecs: self.preferredVideoCodecs,
-            preferredAudioCodecs: self.preferredAudioCodecs
+            audioEnabled: audioEnabled,
+            videoEnabled: videoEnabled,
+            videoDeviceId: videoDeviceId,
+            videoParameters: parsedVideoParameters,
+            stunServerUrl: stunServerUrl,
+            preferredVideoCodecs: preferredVideoCodecs,
+            preferredAudioCodecs: preferredAudioCodecs
           )
-          print(self.whipClient)
+          print("WHIP client initialized: \(self.whipClient)")
+          
+          // Assign the WHIP client as the player in the view
           view.player = self.whipClient
         } catch {
-          print("## Dupa")
+          print("Error initializing WHIP client: \(error)")
+          throw error
         }
-      }
-      Prop("audioEnabled") { (view: ReactNativeMobileWhipClientView, audioEnabled: Bool) in
-        self.audioEnabled = audioEnabled
-      }
-      Prop("videoEnabled") { (view: ReactNativeMobileWhipClientView, videoEnabled: Bool) in
-        self.videoEnabled = videoEnabled
-      }
-      Prop("videoDeviceId") { (view: ReactNativeMobileWhipClientView, videoDeviceId: String?) in
-        self.videoDeviceId = videoDeviceId
-      }
-      Prop("videoParameters") { (view: ReactNativeMobileWhipClientView, videoParameters: String) in
-        // Fix this
-        self.videoParameters = videoParameters as? VideoParameters ?? VideoParameters.presetHD169
-      }
-      Prop("stunServerUrl") { (view: ReactNativeMobileWhipClientView, stunServerUrl: String?) in
-        self.stunServerUrl = stunServerUrl
-      }
-      Prop("preferredVideoCodecs") { (view: ReactNativeMobileWhipClientView, preferredVideoCodecs: [String]) in
-        self.preferredVideoCodecs = preferredVideoCodecs
-      }
-      Prop("preferredAudioCodecs") { (view: ReactNativeMobileWhipClientView, preferredAudioCodecs: [String]) in
-        self.preferredAudioCodecs = preferredAudioCodecs
-      }
-      
-      Prop("playerType") { (view: ReactNativeMobileWhipClientView, playerType: String) in
-        view.playerType = playerType
       }
       
       AsyncFunction("connect") { (serverUrl: String, authToken: String?) in
