@@ -146,7 +146,6 @@ public class ReactNativeMobileWhipClientViewModule: Module {
             preferredAudioCodecs: preferredAudioCodecs
           )
           
-          // Assign the WHIP client as the player in the view
           view.player = self.whipClient
         } catch {
           print("Error initializing WHIP client: \(error)")
@@ -202,7 +201,6 @@ public class ReactNativeMobileWhipClientViewModule: Module {
       }
       
       AsyncFunction("switchCamera") { (deviceId: String) in
-        print("## Swithing camera to: \(deviceId)")
         guard let client = self.whipClient else {
           throw Exception(
             name: "E_WHIP_CLIENT_NOT_FOUND",

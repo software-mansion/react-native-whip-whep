@@ -20,17 +20,14 @@ export default function HomeScreen() {
 
   const whipClient = useRef<WhipClientViewRef>(null);
 
-  // Subscribe to peer connection state changes
   const peerConnectionState = useWhipConnectionState();
 
-  // Log state changes for debugging
   useEffect(() => {
     console.log('WHIP Peer Connection State Changed:', peerConnectionState);
   }, [peerConnectionState]);
 
   const { tint } = useThemeColor();
 
-  // Function to get user-friendly status display
   const getConnectionStatusDisplay = (state: string) => {
     switch (state) {
       case 'new':
@@ -54,7 +51,6 @@ export default function HomeScreen() {
     try {
       setIsLoading(true);
       
-      // Initialize camera with configuration when view appears
       await whipClient.current?.initializeCamera(
         true,
         true,
@@ -162,7 +158,6 @@ export default function HomeScreen() {
           />
         </View>
         
-        {/* Connection Status Display */}
         <View style={styles.statusContainer}>
           <Text style={styles.statusLabel}>Connection Status:</Text>
           <Text 

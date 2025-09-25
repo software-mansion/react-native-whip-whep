@@ -3,11 +3,8 @@ import MobileWhipWhepClient
 import WebRTC
 
 public class ReactNativeMobileWhepClientModule: Module, PlayerListener, ReconnectionManagerListener {
-  static var whepClient: WhepClient? = nil {
-    didSet {
-      print("## WHEP was set in module")
-    }
-  }
+  static var whepClient: WhepClient? = nil
+  
     static var onTrackUpdateListeners: [OnTrackUpdateListener] = []
 
     public func definition() -> ModuleDefinition {
@@ -93,8 +90,6 @@ public class ReactNativeMobileWhepClientModule: Module, PlayerListener, Reconnec
         Function("getSupportedReceiverAudioCodecsNames") {
           return WhepClient.getSupportedReceiverAudioCodecsNames()
         }
-
-      // I think those are unused
 
         Function("setPreferredReceiverVideoCodecs") { (preferredCodecs: [String]?) in
             ReactNativeMobileWhepClientModule.whepClient?.setPreferredVideoCodecs(preferredCodecs: preferredCodecs)
