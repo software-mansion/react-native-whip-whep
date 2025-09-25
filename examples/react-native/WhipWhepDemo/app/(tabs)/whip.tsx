@@ -55,6 +55,15 @@ export default function HomeScreen() {
     }
   };
 
+  const handleDisconnectBtnClick = async () => {
+    try {
+      await whipClient.current?.disconnect();
+      setShouldShowStreamBtn(true);
+    } catch (error) {
+      console.error('Failed to disconnect from WHIP Client', error);
+    }
+  };
+
   const handleSwitchCamera = useCallback(() => {
     // Find the opposite camera (front/back)
     const currentCamera = cameras.find(
@@ -104,6 +113,9 @@ export default function HomeScreen() {
         <Button title="Flip Camera" onPress={handleFlipCamera} />
         {shouldShowStreamBtn && (
           <Button title="Stream" onPress={handleStreamBtnClick} color={tint} />
+        )}
+        {!shouldShowStreamBtn && !isLoading && (
+          <Button title="Disconnect" onPress={handleDisconnectBtnClick} color={tint} />
         )}
         {isLoading && <ActivityIndicator size="large" color={tint} />}
       </View>
