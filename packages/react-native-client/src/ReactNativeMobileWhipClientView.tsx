@@ -31,6 +31,6 @@ const NativeView = NativeViewBase as React.ComponentType<
 export const WhipClientView = React.forwardRef<
   WhipClientViewRef,
   ReactNativeMobileWhipClientViewProps
-  >((props, ref) => (
-    <NativeView {...props} playerType={PlayerType.WHIP} ref={ref} />
-  ));
+>((props, ref) => (
+  <NativeView {...props} playerType={PlayerType.WHIP} ref={ref} />
+));

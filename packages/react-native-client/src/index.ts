@@ -19,10 +19,7 @@ export {
   ReceiverVideoCodecName,
 } from "./ReactNativeMobileWhepClient.types";
 
-export {
-  WhepClient,
-  WhipClient,
-} from "./ReactNativeMobileWhepClientModule";
+export { WhepClient } from "./ReactNativeMobileWhepClientModule";
 
 export {
   cameras,

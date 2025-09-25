@@ -114,16 +114,20 @@ export type WhipClientViewRef = {
     videoParameters?: VideoParameters,
     stunServerUrl?: string,
     preferredVideoCodecs?: SenderVideoCodecName[],
-    preferredAudioCodecs?: SenderAudioCodecName[]
+    preferredAudioCodecs?: SenderAudioCodecName[],
   ) => Promise<void>;
   connect: (serverUrl: string, authToken?: string) => Promise<void>;
   disconnect: () => Promise<void>;
   switchCamera: (deviceId: string) => Promise<void>;
   flipCamera: () => Promise<void>;
   cleanup: () => void;
-  setPreferredSenderVideoCodecs: (preferredCodecs?: SenderVideoCodecName[]) => Promise<void>;
-  setPreferredSenderAudioCodecs: (preferredCodecs?: SenderAudioCodecName[]) => Promise<void>;
-}
+  setPreferredSenderVideoCodecs: (
+    preferredCodecs?: SenderVideoCodecName[],
+  ) => Promise<void>;
+  setPreferredSenderAudioCodecs: (
+    preferredCodecs?: SenderAudioCodecName[],
+  ) => Promise<void>;
+};
 
 /** Internal enum telling native views whether the stream will come from the server or device camera*/
 export enum PlayerType {

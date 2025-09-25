@@ -14,7 +14,8 @@ import ReactNativeMobileWhipClientViewModule, {
 export const useWhepConnectionState = (): PeerConnectionState | null => {
   return useEventState(
     ReceivableEvents.WhepPeerConnectionStateChanged,
-    (ReactNativeMobileWhepClientModule.whepPeerConnectionState ?? "unknown") as PeerConnectionState,
+    (ReactNativeMobileWhepClientModule.whepPeerConnectionState ??
+      "unknown") as PeerConnectionState,
   );
 };
 
@@ -25,6 +26,7 @@ export const useWhepConnectionState = (): PeerConnectionState | null => {
 export const useWhipConnectionState = (): PeerConnectionState | null => {
   return useEventState(
     WhipReceivableEvents.WhipPeerConnectionStateChanged,
-    (ReactNativeMobileWhipClientViewModule.whipPeerConnectionState ?? "unknown") as PeerConnectionState,
+    (ReactNativeMobileWhipClientViewModule.whipPeerConnectionState ??
+      "unknown") as PeerConnectionState,
   );
 };

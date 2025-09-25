@@ -8,7 +8,6 @@ import {
   ReceiverVideoCodecName,
 } from "./ReactNativeMobileWhepClient.types";
 
-
 type RNMobileWhepClientModule = {
   whepPeerConnectionState: PeerConnectionState | null;
   createWhepClient: (
@@ -20,7 +19,6 @@ type RNMobileWhepClientModule = {
   disconnectWhep: () => Promise<void>;
   pauseWhep: () => void;
   unpauseWhep: () => void;
-  
 
   // Codecs
   getSupportedReceiverVideoCodecsNames: () => ReceiverVideoCodecName[];
@@ -56,7 +54,6 @@ const nativeModule = requireNativeModule(
   "ReactNativeMobileWhepClient",
 ) as RNMobileWhepClientModule &
   NativeModule<Record<keyof typeof ReceivableEvents, (payload: any) => void>>;
-
 
 export class WhepClient {
   private isInitialized = false;
@@ -101,7 +98,6 @@ export class WhepClient {
     this.isInitialized = false;
   }
 }
-
 
 /** Gives access to the current state of the WHEP peer connection. */
 export const whepPeerConnectionState = nativeModule.whepPeerConnectionState;
