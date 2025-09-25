@@ -54,8 +54,8 @@ const nativeViewModule = requireNativeModule(
 export const cameras = nativeViewModule.cameras;
 
 export const getCurrentCameraDeviceId = () => {
-    return nativeViewModule.currentCameraDeviceId;
-  }
+  return nativeViewModule.currentCameraDeviceId;
+}
 
 /** Gives access to the current state of the WHIP peer connection. */
 export const whipPeerConnectionState = nativeViewModule.whipPeerConnectionState;

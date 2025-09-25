@@ -112,6 +112,7 @@ public class ReactNativeMobileWhipClientViewModule: Module {
       return whipClient?.currentCameraDeviceId
     }
     
+    // Is this needed for everything since we have the event with the connection state?
     Property("whipPeerConnectionState") {
       return whipClient?.peerConnectionState?.stringValue
     }
@@ -144,7 +145,6 @@ public class ReactNativeMobileWhipClientViewModule: Module {
             preferredVideoCodecs: preferredVideoCodecs,
             preferredAudioCodecs: preferredAudioCodecs
           )
-          print("WHIP client initialized: \(self.whipClient)")
           
           // Assign the WHIP client as the player in the view
           view.player = self.whipClient
@@ -215,11 +215,18 @@ public class ReactNativeMobileWhipClientViewModule: Module {
         try await self.whipClient?.disconnect()
       }
       
-      // Figure out what to do with this
       AsyncFunction("cleanupWhip") {
         self.whipClient?.delegate = nil
         self.whipClient?.onConnectionStateChanged = nil
         self.whipClient = nil
+      }
+      
+      AsyncFunction("setPreferredSenderVideoCodecs") { (preferredCodecs: [String]?) in
+          self.whipClient?.setPreferredVideoCodecs(preferredCodecs: preferredCodecs)
+      }
+
+      AsyncFunction("setPreferredSenderAudioCodecs") { (preferredCodecs: [String]?) in
+          self.whipClient?.setPreferredAudioCodecs(preferredCodecs: preferredCodecs)
       }
     }
   }

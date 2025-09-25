@@ -5,9 +5,10 @@ import {
   cameras,
   getCurrentCameraDeviceId,
   VideoParameters,
-  WhipClient,
   WhipClientView,
   WhipClientViewRef,
+  SenderVideoCodecName,
+  SenderAudioCodecName,
 } from 'react-native-whip-whep';
 import { checkPermissions } from '@/utils/CheckPermissions';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -91,6 +92,28 @@ export default function HomeScreen() {
     }
   }, []);
 
+  const handleSetH264VideoCodec = useCallback(async () => {
+    if (whipClient.current) {
+      try {
+        await whipClient.current.setPreferredSenderVideoCodecs(['H264' as SenderVideoCodecName]);
+        console.log('Set preferred video codec to H264');
+      } catch (error) {
+        console.error('Failed to set video codec:', error);
+      }
+    }
+  }, []);
+
+  const handleSetOpusAudioCodec = useCallback(async () => {
+    if (whipClient.current) {
+      try {
+        await whipClient.current.setPreferredSenderAudioCodecs(['OPUS' as SenderAudioCodecName]);
+        console.log('Set preferred audio codec to OPUS');
+      } catch (error) {
+        console.error('Failed to set audio codec:', error);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     checkPermissions();
     initializeCamera();
@@ -111,6 +134,8 @@ export default function HomeScreen() {
         </View>
         <Button title="Switch Camera" onPress={handleSwitchCamera} />
         <Button title="Flip Camera" onPress={handleFlipCamera} />
+        <Button title="Set H264 Video" onPress={handleSetH264VideoCodec} />
+        <Button title="Set OPUS Audio" onPress={handleSetOpusAudioCodec} />
         {shouldShowStreamBtn && (
           <Button title="Stream" onPress={handleStreamBtnClick} color={tint} />
         )}
