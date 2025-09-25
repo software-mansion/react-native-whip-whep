@@ -34,9 +34,6 @@ export function validateNativeEventPayload<
     case ReceivableEvents.WhepPeerConnectionStateChanged:
       PeerConnectionStateChangedEventSchema.parse(payload);
       break;
-    case ReceivableEvents.WhipPeerConnectionStateChanged:
-      PeerConnectionStateChangedEventSchema.parse(payload);
-      break;
     default:
       throw new Error(`Unknown event: ${eventName}`);
   }

@@ -1,10 +1,12 @@
 import { useEventState } from "./useEventState";
+import { useCallback, useState, useEffect } from "react";
 import ReactNativeMobileWhepClientModule, {
   PeerConnectionState,
   ReceivableEvents,
 } from "../ReactNativeMobileWhepClientModule";
 import ReactNativeMobileWhipClientViewModule, {
   ReceivableEvents as WhipReceivableEvents,
+  PeerConnectionState as WhipPeerConnectionState,
 } from "../ReactNativeMobileWhipClientViewModule";
 
 /**
@@ -23,10 +25,22 @@ export const useWhepConnectionState = (): PeerConnectionState | null => {
  * Hook that returns the current state of the WHIP peer connection.
  * If WHIP client was not created, it will return "unknown".
  */
-export const useWhipConnectionState = (): PeerConnectionState | null => {
-  return useEventState(
-    WhipReceivableEvents.WhipPeerConnectionStateChanged,
-    (ReactNativeMobileWhipClientViewModule.whipPeerConnectionState ??
-      "unknown") as PeerConnectionState,
+export const useWhipConnectionState = (): WhipPeerConnectionState => {
+  const [peerConnectionState, setPeerConnectionState] = useState<WhipPeerConnectionState>(
+    (ReactNativeMobileWhipClientViewModule.whipPeerConnectionState ?? "unknown") as WhipPeerConnectionState
   );
+
+  useEffect(() => {
+    const eventListener = ReactNativeMobileWhipClientViewModule.addListener(
+      WhipReceivableEvents.WhipPeerConnectionStateChanged,
+      (event) => {
+        const payload = event[WhipReceivableEvents.WhipPeerConnectionStateChanged];
+        setPeerConnectionState(payload);
+      }
+    );
+    
+    return () => eventListener.remove();
+  }, []);
+
+  return peerConnectionState;
 };
