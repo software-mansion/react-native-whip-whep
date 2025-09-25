@@ -2,12 +2,8 @@ import { requireNativeModule } from "expo-modules-core";
 import type { NativeModule } from "expo-modules-core/types";
 
 import {
-  WhipConfigurationOptions,
-  CameraId,
   ConnectOptions,
   WhepConfigurationOptions,
-  SenderAudioCodecName,
-  SenderVideoCodecName,
   ReceiverAudioCodecName,
   ReceiverVideoCodecName,
 } from "./ReactNativeMobileWhepClient.types";
@@ -27,15 +23,12 @@ type RNMobileWhepClientModule = {
   
 
   // Codecs
-  getSupportedSenderVideoCodecsNames: () => SenderVideoCodecName[];
   getSupportedReceiverVideoCodecsNames: () => ReceiverVideoCodecName[];
   getSupportedReceiverAudioCodecsNames: () => ReceiverAudioCodecName[];
-  getSupportedSenderAudioCodecsNames: () => SenderAudioCodecName[];
 };
 
 export const ReceivableEvents = {
   WhepPeerConnectionStateChanged: "WhepPeerConnectionStateChanged",
-  WhipPeerConnectionStateChanged: "WhipPeerConnectionStateChanged",
   ReconnectionStatusChanged: "ReconnectionStatusChanged",
   Warning: "Warning",
 } as const;
@@ -56,7 +49,6 @@ export type ReceivableEventPayloads = {
     | "reconnectionRetriesLimitReached";
 
   [ReceivableEvents.WhepPeerConnectionStateChanged]: PeerConnectionState;
-  [ReceivableEvents.WhipPeerConnectionStateChanged]: PeerConnectionState;
   [ReceivableEvents.Warning]: string;
 };
 
@@ -65,78 +57,6 @@ const nativeModule = requireNativeModule(
 ) as RNMobileWhepClientModule &
   NativeModule<Record<keyof typeof ReceivableEvents, (payload: any) => void>>;
 
-export class WhipClient {
-  private isInitialized = false;
-
-  constructor(
-    private readonly configurationOptions: WhipConfigurationOptions,
-    private readonly preferredVideoCodecs: SenderVideoCodecName[] = [],
-    private readonly preferredAudioCodecs: SenderAudioCodecName[] = [],
-  ) {
-    this.initializeIfNeeded();
-  }
-
-  private initializeIfNeeded() {
-    if (!this.isInitialized) {
-      nativeModule.createWhipClient(
-        this.configurationOptions,
-        this.preferredVideoCodecs,
-        this.preferredAudioCodecs,
-      );
-      this.isInitialized = true;
-    }
-  }
-
-  // async connect(connectOptions: ConnectOptions) {
-  //   this.initializeIfNeeded();
-  //   await nativeModule.connectWhip(
-  //     connectOptions.serverUrl,
-  //     connectOptions.authToken,
-  //   );
-  // }
-  // async disconnect() {
-  //   await nativeModule.disconnectWhip();
-  //   this.isInitialized = false;
-  // }
-
-  // async cleanup() {
-  //   nativeModule.cleanupWhip();
-  // }
-
-  // async switchCamera(deviceId: string) {
-  //   nativeModule.switchCamera(deviceId);
-  // }
-
-  // async flipCamera() {
-  //   // Find the opposite camera (front/back)
-  //   const currentCamera = cameras.find(
-  //     (cam) => cam.id === nativeModule.currentCameraDeviceId,
-  //   );
-  //   const oppositeCamera = cameras.find(
-  //     (cam) =>
-  //       cam.facingDirection !== currentCamera?.facingDirection &&
-  //       cam.facingDirection !== "unspecified",
-  //   );
-
-  //   if (oppositeCamera) {
-  //     await this.switchCamera(oppositeCamera.id);
-  //   } else {
-  //     console.warn("Unable to find opposite camera to switch to");
-  //   }
-  // }
-
-  static getSupportedAudioCodecs() {
-    return nativeModule.getSupportedSenderAudioCodecsNames();
-  }
-
-  static getSupportedVideoCodecs() {
-    return nativeModule.getSupportedSenderVideoCodecsNames();
-  }
-
-  getCurrentCameraDeviceId() {
-    return nativeModule.currentCameraDeviceId;
-  }
-}
 
 export class WhepClient {
   private isInitialized = false;
@@ -182,13 +102,8 @@ export class WhepClient {
   }
 }
 
-/** Gives access to the cameras available on the device.*/
-export const cameras = nativeModule.cameras;
 
 /** Gives access to the current state of the WHEP peer connection. */
 export const whepPeerConnectionState = nativeModule.whepPeerConnectionState;
-
-/** Gives access to the current state of the WHIP peer connection. */
-export const whipPeerConnectionState = nativeModule.whipPeerConnectionState;
 
 export default nativeModule;
