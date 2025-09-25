@@ -226,6 +226,14 @@ public class ReactNativeMobileWhipClientViewModule: Module {
       AsyncFunction("setPreferredSenderAudioCodecs") { (preferredCodecs: [String]?) in
           self.whipClient?.setPreferredAudioCodecs(preferredCodecs: preferredCodecs)
       }
+      
+      AsyncFunction("getSupportedSenderVideoCodecsNames") {
+        WhipClient.getSupportedSenderVideoCodecsNames()
+      }
+
+      AsyncFunction("getSupportedSenderAudioCodecsNames") {
+        WhipClient.getSupportedSenderAudioCodecsNames()
+      }
     }
   }
 }
