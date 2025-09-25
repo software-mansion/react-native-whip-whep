@@ -107,14 +107,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   videoWrapper: {
-    width: '100%',
+    flex: 1,
     paddingHorizontal: 16,
-    paddingVertical: 16,
+    paddingTop: 16,
   },
   clientView: {
     alignSelf: 'center',
-    height: '80%',
+    height: '100%',
     aspectRatio: 9 / 16,
-    marginBottom: 20,
   },
 });
