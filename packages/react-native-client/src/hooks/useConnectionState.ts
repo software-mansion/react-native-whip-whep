@@ -3,6 +3,9 @@ import ReactNativeMobileWhepClientModule, {
   PeerConnectionState,
   ReceivableEvents,
 } from "../ReactNativeMobileWhepClientModule";
+import ReactNativeMobileWhipClientViewModule, {
+  ReceivableEvents as WhipReceivableEvents,
+} from "../ReactNativeMobileWhipClientViewModule";
 
 /**
  * Hook that returns the current state of the WHEP peer connection.
@@ -11,7 +14,7 @@ import ReactNativeMobileWhepClientModule, {
 export const useWhepConnectionState = (): PeerConnectionState | null => {
   return useEventState(
     ReceivableEvents.WhepPeerConnectionStateChanged,
-    ReactNativeMobileWhepClientModule.whepPeerConnectionState ?? "unknown",
+    (ReactNativeMobileWhepClientModule.whepPeerConnectionState ?? "unknown") as PeerConnectionState,
   );
 };
 
@@ -21,7 +24,7 @@ export const useWhepConnectionState = (): PeerConnectionState | null => {
  */
 export const useWhipConnectionState = (): PeerConnectionState | null => {
   return useEventState(
-    ReceivableEvents.WhipPeerConnectionStateChanged,
-    ReactNativeMobileWhepClientModule.whipPeerConnectionState ?? "unknown",
+    WhipReceivableEvents.WhipPeerConnectionStateChanged,
+    (ReactNativeMobileWhipClientViewModule.whipPeerConnectionState ?? "unknown") as PeerConnectionState,
   );
 };

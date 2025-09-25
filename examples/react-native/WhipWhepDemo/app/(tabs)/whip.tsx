@@ -1,4 +1,4 @@
-import { StyleSheet, Button, View, ActivityIndicator } from 'react-native';
+import { StyleSheet, Button, View, ActivityIndicator, Text } from 'react-native';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import {
@@ -9,6 +9,7 @@ import {
   WhipClientViewRef,
   SenderVideoCodecName,
   SenderAudioCodecName,
+  useWhipConnectionState,
 } from 'react-native-whip-whep';
 import { checkPermissions } from '@/utils/CheckPermissions';
 import { useThemeColor } from '@/hooks/useThemeColor';
@@ -19,7 +20,35 @@ export default function HomeScreen() {
 
   const whipClient = useRef<WhipClientViewRef>(null);
 
+  // Subscribe to peer connection state changes
+  const peerConnectionState = useWhipConnectionState();
+
+  // Log state changes for debugging
+  useEffect(() => {
+    console.log('WHIP Peer Connection State Changed:', peerConnectionState);
+  }, [peerConnectionState]);
+
   const { tint } = useThemeColor();
+
+  // Function to get user-friendly status display
+  const getConnectionStatusDisplay = (state: string) => {
+    switch (state) {
+      case 'new':
+        return { text: 'Ready', color: '#6B7280' };
+      case 'connecting':
+        return { text: 'Connecting...', color: '#F59E0B' };
+      case 'connected':
+        return { text: 'Connected', color: '#10B981' };
+      case 'disconnected':
+        return { text: 'Disconnected', color: '#6B7280' };
+      case 'failed':
+        return { text: 'Connection Failed', color: '#EF4444' };
+      case 'closed':
+        return { text: 'Connection Closed', color: '#6B7280' };
+      default:
+        return { text: 'Unknown', color: '#6B7280' };
+    }
+  };
 
   const initializeCamera = useCallback(async () => {
     try {
@@ -132,6 +161,20 @@ export default function HomeScreen() {
             ref={whipClient}
           />
         </View>
+        
+        {/* Connection Status Display */}
+        <View style={styles.statusContainer}>
+          <Text style={styles.statusLabel}>Connection Status:</Text>
+          <Text 
+            style={[
+              styles.statusText, 
+              { color: getConnectionStatusDisplay(peerConnectionState ?? 'unknown').color }
+            ]}
+          >
+            {getConnectionStatusDisplay(peerConnectionState ?? 'unknown').text}
+          </Text>
+        </View>
+        
         <Button title="Switch Camera" onPress={handleSwitchCamera} />
         <Button title="Flip Camera" onPress={handleFlipCamera} />
         <Button title="Set H264 Video" onPress={handleSetH264VideoCodec} />
@@ -167,5 +210,25 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     height: '100%',
     aspectRatio: 9 / 16,
+  },
+  statusContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 8,
+    marginHorizontal: 16,
+    marginBottom: 10,
+  },
+  statusLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+    marginRight: 8,
+  },
+  statusText: {
+    fontSize: 16,
+    fontWeight: '500',
   },
 });

@@ -29,6 +29,7 @@ export {
   getCurrentCameraDeviceId,
   Camera,
   CameraFacingDirection,
+  ReceivableEvents,
 } from "./ReactNativeMobileWhipClientViewModule";
 
 export { useEvent } from "./hooks/useEvent";
