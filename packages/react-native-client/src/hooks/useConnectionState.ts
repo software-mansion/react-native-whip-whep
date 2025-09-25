@@ -1,5 +1,6 @@
+import { useState, useEffect } from "react";
+
 import { useEventState } from "./useEventState";
-import { useCallback, useState, useEffect } from "react";
 import ReactNativeMobileWhepClientModule, {
   PeerConnectionState,
   ReceivableEvents,
@@ -26,19 +27,22 @@ export const useWhepConnectionState = (): PeerConnectionState | null => {
  * If WHIP client was not created, it will return "unknown".
  */
 export const useWhipConnectionState = (): WhipPeerConnectionState => {
-  const [peerConnectionState, setPeerConnectionState] = useState<WhipPeerConnectionState>(
-    (ReactNativeMobileWhipClientViewModule.whipPeerConnectionState ?? "unknown") as WhipPeerConnectionState
-  );
+  const [peerConnectionState, setPeerConnectionState] =
+    useState<WhipPeerConnectionState>(
+      (ReactNativeMobileWhipClientViewModule.whipPeerConnectionState ??
+        "unknown") as WhipPeerConnectionState,
+    );
 
   useEffect(() => {
     const eventListener = ReactNativeMobileWhipClientViewModule.addListener(
       WhipReceivableEvents.WhipPeerConnectionStateChanged,
       (event) => {
-        const payload = event[WhipReceivableEvents.WhipPeerConnectionStateChanged];
+        const payload =
+          event[WhipReceivableEvents.WhipPeerConnectionStateChanged];
         setPeerConnectionState(payload);
-      }
+      },
     );
-    
+
     return () => eventListener.remove();
   }, []);
 

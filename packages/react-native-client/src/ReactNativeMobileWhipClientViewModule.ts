@@ -1,11 +1,7 @@
 import { requireNativeModule } from "expo-modules-core";
 import type { NativeModule } from "expo-modules-core/types";
 
-import {
-  WhipConfigurationOptions,
-  CameraId,
-  ConnectOptions,
-} from "./ReactNativeMobileWhepClient.types";
+import { CameraId } from "./ReactNativeMobileWhepClient.types";
 
 /** Describes whether the camera is front-facing or back-facing. */
 export type CameraFacingDirection = "front" | "back" | "unspecified";

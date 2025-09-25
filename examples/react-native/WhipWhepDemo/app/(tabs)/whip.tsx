@@ -1,4 +1,10 @@
-import { StyleSheet, Button, View, ActivityIndicator, Text } from 'react-native';
+import {
+  StyleSheet,
+  Button,
+  View,
+  ActivityIndicator,
+  Text,
+} from 'react-native';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
 import {
@@ -50,14 +56,14 @@ export default function HomeScreen() {
   const initializeCamera = useCallback(async () => {
     try {
       setIsLoading(true);
-      
+
       await whipClient.current?.initializeCamera(
         true,
         true,
         cameras[0].id,
         VideoParameters.presetHD169,
       );
-      
+
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to initialize camera', error);
@@ -69,7 +75,7 @@ export default function HomeScreen() {
     setShouldShowStreamBtn(false);
     try {
       setIsLoading(true);
-      
+
       await whipClient.current?.connect(
         process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
         'example',
@@ -120,7 +126,9 @@ export default function HomeScreen() {
   const handleSetH264VideoCodec = useCallback(async () => {
     if (whipClient.current) {
       try {
-        await whipClient.current.setPreferredSenderVideoCodecs(['H264' as SenderVideoCodecName]);
+        await whipClient.current.setPreferredSenderVideoCodecs([
+          'H264' as SenderVideoCodecName,
+        ]);
         console.log('Set preferred video codec to H264');
       } catch (error) {
         console.error('Failed to set video codec:', error);
@@ -131,7 +139,9 @@ export default function HomeScreen() {
   const handleSetOpusAudioCodec = useCallback(async () => {
     if (whipClient.current) {
       try {
-        await whipClient.current.setPreferredSenderAudioCodecs(['OPUS' as SenderAudioCodecName]);
+        await whipClient.current.setPreferredSenderAudioCodecs([
+          'OPUS' as SenderAudioCodecName,
+        ]);
         console.log('Set preferred audio codec to OPUS');
       } catch (error) {
         console.error('Failed to set audio codec:', error);
@@ -142,34 +152,36 @@ export default function HomeScreen() {
   useEffect(() => {
     checkPermissions();
     initializeCamera();
+
+    const client = whipClient.current;
     return () => {
-      whipClient.current?.disconnect();
-      whipClient.current?.cleanup();
+      client?.disconnect();
+      client?.cleanup();
     };
-  }, [whipClient, initializeCamera]);
+  }, [initializeCamera]);
 
   return (
     <View style={styles.container}>
       <View style={styles.box}>
         <View style={styles.videoWrapper}>
-          <WhipClientView
-            style={styles.clientView}
-            ref={whipClient}
-          />
+          <WhipClientView style={styles.clientView} ref={whipClient} />
         </View>
-        
+
         <View style={styles.statusContainer}>
           <Text style={styles.statusLabel}>Connection Status:</Text>
-          <Text 
+          <Text
             style={[
-              styles.statusText, 
-              { color: getConnectionStatusDisplay(peerConnectionState ?? 'unknown').color }
-            ]}
-          >
+              styles.statusText,
+              {
+                color: getConnectionStatusDisplay(
+                  peerConnectionState ?? 'unknown',
+                ).color,
+              },
+            ]}>
             {getConnectionStatusDisplay(peerConnectionState ?? 'unknown').text}
           </Text>
         </View>
-        
+
         <Button title="Switch Camera" onPress={handleSwitchCamera} />
         <Button title="Flip Camera" onPress={handleFlipCamera} />
         <Button title="Set H264 Video" onPress={handleSetH264VideoCodec} />
@@ -178,7 +190,11 @@ export default function HomeScreen() {
           <Button title="Stream" onPress={handleStreamBtnClick} color={tint} />
         )}
         {!shouldShowStreamBtn && !isLoading && (
-          <Button title="Disconnect" onPress={handleDisconnectBtnClick} color={tint} />
+          <Button
+            title="Disconnect"
+            onPress={handleDisconnectBtnClick}
+            color={tint}
+          />
         )}
         {isLoading && <ActivityIndicator size="large" color={tint} />}
       </View>
