@@ -6,8 +6,8 @@ import { styles } from '../../styles/styles';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function HomeScreen() {
-  const { isLoading, shouldShowPlayBtn, handlePlayBtnClick } = useWhepClient(
-    process.env.EXPO_PUBLIC_WHEP_SERVER_URL ??
+  const { isLoading, shouldShowPlayBtn, handlePlayBtnClick, whepViewRef } = useWhepClient(
+    // process.env.EXPO_PUBLIC_WHEP_SERVER_URL ??
       'https://broadcaster.elixir-webrtc.org/api/whep',
   );
   const { tint } = useThemeColor();
@@ -17,6 +17,7 @@ export default function HomeScreen() {
       <View style={styles.box}>
         <View style={styles.videoWrapper}>
           <WhepClientView
+            ref={whepViewRef}
             pipEnabled
             autoStartPip
             autoStopPip
@@ -25,7 +26,12 @@ export default function HomeScreen() {
           />
         </View>
         {shouldShowPlayBtn && (
-          <Button title="Play" onPress={handlePlayBtnClick} color={tint} />
+          <Button 
+            title="Play" 
+            onPress={handlePlayBtnClick} 
+            color={tint}
+            disabled={isLoading}
+          />
         )}
         {isLoading && <ActivityIndicator size="large" color={tint} />}
       </View>

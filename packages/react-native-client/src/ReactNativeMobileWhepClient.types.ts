@@ -44,24 +44,64 @@ export type WhepConfigurationOptions = {
 
 /**
  * A type that represents the ref to the WhepClientView component.
- * It contains methods to start, stop, and toggle Picture-in-Picture mode.
+ * It contains methods to control the WHEP client and Picture-in-Picture mode.
  */
 export type WhepClientViewRef = {
+  /**
+   * Creates a WHEP client with the given configuration.
+   */
+  createWhepClient: (
+    configurationOptions: WhepConfigurationOptions,
+    preferredVideoCodecs?: ReceiverVideoCodecName[],
+    preferredAudioCodecs?: ReceiverAudioCodecName[],
+  ) => Promise<void>;
+  /**
+   * Connects to the WHEP server.
+   */
+  connectWhep: (ConnectOptions) => Promise<void>;
+  /**
+   * Disconnects from the WHEP server.
+   */
+  disconnectWhep: () => Promise<void>;
+  /**
+   * Pauses the WHEP client stream.
+   */
+  pauseWhep: () => Promise<void>;
+  /**
+   * Unpauses the WHEP client stream.
+   */
+  unpauseWhep: () => Promise<void>;
+  /**
+   * Gets supported receiver video codec names.
+   */
+  getSupportedReceiverVideoCodecsNames: () => Promise<ReceiverVideoCodecName[]>;
+  /**
+   * Gets supported receiver audio codec names.
+   */
+  getSupportedReceiverAudioCodecsNames: () => Promise<ReceiverAudioCodecName[]>;
+  /**
+   * Sets preferred receiver video codecs.
+   */
+  setPreferredReceiverVideoCodecs: (preferredCodecs: ReceiverVideoCodecName[]) => Promise<void>;
+  /**
+   * Sets preferred receiver audio codecs.
+   */
+  setPreferredReceiverAudioCodecs: (preferredCodecs: ReceiverAudioCodecName[]) => Promise<void>;
   /**
    * Starts the Picture-in-Picture mode.
    * On android enters the Picture-in-Picture mode and background the app.
    */
-  startPip: () => void;
+  startPip: () => Promise<void>;
   /**
    * Stops the Picture-in-Picture mode.
    * Does nothing on Android as PiP is not supported in foreground.
    */
-  stopPip: () => void;
+  stopPip: () => Promise<void>;
   /**
    * Toggles the Picture-in-Picture mode.
    * On android enters the Picture-in-Picture mode and background the app.
    */
-  togglePip: () => void;
+  togglePip: () => Promise<void>;
 };
 
 /** Describes props that can be passed to the module view. */

@@ -62,6 +62,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
             }
         }
         didSet {
+          print("## VIDEO TRACK SET")
             if let track = videoTrack {
                 delegate?.onTrackAdded(track: track)
             }
@@ -237,6 +238,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
     }
 
     public func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
+      print("## NEW SCTREAM IN CLIENT BASE")
         DispatchQueue.main.async {
             if let track = stream.videoTracks.first {
                 self.videoTrack = track

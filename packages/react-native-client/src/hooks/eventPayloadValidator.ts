@@ -3,7 +3,7 @@ import { z } from "zod";
 import {
   ReceivableEventPayloads,
   ReceivableEvents,
-} from "../ReactNativeMobileWhepClientModule";
+} from "../ReactNativeMobileWhepClientViewModule";
 
 const ReconnectionStatusChangedEventSchema = z.object({
   status: z.enum([

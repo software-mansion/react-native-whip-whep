@@ -19,15 +19,17 @@ export {
   ReceiverVideoCodecName,
 } from "./ReactNativeMobileWhepClient.types";
 
-export { WhepClient } from "./ReactNativeMobileWhepClientModule";
-
 export {
   cameras,
   getCurrentCameraDeviceId,
   Camera,
   CameraFacingDirection,
-  ReceivableEvents,
+  ReceivableEvents as WhipReceivableEvents,
 } from "./ReactNativeMobileWhipClientViewModule";
+
+export {
+  ReceivableEvents as WhepReceivableEvents,
+} from "./ReactNativeMobileWhepClientViewModule";
 
 export { useEvent } from "./hooks/useEvent";
 export { useEventState } from "./hooks/useEventState";

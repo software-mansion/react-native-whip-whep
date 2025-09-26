@@ -11,37 +11,34 @@ protocol OnTrackUpdateListener {
 @objc(ReactNativeMobileWhepClientView)
 public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
     func onTrackUpdate() {
+        print("Whep track updated")
         setupPlayer()
     }
+  
+    public var pipEnabled = false {
+      didSet {
+        setupPip()
+      }
+    }
     
-    public var playerType: String? {
-        didSet {
-            setupPlayer()
-        }
+    public var pipController: PictureInPictureController? {
+      hostingController?.pipController
     }
-  
-  public var pipEnabled = false {
-    didSet {
-      setupPip()
+        
+    weak var player: ClientBase? {
+      didSet {
+        print("Whep player set")
+        setupPlayer()
+      }
     }
-  }
-  
-  public var pipController: PictureInPictureController? {
-    hostingController?.pipController
-  }
-      
-  private var player: ClientBase? {
-    guard let _ = self.playerType else { return nil }
-    return ReactNativeMobileWhepClientModule.whepClient
-  }
     private var hostingController: VideoViewController?
 
     required init(appContext: AppContext? = nil) {
         super.init(appContext: appContext)
-        ReactNativeMobileWhepClientModule.onTrackUpdateListeners.append(self)
     }
 
     private func setupPlayer() {
+      print("Whep setting up player")
         removeOldPlayer()
         
         guard let player = self.player else { return }
@@ -60,18 +57,18 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
         
         self.hostingController = hostingController
       
-      setupPip()
+        setupPip()
     }
   
-  private func setupPip() {
-    if pipEnabled {
-      hostingController?.setup(pictureInPictureWith: PictureInPictureController(sourceView: self))
-    } else {
-      hostingController?.disablePictureInPicture()
+    private func setupPip() {
+        if pipEnabled {
+            hostingController?.setup(pictureInPictureWith: PictureInPictureController(sourceView: self))
+        } else {
+            hostingController?.disablePictureInPicture()
+        }
     }
-  }
     
     private func removeOldPlayer() {
         hostingController?.view.removeFromSuperview()
     }
-  }
+}
