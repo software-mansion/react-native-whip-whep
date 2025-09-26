@@ -6,6 +6,8 @@ export const useWhepClient = (serverUrl: string) => {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowPlayBtn, setShouldShowPlayBtn] = useState(true);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [isConnected, setIsConnected] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   const whepViewRef = useRef<WhepClientViewRef | null>(null);
   const isConnectingRef = useRef(false);
@@ -30,6 +32,7 @@ export const useWhepClient = (serverUrl: string) => {
 
       await whepViewRef.current?.connectWhep({serverUrl});
       setIsLoading(false);
+      setIsConnected(true);
     } catch (error) {
       console.error('Failed to connect to WHEP Client', error);
       setIsLoading(false);
@@ -38,6 +41,35 @@ export const useWhepClient = (serverUrl: string) => {
       isConnectingRef.current = false;
     }
   }, [serverUrl, isInitialized, isLoading]);
+
+  const handlePause = useCallback(async () => {
+    try {
+      await whepViewRef.current?.pauseWhep();
+      setIsPaused(true);
+    } catch (error) {
+      console.error('Failed to pause WHEP Client', error);
+    }
+  }, []);
+
+  const handleResume = useCallback(async () => {
+    try {
+      await whepViewRef.current?.unpauseWhep();
+      setIsPaused(false);
+    } catch (error) {
+      console.error('Failed to resume WHEP Client', error);
+    }
+  }, []);
+
+  const handleDisconnect = useCallback(async () => {
+    try {
+      await whepViewRef.current?.disconnectWhep();
+      setIsConnected(false);
+      setIsPaused(false);
+      setShouldShowPlayBtn(true);
+    } catch (error) {
+      console.error('Failed to disconnect WHEP Client', error);
+    }
+  }, []);
 
   useEffect(() => {
     const initialize = async () => {
@@ -53,7 +85,12 @@ export const useWhepClient = (serverUrl: string) => {
   return {
     isLoading,
     shouldShowPlayBtn,
+    isConnected,
+    isPaused,
     handlePlayBtnClick,
+    handlePause,
+    handleResume,
+    handleDisconnect,
     whepViewRef,
   };
 };

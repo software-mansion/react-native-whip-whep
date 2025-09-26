@@ -146,7 +146,7 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
 
       AsyncFunction("disconnectWhep") {
         self.whepClient?.disconnect()
-        self.whepClient = nil
+//        self.whepClient = nil
       }
 
       // Potentially we want to do it the same as in whip
