@@ -6,8 +6,18 @@ import { styles } from '../../styles/styles';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function HomeScreen() {
-  const { isLoading, shouldShowPlayBtn, handlePlayBtnClick } = useWhepClient(
-    process.env.EXPO_PUBLIC_WHEP_SERVER_URL ??
+  const { 
+    isLoading, 
+    shouldShowPlayBtn, 
+    isConnected, 
+    isPaused, 
+    handlePlayBtnClick, 
+    handlePause, 
+    handleResume, 
+    handleDisconnect, 
+    whepViewRef 
+  } = useWhepClient(
+    // process.env.EXPO_PUBLIC_WHEP_SERVER_URL ??
       'https://broadcaster.elixir-webrtc.org/api/whep',
   );
   const { tint } = useThemeColor();
@@ -17,6 +27,7 @@ export default function HomeScreen() {
       <View style={styles.box}>
         <View style={styles.videoWrapper}>
           <WhepClientView
+            ref={whepViewRef}
             pipEnabled
             autoStartPip
             autoStopPip
@@ -24,10 +35,37 @@ export default function HomeScreen() {
             style={styles.clientView}
           />
         </View>
-        {shouldShowPlayBtn && (
-          <Button title="Play" onPress={handlePlayBtnClick} color={tint} />
-        )}
-        {isLoading && <ActivityIndicator size="large" color={tint} />}
+        
+        {/* Control Buttons */}
+        <View style={styles.controlsContainer}>
+          {shouldShowPlayBtn && (
+            <Button 
+              title="Play" 
+              onPress={handlePlayBtnClick} 
+              color={tint}
+              disabled={isLoading}
+            />
+          )}
+          
+          {isConnected && !shouldShowPlayBtn && (
+            <>
+              <Button 
+                title={isPaused ? "Resume" : "Pause"} 
+                onPress={isPaused ? handleResume : handlePause} 
+                color={tint}
+                disabled={isLoading}
+              />
+              <Button 
+                title="Disconnect" 
+                onPress={handleDisconnect} 
+                color={tint}
+                disabled={isLoading}
+              />
+            </>
+          )}
+          
+          {isLoading && <ActivityIndicator size="large" color={tint} />}
+        </View>
       </View>
     </View>
   );

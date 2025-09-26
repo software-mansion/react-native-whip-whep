@@ -21,4 +21,12 @@ export const styles = StyleSheet.create({
     aspectRatio: 9 / 16,
     marginBottom: 20,
   },
+  controlsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 10,
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
 });

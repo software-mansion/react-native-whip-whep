@@ -3,7 +3,7 @@ import { z } from "zod";
 import {
   ReceivableEventPayloads,
   ReceivableEvents,
-} from "../ReactNativeMobileWhepClientModule";
+} from "../ReactNativeMobileWhepClientViewModule";
 
 const ReconnectionStatusChangedEventSchema = z.object({
   status: z.enum([
@@ -32,9 +32,6 @@ export function validateNativeEventPayload<
       ReconnectionStatusChangedEventSchema.parse(payload);
       break;
     case ReceivableEvents.WhepPeerConnectionStateChanged:
-      PeerConnectionStateChangedEventSchema.parse(payload);
-      break;
-    case ReceivableEvents.WhipPeerConnectionStateChanged:
       PeerConnectionStateChangedEventSchema.parse(payload);
       break;
     default:

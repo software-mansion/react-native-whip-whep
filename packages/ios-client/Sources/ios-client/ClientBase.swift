@@ -62,6 +62,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
             }
         }
         didSet {
+          print("## VIDEO TRACK SET")
             if let track = videoTrack {
                 delegate?.onTrackAdded(track: track)
             }
@@ -70,7 +71,11 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
 
     public var audioTrack: RTCAudioTrack?
 
-    public weak var delegate: PlayerListener?
+    public weak var delegate: PlayerListener? {
+    didSet {
+      print("## Delegate was set as: \(delegate)")
+    }
+  }
     public var onConnectionStateChanged: ((RTCPeerConnectionState) -> Void)?
 
     let logger = Logger(label: "com.swmansion.whipwhepclient")
@@ -237,8 +242,10 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
     }
 
     public func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
+      print("## NEW SCTREAM IN CLIENT BASE")
         DispatchQueue.main.async {
             if let track = stream.videoTracks.first {
+              print("## informing delegate")
                 self.videoTrack = track
                 self.delegate?.onTrackAdded(track: track)
             }

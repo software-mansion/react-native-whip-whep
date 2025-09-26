@@ -3,7 +3,7 @@ import { useCallback, useState } from "react";
 import {
   ReceivableEventPayloads,
   ReceivableEvents,
-} from "../ReactNativeMobileWhepClientModule";
+} from "../ReactNativeMobileWhepClientViewModule";
 import { useEvent } from "./useEvent";
 
 export function useEventState<

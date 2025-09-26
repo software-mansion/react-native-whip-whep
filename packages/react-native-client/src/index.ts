@@ -8,6 +8,7 @@ export {
   ReactNativeMobileWhepClientViewProps,
   ReactNativeMobileWhipClientViewProps,
   WhepClientViewRef,
+  WhipClientViewRef,
   CameraId,
   ConnectOptions,
   WhipConfigurationOptions,
@@ -19,12 +20,16 @@ export {
 } from "./ReactNativeMobileWhepClient.types";
 
 export {
-  WhepClient,
-  WhipClient,
   cameras,
+  getCurrentCameraDeviceId,
   Camera,
   CameraFacingDirection,
-} from "./ReactNativeMobileWhepClientModule";
+  ReceivableEvents as WhipReceivableEvents,
+} from "./ReactNativeMobileWhipClientViewModule";
+
+export {
+  ReceivableEvents as WhepReceivableEvents,
+} from "./ReactNativeMobileWhepClientViewModule";
 
 export { useEvent } from "./hooks/useEvent";
 export { useEventState } from "./hooks/useEventState";

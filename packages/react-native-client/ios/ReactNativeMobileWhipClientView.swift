@@ -5,26 +5,16 @@ import ExpoModulesCore
 import MobileWhipWhepClient
 
 @objc(ReactNativeMobileWhipClientView)
-public class ReactNativeMobileWhipClientView: ExpoView, OnTrackUpdateListener {
-    func onTrackUpdate() {
-        setupPlayer()
+public class ReactNativeMobileWhipClientView: ExpoView {  
+  var player: ClientBase? {
+    didSet {
+      setupPlayer()
     }
-    
-    public var playerType: String? {
-        didSet {
-            setupPlayer()
-        }
-    }
-  
-  private var player: ClientBase? {
-    guard let _ = self.playerType else { return nil }
-    return ReactNativeMobileWhepClientModule.whipClient
   }
     private var hostingController: VideoViewController?
 
     required init(appContext: AppContext? = nil) {
         super.init(appContext: appContext)
-        ReactNativeMobileWhepClientModule.onTrackUpdateListeners.append(self)
     }
 
     private func setupPlayer() {
