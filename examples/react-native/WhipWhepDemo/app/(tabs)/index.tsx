@@ -17,7 +17,7 @@ export default function HomeScreen() {
     handleDisconnect, 
     whepViewRef 
   } = useWhepClient(
-    // process.env.EXPO_PUBLIC_WHEP_SERVER_URL ??
+    process.env.EXPO_PUBLIC_WHEP_SERVER_URL ??
       'https://broadcaster.elixir-webrtc.org/api/whep',
   );
   const { tint } = useThemeColor();

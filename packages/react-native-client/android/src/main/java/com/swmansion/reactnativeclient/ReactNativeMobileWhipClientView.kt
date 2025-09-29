@@ -1,8 +1,9 @@
 package com.swmansion.reactnativeclient
 
 import android.content.Context
+import android.util.Log
 import com.mobilewhep.client.VideoView
-import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whipClient
+import com.mobilewhep.client.WhipClient
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
 import kotlinx.coroutines.CoroutineScope
@@ -14,12 +15,14 @@ class ReactNativeMobileWhipClientView(
   context: Context,
   appContext: AppContext,
 ) : ExpoView(context, appContext),
-  ReactNativeMobileWhepClientModule.OnTrackUpdateListener {
+  ReactNativeMobileWhipClientViewModule.OnTrackUpdateListener {
   private var videoView: VideoView? = null
-  private var playerType: String = "WHEP"
+  private var playerType: String = "WHIP"
+
+  var player: WhipClient? = null
 
   init {
-    ReactNativeMobileWhepClientModule.onWhipTrackUpdateListeners.add(this)
+    ReactNativeMobileWhipClientViewModule.onWhipTrackUpdateListeners.add(this)
   }
 
   fun init(playerType: String) {
@@ -27,17 +30,19 @@ class ReactNativeMobileWhipClientView(
   }
 
   private fun setupTrack(videoTrack: VideoTrack) {
+    if (player == null) {
+      Log.d("test", "Player is null")
+      return
+    }
     if (videoView == null) {
-      videoView = VideoView(context, whipClient!!.eglBase)
+      videoView = VideoView(context, player!!.eglBase)
+      videoView!!.player = player
       addView(videoView)
     }
     videoView!!.post {
-      videoView!!.player = whipClient
-
-      videoView!!.player?.videoTrack = videoTrack
       videoView!!.player?.videoTrack?.removeSink(videoView)
+      videoView!!.player?.videoTrack = videoTrack
       videoTrack.addSink(videoView)
-
     }
   }
 
