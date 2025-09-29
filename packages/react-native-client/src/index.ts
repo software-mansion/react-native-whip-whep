@@ -21,7 +21,6 @@ export {
 
 export {
   cameras,
-  getCurrentCameraDeviceId,
   Camera,
   CameraFacingDirection,
   ReceivableEvents as WhipReceivableEvents,

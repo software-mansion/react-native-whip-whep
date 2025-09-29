@@ -18,8 +18,6 @@ export type Camera = {
 
 type RNMobileWhipClientViewModule = {
   cameras: readonly Camera[];
-  currentCameraDeviceId: CameraId | null;
-  whipPeerConnectionState: string | null;
 };
 
 export const ReceivableEvents = {
@@ -48,12 +46,5 @@ const nativeViewModule = requireNativeModule(
 
 /** Gives access to the cameras available on the device.*/
 export const cameras = nativeViewModule.cameras;
-
-export const getCurrentCameraDeviceId = () => {
-  return nativeViewModule.currentCameraDeviceId;
-};
-
-/** Gives access to the current state of the WHIP peer connection. */
-export const whipPeerConnectionState = nativeViewModule.whipPeerConnectionState;
 
 export default nativeViewModule;

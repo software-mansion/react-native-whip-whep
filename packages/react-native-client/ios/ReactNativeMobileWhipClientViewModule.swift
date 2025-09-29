@@ -5,29 +5,46 @@ import WebRTC
 public class ReactNativeMobileWhipClientViewModule: Module {
   private var whipClient: WhipClient?
   
-  private func createWhipClient(
-    audioEnabled: Bool,
-    videoEnabled: Bool,
-    videoDeviceId: String?,
-    videoParameters: VideoParameters,
-    stunServerUrl: String?,
-    preferredVideoCodecs: [String]?,
-    preferredAudioCodecs: [String]?
-  ) throws {
-    guard let videoDeviceId, let avCaptureDevice = AVCaptureDevice(uniqueID: videoDeviceId) else {
+  struct ConfigurationOptions: Record {
+    @Field
+    var audioEnabled: Bool?
+    @Field
+    var videoEnabled: Bool?
+    @Field
+    var videoDeviceId: String?
+    @Field
+    var videoParameters: String?
+    @Field
+    var stunServerUrl: String?
+    @Field
+    var preferredVideoCodecs: [String]?
+    @Field
+    var preferredAudioCodecs: [String]?
+  }
+  
+  private func createWhipClient(options: ConfigurationOptions) throws {
+    guard let videoDeviceId = options.videoDeviceId, let avCaptureDevice = AVCaptureDevice(uniqueID: videoDeviceId) else {
       throw Exception(
         name: "E_INVALID_VIDEO_DEVICE_ID",
         description: "Invalid video device ID. Make sure the device ID is correct.")
     }
     
+    let parsedVideoParameters: VideoParameters
+    
+    if let optionsVideoParameters = options.videoParameters, let parameters = try? self.getVideoParametersFromOptions(createOptions: optionsVideoParameters) {
+      parsedVideoParameters = parameters
+    } else {
+      parsedVideoParameters = VideoParameters.presetHD169
+    }
+    
     let options = WhipConfigurationOptions(
-      audioEnabled: audioEnabled,
-      videoEnabled: videoEnabled,
+      audioEnabled: options.audioEnabled ?? true,
+      videoEnabled: options.videoEnabled ?? true,
       videoDevice: avCaptureDevice,
-      videoParameters: videoParameters,
-      stunServerUrl: stunServerUrl,
-      preferredVideoCodecs: preferredVideoCodecs ?? [],
-      preferredAudioCodecs: preferredAudioCodecs ?? []
+      videoParameters: parsedVideoParameters,
+      stunServerUrl: options.stunServerUrl,
+      preferredVideoCodecs: options.preferredVideoCodecs ?? [],
+      preferredAudioCodecs: options.preferredAudioCodecs ?? []
     )
     
     guard options.videoEnabled, PermissionUtils.hasCameraPermission() else {
@@ -108,43 +125,13 @@ public class ReactNativeMobileWhipClientViewModule: Module {
         return self.getCaptureDevices()
     }
     
-    Property("currentCameraDeviceId") {
-      return whipClient?.currentCameraDeviceId
-    }
-    
-    // Is this needed for everything since we have the event with the connection state?
-    Property("whipPeerConnectionState") {
-      return whipClient?.peerConnectionState?.stringValue
-    }
-    
     View(ReactNativeMobileWhipClientView.self) {
       AsyncFunction("initializeCamera") { (
         view: ReactNativeMobileWhipClientView,
-        audioEnabled: Bool,
-        videoEnabled: Bool,
-        videoDeviceId: String?,
-        videoParameters: String,
-        stunServerUrl: String?,
-        preferredVideoCodecs: [String]?,
-        preferredAudioCodecs: [String]?
+        options: ConfigurationOptions
       ) in
-        let parsedVideoParameters: VideoParameters
         do {
-          parsedVideoParameters = try self.getVideoParametersFromOptions(createOptions: videoParameters)
-        } catch {
-          parsedVideoParameters = VideoParameters.presetHD169
-        }
-        
-        do {
-          try self.createWhipClient(
-            audioEnabled: audioEnabled,
-            videoEnabled: videoEnabled,
-            videoDeviceId: videoDeviceId,
-            videoParameters: parsedVideoParameters,
-            stunServerUrl: stunServerUrl,
-            preferredVideoCodecs: preferredVideoCodecs,
-            preferredAudioCodecs: preferredAudioCodecs
-          )
+          try self.createWhipClient(options: options)
           
           view.player = self.whipClient
         } catch {
@@ -233,6 +220,15 @@ public class ReactNativeMobileWhipClientViewModule: Module {
 
       AsyncFunction("getSupportedSenderAudioCodecsNames") {
         WhipClient.getSupportedSenderAudioCodecsNames()
+      }
+      
+      AsyncFunction("currentCameraDeviceId") {
+        self.whipClient?.currentCameraDeviceId
+      }
+      
+      // Is this needed for everything since we have the event with the connection state?
+      AsyncFunction("whipPeerConnectionState") {
+        self.whipClient?.peerConnectionState?.stringValue
       }
     }
   }

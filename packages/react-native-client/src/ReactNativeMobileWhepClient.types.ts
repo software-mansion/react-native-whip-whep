@@ -18,20 +18,6 @@ export type ConnectOptions = {
   serverUrl: string;
 };
 
-/** Defines initial WHIP Client options. */
-export type WhipConfigurationOptions = {
-  /** A variable deciding whether the audio should be streamed or not. Defaults to true. */
-  audioEnabled?: boolean;
-  /** A variable deciding whether the video should be streamed or not. Defaults to true. */
-  videoEnabled?: boolean;
-  /** ID of the camera.  */
-  videoDeviceId?: CameraId;
-  /** Defines the parameters of the video. Defaults to HD43. */
-  videoParameters?: VideoParameters;
-  /** URL address of the STUN server. The default one is `stun.l.google.com`. */
-  stunServerUrl?: string;
-};
-
 /** Defines initial WHEP Client options. */
 export type WhepConfigurationOptions = {
   /** A variable deciding whether the audio should be streamed or not. Defaults to true. */
@@ -146,16 +132,25 @@ export type ReactNativeMobileWhipClientViewProps = {
   style: React.CSSProperties;
 };
 
+/** Defines initial WHIP Client options. */
+export type WhipConfigurationOptions = {
+  /** A variable deciding whether the audio should be streamed or not. Defaults to true. */
+  audioEnabled?: boolean;
+  /** A variable deciding whether the video should be streamed or not. Defaults to true. */
+  videoEnabled?: boolean;
+  /** ID of the camera.  */
+  videoDeviceId?: CameraId;
+  /** Defines the parameters of the video. Defaults to HD43. */
+  videoParameters?: VideoParameters;
+  /** URL address of the STUN server. The default one is `stun.l.google.com`. */
+  stunServerUrl?: string;
+
+  preferredVideoCodecs?: SenderVideoCodecName[];
+  preferredAudioCodecs?: SenderAudioCodecName[];
+};
+
 export type WhipClientViewRef = {
-  initializeCamera: (
-    audioEnabled: boolean,
-    videoEnabled: boolean,
-    videoDeviceId?: string,
-    videoParameters?: VideoParameters,
-    stunServerUrl?: string,
-    preferredVideoCodecs?: SenderVideoCodecName[],
-    preferredAudioCodecs?: SenderAudioCodecName[],
-  ) => Promise<void>;
+  initializeCamera: (options: WhipConfigurationOptions) => Promise<void>;
   connect: (serverUrl: string, authToken?: string) => Promise<void>;
   disconnect: () => Promise<void>;
   switchCamera: (deviceId: string) => Promise<void>;
@@ -169,6 +164,8 @@ export type WhipClientViewRef = {
   ) => Promise<void>;
   getSupportedSenderVideoCodecsNames: () => Promise<SenderVideoCodecName[]>;
   getSupportedSenderAudioCodecsNames: () => Promise<SenderAudioCodecName[]>;
+  currentCameraDeviceId: () => Promise<String>;
+  whipPeerConnectionState: () => Promise<String>;
 };
 
 /** Internal enum telling native views whether the stream will come from the server or device camera*/

@@ -9,7 +9,6 @@ import {
 import { useEffect, useRef, useState, useCallback } from 'react';
 import {
   cameras,
-  getCurrentCameraDeviceId,
   VideoParameters,
   WhipClientView,
   WhipClientViewRef,
@@ -24,7 +23,7 @@ export default function HomeScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
 
-  const whipClient = useRef<WhipClientViewRef>(null);
+  const whipClient = useRef<WhipClientViewRef | null>(null);
 
   const peerConnectionState = useWhipConnectionState();
 
@@ -58,10 +57,12 @@ export default function HomeScreen() {
       setIsLoading(true);
 
       await whipClient.current?.initializeCamera(
-        true,
-        true,
-        cameras[0].id,
-        VideoParameters.presetHD169,
+        {
+        audioEnabled: true,
+        videoEnabled: true,
+        videoDeviceId: cameras[0].id,
+        videoParameters: VideoParameters.presetHD169,
+        }
       );
 
       setIsLoading(false);
@@ -83,6 +84,7 @@ export default function HomeScreen() {
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to connect to WHIP Client', error);
+      setShouldShowStreamBtn(true);
       setIsLoading(false);
     }
   };
@@ -96,10 +98,11 @@ export default function HomeScreen() {
     }
   };
 
-  const handleSwitchCamera = useCallback(() => {
+  const handleSwitchCamera = useCallback(async () => {
     // Find the opposite camera (front/back)
+    const currentCameraId = await whipClient.current?.currentCameraDeviceId()
     const currentCamera = cameras.find(
-      (cam) => cam.id === getCurrentCameraDeviceId(),
+      (cam) => cam.id === currentCameraId,
     );
 
     const oppositeCamera = cameras.find(
