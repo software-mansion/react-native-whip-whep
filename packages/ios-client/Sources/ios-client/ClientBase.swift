@@ -62,7 +62,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
             }
         }
         didSet {
-          print("## VIDEO TRACK SET")
+          print("## Client base: VIDEO TRACK SET")
             if let track = videoTrack {
                 delegate?.onTrackAdded(track: track)
             }
@@ -245,7 +245,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
       print("## NEW SCTREAM IN CLIENT BASE")
         DispatchQueue.main.async {
             if let track = stream.videoTracks.first {
-              print("## informing delegate")
+              print("## Clinet Base: informing delegate: \(self.delegate)")
                 self.videoTrack = track
                 self.delegate?.onTrackAdded(track: track)
             }

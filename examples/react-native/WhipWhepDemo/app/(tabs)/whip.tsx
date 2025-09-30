@@ -154,7 +154,6 @@ export default function HomeScreen() {
 
   useEffect(() => {
     checkPermissions();
-    // setTimeout(initializeCamera, 0)
     initializeCamera();
 
     const client = whipClient.current;
@@ -225,7 +224,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     height: '100%',
     aspectRatio: 9 / 16,
-    backgroundColor: 'red'
   },
   statusContainer: {
     flexDirection: 'row',

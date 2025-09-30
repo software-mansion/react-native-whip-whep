@@ -30,64 +30,33 @@ class ReactNativeMobileWhipClientView(
   }
 
   private fun setupTrack(videoTrack: VideoTrack) {
-    if (player == null) {
-      Log.d("test", "Player is null")
-      return
-    }
+    if (player == null) return
+    
     if (videoView == null) {
-      Log.d("test", "Creating view. Eglbase is: ${player!!.eglBase}")
       videoView = VideoView(context, player!!.eglBase)
       videoView!!.player = player
       
-      // Set proper layout parameters to fill the parent
-      val layoutParams = android.view.ViewGroup.LayoutParams(
+      // Set layout parameters to fill parent
+      videoView!!.layoutParams = android.view.ViewGroup.LayoutParams(
         android.view.ViewGroup.LayoutParams.MATCH_PARENT,
         android.view.ViewGroup.LayoutParams.MATCH_PARENT
       )
-      videoView!!.layoutParams = layoutParams
       
       addView(videoView)
-      
-      // Force a layout pass
-      this@ReactNativeMobileWhipClientView.requestLayout()
-      videoView!!.requestLayout()
     }
     
-    // Wait for the view to be properly laid out
+    // Wait for layout, then setup video track
     videoView!!.post {
-      // Wait for the parent view to be laid out first
-      if (this@ReactNativeMobileWhipClientView.width == 0 || this@ReactNativeMobileWhipClientView.height == 0) {
-        Log.d("test", "Parent view not laid out yet, waiting...")
-        this@ReactNativeMobileWhipClientView.post {
-          setupTrack(videoTrack)
+      // If VideoView has no dimensions, use parent dimensions
+      if (videoView!!.width == 0 || videoView!!.height == 0) {
+        val parentWidth = this@ReactNativeMobileWhipClientView.width
+        val parentHeight = this@ReactNativeMobileWhipClientView.height
+        if (parentWidth > 0 && parentHeight > 0) {
+          videoView!!.layout(0, 0, parentWidth, parentHeight)
         }
-        return@post
       }
       
-      // Now wait for the VideoView to be laid out
-      if (videoView!!.width == 0 || videoView!!.height == 0) {
-        Log.d("test", "VideoView not laid out yet, waiting...")
-        videoView!!.post {
-          // Try one more time after layout
-          if (videoView!!.width == 0 || videoView!!.height == 0) {
-            Log.d("test", "VideoView still not laid out, trying with parent dimensions...")
-            // Use parent dimensions as fallback
-            val parentWidth = this@ReactNativeMobileWhipClientView.width
-            val parentHeight = this@ReactNativeMobileWhipClientView.height
-            Log.d("test", "Parent dimensions: ${parentWidth}x${parentHeight}")
-            if (parentWidth > 0 && parentHeight > 0) {
-              // Force the VideoView to have the same dimensions as parent
-              videoView!!.layout(0, 0, parentWidth, parentHeight)
-              Log.d("test", "Forced VideoView layout to parent dimensions")
-            }
-            setupVideoTrack(videoTrack)
-          } else {
-            setupVideoTrack(videoTrack)
-          }
-        }
-      } else {
-        setupVideoTrack(videoTrack)
-      }
+      setupVideoTrack(videoTrack)
     }
   }
 
