@@ -430,6 +430,7 @@ open class ClientBase(
     coroutineScope.launch(Dispatchers.Main) {
       val videoTrack = receiver?.track() as? VideoTrack?
       this@ClientBase.videoTrack = videoTrack
+      Log.d("test", "Track added in CLient Base. Calling listeners")
       listeners.forEach { listener -> videoTrack?.let { listener.onTrackAdded(it) } }
     }
     onTrackAdded?.let { it() }
