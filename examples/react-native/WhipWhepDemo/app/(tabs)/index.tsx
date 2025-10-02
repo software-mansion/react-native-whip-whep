@@ -36,7 +36,6 @@ export default function HomeScreen() {
           />
         </View>
 
-        {/* Control Buttons */}
         <View style={styles.controlsContainer}>
           {shouldShowPlayBtn && (
             <Button

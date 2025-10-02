@@ -11,7 +11,6 @@ protocol OnTrackUpdateListener {
 @objc(ReactNativeMobileWhepClientView)
 public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
     func onTrackUpdate() {
-        print("Whep track updated")
         setupPlayer()
     }
   
@@ -27,7 +26,6 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
         
     weak var player: ClientBase? {
       didSet {
-        print("Whep player set")
         setupPlayer()
       }
     }
@@ -59,7 +57,6 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
     }
 
     private func setupPlayer() {
-      print("Whep setting up player")
         removeOldPlayer()
         
         guard let player = self.player else { return }

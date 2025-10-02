@@ -103,7 +103,6 @@ public class WhepClient: ClientBase {
         try await peerConnection!.setRemoteDescription(remoteDescription)
 
         reconnectionManager?.onReconnected()
-      print("## Connection completed")
     }
 
     public override func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState)

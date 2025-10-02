@@ -107,7 +107,6 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
           self?.emit(event: .whepPeerConnectionStateChanged(status: newState))
         }
         view.player = self.whepClient
-        print("## appenting view as listener")
         self.onTrackUpdateListeners.append(view)
       }
 
@@ -126,7 +125,6 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
           )
         }
         
-        print("## connecting whep to \(connectOptions.serverUrl)")
         try await client.connect(.init(serverUrl: url, authToken: connectOptions.authToken))
       }
 
