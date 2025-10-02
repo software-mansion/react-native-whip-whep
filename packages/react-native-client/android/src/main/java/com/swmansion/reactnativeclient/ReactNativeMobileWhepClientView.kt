@@ -10,7 +10,7 @@ import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.FragmentActivity
 import com.mobilewhep.client.VideoView
-import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whepClient
+import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientViewModule.Companion.whepClient
 import com.swmansion.reactnativeclient.helpers.PictureInPictureHelperFragment
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
@@ -23,12 +23,12 @@ class ReactNativeMobileWhepClientView(
   context: Context,
   appContext: AppContext,
 ) : ExpoView(context, appContext),
-  ReactNativeMobileWhepClientModule.OnTrackUpdateListener {
+  ReactNativeMobileWhepClientViewModule.OnTrackUpdateListener {
   private var videoView: VideoView? = null
   private var playerType: String = "WHEP"
 
   init {
-    ReactNativeMobileWhepClientModule.onWhepTrackUpdateListeners.add(this)
+    ReactNativeMobileWhepClientViewModule.onWhepTrackUpdateListeners.add(this)
   }
 
   fun init(playerType: String) {
@@ -40,7 +40,10 @@ class ReactNativeMobileWhepClientView(
       videoView = VideoView(context, whepClient!!.eglBase)
       videoView!!.player = whepClient
 
-      addView(videoView)
+      addView(videoView, FrameLayout.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT
+      ))
     }
     videoView!!.post {
 
