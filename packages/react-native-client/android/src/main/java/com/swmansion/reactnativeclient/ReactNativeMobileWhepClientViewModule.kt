@@ -8,9 +8,7 @@ import com.mobilewhep.client.ClientConnectOptions
 import com.mobilewhep.client.ReconnectionManagerListener
 import com.mobilewhep.client.WhepClient
 import com.mobilewhep.client.WhepConfigurationOptions
-import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion
 import expo.modules.kotlin.functions.Coroutine
-import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
