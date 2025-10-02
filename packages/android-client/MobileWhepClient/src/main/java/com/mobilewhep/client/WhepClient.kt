@@ -116,7 +116,13 @@ class WhepClient(
    *
    */
   fun disconnect() {
+    peerConnection?.close()
     peerConnection?.dispose()
+    peerConnection = null
+    patchEndpoint = null
+    iceCandidates.clear()
+    videoTrack = null
+    audioTrack = null
   }
 
   public fun pause() {
