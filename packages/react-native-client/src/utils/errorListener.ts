@@ -9,7 +9,7 @@ export const initializeWarningListener = () => {
   if (!__DEV__) {
     return;
   }
-  
+
   try {
     // Listen for WHEP warnings
     ReactNativeMobileWhepClientViewModule.addListener(

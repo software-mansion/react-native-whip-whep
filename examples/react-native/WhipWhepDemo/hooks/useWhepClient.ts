@@ -30,7 +30,7 @@ export const useWhepClient = (serverUrl: string) => {
         setIsInitialized(true);
       }
 
-      await whepViewRef.current?.connectWhep({serverUrl});
+      await whepViewRef.current?.connectWhep({ serverUrl });
       setIsLoading(false);
       setIsConnected(true);
     } catch (error) {
@@ -76,9 +76,9 @@ export const useWhepClient = (serverUrl: string) => {
       await checkPermissions();
     };
     initialize();
-    
+    const ref = whepViewRef.current;
     return () => {
-      whepViewRef.current?.disconnectWhep();
+      ref?.disconnectWhep();
     };
   }, []);
 

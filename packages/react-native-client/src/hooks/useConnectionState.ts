@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 
-import { useEventState } from "./useEventState";
 import ReactNativeMobileWhepClientViewModule, {
   PeerConnectionState,
   ReceivableEvents,
@@ -25,8 +24,7 @@ export const useWhepConnectionState = (): PeerConnectionState | null => {
     const eventListener = ReactNativeMobileWhepClientViewModule.addListener(
       ReceivableEvents.WhepPeerConnectionStateChanged,
       (event) => {
-        const payload =
-          event[ReceivableEvents.WhepPeerConnectionStateChanged];
+        const payload = event[ReceivableEvents.WhepPeerConnectionStateChanged];
         setPeerConnectionState(payload);
       },
     );

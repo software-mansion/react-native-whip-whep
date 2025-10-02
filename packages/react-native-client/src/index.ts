@@ -26,9 +26,7 @@ export {
   ReceivableEvents as WhipReceivableEvents,
 } from "./ReactNativeMobileWhipClientViewModule";
 
-export {
-  ReceivableEvents as WhepReceivableEvents,
-} from "./ReactNativeMobileWhepClientViewModule";
+export { ReceivableEvents as WhepReceivableEvents } from "./ReactNativeMobileWhepClientViewModule";
 
 export { useEvent } from "./hooks/useEvent";
 export { useEventState } from "./hooks/useEventState";

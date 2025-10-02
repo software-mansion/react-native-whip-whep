@@ -56,14 +56,12 @@ export default function HomeScreen() {
     try {
       setIsLoading(true);
 
-      await whipClient.current?.initializeCamera(
-        {
+      await whipClient.current?.initializeCamera({
         audioEnabled: true,
         videoEnabled: true,
         videoDeviceId: cameras[0].id,
         videoParameters: VideoParameters.presetHD169,
-        }
-      );
+      });
 
       setIsLoading(false);
     } catch (error) {
@@ -100,10 +98,8 @@ export default function HomeScreen() {
 
   const handleSwitchCamera = useCallback(async () => {
     // Find the opposite camera (front/back)
-    const currentCameraId = await whipClient.current?.currentCameraDeviceId()
-    const currentCamera = cameras.find(
-      (cam) => cam.id === currentCameraId,
-    );
+    const currentCameraId = await whipClient.current?.currentCameraDeviceId();
+    const currentCamera = cameras.find((cam) => cam.id === currentCameraId);
 
     const oppositeCamera = cameras.find(
       (cam) =>

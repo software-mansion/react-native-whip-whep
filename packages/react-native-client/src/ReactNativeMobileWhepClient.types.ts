@@ -68,11 +68,15 @@ export type WhepClientViewRef = {
   /**
    * Sets preferred receiver video codecs.
    */
-  setPreferredReceiverVideoCodecs: (preferredCodecs: ReceiverVideoCodecName[]) => Promise<void>;
+  setPreferredReceiverVideoCodecs: (
+    preferredCodecs: ReceiverVideoCodecName[],
+  ) => Promise<void>;
   /**
    * Sets preferred receiver audio codecs.
    */
-  setPreferredReceiverAudioCodecs: (preferredCodecs: ReceiverAudioCodecName[]) => Promise<void>;
+  setPreferredReceiverAudioCodecs: (
+    preferredCodecs: ReceiverAudioCodecName[],
+  ) => Promise<void>;
   /**
    * Starts the Picture-in-Picture mode.
    * On android enters the Picture-in-Picture mode and background the app.
@@ -164,8 +168,8 @@ export type WhipClientViewRef = {
   ) => Promise<void>;
   getSupportedSenderVideoCodecsNames: () => Promise<SenderVideoCodecName[]>;
   getSupportedSenderAudioCodecsNames: () => Promise<SenderAudioCodecName[]>;
-  currentCameraDeviceId: () => Promise<String>;
-  whipPeerConnectionState: () => Promise<String>;
+  currentCameraDeviceId: () => Promise<string>;
+  whipPeerConnectionState: () => Promise<string>;
 };
 
 /** Internal enum telling native views whether the stream will come from the server or device camera*/
