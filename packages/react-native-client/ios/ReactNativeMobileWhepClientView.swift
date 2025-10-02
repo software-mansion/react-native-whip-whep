@@ -31,6 +31,27 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
         setupPlayer()
       }
     }
+  
+    public var autoStartPip = false {
+      didSet {
+        pipController?.startAutomatically = autoStartPip
+      }
+    }
+    
+    public var autoStopPip = true {
+      didSet {
+        pipController?.stopAutomatically = autoStopPip
+      }
+    }
+    
+    public var pipSize: CGSize = .zero {
+      didSet {
+        if !pipSize.equalTo(.zero) {
+          pipController?.preferredSize = pipSize
+        }
+      }
+    }
+    
     private var hostingController: VideoViewController?
 
     required init(appContext: AppContext? = nil) {
@@ -61,11 +82,17 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
     }
   
     private func setupPip() {
-        if pipEnabled {
-            hostingController?.setup(pictureInPictureWith: PictureInPictureController(sourceView: self))
-        } else {
-            hostingController?.disablePictureInPicture()
+      if pipEnabled {
+        let controller = PictureInPictureController(sourceView: self)
+        controller.startAutomatically = autoStartPip
+        controller.stopAutomatically = autoStopPip
+        if !pipSize.equalTo(.zero) {
+          controller.preferredSize = pipSize
         }
+        hostingController?.setup(pictureInPictureWith: controller)
+      } else {
+        hostingController?.disablePictureInPicture()
+      }
     }
     
     private func removeOldPlayer() {

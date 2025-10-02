@@ -67,16 +67,14 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
         (view: ReactNativeMobileWhepClientView, pipEnabled: Bool) in
         view.pipEnabled = pipEnabled
       }
-      Prop("autoStartPip") {
-        (view: ReactNativeMobileWhepClientView, startAutomatically: Bool) in
-        view.pipController?.startAutomatically = startAutomatically
+      Prop("autoStartPip") { (view: ReactNativeMobileWhepClientView, startAutomatically: Bool) in
+        view.autoStartPip = startAutomatically
       }
-      Prop("autoStopPip") {
-        (view: ReactNativeMobileWhepClientView, stopAutomatically: Bool) in
-        view.pipController?.stopAutomatically = stopAutomatically
+      Prop("autoStopPip") { (view: ReactNativeMobileWhepClientView, stopAutomatically: Bool) in
+        view.autoStopPip = stopAutomatically
       }
-      Prop("pipSize") { (view: ReactNativeMobileWhepClientView, size: CGSize) in
-        view.pipController?.preferredSize = size
+      Prop("pipSize"){ (view: ReactNativeMobileWhepClientView, size: CGSize) in
+        view.pipSize = size
       }
 
       AsyncFunction("createWhepClient") {
