@@ -34,3 +34,5 @@ export const WhipClientView = React.forwardRef<
 >((props, ref) => (
   <NativeView {...props} playerType={PlayerType.WHIP} ref={ref} />
 ));
+
+WhipClientView.displayName = "WhipClientView";

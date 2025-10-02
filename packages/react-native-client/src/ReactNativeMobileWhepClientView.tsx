@@ -35,3 +35,5 @@ export const WhepClientView = React.forwardRef<
 >((props, ref) => (
   <NativeView {...props} playerType={PlayerType.WHEP} ref={ref} />
 ));
+
+WhepClientView.displayName = "WhepClientView";
