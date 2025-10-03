@@ -4,6 +4,7 @@ import {
   View,
   ActivityIndicator,
   Text,
+  Platform,
 } from 'react-native';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -183,8 +184,13 @@ export default function HomeScreen() {
 
         <Button title="Switch Camera" onPress={handleSwitchCamera} />
         <Button title="Flip Camera" onPress={handleFlipCamera} />
-        <Button title="Set H264 Video" onPress={handleSetH264VideoCodec} />
-        <Button title="Set OPUS Audio" onPress={handleSetOpusAudioCodec} />
+        {/* This functionality will be implemented on android in FCE-2038 */}
+        {Platform.OS === 'ios' && (
+          <>
+            <Button title="Set H264 Video" onPress={handleSetH264VideoCodec} />
+            <Button title="Set OPUS Audio" onPress={handleSetOpusAudioCodec} />
+          </>
+        )}
         {shouldShowStreamBtn && (
           <Button title="Stream" onPress={handleStreamBtnClick} color={tint} />
         )}
