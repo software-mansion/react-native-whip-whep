@@ -70,11 +70,3 @@ class EmitableEvent {
     .init(event: .WhipPeerConnectionStateChanged, eventContent: status.stringValue)
   }
 }
-
-extension ReactNativeMobileWhepClientModule {
-  func emit(event: EmitableEvent) {
-    DispatchQueue.main.async {
-      self.sendEvent(event.event.name, event.data)
-    }
-  }
-}

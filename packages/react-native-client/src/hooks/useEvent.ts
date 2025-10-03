@@ -4,7 +4,7 @@ import { ZodError } from "zod";
 import nativeModule, {
   ReceivableEventPayloads,
   ReceivableEvents,
-} from "../ReactNativeMobileWhepClientModule";
+} from "../ReactNativeMobileWhepClientViewModule";
 import { validateNativeEventPayload } from "./eventPayloadValidator";
 
 export function useEvent<T extends keyof typeof ReceivableEvents>(

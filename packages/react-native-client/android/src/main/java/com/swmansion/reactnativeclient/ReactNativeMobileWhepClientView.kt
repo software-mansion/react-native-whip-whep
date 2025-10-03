@@ -10,8 +10,7 @@ import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.FragmentActivity
 import com.mobilewhep.client.VideoView
-import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whepClient
-import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientModule.Companion.whipClient
+import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientViewModule.Companion.whepClient
 import com.swmansion.reactnativeclient.helpers.PictureInPictureHelperFragment
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
@@ -20,23 +19,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.webrtc.VideoTrack
 
-enum class Orientation {
-    PORTRAIT,
-    LANDSCAPE
-}
-
 class ReactNativeMobileWhepClientView(
   context: Context,
   appContext: AppContext,
 ) : ExpoView(context, appContext),
-  ReactNativeMobileWhepClientModule.OnTrackUpdateListener {
-  private val videoView: VideoView
+  ReactNativeMobileWhepClientViewModule.OnTrackUpdateListener {
+  private var videoView: VideoView? = null
   private var playerType: String = "WHEP"
 
   init {
-    ReactNativeMobileWhepClientModule.onTrackUpdateListeners.add(this)
-    videoView = VideoView(context)
-    addView(videoView)
+    ReactNativeMobileWhepClientViewModule.onWhepTrackUpdateListeners.add(this)
   }
 
   fun init(playerType: String) {
@@ -44,15 +36,19 @@ class ReactNativeMobileWhepClientView(
   }
 
   private fun setupTrack(videoTrack: VideoTrack) {
-    videoView.post {
-      if (playerType == "WHIP") {
-        videoView.player = whipClient
-      } else {
-        videoView.player = whepClient
-      }
+    if (videoView == null) {
+      videoView = VideoView(context, whepClient!!.eglBase)
+      videoView!!.player = whepClient
 
-      videoView.player?.videoTrack = videoTrack
-      videoView.player?.videoTrack?.removeSink(videoView)
+      addView(videoView, FrameLayout.LayoutParams(
+        ViewGroup.LayoutParams.MATCH_PARENT,
+        ViewGroup.LayoutParams.MATCH_PARENT
+      ))
+    }
+    videoView!!.post {
+
+      videoView!!.player?.videoTrack?.removeSink(videoView)
+      videoView!!.player?.videoTrack = videoTrack
       videoTrack.addSink(videoView)
 
     }
@@ -121,7 +117,7 @@ class ReactNativeMobileWhepClientView(
   }
 
   fun layoutForPiPEnter() {
-    (videoView.parent as? ViewGroup)?.removeView(videoView)
+    (videoView!!.parent as? ViewGroup)?.removeView(videoView)
     for (i in 0 until rootView.childCount) {
       if (rootView.getChildAt(i) != videoView) {
         rootViewChildrenOriginalVisibility.add(rootView.getChildAt(i).visibility)
