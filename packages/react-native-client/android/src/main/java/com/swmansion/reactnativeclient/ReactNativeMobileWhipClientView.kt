@@ -56,11 +56,9 @@ class ReactNativeMobileWhipClientView(
   }
 
   private fun setupVideoTrack(videoTrack: VideoTrack) {
-    Log.d("test", "Setting up video track with dimensions: ${videoView!!.width}x${videoView!!.height}")
     videoView!!.player?.videoTrack?.removeSink(videoView)
     videoView!!.player?.videoTrack = videoTrack
     videoTrack.addSink(videoView)
-    Log.d("test", "Video track setup complete")
   }
 
   private fun update(track: VideoTrack) {
@@ -75,12 +73,10 @@ class ReactNativeMobileWhipClientView(
 
   override fun onAttachedToWindow() {
     super.onAttachedToWindow()
-    Log.d("test", "View attached to window")
     
     // Ensure the view is properly laid out before setting up video track
     post {
       if (videoView != null && player != null) {
-        Log.d("test", "View is laid out, setting up video track")
         // Re-trigger video track setup if player and videoView are ready
         player?.videoTrack?.let { track ->
           setupTrack(track)
