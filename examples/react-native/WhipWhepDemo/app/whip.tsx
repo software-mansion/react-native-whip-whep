@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   Text,
   Platform,
+  ScrollView
 } from 'react-native';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -160,55 +161,57 @@ export default function WhipScreen() {
   }, [initializeCamera]);
 
   return (
-    <View style={styles.container}>
-      <View style={styles.box}>
-        <View style={styles.videoWrapper}>
-          <WhipClientView style={styles.clientView} ref={whipClient} />
-        </View>
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={styles.box}>
+          <View style={styles.videoWrapper}>
+            <WhipClientView style={styles.clientView} ref={whipClient} />
+          </View>
 
-        <View style={styles.statusContainer}>
-          <Text style={styles.statusLabel}>Connection Status:</Text>
-          <Text
-            style={[
-              styles.statusText,
-              {
-                color: getConnectionStatusDisplay(
-                  peerConnectionState ?? 'unknown',
-                ).color,
-              },
-            ]}>
-            {getConnectionStatusDisplay(peerConnectionState ?? 'unknown').text}
-          </Text>
-        </View>
+          <View style={styles.statusContainer}>
+            <Text style={styles.statusLabel}>Connection Status:</Text>
+            <Text
+              style={[
+                styles.statusText,
+                {
+                  color: getConnectionStatusDisplay(
+                    peerConnectionState ?? 'unknown',
+                  ).color,
+                },
+              ]}>
+              {getConnectionStatusDisplay(peerConnectionState ?? 'unknown').text}
+            </Text>
+          </View>
 
-        <Button title="Switch Camera" onPress={handleSwitchCamera} />
-        <Button title="Flip Camera" onPress={handleFlipCamera} />
-        {Platform.OS === 'ios' && (
-          <>
-            <Button title="Set H264 Video" onPress={handleSetH264VideoCodec} />
-            <Button title="Set OPUS Audio" onPress={handleSetOpusAudioCodec} />
-          </>
-        )}
-        {shouldShowStreamBtn && (
-          <Button title="Stream" onPress={handleStreamBtnClick} color={tint} />
-        )}
-        {!shouldShowStreamBtn && !isLoading && (
-          <Button
-            title="Disconnect"
-            onPress={handleDisconnectBtnClick}
-            color={tint}
-          />
-        )}
-        {isLoading && <ActivityIndicator size="large" color={tint} />}
+          <Button title="Switch Camera" onPress={handleSwitchCamera} />
+          <Button title="Flip Camera" onPress={handleFlipCamera} />
+          {Platform.OS === 'ios' && (
+            <>
+              <Button title="Set H264 Video" onPress={handleSetH264VideoCodec} />
+              <Button title="Set OPUS Audio" onPress={handleSetOpusAudioCodec} />
+            </>
+          )}
+          {shouldShowStreamBtn && (
+            <Button title="Stream" onPress={handleStreamBtnClick} color={tint} />
+          )}
+          {!shouldShowStreamBtn && !isLoading && (
+            <Button
+              title="Disconnect"
+              onPress={handleDisconnectBtnClick}
+              color={tint}
+            />
+          )}
+          {isLoading && <ActivityIndicator size="large" color={tint} />}
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 10,
+    paddingVertical: 20,
   },
   box: {
     flex: 1,
@@ -218,7 +221,7 @@ const styles = StyleSheet.create({
   videoWrapper: {
     flex: 1,
     paddingHorizontal: 16,
-    paddingTop: 16,
+    maxHeight: 500
   },
   clientView: {
     alignSelf: 'center',
