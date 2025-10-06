@@ -127,10 +127,9 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
           whepClient?.disconnect()
         }
 
-//        Potentially we want to cleanup whep the same way we do it with whip
-//        AsyncFunction("cleanupWhep") Coroutine { ->
-//          whepClient = null
-//        }
+        AsyncFunction("cleanupWhep") Coroutine { ->
+          whepClient = null
+        }
 
         AsyncFunction("pauseWhep") {
           whepClient?.pause()

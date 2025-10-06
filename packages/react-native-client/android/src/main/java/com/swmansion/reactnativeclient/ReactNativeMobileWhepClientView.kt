@@ -3,6 +3,7 @@ package com.swmansion.reactnativeclient
 import android.app.PictureInPictureParams
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.util.Rational
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +32,10 @@ class ReactNativeMobileWhepClientView(
   }
 
   private fun setupTrack(videoTrack: VideoTrack) {
+    if (whepClient == null) {
+      Log.e("ReactNativeMobileWhepClientView", "Setup track called without WHEP client.")
+      return
+    }
     if (videoView == null) {
       videoView = VideoView(context, whepClient!!.eglBase)
       videoView!!.player = whepClient
