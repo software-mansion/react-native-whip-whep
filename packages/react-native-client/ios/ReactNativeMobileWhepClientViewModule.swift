@@ -26,7 +26,6 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
   }
 
   public func onTrackAdded(track: RTCVideoTrack) {
-    print("Track was added in module. Listeners: \(onTrackUpdateListeners)")
     onTrackUpdateListeners.forEach {
       $0.onTrackUpdate()
     }
@@ -35,7 +34,6 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
   public func onTrackRemoved(track: RTCVideoTrack) {
 
   }
-
   private var whepClient: WhepClient? = nil
   private var onTrackUpdateListeners: [OnTrackUpdateListener] = []
 
@@ -144,10 +142,16 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
         self.whepClient?.disconnect()
       }
       
-      AsyncFunction("cleanupWhep") {
-        self.whepClient?.delegate = nil
-        self.whepClient?.reconnectionListener = nil
-        self.whepClient?.onConnectionStateChanged = nil
+      AsyncFunction("cleanupWhep") { (view: ReactNativeMobileWhepClientView) in
+        
+        // Use the comprehensive cleanup method
+        self.whepClient?.cleanup()
+        
+        view.player = nil
+        
+        // Remove the view from track update listeners
+        self.onTrackUpdateListeners = []
+        
         self.whepClient = nil
       }
 

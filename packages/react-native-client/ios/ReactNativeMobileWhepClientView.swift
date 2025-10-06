@@ -27,6 +27,11 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
     weak var player: ClientBase? {
       didSet {
         setupPlayer()
+        if player == nil {
+            hostingController?.player = nil
+            hostingController?.view.removeFromSuperview()
+            hostingController = nil
+        }
       }
     }
   
@@ -93,6 +98,8 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
     }
     
     private func removeOldPlayer() {
+        hostingController?.player = nil
         hostingController?.view.removeFromSuperview()
+        hostingController = nil
     }
 }

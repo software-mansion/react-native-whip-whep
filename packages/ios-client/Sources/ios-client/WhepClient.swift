@@ -51,6 +51,10 @@ public class WhepClient: ClientBase {
             listener: reconnectionListener
         )
     }
+  
+  deinit {
+    reconnectionManager = nil
+  }
 
     /**
     Connects the client to the WHEP server using WebRTC Peer Connection.
@@ -127,6 +131,13 @@ public class WhepClient: ClientBase {
             self?.isConnectionSetUp = false
             self?.videoTrack = nil
         }
+    }
+    
+    public func cleanup() {
+        reconnectionManager = nil
+        delegate = nil
+        reconnectionListener = nil
+        onConnectionStateChanged = nil
     }
 
     private func getAudioTrack() -> RTCAudioTrack? {
