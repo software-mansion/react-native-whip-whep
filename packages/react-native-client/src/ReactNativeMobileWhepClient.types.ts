@@ -58,6 +58,10 @@ export type WhepClientViewRef = {
    */
   unpauseWhep: () => Promise<void>;
   /**
+   * Cleanups WHEP client
+   */
+  cleanupWhep: () => Promise<void>;
+  /**
    * Gets supported receiver video codec names.
    */
   getSupportedReceiverVideoCodecsNames: () => Promise<ReceiverVideoCodecName[]>;

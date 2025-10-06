@@ -142,16 +142,14 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
 
       AsyncFunction("disconnectWhep") {
         self.whepClient?.disconnect()
-//        self.whepClient = nil
       }
-
-      // Potentially we want to do it the same as in whip
-      //      AsyncFunction("cleanupWhep") {
-      //        self.whepClient?.delegate = nil
-      //        self.whepClient?.reconnectionListener = nil
-      //        self.whepClient?.onConnectionStateChanged = nil
-      //        self.whepClient = nil
-      //      }
+      
+      AsyncFunction("cleanupWhep") {
+        self.whepClient?.delegate = nil
+        self.whepClient?.reconnectionListener = nil
+        self.whepClient?.onConnectionStateChanged = nil
+        self.whepClient = nil
+      }
 
       AsyncFunction("pauseWhep") {
         guard let client = self.whepClient else {
