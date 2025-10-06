@@ -163,7 +163,7 @@ export type WhipClientViewRef = {
   disconnect: () => Promise<void>;
   switchCamera: (deviceId: string) => Promise<void>;
   flipCamera: () => Promise<void>;
-  cleanup: () => void;
+  cleanupWhip: () => Promise<void>;
   setPreferredSenderVideoCodecs: (
     preferredCodecs?: SenderVideoCodecName[],
   ) => Promise<void>;

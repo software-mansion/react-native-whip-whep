@@ -29,7 +29,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="whip"
+        name="whipTab"
         options={{
           title: 'Whip',
           tabBarIcon: ({ color, focused }) => (

@@ -61,6 +61,7 @@ public class WhipClient: ClientBase {
     }
 
     deinit {
+        print("WHIP DEINIT")
         cleanup()
     }
 

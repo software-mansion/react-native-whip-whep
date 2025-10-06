@@ -20,7 +20,7 @@ import {
 import { checkPermissions } from '@/utils/CheckPermissions';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
-export default function HomeScreen() {
+export default function WhipScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
 
@@ -98,7 +98,6 @@ export default function HomeScreen() {
   };
 
   const handleSwitchCamera = useCallback(async () => {
-    // Find the opposite camera (front/back)
     const currentCameraId = await whipClient.current?.currentCameraDeviceId();
     const currentCamera = cameras.find((cam) => cam.id === currentCameraId);
 
@@ -156,7 +155,7 @@ export default function HomeScreen() {
     const client = whipClient.current;
     return () => {
       client?.disconnect();
-      client?.cleanup();
+      client?.cleanupWhip();
     };
   }, [initializeCamera]);
 
@@ -184,7 +183,6 @@ export default function HomeScreen() {
 
         <Button title="Switch Camera" onPress={handleSwitchCamera} />
         <Button title="Flip Camera" onPress={handleFlipCamera} />
-        {/* This functionality will be implemented on android in FCE-2038 */}
         {Platform.OS === 'ios' && (
           <>
             <Button title="Set H264 Video" onPress={handleSetH264VideoCodec} />
@@ -210,7 +208,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 50,
+    paddingTop: 10,
   },
   box: {
     flex: 1,
@@ -248,3 +246,5 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
+
+
