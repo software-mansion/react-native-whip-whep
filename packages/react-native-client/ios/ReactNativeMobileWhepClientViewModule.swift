@@ -143,13 +143,9 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
       }
       
       AsyncFunction("cleanupWhep") { (view: ReactNativeMobileWhepClientView) in
-        
-        // Use the comprehensive cleanup method
         self.whepClient?.cleanup()
         
         view.player = nil
-        
-        // Remove the view from track update listeners
         self.onTrackUpdateListeners = []
         
         self.whepClient = nil

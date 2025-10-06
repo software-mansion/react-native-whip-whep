@@ -69,15 +69,7 @@ public struct VideoView: UIViewRepresentable {
 }
 
 public class VideoViewController: UIViewController {
-    public weak var player: ClientBase? {
-        didSet {
-            if player == nil {
-                // Clean up when player is set to nil
-                pipController?.videoTrack = nil
-                pipController = nil
-            }
-        }
-    }
+    public weak var player: ClientBase?
 
     private let videoView: RTCMTLVideoView = {
         let videoView = RTCMTLVideoView(frame: .zero)
@@ -95,12 +87,6 @@ public class VideoViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    deinit {
-        print("DEINIT IN VIDEO VIEW: \(player)")
-        pipController?.videoTrack = nil
-        pipController = nil
-        player = nil
-    }
 
     public override func viewDidLoad() {
         super.viewDidLoad()

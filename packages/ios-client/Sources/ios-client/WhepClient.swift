@@ -53,7 +53,7 @@ public class WhepClient: ClientBase {
     }
   
   deinit {
-    reconnectionManager = nil
+    print("DEINIT WHEP CLIENT")
   }
 
     /**
