@@ -5,7 +5,7 @@ import {
   ActivityIndicator,
   Text,
   Platform,
-  ScrollView
+  ScrollView,
 } from 'react-native';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
@@ -179,7 +179,10 @@ export default function WhipScreen() {
                   ).color,
                 },
               ]}>
-              {getConnectionStatusDisplay(peerConnectionState ?? 'unknown').text}
+              {
+                getConnectionStatusDisplay(peerConnectionState ?? 'unknown')
+                  .text
+              }
             </Text>
           </View>
 
@@ -187,12 +190,22 @@ export default function WhipScreen() {
           <Button title="Flip Camera" onPress={handleFlipCamera} />
           {Platform.OS === 'ios' && (
             <>
-              <Button title="Set H264 Video" onPress={handleSetH264VideoCodec} />
-              <Button title="Set OPUS Audio" onPress={handleSetOpusAudioCodec} />
+              <Button
+                title="Set H264 Video"
+                onPress={handleSetH264VideoCodec}
+              />
+              <Button
+                title="Set OPUS Audio"
+                onPress={handleSetOpusAudioCodec}
+              />
             </>
           )}
           {shouldShowStreamBtn && (
-            <Button title="Stream" onPress={handleStreamBtnClick} color={tint} />
+            <Button
+              title="Stream"
+              onPress={handleStreamBtnClick}
+              color={tint}
+            />
           )}
           {!shouldShowStreamBtn && !isLoading && (
             <Button
@@ -221,7 +234,7 @@ const styles = StyleSheet.create({
   videoWrapper: {
     flex: 1,
     paddingHorizontal: 16,
-    maxHeight: 500
+    maxHeight: 500,
   },
   clientView: {
     alignSelf: 'center',
@@ -249,5 +262,3 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
 });
-
-

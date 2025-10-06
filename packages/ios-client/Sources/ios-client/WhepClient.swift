@@ -51,10 +51,10 @@ public class WhepClient: ClientBase {
             listener: reconnectionListener
         )
     }
-  
-  deinit {
-    print("DEINIT WHEP CLIENT")
-  }
+
+    deinit {
+        print("DEINIT WHEP CLIENT")
+    }
 
     /**
     Connects the client to the WHEP server using WebRTC Peer Connection.
@@ -132,7 +132,7 @@ public class WhepClient: ClientBase {
             self?.videoTrack = nil
         }
     }
-    
+
     public func cleanup() {
         reconnectionManager = nil
         delegate = nil
