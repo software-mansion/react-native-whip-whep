@@ -155,7 +155,6 @@ class WhipClient(
       this.currentCameraDeviceId = configOptions.videoDevice
 
       videoTrack.setEnabled(true)
-      Log.d("test", "Setting video track in Whip client")
       this.videoTrack = videoTrack
     }
 
