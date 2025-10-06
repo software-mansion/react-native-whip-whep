@@ -37,7 +37,7 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
   private var whepClient: WhepClient? = nil
   private var onTrackUpdateListeners: [OnTrackUpdateListener] = []
 
-  private func emit(event: EmitableEvent) {
+  private func emit(event: WhepEmitableEvent) {
     DispatchQueue.main.async {
       self.sendEvent(event.event.name, event.data)
     }
@@ -54,7 +54,7 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
   public func definition() -> ModuleDefinition {
     Name("ReactNativeMobileWhepClientViewModule")
 
-    Events(EmitableEvent.allEvents)
+    Events(WhepEmitableEvent.allEvents)
 
     Property("whepPeerConnectionState") {
       self.whepClient?.peerConnectionState?.stringValue

@@ -63,7 +63,7 @@ public class ReactNativeMobileWhipClientViewModule: Module {
       }
   }
   
-  private func emit(event: EmitableEvent) {
+  private func emit(event: WhipEmitableEvent) {
     DispatchQueue.main.async {
       self.sendEvent(event.event.name, event.data)
     }
@@ -119,7 +119,7 @@ public class ReactNativeMobileWhipClientViewModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ReactNativeMobileWhipClientViewModule")
     
-    Events(EmitableEvent.allEvents)
+    Events(WhipEmitableEvent.allEvents)
     
     Property("cameras") {
         return self.getCaptureDevices()
