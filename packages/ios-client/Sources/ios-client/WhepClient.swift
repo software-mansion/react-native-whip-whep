@@ -52,10 +52,6 @@ public class WhepClient: ClientBase {
         )
     }
 
-    deinit {
-        print("DEINIT WHEP CLIENT")
-    }
-
     /**
     Connects the client to the WHEP server using WebRTC Peer Connection.
     
