@@ -50,24 +50,24 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
 
   override fun onReconnectionStarted() {
     super.onReconnectionStarted()
-    emit(EmitableEvent.reconnectionStatusChanged(ReconnectionStatus.ReconnectionStarted))
+    emit(WhepEmitableEvent.reconnectionStatusChanged(ReconnectionStatus.ReconnectionStarted))
   }
 
   override fun onReconnected() {
     super.onReconnected()
-    emit(EmitableEvent.reconnectionStatusChanged(ReconnectionStatus.Reconnected))
+    emit(WhepEmitableEvent.reconnectionStatusChanged(ReconnectionStatus.Reconnected))
   }
 
   override fun onReconnectionRetriesLimitReached() {
     super.onReconnectionRetriesLimitReached()
-    emit(EmitableEvent.reconnectionStatusChanged(ReconnectionStatus.ReconnectionRetriesLimitReached))
+    emit(WhepEmitableEvent.reconnectionStatusChanged(ReconnectionStatus.ReconnectionRetriesLimitReached))
   }
 
   override fun definition() =
     ModuleDefinition {
       Name("ReactNativeMobileWhepClientViewModule")
 
-      Events(EmitableEvent.allEvents)
+      Events(WhepEmitableEvent.allEvents)
 
       View(ReactNativeMobileWhepClientView::class) {
         Prop("pipEnabled") { view: ReactNativeMobileWhepClientView, pipEnabled: Boolean ->
@@ -110,7 +110,7 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
             }
           })
           whepClient?.onConnectionStateChanged = { newState ->
-            emit(EmitableEvent.whepPeerConnectionStateChanged(newState))
+            emit(WhepEmitableEvent.whepPeerConnectionStateChanged(newState))
           }
         }
 

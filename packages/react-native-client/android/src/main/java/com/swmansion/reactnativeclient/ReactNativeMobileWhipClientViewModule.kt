@@ -96,7 +96,7 @@ class ReactNativeMobileWhipClientViewModule : Module() {
     ModuleDefinition {
       Name("ReactNativeMobileWhipClientViewModule")
 
-      Events(EmitableEvent.allEvents)
+      Events(WhipEmitableEvent.allEvents)
 
       Property("cameras") {
         return@Property getCaptureDevices()
@@ -129,12 +129,12 @@ class ReactNativeMobileWhipClientViewModule : Module() {
             )
 
           if (options.videoEnabled && !PermissionUtils.hasCameraPermission(appContext)) {
-            emit(EmitableEvent.warning("Camera permission not granted. Cannot initialize WhipClient."))
+            emit(WhipEmitableEvent.warning("Camera permission not granted. Cannot initialize WhipClient."))
             return@AsyncFunction
           }
 
           if (options.audioEnabled && !PermissionUtils.hasMicrophonePermission(appContext)) {
-            emit(EmitableEvent.warning("Microphone permission not granted. Cannot initialize WhipClient."))
+            emit(WhipEmitableEvent.warning("Microphone permission not granted. Cannot initialize WhipClient."))
             return@AsyncFunction
           }
 
@@ -146,7 +146,7 @@ class ReactNativeMobileWhipClientViewModule : Module() {
             }
           })
           whipClient?.onConnectionStateChanged = { newState ->
-            emit(EmitableEvent.whipPeerConnectionStateChanged(newState))
+            emit(WhipEmitableEvent.whipPeerConnectionStateChanged(newState))
           }
         }
 
