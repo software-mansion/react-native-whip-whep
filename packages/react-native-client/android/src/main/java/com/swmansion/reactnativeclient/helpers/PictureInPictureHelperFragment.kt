@@ -2,6 +2,7 @@ package com.swmansion.reactnativeclient.helpers
 
 import androidx.fragment.app.Fragment
 import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientView
+import com.swmansion.reactnativeclient.ReactNativeMobileWhipClientView
 import java.util.UUID
 
 class PictureInPictureHelperFragment(private val videoView: ReactNativeMobileWhepClientView) : Fragment() {

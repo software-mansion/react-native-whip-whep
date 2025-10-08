@@ -16,6 +16,7 @@ import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraEnumerationAndroid
 import org.webrtc.CameraEnumerator
 import org.webrtc.CameraVideoCapturer
+import org.webrtc.EglBase
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
@@ -127,7 +128,7 @@ class WhipClient(
 
       val videoSource: VideoSource =
         peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
-      val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", PeerConnectionFactoryHelper.eglBase.eglBaseContext)
+      val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
       videoCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
       val videoSize =
         setVideoSize(

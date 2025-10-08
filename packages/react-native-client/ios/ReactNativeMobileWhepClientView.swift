@@ -13,37 +13,50 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
     func onTrackUpdate() {
         setupPlayer()
     }
+  
+    public var pipEnabled = false {
+      didSet {
+        setupPip()
+      }
+    }
     
-    public var playerType: String? {
-        didSet {
-            setupPlayer()
+    public var pipController: PictureInPictureController? {
+      hostingController?.pipController
+    }
+        
+    weak var player: ClientBase? {
+      didSet {
+        setupPlayer()
+        if player == nil {
+            hostingController?.player = nil
         }
+      }
     }
   
-  public var pipEnabled = false {
-    didSet {
-      setupPip()
+    public var autoStartPip = false {
+      didSet {
+        pipController?.startAutomatically = autoStartPip
+      }
     }
-  }
-  
-  public var pipController: PictureInPictureController? {
-    hostingController?.pipController
-  }
-      
-  private var player: ClientBase? {
-    guard let playerType = self.playerType else { return nil }
-    if (playerType == "WHIP") {
-        return ReactNativeMobileWhepClientModule.whipClient
-    } else {
-        return ReactNativeMobileWhepClientModule.whepClient
+    
+    public var autoStopPip = true {
+      didSet {
+        pipController?.stopAutomatically = autoStopPip
+      }
     }
-  }
+    
+    public var pipSize: CGSize = .zero {
+      didSet {
+        if !pipSize.equalTo(.zero) {
+          pipController?.preferredSize = pipSize
+        }
+      }
+    }
+    
     private var hostingController: VideoViewController?
 
     required init(appContext: AppContext? = nil) {
         super.init(appContext: appContext)
-        ReactNativeMobileWhepClientModule.onTrackUpdateListeners = []
-        ReactNativeMobileWhepClientModule.onTrackUpdateListeners.append(self)
     }
 
     private func setupPlayer() {
@@ -65,18 +78,24 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
         
         self.hostingController = hostingController
       
-      setupPip()
+        setupPip()
     }
   
-  private func setupPip() {
-    if pipEnabled {
-      hostingController?.setup(pictureInPictureWith: PictureInPictureController(sourceView: self))
-    } else {
-      hostingController?.disablePictureInPicture()
+    private func setupPip() {
+      if pipEnabled {
+        let controller = PictureInPictureController(sourceView: self)
+        controller.startAutomatically = autoStartPip
+        controller.stopAutomatically = autoStopPip
+        if !pipSize.equalTo(.zero) {
+          controller.preferredSize = pipSize
+        }
+        hostingController?.setup(pictureInPictureWith: controller)
+      } else {
+        hostingController?.disablePictureInPicture()
+      }
     }
-  }
     
     private func removeOldPlayer() {
         hostingController?.view.removeFromSuperview()
     }
-  }
+}

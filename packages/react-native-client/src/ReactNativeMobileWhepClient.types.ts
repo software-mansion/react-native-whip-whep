@@ -18,20 +18,6 @@ export type ConnectOptions = {
   serverUrl: string;
 };
 
-/** Defines initial WHIP Client options. */
-export type WhipConfigurationOptions = {
-  /** A variable deciding whether the audio should be streamed or not. Defaults to true. */
-  audioEnabled?: boolean;
-  /** A variable deciding whether the video should be streamed or not. Defaults to true. */
-  videoEnabled?: boolean;
-  /** ID of the camera.  */
-  videoDeviceId?: CameraId;
-  /** Defines the parameters of the video. Defaults to HD43. */
-  videoParameters?: VideoParameters;
-  /** URL address of the STUN server. The default one is `stun.l.google.com`. */
-  stunServerUrl?: string;
-};
-
 /** Defines initial WHEP Client options. */
 export type WhepConfigurationOptions = {
   /** A variable deciding whether the audio should be streamed or not. Defaults to true. */
@@ -44,24 +30,72 @@ export type WhepConfigurationOptions = {
 
 /**
  * A type that represents the ref to the WhepClientView component.
- * It contains methods to start, stop, and toggle Picture-in-Picture mode.
+ * It contains methods to control the WHEP client and Picture-in-Picture mode.
  */
 export type WhepClientViewRef = {
+  /**
+   * Creates a WHEP client with the given configuration.
+   */
+  createWhepClient: (
+    configurationOptions: WhepConfigurationOptions,
+    preferredVideoCodecs?: ReceiverVideoCodecName[],
+    preferredAudioCodecs?: ReceiverAudioCodecName[],
+  ) => Promise<void>;
+  /**
+   * Connects to the WHEP server.
+   */
+  connectWhep: (ConnectOptions) => Promise<void>;
+  /**
+   * Disconnects from the WHEP server.
+   */
+  disconnectWhep: () => Promise<void>;
+  /**
+   * Pauses the WHEP client stream.
+   */
+  pauseWhep: () => Promise<void>;
+  /**
+   * Unpauses the WHEP client stream.
+   */
+  unpauseWhep: () => Promise<void>;
+  /**
+   * Cleanups WHEP client
+   */
+  cleanupWhep: () => Promise<void>;
+  /**
+   * Gets supported receiver video codec names.
+   */
+  getSupportedReceiverVideoCodecsNames: () => Promise<ReceiverVideoCodecName[]>;
+  /**
+   * Gets supported receiver audio codec names.
+   */
+  getSupportedReceiverAudioCodecsNames: () => Promise<ReceiverAudioCodecName[]>;
+  /**
+   * Sets preferred receiver video codecs.
+   */
+  setPreferredReceiverVideoCodecs: (
+    preferredCodecs: ReceiverVideoCodecName[],
+  ) => Promise<void>;
+  /**
+   * Sets preferred receiver audio codecs.
+   */
+  setPreferredReceiverAudioCodecs: (
+    preferredCodecs: ReceiverAudioCodecName[],
+  ) => Promise<void>;
   /**
    * Starts the Picture-in-Picture mode.
    * On android enters the Picture-in-Picture mode and background the app.
    */
-  startPip: () => void;
+  startPip: () => Promise<void>;
   /**
    * Stops the Picture-in-Picture mode.
    * Does nothing on Android as PiP is not supported in foreground.
    */
-  stopPip: () => void;
+  stopPip: () => Promise<void>;
   /**
    * Toggles the Picture-in-Picture mode.
    * On android enters the Picture-in-Picture mode and background the app.
    */
-  togglePip: () => void;
+  togglePip: () => Promise<void>;
 };
 
 /** Describes props that can be passed to the module view. */
@@ -95,6 +129,50 @@ export type ReactNativeMobileWhepClientViewProps = {
    * A variable deciding the size of the Picture-in-Picture mode.
    */
   pipSize?: { width: number; height: number };
+};
+
+/** Describes props that can be passed to the module view. */
+export type ReactNativeMobileWhipClientViewProps = {
+  /**
+   * Used to apply custom styles to the component.
+   * It should be a valid CSS object for style properties.
+   */
+  style: React.CSSProperties;
+};
+
+/** Defines initial WHIP Client options. */
+export type WhipConfigurationOptions = {
+  /** A variable deciding whether the audio should be streamed or not. Defaults to true. */
+  audioEnabled?: boolean;
+  /** A variable deciding whether the video should be streamed or not. Defaults to true. */
+  videoEnabled?: boolean;
+  /** ID of the camera.  */
+  videoDeviceId?: CameraId;
+  /** Defines the parameters of the video. Defaults to HD43. */
+  videoParameters?: VideoParameters;
+  /** URL address of the STUN server. The default one is `stun.l.google.com`. */
+  stunServerUrl?: string;
+
+  preferredVideoCodecs?: SenderVideoCodecName[];
+  preferredAudioCodecs?: SenderAudioCodecName[];
+};
+
+export type WhipClientViewRef = {
+  initializeCamera: (options: WhipConfigurationOptions) => Promise<void>;
+  connect: (serverUrl: string, authToken?: string) => Promise<void>;
+  disconnect: () => Promise<void>;
+  switchCamera: (deviceId: string) => Promise<void>;
+  flipCamera: () => Promise<void>;
+  cleanupWhip: () => Promise<void>;
+  setPreferredSenderVideoCodecs: (
+    preferredCodecs?: SenderVideoCodecName[],
+  ) => Promise<void>;
+  setPreferredSenderAudioCodecs: (
+    preferredCodecs?: SenderAudioCodecName[],
+  ) => Promise<void>;
+  getSupportedSenderVideoCodecsNames: () => Promise<SenderVideoCodecName[]>;
+  getSupportedSenderAudioCodecsNames: () => Promise<SenderAudioCodecName[]>;
+  currentCameraDeviceId: () => Promise<string>;
 };
 
 /** Internal enum telling native views whether the stream will come from the server or device camera*/

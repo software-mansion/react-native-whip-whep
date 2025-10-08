@@ -129,6 +129,13 @@ public class WhepClient: ClientBase {
         }
     }
 
+    public func cleanup() {
+        reconnectionManager = nil
+        delegate = nil
+        reconnectionListener = nil
+        onConnectionStateChanged = nil
+    }
+
     private func getAudioTrack() -> RTCAudioTrack? {
         for transceiver in peerConnection!.transceivers {
             if let track = transceiver.receiver.track as? RTCAudioTrack {

@@ -1,21 +1,40 @@
-import ReactNativeMobileWhepClientModule, {
-  ReceivableEvents,
-} from "../ReactNativeMobileWhepClientModule";
+import ReactNativeMobileWhepClientViewModule, {
+  ReceivableEvents as WhepReceivableEvents,
+} from "../ReactNativeMobileWhepClientViewModule";
+import ReactNativeMobileWhipClientViewModule, {
+  ReceivableEvents as WhipReceivableEvents,
+} from "../ReactNativeMobileWhipClientViewModule";
 
 export const initializeWarningListener = () => {
   if (!__DEV__) {
     return;
   }
+
   try {
-    ReactNativeMobileWhepClientModule.addListener(
-      ReceivableEvents.Warning,
+    // Listen for WHEP warnings
+    ReactNativeMobileWhepClientViewModule.addListener(
+      WhepReceivableEvents.Warning,
       (event) => {
-        console.warn(event[ReceivableEvents.Warning]);
+        console.warn("[WHEP]", event[WhepReceivableEvents.Warning]);
       },
     );
   } catch (error: unknown) {
     console.error(
-      `Failed to start warning listener: ${error instanceof Error ? error.message : ""}`,
+      `Failed to start WHEP warning listener: ${error instanceof Error ? error.message : ""}`,
+    );
+  }
+
+  try {
+    // Listen for WHIP warnings
+    ReactNativeMobileWhipClientViewModule.addListener(
+      WhipReceivableEvents.Warning,
+      (event) => {
+        console.warn("[WHIP]", event[WhipReceivableEvents.Warning]);
+      },
+    );
+  } catch (error: unknown) {
+    console.error(
+      `Failed to start WHIP warning listener: ${error instanceof Error ? error.message : ""}`,
     );
   }
 };

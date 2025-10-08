@@ -45,7 +45,7 @@ class VideoView :
       newPlayer?.addTrackListener(this)
       newPlayer?.videoTrack?.addSink(this)
       field = newPlayer
-      PeerConnectionFactoryHelper.eglBase?.eglBaseContext?.let {
+      eglBase.eglBaseContext?.let {
         init(it, null)
       }
     }
@@ -67,21 +67,25 @@ class VideoView :
   private var surfaceWidth = 0
   private var surfaceHeight = 0
 
+  private val eglBase: EglBase
+
   /**
    * Standard View constructor. In order to render something, you must first call init().
    */
-  constructor(context: Context) : super(context) {
+  constructor(context: Context, eglBase: EglBase) : super(context) {
     resourceName = getResourceName()
     eglRenderer = SurfaceEglRenderer(resourceName)
     surfaceTextureListener = this
+    this.eglBase = eglBase
   }
 
   /**
    * Standard View constructor. In order to render something, you must first call init().
    */
-  constructor(context: Context, attrs: AttributeSet) : super(context, attrs) {
+  constructor(context: Context, attrs: AttributeSet, eglBase: EglBase) : super(context, attrs) {
     resourceName = getResourceName()
     eglRenderer = SurfaceEglRenderer(resourceName)
+    this.eglBase = eglBase
 
     surfaceTextureListener = this
   }
