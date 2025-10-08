@@ -173,7 +173,6 @@ export type WhipClientViewRef = {
   getSupportedSenderVideoCodecsNames: () => Promise<SenderVideoCodecName[]>;
   getSupportedSenderAudioCodecsNames: () => Promise<SenderAudioCodecName[]>;
   currentCameraDeviceId: () => Promise<string>;
-  whipPeerConnectionState: () => Promise<string>;
 };
 
 /** Internal enum telling native views whether the stream will come from the server or device camera*/

@@ -225,11 +225,6 @@ public class ReactNativeMobileWhipClientViewModule: Module {
       AsyncFunction("currentCameraDeviceId") {
         self.whipClient?.currentCameraDeviceId
       }
-      
-      // Is this needed for anything since we have the event with the connection state?
-      AsyncFunction("whipPeerConnectionState") {
-        self.whipClient?.peerConnectionState?.stringValue
-      }
     }
   }
 }
