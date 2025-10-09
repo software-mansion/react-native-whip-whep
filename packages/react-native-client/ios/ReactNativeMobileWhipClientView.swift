@@ -1,16 +1,17 @@
+import ExpoModulesCore
+import Foundation
+import MobileWhipWhepClient
 import SwiftUI
 import UIKit
-import Foundation
-import ExpoModulesCore
-import MobileWhipWhepClient
 
 @objc(ReactNativeMobileWhipClientView)
-public class ReactNativeMobileWhipClientView: ExpoView {  
-  var player: ClientBase? {
-    didSet {
-      setupPlayer()
+public class ReactNativeMobileWhipClientView: ExpoView {
+    var player: ClientBase? {
+        didSet {
+            setupPlayer()
+        }
     }
-  }
+
     private var hostingController: VideoViewController?
 
     required init(appContext: AppContext? = nil) {
@@ -19,25 +20,25 @@ public class ReactNativeMobileWhipClientView: ExpoView {
 
     private func setupPlayer() {
         removeOldPlayer()
-        
-        guard let player = self.player else { return }
+
+        guard let player = player else { return }
         let hostingController = VideoViewController()
         hostingController.player = player
         hostingController.view.backgroundColor = nil
-        self.addSubview(hostingController.view)
-        
+        addSubview(hostingController.view)
+
         hostingController.view.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            hostingController.view.topAnchor.constraint(equalTo: self.topAnchor),
-            hostingController.view.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-            hostingController.view.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            hostingController.view.trailingAnchor.constraint(equalTo: self.trailingAnchor)
+            hostingController.view.topAnchor.constraint(equalTo: topAnchor),
+            hostingController.view.bottomAnchor.constraint(equalTo: bottomAnchor),
+            hostingController.view.leadingAnchor.constraint(equalTo: leadingAnchor),
+            hostingController.view.trailingAnchor.constraint(equalTo: trailingAnchor)
         ])
-        
+
         self.hostingController = hostingController
     }
-    
+
     private func removeOldPlayer() {
         hostingController?.view.removeFromSuperview()
     }
-  }
+}

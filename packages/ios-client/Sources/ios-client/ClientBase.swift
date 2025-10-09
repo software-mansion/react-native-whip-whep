@@ -1,13 +1,13 @@
 import Foundation
 import Logging
-import WebRTC
 import os
+import WebRTC
 
 extension RTCPeerConnection {
     // currently `Membrane RTC Engine` can't handle track of diretion `sendRecv` therefore
     // we need to change all `sendRecv` to `sendOnly`.
     func enforceSendOnlyDirection() {
-        self.transceivers.forEach { transceiver in
+        for transceiver in transceivers {
             if transceiver.direction == .sendRecv {
                 transceiver.setDirection(.sendOnly, error: nil)
             }
@@ -97,16 +97,17 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
         config.tcpCandidatePolicy = .disabled
 
         let constraints = RTCMediaConstraints(mandatoryConstraints: nil, optionalConstraints: nil)
-        self.peerConnection = ClientBase.peerConnectionFactory.peerConnection(
+        peerConnection = ClientBase.peerConnectionFactory.peerConnection(
             with: config,
             constraints: constraints,
-            delegate: self)
+            delegate: self
+        )
 
-        if self.peerConnection! == nil {
+        if peerConnection! == nil {
             print("Failed to establish RTCPeerConnection. Check initial configuration")
         }
 
-        self.isConnectionSetUp = true
+        isConnectionSetUp = true
     }
 
     public func connect(_ connectOptions: ClientConnectOptions) async throws {
@@ -114,22 +115,22 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
     }
 
     /**
-    Sends an SDP offer to the WHIP/WHEP server.
-    
-    - Parameter sdpOffer: The offer to send to the server.
-    
-    - Throws: `AttributeNotFoundError.ResponseNotFound` if there is no response to the offer or
-     `AttributeNotFoundError.LocationNotFound` if the response does not contain the location parameter or
-     `SessionNetworkError.ConnectionError` if the  connection could not be established or the response code is incorrect,
-      for example due to server being down, wrong server URL or token.
-    
-    - Returns: A SDP response.
-    */
+     Sends an SDP offer to the WHIP/WHEP server.
+
+     - Parameter sdpOffer: The offer to send to the server.
+
+     - Throws: `AttributeNotFoundError.ResponseNotFound` if there is no response to the offer or
+      `AttributeNotFoundError.LocationNotFound` if the response does not contain the location parameter or
+      `SessionNetworkError.ConnectionError` if the  connection could not be established or the response code is incorrect,
+       for example due to server being down, wrong server URL or token.
+
+     - Returns: A SDP response.
+     */
     func send(sdpOffer: String) async throws -> String {
         guard let connectOptions else {
             throw SessionNetworkError.ConnectionError(
                 description:
-                    "Cannot send the SDP Offer. Connection not setup. Remember to call connect first.")
+                "Cannot send the SDP Offer. Connection not setup. Remember to call connect first.")
         }
 
         var request = URLRequest(url: connectOptions.serverUrl)
@@ -148,20 +149,20 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
         } catch {
             throw SessionNetworkError.ConnectionError(
                 description:
-                    "Network error. Check if the server is up and running and the token and the server url is correct.")
+                "Network error. Check if the server is up and running and the token and the server url is correct.")
         }
         guard let httpResponse = response as? HTTPURLResponse,
-            httpResponse.statusCode == 201
+              httpResponse.statusCode == 201
         else {
             let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
             throw SessionNetworkError.ConnectionError(
                 description:
-                    "Network error. Check if the server is up and running and the token and the server url is correct.")
+                "Network error. Check if the server is up and running and the token and the server url is correct.")
         }
 
         let responseString = String(data: data!, encoding: .utf8)
         if let foundLocation = httpResponse.allHeaderFields["Location"] as? String {
-            self.patchEndpoint = foundLocation
+            patchEndpoint = foundLocation
             print("Location: \(foundLocation)")
         } else {
             throw AttributeNotFoundError.LocationNotFound(
@@ -175,20 +176,20 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
     }
 
     /**
-    Sends an ICE candidate to WHIP/WHEP server in order to provide a streaming device.
-    
-    - Parameter candidate: Represents a single ICE candidate.
-    
-    - Throws: `AttributeNotFoundError.PatchEndpointNotFound` if the patch endpoint has not been properly set up,
-      `AttributeNotFoundError.UFragNotFound` if the SDP of the candidate does not contain the ufrag,
-      `SessionNetworkError.CandidateSendingError` if the candidate could not be sent and
-      `NSError` for when the candidate data dictionary could not be serialized to JSON.
-    */
+     Sends an ICE candidate to WHIP/WHEP server in order to provide a streaming device.
+
+     - Parameter candidate: Represents a single ICE candidate.
+
+     - Throws: `AttributeNotFoundError.PatchEndpointNotFound` if the patch endpoint has not been properly set up,
+       `AttributeNotFoundError.UFragNotFound` if the SDP of the candidate does not contain the ufrag,
+       `SessionNetworkError.CandidateSendingError` if the candidate could not be sent and
+       `NSError` for when the candidate data dictionary could not be serialized to JSON.
+     */
     func sendCandidate(candidate: RTCIceCandidate) async throws {
         guard let connectOptions else {
             throw SessionNetworkError.ConnectionError(
                 description:
-                    "Cannot send ICE Candidate. Connection not setup. Remember to call connect first.")
+                "Cannot send ICE Candidate. Connection not setup. Remember to call connect first.")
         }
 
         guard patchEndpoint != nil else {
@@ -232,11 +233,11 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
         }
     }
 
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCSignalingState) {
+    public func peerConnection(_: RTCPeerConnection, didChange stateChanged: RTCSignalingState) {
         logger.debug("RTC signaling state changed: \(stateChanged.rawValue).")
     }
 
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didAdd stream: RTCMediaStream) {
+    public func peerConnection(_: RTCPeerConnection, didAdd stream: RTCMediaStream) {
         DispatchQueue.main.async {
             if let track = stream.videoTracks.first {
                 self.videoTrack = track
@@ -246,18 +247,18 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
         logger.debug("RTC media stream added: \(stream.description).")
     }
 
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove stream: RTCMediaStream) {
+    public func peerConnection(_: RTCPeerConnection, didRemove stream: RTCMediaStream) {
         logger.debug("RTC media stream removed: \(stream.description).")
     }
 
-    public func peerConnectionShouldNegotiate(_ peerConnection: RTCPeerConnection) {
+    public func peerConnectionShouldNegotiate(_: RTCPeerConnection) {
         logger.debug("Peer connection negotiation needed.")
     }
 
     /**
-     Reacts to changes in the ICE Connection state and logs a message depending on the current state.
-    */
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
+      Reacts to changes in the ICE Connection state and logs a message depending on the current state.
+     */
+    public func peerConnection(_: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
         switch newState {
         case .checking:
             logger.debug("ICE is checking paths, this might take a moment.")
@@ -281,15 +282,15 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
         }
     }
 
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceGatheringState) {
+    public func peerConnection(_: RTCPeerConnection, didChange newState: RTCIceGatheringState) {
         logger.debug("RTC ICE gathering state changed: \(newState.rawValue).")
     }
 
     /**
-     Reacts to new candidate found and sends it to the WHIP/WHEP server.
-    */
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
-        if self.patchEndpoint != nil {
+      Reacts to new candidate found and sends it to the WHIP/WHEP server.
+     */
+    public func peerConnection(_: RTCPeerConnection, didGenerate candidate: RTCIceCandidate) {
+        if patchEndpoint != nil {
             Task { [weak self] in
                 try await self?.sendCandidate(candidate: candidate)
             }
@@ -298,18 +299,18 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
         }
     }
 
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didRemove candidates: [RTCIceCandidate]) {
+    public func peerConnection(_: RTCPeerConnection, didRemove _: [RTCIceCandidate]) {
         logger.debug("Removed candidate from candidates list.")
     }
 
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
+    public func peerConnection(_: RTCPeerConnection, didOpen dataChannel: RTCDataChannel) {
         logger.debug("RTC data channel opened: \(dataChannel.channelId)")
     }
 
     /**
-     Reacts to changes in the Peer Connection state and logs a message depending on the current state
-    */
-    public func peerConnection(_ peerConnection: RTCPeerConnection, didChange stateChanged: RTCPeerConnectionState) {
+      Reacts to changes in the Peer Connection state and logs a message depending on the current state
+     */
+    public func peerConnection(_: RTCPeerConnection, didChange stateChanged: RTCPeerConnectionState) {
         onConnectionStateChanged?(stateChanged)
         switch stateChanged {
         case .connected:
@@ -333,11 +334,11 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
 
     /**
      Gets matched codecs from the preferred codec list that are available in the peer connection factory.
-    
+
      - Parameter preferredCodecs: List of preferred codec names
      - Parameter mediaType: The media type (audio or video)
      - Parameter useReceiver: Whether to use receiver capabilities instead of sender capabilities
-    
+
      - Returns: Array of matched codec capabilities
      */
     func getMatchedCodecs(preferredCodecs: [String], mediaType: String, useReceiver: Bool = false)
@@ -349,8 +350,8 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
 
         let capabilities =
             useReceiver
-            ? ClientBase.peerConnectionFactory.rtpReceiverCapabilities(forKind: mediaType)
-            : ClientBase.peerConnectionFactory.rtpSenderCapabilities(forKind: mediaType)
+                ? ClientBase.peerConnectionFactory.rtpReceiverCapabilities(forKind: mediaType)
+                : ClientBase.peerConnectionFactory.rtpSenderCapabilities(forKind: mediaType)
         let availableCodecs = capabilities.codecs
 
         return preferredCodecs.compactMap { preferredCodec in
@@ -362,7 +363,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
 
     /**
      Sets codec preferences for a transceiver if matched codecs are available.
-    
+
      - Parameter transceiver: The RTP transceiver to set preferences for
      - Parameter preferredCodecs: List of preferred codec names
      - Parameter mediaType: The media type (audio or video)
@@ -372,10 +373,10 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
         transceiver: RTCRtpTransceiver?, preferredCodecs: [String], mediaType: String, useReceiver: Bool = false
     ) {
         let matchedCodecs = getMatchedCodecs(
-            preferredCodecs: preferredCodecs, mediaType: mediaType, useReceiver: useReceiver)
+            preferredCodecs: preferredCodecs, mediaType: mediaType, useReceiver: useReceiver
+        )
         if !matchedCodecs.isEmpty {
             transceiver?.codecPreferences = matchedCodecs
         }
     }
-
 }

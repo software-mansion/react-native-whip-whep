@@ -7,7 +7,7 @@ public class SampleBufferVideoCallView: UIView {
 
     public var shouldRender: Bool = false
 
-    public override init(frame: CGRect) {
+    override public init(frame: CGRect) {
         sampleBufferLayer = AVSampleBufferDisplayLayer()
         super.init(frame: frame)
 
@@ -16,11 +16,12 @@ public class SampleBufferVideoCallView: UIView {
         translatesAutoresizingMaskIntoConstraints = false
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func layoutSubviews() {
+    override public func layoutSubviews() {
         super.layoutSubviews()
         sampleBufferLayer.frame = bounds
     }
@@ -67,13 +68,14 @@ public class SampleBufferVideoCallView: UIView {
 
         // Set sample attachments
         if let attachments = CMSampleBufferGetSampleAttachmentsArray(buffer, createIfNecessary: true),
-            let attachmentArray = attachments as? [CFMutableDictionary],
-            let dict = attachmentArray.first
+           let attachmentArray = attachments as? [CFMutableDictionary],
+           let dict = attachmentArray.first
         {
             CFDictionarySetValue(
                 dict,
                 Unmanaged.passUnretained(kCMSampleAttachmentKey_DisplayImmediately).toOpaque(),
-                Unmanaged.passUnretained(kCFBooleanTrue).toOpaque())
+                Unmanaged.passUnretained(kCFBooleanTrue).toOpaque()
+            )
         }
 
         return buffer

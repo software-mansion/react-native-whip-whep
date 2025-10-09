@@ -25,12 +25,12 @@ public struct VideoParameters {
     )
     public static let presetHD43 = VideoParameters(
         dimensions: Dimensions(width: 960, height: 720),
-        maxBandwidth: 1_500,
+        maxBandwidth: 1500,
         maxFps: 30
     )
     public static let presetFHD43 = VideoParameters(
         dimensions: Dimensions(width: 1440, height: 1080),
-        maxBandwidth: 2_800,
+        maxBandwidth: 2800,
         maxFps: 30
     )
 
@@ -52,12 +52,12 @@ public struct VideoParameters {
     )
     public static let presetHD169 = VideoParameters(
         dimensions: Dimensions(width: 1280, height: 720),
-        maxBandwidth: 2_000,
+        maxBandwidth: 2000,
         maxFps: 30
     )
     public static let presetFHD169 = VideoParameters(
         dimensions: Dimensions(width: 1920, height: 1080),
-        maxBandwidth: 3_000,
+        maxBandwidth: 3000,
         maxFps: 30
     )
 
@@ -74,17 +74,17 @@ public struct VideoParameters {
     )
     public static let presetScreenShareHD15 = VideoParameters(
         dimensions: Dimensions(width: 1280, height: 720),
-        maxBandwidth: 1_000,
+        maxBandwidth: 1000,
         maxFps: 15
     )
     public static let presetScreenShareFHD15 = VideoParameters(
         dimensions: Dimensions(width: 1920, height: 1080),
-        maxBandwidth: 1_500,
+        maxBandwidth: 1500,
         maxFps: 15
     )
     public static let presetScreenShareFHD30 = VideoParameters(
         dimensions: Dimensions(width: 1920, height: 1080),
-        maxBandwidth: 3_000,
+        maxBandwidth: 3000,
         maxFps: 30
     )
 

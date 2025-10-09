@@ -12,7 +12,8 @@ let package = Package(
         // Products define the executables and libraries a package produces, making them visible to other packages.
         .library(
             name: "MobileWhipWhepClient",
-            targets: ["MobileWhipWhepClient"])
+            targets: ["MobileWhipWhepClient"]
+        )
     ],
     dependencies: [
         .package(name: "WebRTC", url: "https://github.com/webrtc-sdk/Specs.git", .exact("125.6422.06")),
@@ -30,6 +31,7 @@ let package = Package(
         ),
         .testTarget(
             name: "MobileWhipWhepClientTests",
-            dependencies: ["MobileWhipWhepClient"]),
+            dependencies: ["MobileWhipWhepClient"]
+        ),
     ]
 )

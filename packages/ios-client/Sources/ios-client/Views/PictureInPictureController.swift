@@ -1,9 +1,9 @@
 /*
-* Adapted from Objective-C version: https://github.com/react-native-webrtc/react-native-webrtc/blob/a388aba77d6ef652d904ac4ef55026716bb151f1/ios/RCTWebRTC/PIPController.m
- */
+ * Adapted from Objective-C version: https://github.com/react-native-webrtc/react-native-webrtc/blob/a388aba77d6ef652d904ac4ef55026716bb151f1/ios/RCTWebRTC/PIPController.m
+  */
 
-import AVKit
 import Accelerate
+import AVKit
 import Foundation
 import UIKit
 import WebRTC
@@ -49,9 +49,9 @@ public class PictureInPictureController: NSObject {
     public init(sourceView: UIView) {
         self.sourceView = sourceView
 
-        self.fallbackView = UIView(frame: .zero)
+        fallbackView = UIView(frame: .zero)
 
-        self.sampleView = SampleBufferVideoCallView(frame: .zero)
+        sampleView = SampleBufferVideoCallView(frame: .zero)
 
         super.init()
 
@@ -88,7 +88,7 @@ public class PictureInPictureController: NSObject {
         pipController = AVPictureInPictureController(contentSource: contentSource)
 
         keyValueObservation = pipController?.observe(\.isPictureInPictureActive, options: [.initial, .new]) {
-            [weak self] controller, change in
+            [weak self] _, change in
             self?.sampleView.shouldRender = change.newValue ?? false
         }
     }
@@ -154,7 +154,7 @@ public class PictureInPictureController: NSObject {
         )
     }
 
-    @objc private func applicationWillEnterForeground(_ notification: Notification) {
+    @objc private func applicationWillEnterForeground(_: Notification) {
         if stopAutomatically {
             // Arbitraty 0.5s, if called to early won't have any effect.
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
@@ -188,7 +188,7 @@ public class PictureInPictureController: NSObject {
 
     public func startPictureInPicture() {
         guard let pipController = pipController,
-            pipController.isPictureInPicturePossible
+              pipController.isPictureInPicturePossible
         else { return }
 
         pipController.startPictureInPicture()
@@ -196,7 +196,7 @@ public class PictureInPictureController: NSObject {
 
     public func stopPictureInPicture() {
         guard let pipController = pipController,
-            pipController.isPictureInPictureActive
+              pipController.isPictureInPictureActive
         else { return }
 
         pipController.stopPictureInPicture()

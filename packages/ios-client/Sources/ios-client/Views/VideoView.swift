@@ -18,7 +18,7 @@ public struct VideoView: UIViewRepresentable {
         return view
     }
 
-    public func updateUIView(_ uiView: RTCMTLVideoView, context: Context) {
+    public func updateUIView(_ uiView: RTCMTLVideoView, context _: Context) {
         DispatchQueue.main.async {
             if let track = player.videoTrack {
                 track.add(uiView)
@@ -83,11 +83,12 @@ public class VideoViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
 
-    required init?(coder: NSCoder) {
+    @available(*, unavailable)
+    required init?(coder _: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    public override func viewDidLoad() {
+    override public func viewDidLoad() {
         super.viewDidLoad()
         view.addSubview(videoView)
         videoView.translatesAutoresizingMaskIntoConstraints = false
@@ -106,19 +107,19 @@ public class VideoViewController: UIViewController {
         }
     }
 
-    public override func viewWillDisappear(_ animated: Bool) {
+    override public func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
     }
 
     public func setup(pictureInPictureWith controller: PictureInPictureController) {
-        self.pipController = controller
+        pipController = controller
         if let track = player?.videoTrack {
             pipController?.videoTrack = track
         }
     }
 
     public func disablePictureInPicture() {
-        self.pipController = nil
+        pipController = nil
     }
 }
 
