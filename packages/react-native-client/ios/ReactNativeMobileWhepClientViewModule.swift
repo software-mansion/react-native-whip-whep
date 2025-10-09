@@ -85,7 +85,7 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
                     self.emit(
                         event: .warning(
                             message:
-                            "WHEP client already exists. You must disconnect before creating a new one."
+                                "WHEP client already exists. You must disconnect before creating a new one."
                         )
                     )
                     return
@@ -112,7 +112,7 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
                     throw Exception(
                         name: "E_WHEP_CLIENT_NOT_FOUND",
                         description:
-                        "WHEP client not found. Make sure it was initialized properly."
+                            "WHEP client not found. Make sure it was initialized properly."
                     )
                 }
                 guard let url = URL(string: connectOptions.serverUrl) else {
@@ -155,7 +155,7 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
                     throw Exception(
                         name: "E_WHEP_CLIENT_NOT_FOUND",
                         description:
-                        "WHEP client not found. Make sure it was initialized properly."
+                            "WHEP client not found. Make sure it was initialized properly."
                     )
                 }
                 client.pause()
@@ -166,7 +166,7 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
                     throw Exception(
                         name: "E_WHEP_CLIENT_NOT_FOUND",
                         description:
-                        "WHEP client not found. Make sure it was initialized properly."
+                            "WHEP client not found. Make sure it was initialized properly."
                     )
                 }
                 client.unpause()

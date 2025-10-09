@@ -1,5 +1,5 @@
-import os
 import WebRTC
+import os
 
 public struct WhipConfigurationOptions {
     public let audioEnabled: Bool
@@ -34,11 +34,11 @@ public class WhipClient: ClientBase {
 
     /**
      Initializes a `WhipClient` object.
-
+    
      - Parameter serverUrl: A URL of the WHIP server.
      - Parameter configurationOptions: Additional configuration options, such as a STUN server URL or authorization token.
      - Parameter videoDevice: A device that will be used to stream video.
-
+    
      - Returns: A `WhipClient` object.
      */
     public init(
@@ -51,8 +51,8 @@ public class WhipClient: ClientBase {
             try setUpVideoAndAudioDevices()
         } catch let error as CaptureDeviceError {
             switch error {
-            case let .VideoDeviceNotAvailable(description),
-                 let .VideoSizeNotSupported(description):
+            case .VideoDeviceNotAvailable(let description),
+                .VideoSizeNotSupported(let description):
                 print(description)
             }
         } catch {
@@ -109,7 +109,7 @@ public class WhipClient: ClientBase {
 
     /**
      Connects the client to the WHIP server using WebRTC Peer Connection.
-
+    
      - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
          of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
      */
@@ -137,7 +137,7 @@ public class WhipClient: ClientBase {
 
     /**
      Closes the established Peer Connection.
-
+    
      - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
      of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
      */
@@ -159,7 +159,7 @@ public class WhipClient: ClientBase {
         guard let connectOptions else {
             throw SessionNetworkError.ConnectionError(
                 description:
-                "Connection not setup. Remember to call connect first.")
+                    "Connection not setup. Remember to call connect first.")
         }
         guard let patchEndpoint = patchEndpoint else {
             throw AttributeNotFoundError.PatchEndpointNotFound(
@@ -184,7 +184,7 @@ public class WhipClient: ClientBase {
         if httpResponse.statusCode < 200 || httpResponse.statusCode >= 300 {
             throw SessionNetworkError.ConnectionError(
                 description:
-                "DELETE Failed, invalid response. Check if the server is up and running and the token and the server url is correct."
+                    "DELETE Failed, invalid response. Check if the server is up and running and the token and the server url is correct."
             )
         }
     }
@@ -311,7 +311,7 @@ public class WhipClient: ClientBase {
 
     /**
      Gets the names of supported sender video codecs.
-
+    
      - Returns: Array of supported video codec names
      */
     public static func getSupportedSenderVideoCodecsNames() -> [String] {
@@ -323,7 +323,7 @@ public class WhipClient: ClientBase {
 
     /**
      Gets the names of supported sender audio codecs.
-
+    
      - Returns: Array of supported audio codec names
      */
     public static func getSupportedSenderAudioCodecsNames() -> [String] {
@@ -335,7 +335,7 @@ public class WhipClient: ClientBase {
 
     /**
      Sets preferred video codecs for sending.
-
+    
      - Parameter preferredCodecs: Array of preferred video codec names, or nil to skip setting
      */
     public func setPreferredVideoCodecs(preferredCodecs: [String]?) {
@@ -360,7 +360,7 @@ public class WhipClient: ClientBase {
 
     /**
      Sets preferred audio codecs for sending.
-
+    
      - Parameter preferredCodecs: Array of preferred audio codec names, or nil to skip setting
      */
     public func setPreferredAudioCodecs(preferredCodecs: [String]?) {

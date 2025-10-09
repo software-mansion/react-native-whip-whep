@@ -1,8 +1,8 @@
 import Foundation
 import WebRTC
 
-public extension RTCPeerConnectionState {
-    var stringValue: String {
+extension RTCPeerConnectionState {
+    public var stringValue: String {
         switch self {
         case .new:
             return "new"

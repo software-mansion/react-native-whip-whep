@@ -215,7 +215,7 @@ public class I420Converter {
         )
 
         // Do the conversion
-        let permuteMap: [UInt8] = [3, 2, 1, 0] // BGRA
+        let permuteMap: [UInt8] = [3, 2, 1, 0]  // BGRA
 
         let convertError = vImageConvert_420Yp8_Cb8_Cr8ToARGB8888(
             &yPlaneBuffer,

@@ -24,7 +24,7 @@ public class ReactNativeMobileWhipClientViewModule: Module {
 
     private func createWhipClient(options: ConfigurationOptions) throws {
         guard let videoDeviceId = options.videoDeviceId,
-              let avCaptureDevice = AVCaptureDevice(uniqueID: videoDeviceId)
+            let avCaptureDevice = AVCaptureDevice(uniqueID: videoDeviceId)
         else {
             throw Exception(
                 name: "E_INVALID_VIDEO_DEVICE_ID",
@@ -35,7 +35,7 @@ public class ReactNativeMobileWhipClientViewModule: Module {
         let parsedVideoParameters: VideoParameters
 
         if let optionsVideoParameters = options.videoParameters,
-           let parameters = try? getVideoParametersFromOptions(createOptions: optionsVideoParameters)
+            let parameters = try? getVideoParametersFromOptions(createOptions: optionsVideoParameters)
         {
             parsedVideoParameters = parameters
         } else {
@@ -131,10 +131,11 @@ public class ReactNativeMobileWhipClientViewModule: Module {
         }
 
         View(ReactNativeMobileWhipClientView.self) {
-            AsyncFunction("initializeCamera") { (
-                view: ReactNativeMobileWhipClientView,
-                options: ConfigurationOptions
-            ) in
+            AsyncFunction("initializeCamera") {
+                (
+                    view: ReactNativeMobileWhipClientView,
+                    options: ConfigurationOptions
+                ) in
                 do {
                     try self.createWhipClient(options: options)
 

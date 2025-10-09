@@ -17,11 +17,11 @@ public enum SessionNetworkError: LocalizedError {
 
     public var errorDescription: String? {
         switch self {
-        case let .CandidateSendingError(description):
+        case .CandidateSendingError(let description):
             return "Candidate sending error: \(description)"
-        case let .ConnectionError(description):
+        case .ConnectionError(let description):
             return "Connection error: \(description)"
-        case let .ConfigurationError(description):
+        case .ConfigurationError(let description):
             return "Configuration error: \(description)"
         }
     }

@@ -2,8 +2,8 @@
  * Adapted from Objective-C version: https://github.com/react-native-webrtc/react-native-webrtc/blob/a388aba77d6ef652d904ac4ef55026716bb151f1/ios/RCTWebRTC/PIPController.m
   */
 
-import Accelerate
 import AVKit
+import Accelerate
 import Foundation
 import UIKit
 import WebRTC
@@ -188,7 +188,7 @@ public class PictureInPictureController: NSObject {
 
     public func startPictureInPicture() {
         guard let pipController = pipController,
-              pipController.isPictureInPicturePossible
+            pipController.isPictureInPicturePossible
         else { return }
 
         pipController.startPictureInPicture()
@@ -196,7 +196,7 @@ public class PictureInPictureController: NSObject {
 
     public func stopPictureInPicture() {
         guard let pipController = pipController,
-              pipController.isPictureInPictureActive
+            pipController.isPictureInPictureActive
         else { return }
 
         pipController.stopPictureInPicture()

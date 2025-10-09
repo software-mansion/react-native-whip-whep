@@ -73,7 +73,7 @@ public class ReactNativeMobileWhepClientView: ExpoView, OnTrackUpdateListener {
             hostingController.view.topAnchor.constraint(equalTo: topAnchor),
             hostingController.view.bottomAnchor.constraint(equalTo: bottomAnchor),
             hostingController.view.leadingAnchor.constraint(equalTo: leadingAnchor),
-            hostingController.view.trailingAnchor.constraint(equalTo: trailingAnchor)
+            hostingController.view.trailingAnchor.constraint(equalTo: trailingAnchor),
         ])
 
         self.hostingController = hostingController

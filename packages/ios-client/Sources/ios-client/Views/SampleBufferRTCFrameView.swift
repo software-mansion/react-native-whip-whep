@@ -68,8 +68,8 @@ public class SampleBufferVideoCallView: UIView {
 
         // Set sample attachments
         if let attachments = CMSampleBufferGetSampleAttachmentsArray(buffer, createIfNecessary: true),
-           let attachmentArray = attachments as? [CFMutableDictionary],
-           let dict = attachmentArray.first
+            let attachmentArray = attachments as? [CFMutableDictionary],
+            let dict = attachmentArray.first
         {
             CFDictionarySetValue(
                 dict,
