@@ -105,7 +105,9 @@ public class WhepClient: ClientBase {
         reconnectionManager?.onReconnected()
     }
 
-    override public func peerConnection(_ peerConnection: RTCPeerConnection, didChange newState: RTCIceConnectionState) {
+    override public func peerConnection(_ peerConnection: RTCPeerConnection,
+                                        didChange newState: RTCIceConnectionState)
+    {
         super.peerConnection(peerConnection, didChange: newState)
 
         if newState == .disconnected {
