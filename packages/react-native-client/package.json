@@ -7,7 +7,7 @@
   "scripts": {
     "build": "EXPO_NONINTERACTIVE=1 sh -c 'expo-module build && expo-module build plugin'",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "expo-module lint && swift-format format -i -r ./**/**/*.swift --configuration swift-format-config.json",
     "test": "expo-module test",
     "prepare": "expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
