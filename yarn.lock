@@ -7347,13 +7347,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo-web-browser@npm:14.0.2":
-  version: 14.0.2
-  resolution: "expo-web-browser@npm:14.0.2"
+"expo-web-browser@npm:15.0.8":
+  version: 15.0.8
+  resolution: "expo-web-browser@npm:15.0.8"
   peerDependencies:
     expo: "*"
     react-native: "*"
-  checksum: 10c0/b02e6d3a59863101e430e8581a621c7c612f35abc6d5bd89b85e458fc9d92836a9306124c8f35bdb0e710e0771272a5724769ef717893e7b49d5e0528252c18c
+  checksum: 10c0/5d94e47ef1bd1ec18502b78c6f7ff3b1c9ff2e037dc921bc3b049d139fec396e1eaa91bc2f9e7ed8fcc92106f5e7db9ae1852429480ff19ba24c9432400830b8
   languageName: node
   linkType: hard
 
@@ -14038,7 +14038,7 @@ __metadata:
     expo-splash-screen: "npm:~0.29.24"
     expo-status-bar: "npm:~2.0.1"
     expo-system-ui: "npm:4.0.9"
-    expo-web-browser: "npm:14.0.2"
+    expo-web-browser: "npm:15.0.8"
     jest: "npm:^29.2.1"
     jest-expo: "npm:~52.0.6"
     react: "npm:18.3.1"
