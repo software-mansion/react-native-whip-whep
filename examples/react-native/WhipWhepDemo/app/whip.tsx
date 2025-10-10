@@ -77,10 +77,10 @@ export default function WhipScreen() {
     try {
       setIsLoading(true);
 
-      await whipClient.current?.connect(
-        process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
-        'example',
-      );
+      await whipClient.current?.connect({
+        serverUrl: process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
+        authToken: 'example',
+      });
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to connect to WHIP Client', error);

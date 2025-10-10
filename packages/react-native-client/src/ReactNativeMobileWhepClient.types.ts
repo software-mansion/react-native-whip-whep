@@ -159,7 +159,10 @@ export type WhipConfigurationOptions = {
 
 export type WhipClientViewRef = {
   initializeCamera: (options: WhipConfigurationOptions) => Promise<void>;
-  connect: (serverUrl: string, authToken?: string) => Promise<void>;
+  connect: (options: {
+    serverUrl: string;
+    authToken?: string;
+  }) => Promise<void>;
   disconnect: () => Promise<void>;
   switchCamera: (deviceId: string) => Promise<void>;
   flipCamera: () => Promise<void>;
