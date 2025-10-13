@@ -18,7 +18,6 @@ import {
   SenderAudioCodecName,
   useWhipConnectionState,
 } from 'react-native-whip-whep';
-import { checkPermissions } from '@/utils/CheckPermissions';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function WhipScreen() {
@@ -150,7 +149,6 @@ export default function WhipScreen() {
   }, []);
 
   useEffect(() => {
-    checkPermissions();
     initializeCamera();
 
     const client = whipClient.current;

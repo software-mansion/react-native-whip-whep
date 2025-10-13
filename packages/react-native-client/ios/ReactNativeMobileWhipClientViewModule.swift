@@ -142,18 +142,19 @@ public class ReactNativeMobileWhipClientViewModule: Module {
         }
 
         View(ReactNativeMobileWhipClientView.self) {
-            AsyncFunction("initializeCamera") {
-                (
-                    view: ReactNativeMobileWhipClientView,
-                    options: ConfigurationOptions
-                ) in
-                do {
+            AsyncFunction("initializeCamera") { (view: ReactNativeMobileWhipClientView, options: ConfigurationOptions) in
+                Task { @MainActor in
+                    guard await PermissionUtils.requestCameraPermission() else {
+                        self.emit(event: .warning(message: "Camera permission not granted."))
+                        return
+                    }
+                    guard await PermissionUtils.requestMicrophonePermission() else {
+                        self.emit(event: .warning(message: "Microphone permission not granted."))
+                        return
+                    }
+                    
                     try self.createWhipClient(options: options)
-
                     view.player = self.whipClient
-                } catch {
-                    print("Error initializing WHIP client: \(error)")
-                    throw error
                 }
             }
 

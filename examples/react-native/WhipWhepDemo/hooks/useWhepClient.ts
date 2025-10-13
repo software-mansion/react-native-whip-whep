@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { WhepClientViewRef } from 'react-native-whip-whep';
-import { checkPermissions } from '@/utils/CheckPermissions';
 
 export const useWhepClient = (serverUrl: string) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -72,10 +71,6 @@ export const useWhepClient = (serverUrl: string) => {
   }, []);
 
   useEffect(() => {
-    const initialize = async () => {
-      await checkPermissions();
-    };
-    initialize();
     const ref = whepViewRef.current;
     return () => {
       ref?.disconnect();
