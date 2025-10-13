@@ -156,7 +156,7 @@ export default function WhipScreen() {
     const client = whipClient.current;
     return () => {
       client?.disconnect();
-      client?.cleanupWhip();
+      client?.cleanup();
     };
   }, [initializeCamera]);
 

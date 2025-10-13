@@ -200,7 +200,7 @@ class ReactNativeMobileWhipClientViewModule : Module() {
           whipClient?.switchCamera(deviceId)
         }
 
-        AsyncFunction("cleanupWhip") {
+        AsyncFunction("cleanup") {
           whipClient?.cleanup()
           return@AsyncFunction Unit
         }

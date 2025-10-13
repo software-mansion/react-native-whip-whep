@@ -220,7 +220,7 @@ public class ReactNativeMobileWhipClientViewModule: Module {
                 try await self.whipClient?.disconnect()
             }
 
-            AsyncFunction("cleanupWhip") {
+            AsyncFunction("cleanup") {
                 self.whipClient?.delegate = nil
                 self.whipClient?.onConnectionStateChanged = nil
                 self.whipClient = nil
