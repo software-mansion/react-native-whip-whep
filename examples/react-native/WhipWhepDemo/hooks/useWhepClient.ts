@@ -30,7 +30,7 @@ export const useWhepClient = (serverUrl: string) => {
         setIsInitialized(true);
       }
 
-      await whepViewRef.current?.connectWhep({ serverUrl });
+      await whepViewRef.current?.connect({ serverUrl });
       setIsLoading(false);
       setIsConnected(true);
     } catch (error) {
@@ -44,7 +44,7 @@ export const useWhepClient = (serverUrl: string) => {
 
   const handlePause = useCallback(async () => {
     try {
-      await whepViewRef.current?.pauseWhep();
+      await whepViewRef.current?.pause();
       setIsPaused(true);
     } catch (error) {
       console.error('Failed to pause WHEP Client', error);
@@ -53,7 +53,7 @@ export const useWhepClient = (serverUrl: string) => {
 
   const handleResume = useCallback(async () => {
     try {
-      await whepViewRef.current?.unpauseWhep();
+      await whepViewRef.current?.unpause();
       setIsPaused(false);
     } catch (error) {
       console.error('Failed to resume WHEP Client', error);
@@ -62,7 +62,7 @@ export const useWhepClient = (serverUrl: string) => {
 
   const handleDisconnect = useCallback(async () => {
     try {
-      await whepViewRef.current?.disconnectWhep();
+      await whepViewRef.current?.disconnect();
       setIsConnected(false);
       setIsPaused(false);
       setShouldShowPlayBtn(true);
@@ -78,8 +78,8 @@ export const useWhepClient = (serverUrl: string) => {
     initialize();
     const ref = whepViewRef.current;
     return () => {
-      ref?.disconnectWhep();
-      ref?.cleanupWhep();
+      ref?.disconnect();
+      ref?.cleanup();
     };
   }, []);
 

@@ -114,7 +114,7 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
           }
         }
 
-        AsyncFunction("connectWhep") Coroutine { options: ConnectOptions ->
+        AsyncFunction("connect") Coroutine { options: ConnectOptions ->
           if (whepClient == null) {
             throw IllegalStateException("React context is not available")
           }
@@ -123,19 +123,19 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
           }
         }
 
-        AsyncFunction("disconnectWhep") Coroutine { ->
+        AsyncFunction("disconnect") Coroutine { ->
           whepClient?.disconnect()
         }
 
-        AsyncFunction("cleanupWhep") Coroutine { ->
+        AsyncFunction("cleanup") Coroutine { ->
           whepClient = null
         }
 
-        AsyncFunction("pauseWhep") {
+        AsyncFunction("pause") {
           whepClient?.pause()
         }
 
-        AsyncFunction("unpauseWhep") {
+        AsyncFunction("unpause") {
           whepClient?.unpause()
         }
 

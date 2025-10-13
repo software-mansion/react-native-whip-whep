@@ -44,23 +44,23 @@ export type WhepClientViewRef = {
   /**
    * Connects to the WHEP server.
    */
-  connectWhep: (ConnectOptions) => Promise<void>;
+  connect: (ConnectOptions) => Promise<void>;
   /**
    * Disconnects from the WHEP server.
    */
-  disconnectWhep: () => Promise<void>;
+  disconnect: () => Promise<void>;
   /**
    * Pauses the WHEP client stream.
    */
-  pauseWhep: () => Promise<void>;
+  pause: () => Promise<void>;
   /**
    * Unpauses the WHEP client stream.
    */
-  unpauseWhep: () => Promise<void>;
+  unpause: () => Promise<void>;
   /**
    * Cleanups WHEP client
    */
-  cleanupWhep: () => Promise<void>;
+  cleanup: () => Promise<void>;
   /**
    * Gets supported receiver video codec names.
    */
