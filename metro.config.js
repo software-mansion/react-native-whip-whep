@@ -1,27 +1,28 @@
 const { getDefaultConfig } = require('expo/metro-config');
 const path = require('path');
 
-// Find the project and workspace directories
-const projectRoot = __dirname;
-const monorepoRoot = path.resolve(projectRoot, '../../..');
+// Monorepo root configuration
+const monorepoRoot = __dirname;
 
-// Get Expo's default config
-const config = getDefaultConfig(projectRoot);
+const config = getDefaultConfig(monorepoRoot);
 
 // Extend Expo's default watchFolders instead of overriding them
 config.watchFolders = [
   ...config.watchFolders, // Keep Expo's default watch folders
-  monorepoRoot, // Add our monorepo root
+  path.resolve(monorepoRoot, 'packages'),
+  path.resolve(monorepoRoot, 'examples'),
 ];
 
-// Let Metro know where to resolve packages and in what order
+// Resolve packages from monorepo structure
 config.resolver.nodeModulesPaths = [
   path.resolve(monorepoRoot, 'node_modules'),
-  path.resolve(projectRoot, 'node_modules'),
 ];
 
 // Enable package exports for better module resolution
 config.resolver.unstable_enablePackageExports = true;
+
+// Platform support
+config.resolver.platforms = ['ios', 'android', 'native', 'web'];
 
 // Performance optimizations
 config.maxWorkers = require('os').cpus().length;

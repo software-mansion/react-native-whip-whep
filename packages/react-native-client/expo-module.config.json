@@ -1,15 +1,23 @@
 {
   "platforms": ["ios", "android"],
-  "ios": {
+  "apple": {
     "modules": [
       "ReactNativeMobileWhepClientViewModule",
       "ReactNativeMobileWhipClientViewModule"
+    ],
+    "views": [
+      "ReactNativeMobileWhepClientView",
+      "ReactNativeMobileWhipClientView"
     ]
   },
   "android": {
     "modules": [
       "com.swmansion.reactnativeclient.ReactNativeMobileWhepClientViewModule",
       "com.swmansion.reactnativeclient.ReactNativeMobileWhipClientViewModule"
+    ],
+    "views": [
+      "com.swmansion.reactnativeclient.ReactNativeMobileWhepClientView",
+      "com.swmansion.reactnativeclient.ReactNativeMobileWhipClientView"
     ]
   }
 }
