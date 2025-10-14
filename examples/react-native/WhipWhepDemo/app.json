@@ -39,7 +39,10 @@
         {
           "supportsPictureInPicture": true
         }
-      ]
+      ],
+      "expo-font",
+      "expo-web-browser",
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true
