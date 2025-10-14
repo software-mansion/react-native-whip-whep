@@ -1,13 +1,13 @@
 import { Platform, PermissionsAndroid } from 'react-native';
 import { Camera } from 'expo-camera';
-import { Audio } from 'expo-av';
+import { requestRecordingPermissionsAsync } from 'expo-audio';
 
 export async function checkPermissions() {
   if (Platform.OS === 'ios') {
     try {
       const { status: cameraStatus } =
         await Camera.requestCameraPermissionsAsync();
-      const { status: micStatus } = await Audio.requestPermissionsAsync();
+      const { status: micStatus } = await requestRecordingPermissionsAsync();
       if (cameraStatus !== 'granted' || micStatus !== 'granted') {
         console.warn('Camera/Microphone permissions not granted');
       }

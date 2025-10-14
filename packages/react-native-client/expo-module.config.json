@@ -1,6 +1,6 @@
 {
   "platforms": ["ios", "android"],
-  "ios": {
+  "apple": {
     "modules": [
       "ReactNativeMobileWhepClientViewModule",
       "ReactNativeMobileWhipClientViewModule"
