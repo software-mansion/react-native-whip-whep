@@ -11,7 +11,6 @@ import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.TextureView
 import android.view.TextureView.SurfaceTextureListener
-import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
 import org.webrtc.EglBase
 import org.webrtc.EglRenderer
 import org.webrtc.GlRectDrawer

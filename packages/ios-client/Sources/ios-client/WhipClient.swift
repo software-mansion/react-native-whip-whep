@@ -64,8 +64,8 @@ public class WhipClient: ClientBase {
         cleanup()
     }
 
-    override func setUpPeerConnection() {
-        super.setUpPeerConnection()
+    override func setUpPeerConnection() throws {
+        try super.setUpPeerConnection()
 
         let audioEnabled = configOptions.audioEnabled
         let videoEnabled = configOptions.videoEnabled
@@ -104,6 +104,14 @@ public class WhipClient: ClientBase {
                 preferredCodecs: configOptions.preferredAudioCodecs,
                 mediaType: kRTCMediaStreamTrackKindAudio
             )
+
+            let audioSession = RTCAudioSession.sharedInstance()
+            audioSession.lockForConfiguration()
+            let config = RTCAudioSessionConfiguration.webRTC()
+            config.category = AVAudioSession.Category.playAndRecord.rawValue
+            config.mode = videoEnabled ? AVAudioSession.Mode.videoChat.rawValue : AVAudioSession.Mode.voiceChat.rawValue
+            try audioSession.setConfiguration(config, active: true)
+            audioSession.unlockForConfiguration()
         }
     }
 
@@ -116,7 +124,7 @@ public class WhipClient: ClientBase {
     public override func connect(_ connectOptions: ClientConnectOptions) async throws {
         try await super.connect(connectOptions)
         if !self.isConnectionSetUp {
-            setUpPeerConnection()
+            try setUpPeerConnection()
         } else if self.isConnectionSetUp && self.peerConnection == nil {
             throw SessionNetworkError.ConfigurationError(
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")
