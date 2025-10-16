@@ -104,7 +104,7 @@ public class WhipClient: ClientBase {
                 preferredCodecs: configOptions.preferredAudioCodecs,
                 mediaType: kRTCMediaStreamTrackKindAudio
             )
-            
+
             let audioSession = RTCAudioSession.sharedInstance()
             audioSession.lockForConfiguration()
             let config = RTCAudioSessionConfiguration.webRTC()
