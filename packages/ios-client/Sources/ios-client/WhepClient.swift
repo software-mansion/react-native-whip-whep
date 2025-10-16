@@ -27,10 +27,10 @@ public class WhepClient: ClientBase {
     
     - Returns: A `WhepClient` object.
     */
-    public init(configOptions: WhepConfigurationOptions) {
+    public init(configOptions: WhepConfigurationOptions) throws {
         self.configOptions = configOptions
         super.init(stunServerUrl: configOptions.stunServerUrl)
-        setUpPeerConnection()
+        try setUpPeerConnection()
 
         self.reconnectionManager = ReconnectionManager(
             reconnectConfig: ReconnectConfig(),
@@ -61,7 +61,7 @@ public class WhepClient: ClientBase {
     public override func connect(_ connectOptions: ClientConnectOptions) async throws {
         try await super.connect(connectOptions)
         if !self.isConnectionSetUp {
-            setUpPeerConnection()
+            try setUpPeerConnection()
         } else if self.isConnectionSetUp && self.peerConnection == nil {
             throw SessionNetworkError.ConfigurationError(
                 description: "Failed to establish RTCPeerConnection. Check initial configuration")

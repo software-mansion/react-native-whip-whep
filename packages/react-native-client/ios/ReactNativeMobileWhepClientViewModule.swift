@@ -98,7 +98,7 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
                     stunServerUrl: configurationOptions?["stunServerUrl"] as? String
                 )
 
-                self.whepClient = WhepClient(configOptions: options)
+                self.whepClient = try WhepClient(configOptions: options)
                 self.whepClient?.delegate = self
                 self.whepClient?.reconnectionListener = self
                 self.whepClient?.onConnectionStateChanged = { [weak self] newState in

@@ -84,7 +84,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
         self.stunServerUrl = stunServerUrl ?? "stun:stun.l.google.com:19302"
     }
 
-    func setUpPeerConnection() {
+    func setUpPeerConnection() throws {
         let stunServerUrl = stunServerUrl
         let stunServer = RTCIceServer(urlStrings: [stunServerUrl])
         let iceServers = [stunServer]
