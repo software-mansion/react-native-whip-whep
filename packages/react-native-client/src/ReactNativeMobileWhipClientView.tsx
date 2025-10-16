@@ -70,8 +70,11 @@ export function WhipClientView(
         }, 0);
       });
     },
-    connect: async (serverUrl: string, authToken?: string) => {
-      await nativeRef.current?.connect(serverUrl, authToken);
+    connect: async (options: {
+      serverUrl: string;
+      authToken?: string | undefined;
+    }) => {
+      await nativeRef.current?.connect(options);
     },
     disconnect: async () => {
       await nativeRef.current?.disconnect();
@@ -82,8 +85,8 @@ export function WhipClientView(
     flipCamera: async () => {
       await nativeRef.current?.flipCamera();
     },
-    cleanupWhip: async () => {
-      await nativeRef.current?.cleanupWhip();
+    cleanup: async () => {
+      await nativeRef.current?.cleanup();
     },
     setPreferredSenderVideoCodecs: async (preferredCodecs) => {
       await nativeRef.current?.setPreferredSenderVideoCodecs(preferredCodecs);
