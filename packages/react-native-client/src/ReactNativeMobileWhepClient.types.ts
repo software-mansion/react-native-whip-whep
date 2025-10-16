@@ -44,23 +44,23 @@ export type WhepClientViewRef = {
   /**
    * Connects to the WHEP server.
    */
-  connectWhep: (ConnectOptions) => Promise<void>;
+  connect: (ConnectOptions) => Promise<void>;
   /**
    * Disconnects from the WHEP server.
    */
-  disconnectWhep: () => Promise<void>;
+  disconnect: () => Promise<void>;
   /**
    * Pauses the WHEP client stream.
    */
-  pauseWhep: () => Promise<void>;
+  pause: () => Promise<void>;
   /**
    * Unpauses the WHEP client stream.
    */
-  unpauseWhep: () => Promise<void>;
+  unpause: () => Promise<void>;
   /**
    * Cleanups WHEP client
    */
-  cleanupWhep: () => Promise<void>;
+  cleanup: () => Promise<void>;
   /**
    * Gets supported receiver video codec names.
    */
@@ -159,11 +159,14 @@ export type WhipConfigurationOptions = {
 
 export type WhipClientViewRef = {
   initializeCamera: (options: WhipConfigurationOptions) => Promise<void>;
-  connect: (serverUrl: string, authToken?: string) => Promise<void>;
+  connect: (options: {
+    serverUrl: string;
+    authToken?: string;
+  }) => Promise<void>;
   disconnect: () => Promise<void>;
   switchCamera: (deviceId: string) => Promise<void>;
   flipCamera: () => Promise<void>;
-  cleanupWhip: () => Promise<void>;
+  cleanup: () => Promise<void>;
   setPreferredSenderVideoCodecs: (
     preferredCodecs?: SenderVideoCodecName[],
   ) => Promise<void>;

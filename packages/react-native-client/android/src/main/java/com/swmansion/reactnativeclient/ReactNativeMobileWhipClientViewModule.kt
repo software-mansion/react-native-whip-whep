@@ -46,6 +46,13 @@ class ReactNativeMobileWhipClientViewModule : Module() {
     val preferredAudioCodecs: List<String>? = null
   }
 
+  class ConnectionOptions : Record {
+    @Field
+    val serverUrl: String = ""
+    @Field
+    val authToken: String? = null
+  }
+
   private fun getVideoParametersFromOptions(createOptions: String): VideoParameters {
     return when (createOptions) {
       "QVGA169" -> VideoParameters.presetQVGA169
@@ -150,12 +157,12 @@ class ReactNativeMobileWhipClientViewModule : Module() {
           }
         }
 
-        AsyncFunction("connect") Coroutine { serverUrl: String, authToken: String? ->
+        AsyncFunction("connect") Coroutine { options: ConnectionOptions ->
           withContext(Dispatchers.IO) {
             if (whipClient == null) {
               throw IllegalStateException("WHIP client not found. Make sure it was initialized properly.")
             }
-            whipClient?.connect(ClientConnectOptions(serverUrl = serverUrl, authToken = authToken))
+            whipClient?.connect(ClientConnectOptions(serverUrl = options.serverUrl, authToken = options.authToken))
           }
         }
 
@@ -193,7 +200,7 @@ class ReactNativeMobileWhipClientViewModule : Module() {
           whipClient?.switchCamera(deviceId)
         }
 
-        AsyncFunction("cleanupWhip") {
+        AsyncFunction("cleanup") {
           whipClient?.cleanup()
           return@AsyncFunction Unit
         }

@@ -65,10 +65,12 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
                 (view: ReactNativeMobileWhepClientView, pipEnabled: Bool) in
                 view.pipEnabled = pipEnabled
             }
-            Prop("autoStartPip") { (view: ReactNativeMobileWhepClientView, startAutomatically: Bool) in
+            Prop("autoStartPip") {
+                (view: ReactNativeMobileWhepClientView, startAutomatically: Bool) in
                 view.autoStartPip = startAutomatically
             }
-            Prop("autoStopPip") { (view: ReactNativeMobileWhepClientView, stopAutomatically: Bool) in
+            Prop("autoStopPip") {
+                (view: ReactNativeMobileWhepClientView, stopAutomatically: Bool) in
                 view.autoStopPip = stopAutomatically
             }
             Prop("pipSize") { (view: ReactNativeMobileWhepClientView, size: CGSize) in
@@ -108,7 +110,7 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
                 self.onTrackUpdateListeners.append(view)
             }
 
-            AsyncFunction("connectWhep") { (connectOptions: ConnectOptions) in
+            AsyncFunction("connect") { (connectOptions: ConnectOptions) in
                 guard let client = self.whepClient else {
                     throw Exception(
                         name: "E_WHEP_CLIENT_NOT_FOUND",
@@ -138,11 +140,11 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
                 view.pipController?.togglePictureInPicture()
             }
 
-            AsyncFunction("disconnectWhep") {
+            AsyncFunction("disconnect") {
                 self.whepClient?.disconnect()
             }
 
-            AsyncFunction("cleanupWhep") { (view: ReactNativeMobileWhepClientView) in
+            AsyncFunction("cleanup") { (view: ReactNativeMobileWhepClientView) in
                 self.whepClient?.cleanup()
 
                 view.player = nil
@@ -151,7 +153,7 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
                 self.whepClient = nil
             }
 
-            AsyncFunction("pauseWhep") {
+            AsyncFunction("pause") {
                 guard let client = self.whepClient else {
                     throw Exception(
                         name: "E_WHEP_CLIENT_NOT_FOUND",
@@ -162,7 +164,7 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
                 client.pause()
             }
 
-            AsyncFunction("unpauseWhep") {
+            AsyncFunction("unpause") {
                 guard let client = self.whepClient else {
                     throw Exception(
                         name: "E_WHEP_CLIENT_NOT_FOUND",

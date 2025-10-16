@@ -22,8 +22,16 @@ public class ReactNativeMobileWhipClientViewModule: Module {
         var preferredAudioCodecs: [String]?
     }
 
+    struct ConnectionOptions: Record {
+        @Field
+        var serverUrl: String
+        @Field
+        var authToken: String?
+    }
+
     private func createWhipClient(options: ConfigurationOptions) throws {
-        guard let videoDeviceId = options.videoDeviceId, let avCaptureDevice = AVCaptureDevice(uniqueID: videoDeviceId)
+        guard let videoDeviceId = options.videoDeviceId,
+            let avCaptureDevice = AVCaptureDevice(uniqueID: videoDeviceId)
         else {
             throw Exception(
                 name: "E_INVALID_VIDEO_DEVICE_ID",
@@ -33,7 +41,8 @@ public class ReactNativeMobileWhipClientViewModule: Module {
         let parsedVideoParameters: VideoParameters
 
         if let optionsVideoParameters = options.videoParameters,
-            let parameters = try? self.getVideoParametersFromOptions(createOptions: optionsVideoParameters)
+            let parameters = try? self.getVideoParametersFromOptions(
+                createOptions: optionsVideoParameters)
         {
             parsedVideoParameters = parameters
         } else {
@@ -51,12 +60,16 @@ public class ReactNativeMobileWhipClientViewModule: Module {
         )
 
         guard options.videoEnabled, PermissionUtils.hasCameraPermission() else {
-            emit(event: .warning(message: "Camera permission not granted. Cannot initialize WhipClient."))
+            emit(
+                event: .warning(
+                    message: "Camera permission not granted. Cannot initialize WhipClient."))
             return
         }
 
         guard options.audioEnabled, PermissionUtils.hasMicrophonePermission() else {
-            emit(event: .warning(message: "Microphone permission not granted. Cannot initialize WhipClient."))
+            emit(
+                event: .warning(
+                    message: "Microphone permission not granted. Cannot initialize WhipClient."))
             return
         }
 
@@ -129,41 +142,45 @@ public class ReactNativeMobileWhipClientViewModule: Module {
         }
 
         View(ReactNativeMobileWhipClientView.self) {
-            AsyncFunction("initializeCamera") {
-                (
-                    view: ReactNativeMobileWhipClientView,
-                    options: ConfigurationOptions
-                ) in
-                do {
-                    try self.createWhipClient(options: options)
-
+            AsyncFunction("initializeCamera") { (view: ReactNativeMobileWhipClientView, options: ConfigurationOptions) in
+                guard await PermissionUtils.requestCameraPermission() else {
+                    self.emit(event: .warning(message: "Camera permission not granted."))
+                    return
+                }
+                guard await PermissionUtils.requestMicrophonePermission() else {
+                    self.emit(event: .warning(message: "Microphone permission not granted."))
+                    return
+                }
+                
+                try self.createWhipClient(options: options)
+                Task { @MainActor [weak self] in
+                    guard let self else { return }
                     view.player = self.whipClient
-                } catch {
-                    print("Error initializing WHIP client: \(error)")
-                    throw error
                 }
             }
 
-            AsyncFunction("connect") { (serverUrl: String, authToken: String?) in
+            AsyncFunction("connect") { (options: ConnectionOptions) in
                 guard let client = self.whipClient else {
                     throw Exception(
                         name: "E_WHIP_CLIENT_NOT_FOUND",
-                        description: "WHIP client not found. Make sure it was initialized properly.")
+                        description: "WHIP client not found. Make sure it was initialized properly."
+                    )
                 }
 
-                guard let url = URL(string: serverUrl) else {
+                guard let url = URL(string: options.serverUrl) else {
                     throw Exception(
                         name: "E_INVALID_SERVER_URL",
                         description: "Invalid server URL. Make sure the address is correct.")
                 }
-                try await client.connect(.init(serverUrl: url, authToken: authToken))
+                try await client.connect(.init(serverUrl: url, authToken: options.authToken))
             }
 
             AsyncFunction("flipCamera") {
                 guard let client = self.whipClient else {
                     throw Exception(
                         name: "E_WHIP_CLIENT_NOT_FOUND",
-                        description: "WHIP client not found. Make sure it was initialized properly.")
+                        description: "WHIP client not found. Make sure it was initialized properly."
+                    )
                 }
 
                 guard let currentCameraId = self.whipClient?.currentCameraDeviceId else {
@@ -195,7 +212,8 @@ public class ReactNativeMobileWhipClientViewModule: Module {
                 guard let client = self.whipClient else {
                     throw Exception(
                         name: "E_WHIP_CLIENT_NOT_FOUND",
-                        description: "WHIP client not found. Make sure it was initialized properly.")
+                        description: "WHIP client not found. Make sure it was initialized properly."
+                    )
                 }
                 client.switchCamera(deviceId: deviceId)
             }
@@ -204,7 +222,7 @@ public class ReactNativeMobileWhipClientViewModule: Module {
                 try await self.whipClient?.disconnect()
             }
 
-            AsyncFunction("cleanupWhip") {
+            AsyncFunction("cleanup") {
                 self.whipClient?.delegate = nil
                 self.whipClient?.onConnectionStateChanged = nil
                 self.whipClient = nil

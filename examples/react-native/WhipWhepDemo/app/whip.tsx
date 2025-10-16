@@ -18,7 +18,6 @@ import {
   SenderAudioCodecName,
   useWhipConnectionState,
 } from 'react-native-whip-whep';
-import { checkPermissions } from '@/utils/CheckPermissions';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
 export default function WhipScreen() {
@@ -77,10 +76,10 @@ export default function WhipScreen() {
     try {
       setIsLoading(true);
 
-      await whipClient.current?.connect(
-        process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
-        'example',
-      );
+      await whipClient.current?.connect({
+        serverUrl: process.env.EXPO_PUBLIC_WHIP_SERVER_URL ?? '',
+        authToken: 'example',
+      });
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to connect to WHIP Client', error);
@@ -150,13 +149,12 @@ export default function WhipScreen() {
   }, []);
 
   useEffect(() => {
-    checkPermissions();
     initializeCamera();
 
     const client = whipClient.current;
     return () => {
       client?.disconnect();
-      client?.cleanupWhip();
+      client?.cleanup();
     };
   }, [initializeCamera]);
 
