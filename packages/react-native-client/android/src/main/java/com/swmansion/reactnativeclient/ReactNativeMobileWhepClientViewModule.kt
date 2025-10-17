@@ -124,6 +124,7 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
         }
 
         AsyncFunction("disconnect") Coroutine { ->
+          whepClient?.eglBase?.release()
           whepClient?.disconnect()
         }
 
