@@ -124,11 +124,12 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
         }
 
         AsyncFunction("disconnect") Coroutine { ->
-          whepClient?.eglBase?.release()
           whepClient?.disconnect()
         }
 
         AsyncFunction("cleanup") Coroutine { ->
+          whepClient?.eglBase?.release()
+          onWhepTrackUpdateListeners.clear()
           whepClient = null
         }
 
