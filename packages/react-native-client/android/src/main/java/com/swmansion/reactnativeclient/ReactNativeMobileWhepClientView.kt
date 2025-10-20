@@ -26,7 +26,7 @@ class ReactNativeMobileWhepClientView(
 ) : ExpoView(context, appContext),
   ReactNativeMobileWhepClientViewModule.OnTrackUpdateListener {
   private var videoView: VideoView? = null
-  private var pendingVideoTrack: org.webrtc.VideoTrack? = null
+  private var pendingVideoTrack: VideoTrack? = null
 
   init {
     ReactNativeMobileWhepClientViewModule.onWhepTrackUpdateListeners.add(this)
@@ -62,38 +62,37 @@ class ReactNativeMobileWhepClientView(
     
     Log.d("ReactNativeMobileWhepClientView", "VideoView created and added to hierarchy")
     
-    // Wait for the TextureView surface to be ready, then set the player
     videoView!!.post {
       val isAvailable = videoView!!.isAvailable
       Log.d("ReactNativeMobileWhepClientView", "Post executed, surface available: $isAvailable")
       
       if (isAvailable) {
-        // Surface is already available - set player immediately
         Log.d("ReactNativeMobileWhepClientView", "Surface already available, setting player now")
         videoView!!.player = whepClient
-        // Add a small delay to ensure EGL renderer is fully initialized
         videoView!!.postDelayed({
           pendingVideoTrack?.let { track ->
-            Log.d("ReactNativeMobileWhepClientView", "Setting up pending track after EGL init")
+            Log.d("ReactNativeMobileWhepClientView", "Setting up pending track")
             setupVideoTrackSafely(track)
             pendingVideoTrack = null
           }
         }, 50)
       } else {
-        // Surface not ready - wait for it
         Log.d("ReactNativeMobileWhepClientView", "Surface not available yet, setting up listener")
         val originalListener = videoView!!.surfaceTextureListener
         videoView!!.surfaceTextureListener = object : android.view.TextureView.SurfaceTextureListener {
           override fun onSurfaceTextureAvailable(surface: android.graphics.SurfaceTexture, width: Int, height: Int) {
             Log.d("ReactNativeMobileWhepClientView", "Surface texture available: ${width}x${height}")
             originalListener?.onSurfaceTextureAvailable(surface, width, height)
-            videoView!!.player = whepClient
+            videoView?.player = whepClient
             Log.d("ReactNativeMobileWhepClientView", "Player set")
-            pendingVideoTrack?.let { track ->
-              Log.d("ReactNativeMobileWhepClientView", "Setting up pending video track after surface ready")
-              setupVideoTrackSafely(track)
-              pendingVideoTrack = null
-            }
+
+            videoView?.postDelayed({
+              pendingVideoTrack?.let { track ->
+                Log.d("ReactNativeMobileWhepClientView", "Setting up pending track after delay")
+                setupVideoTrackSafely(track)
+                pendingVideoTrack = null
+              }
+            }, 50)
           }
 
           override fun onSurfaceTextureSizeChanged(surface: android.graphics.SurfaceTexture, width: Int, height: Int) {
@@ -114,26 +113,24 @@ class ReactNativeMobileWhepClientView(
 
   private fun setupTrack(videoTrack: VideoTrack) {
     if (whepClient == null) {
-      Log.e("ReactNativeMobileWhepClientView", "Setup track called without WHEP client.")
+      Log.d("ReactNativeMobileWhepClientView", "Setup track called without WHEP client.")
       return
     }
     
     Log.d("ReactNativeMobileWhepClientView", "setupTrack called with videoTrack: $videoTrack")
     
-    ensureVideoViewCreated()
-    
-    // Store the track - it will be set up when the surface is ready
-    Log.d("ReactNativeMobileWhepClientView", "Storing pending track")
     pendingVideoTrack = videoTrack
+    
+    ensureVideoViewCreated()
   }
   
   private fun setupVideoTrackSafely(videoTrack: VideoTrack) {
     try {
-      Log.d("ReactNativeMobileWhepClientView", "Setting up video track sink")
-      videoView!!.player?.videoTrack?.removeSink(videoView)
-      videoView!!.player?.videoTrack = videoTrack
+      Log.d("ReactNativeMobileWhepClientView", "Setting up video track")
+      videoView?.player?.videoTrack?.removeSink(videoView)
+      videoView?.player?.videoTrack = videoTrack
       videoTrack.addSink(videoView)
-      Log.d("ReactNativeMobileWhepClientView", "Video track sink added successfully")
+      Log.d("ReactNativeMobileWhepClientView", "Video track setup complete")
     } catch (e: Exception) {
       Log.e("ReactNativeMobileWhepClientView", "Error setting up video track: ${e.message}", e)
     }
@@ -196,8 +193,12 @@ class ReactNativeMobileWhepClientView(
     
     // Clean up video view
     videoView?.let { view ->
-      view.player?.videoTrack?.removeSink(view)
-      view.release()
+      try {
+        view.player?.videoTrack?.removeSink(view)
+        view.release()
+      } catch (e: Exception) {
+        Log.e("ReactNativeMobileWhepClientView", "Error during cleanup: ${e.message}", e)
+      }
     }
     videoView = null
     pendingVideoTrack = null
