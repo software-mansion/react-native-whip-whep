@@ -436,6 +436,7 @@ open class ClientBase(
   }
 
   fun addTrackListener(listener: ClientBaseListener) {
+    Log.d("Test", "Adding track listener: $listener")
     listeners.add(listener)
     videoTrack?.let { listener.onTrackAdded(it) }
   }

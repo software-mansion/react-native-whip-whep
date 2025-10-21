@@ -11,7 +11,7 @@ import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.FragmentActivity
 import com.mobilewhep.client.VideoView
-import com.swmansion.reactnativeclient.ReactNativeMobileWhepClientViewModule.Companion.whepClient
+import com.mobilewhep.client.WhepClient
 import com.swmansion.reactnativeclient.helpers.PictureInPictureHelperFragment
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
@@ -26,10 +26,16 @@ class ReactNativeMobileWhepClientView(
 ) : ExpoView(context, appContext),
   ReactNativeMobileWhepClientViewModule.OnTrackUpdateListener {
   private var videoView: VideoView? = null
-  private var currentWhepClientInstance: Any? = null
+  private var whepClient: WhepClient? = null
 
-  init {
-    ReactNativeMobileWhepClientViewModule.onWhepTrackUpdateListeners.add(this)
+  fun setWhepClient(whepClient: WhepClient) {
+    this.whepClient = whepClient
+    Log.d("Test", "Whep client set in the view")
+    whepClient.videoTrack?.let { track ->
+      Log.d("Test", "Whep client already has a track. Setting up")
+      setupTrack(track)
+    }
+
   }
 
   private fun setupTrack(videoTrack: VideoTrack) {
@@ -37,8 +43,6 @@ class ReactNativeMobileWhepClientView(
       Log.e("Test", "Setup track called without WHEP client.")
       return
     }
-
-    reassignedWhepClientIfNeeded()
 
     if (videoView == null) {
       videoView = VideoView(context, whepClient!!.eglBase)
@@ -55,19 +59,6 @@ class ReactNativeMobileWhepClientView(
       videoView!!.player?.videoTrack = videoTrack
       videoTrack.addSink(videoView)
 
-    }
-  }
-
-  private fun reassignedWhepClientIfNeeded() {
-    Log.d("Test", "Checking reasignment")
-    if (currentWhepClientInstance != whepClient) {
-      Log.d("Test", "Reasigning whep client")
-      videoView?.let { view ->
-        whepClient?.videoTrack?.removeSink(view)
-        removeView(view)
-      }
-      videoView = null
-      currentWhepClientInstance = whepClient
     }
   }
 
@@ -115,11 +106,6 @@ class ReactNativeMobileWhepClientView(
     Log.d("Test", "On attached to window")
     super.onAttachedToWindow()
 
-//    whepClient?.videoTrack?.let { track ->
-//      Log.d("Test", "Whep client already has a track. Setting up")
-//      setupTrack(track)
-//    }
-
     (currentActivity as? FragmentActivity)?.let {
       val fragment = PictureInPictureHelperFragment(this)
       pictureInPictureHelperTag = fragment.id
@@ -132,6 +118,7 @@ class ReactNativeMobileWhepClientView(
   override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
 
+    cleanup()
     (currentActivity as? FragmentActivity)?.let {
       val fragment = it.supportFragmentManager.findFragmentByTag(pictureInPictureHelperTag ?: "")
         ?: return
@@ -141,14 +128,15 @@ class ReactNativeMobileWhepClientView(
     }
   }
 
-  fun cleanup() {
+  private fun cleanup() {
     Log.d("Test", "Cleanup in view")
     videoView?.let { view ->
-      Log.d("Test", "Removing sink")
+      Log.d("Test", "Removing sink in whepClient: $whepClient")
       whepClient?.videoTrack?.removeSink(view)
       removeView(view)
     }
     videoView = null
+    whepClient = null
   }
 
   fun layoutForPiPEnter() {
@@ -178,6 +166,7 @@ class ReactNativeMobileWhepClientView(
   }
 
   override fun onTrackUpdate(track: VideoTrack) {
+    Log.d("Test", "onTrackUpdate called in view")
     update(track)
   }
 }
