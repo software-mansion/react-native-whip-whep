@@ -38,6 +38,7 @@ class VideoView :
   ClientBaseListener {
   var player: ClientBase? = null
     set(newPlayer) {
+      Log.d("Test", "VideoView: New player set")
       if (field != null) {
         release()
       }
@@ -72,6 +73,7 @@ class VideoView :
    * Standard View constructor. In order to render something, you must first call init().
    */
   constructor(context: Context, eglBase: EglBase) : super(context) {
+    Log.d("Test", "VideoView: Constructed with eglBase: $eglBase")
     resourceName = getResourceName()
     eglRenderer = SurfaceEglRenderer(resourceName)
     surfaceTextureListener = this
@@ -82,6 +84,7 @@ class VideoView :
    * Standard View constructor. In order to render something, you must first call init().
    */
   constructor(context: Context, attrs: AttributeSet, eglBase: EglBase) : super(context, attrs) {
+    Log.d("Test", "VideoView: Constructed with constructor 2 eglBase: $eglBase")
     resourceName = getResourceName()
     eglRenderer = SurfaceEglRenderer(resourceName)
     this.eglBase = eglBase
@@ -117,6 +120,7 @@ class VideoView :
    * don't call this function, the GL resources might leak.
    */
   fun release() {
+    Log.d("Test", "VideoView: Release called")
     eglRenderer.release()
   }
 

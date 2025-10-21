@@ -39,8 +39,13 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
     fun onTrackUpdate(track: VideoTrack)
   }
 
+  interface OnCleanupListener {
+    suspend fun onCleanup()
+  }
+
   private var whepClient: WhepClient? = null
   private var onWhepTrackUpdateListeners: MutableList<OnTrackUpdateListener> = mutableListOf()
+  private var onCleanupListener: OnCleanupListener? = null
 
   fun emit(event: EmitableEvent) {
     sendEvent(event.name, event.data)
@@ -115,6 +120,19 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
             emit(WhepEmitableEvent.whepPeerConnectionStateChanged(newState))
           }
           view.setWhepClient(whepClient!!)
+          view.setCleanupListener(object : OnCleanupListener {
+            override suspend fun onCleanup() {
+              Log.d("Test", "Cleanup listener called from view detachment")
+              whepClient?.let { client ->
+                client.disconnect()
+                client.removeReconnectionListener(this@ReactNativeMobileWhepClientViewModule)
+                client.removeTrackListeners()
+                client.eglBase?.release()
+              }
+              onWhepTrackUpdateListeners.clear()
+              whepClient = null
+            }
+          })
           Log.d("Test", "Finished creating client")
         }
 
@@ -134,7 +152,12 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
 
         AsyncFunction("cleanup") Coroutine { view: ReactNativeMobileWhepClientView ->
           Log.d("Test", "Cleaning up whep client")
-          whepClient?.eglBase?.release()
+          whepClient?.let { client ->
+            client.disconnect()
+            client.removeReconnectionListener(this@ReactNativeMobileWhepClientViewModule)
+            client.removeTrackListeners()
+            client.eglBase?.release()
+          }
           onWhepTrackUpdateListeners.clear()
           whepClient = null
         }

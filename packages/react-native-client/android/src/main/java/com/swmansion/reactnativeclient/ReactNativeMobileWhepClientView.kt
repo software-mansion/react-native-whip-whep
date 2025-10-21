@@ -27,6 +27,7 @@ class ReactNativeMobileWhepClientView(
   ReactNativeMobileWhepClientViewModule.OnTrackUpdateListener {
   private var videoView: VideoView? = null
   private var whepClient: WhepClient? = null
+  private var cleanupListener: ReactNativeMobileWhepClientViewModule.OnCleanupListener? = null
 
   fun setWhepClient(whepClient: WhepClient) {
     this.whepClient = whepClient
@@ -35,7 +36,10 @@ class ReactNativeMobileWhepClientView(
       Log.d("Test", "Whep client already has a track. Setting up")
       setupTrack(track)
     }
+  }
 
+  fun setCleanupListener(listener: ReactNativeMobileWhepClientViewModule.OnCleanupListener) {
+    this.cleanupListener = listener
   }
 
   private fun setupTrack(videoTrack: VideoTrack) {
@@ -45,6 +49,7 @@ class ReactNativeMobileWhepClientView(
     }
 
     if (videoView == null) {
+      Log.d("Test", "Creating video view with base: ${whepClient!!.eglBase}")
       videoView = VideoView(context, whepClient!!.eglBase)
       videoView!!.player = whepClient
 
@@ -119,6 +124,9 @@ class ReactNativeMobileWhepClientView(
     super.onDetachedFromWindow()
 
     cleanup()
+    CoroutineScope(Dispatchers.Main).launch {
+      cleanupListener?.onCleanup()
+    }
     (currentActivity as? FragmentActivity)?.let {
       val fragment = it.supportFragmentManager.findFragmentByTag(pictureInPictureHelperTag ?: "")
         ?: return
