@@ -2,6 +2,7 @@ package com.swmansion.reactnativeclient
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.util.Rational
 import com.mobilewhep.client.ClientBaseListener
 import com.mobilewhep.client.ClientConnectOptions
@@ -93,6 +94,7 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
         AsyncFunction("createWhepClient") { configurationOptions: Map<String, Any>?, preferredVideoCodecs: List<String>?, preferredAudioCodecs: List<String>? ->
           val context: Context =
             appContext.reactContext ?: throw IllegalStateException("React context is not available")
+          Log.d("Test", "Creating whep client")
           val options =
             WhepConfigurationOptions(
               stunServerUrl = configurationOptions?.get("stunServerUrl") as? String,
@@ -127,8 +129,10 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
           whepClient?.disconnect()
         }
 
-        AsyncFunction("cleanup") Coroutine { ->
+        AsyncFunction("cleanup") Coroutine { view: ReactNativeMobileWhepClientView ->
+          Log.d("Test", "Cleaning up whep client")
           whepClient?.eglBase?.release()
+          view.cleanup()
           onWhepTrackUpdateListeners.clear()
           whepClient = null
         }
