@@ -147,7 +147,7 @@ class WhepClient(
     reconnectionManager.addListener(listener)
   }
 
-  fun removeReconnectionListener(listener: ReconnectionManagerListener) {
-    reconnectionManager.removeListener(listener)
+  fun removeReconnectionListeners() {
+    reconnectionManager.removeListeners()
   }
 }

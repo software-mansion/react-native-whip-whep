@@ -81,7 +81,7 @@ internal class ReconnectionManager(
     listeners.add(listener)
   }
 
-  fun removeListener(listener: ReconnectionManagerListener) {
-    listeners.remove(listener)
+  fun removeListeners() {
+    listeners.clear()
   }
 }

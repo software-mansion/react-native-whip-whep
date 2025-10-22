@@ -10,36 +10,83 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.FragmentActivity
+import com.mobilewhep.client.ClientBaseListener
+import com.mobilewhep.client.ClientConnectOptions
+import com.mobilewhep.client.ReconnectionManagerListener
 import com.mobilewhep.client.VideoView
 import com.mobilewhep.client.WhepClient
+import com.mobilewhep.client.WhepConfigurationOptions
 import com.swmansion.reactnativeclient.helpers.PictureInPictureHelperFragment
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.webrtc.VideoTrack
+import kotlin.text.get
 
 class ReactNativeMobileWhepClientView(
   context: Context,
   appContext: AppContext,
-) : ExpoView(context, appContext),
-  ReactNativeMobileWhepClientViewModule.OnTrackUpdateListener {
+) : ExpoView(context, appContext) {
   private var videoView: VideoView? = null
   private var whepClient: WhepClient? = null
-  private var cleanupListener: ReactNativeMobileWhepClientViewModule.OnCleanupListener? = null
 
-  fun setWhepClient(whepClient: WhepClient) {
-    this.whepClient = whepClient
-    Log.d("Test", "Whep client set in the view")
-    whepClient.videoTrack?.let { track ->
-      Log.d("Test", "Whep client already has a track. Setting up")
-      setupTrack(track)
+  fun createWhepClient(configurationOptions: Map<String, Any>?, preferredVideoCodecs: List<String>?, preferredAudioCodecs: List<String>?) {
+    val context: Context =
+      appContext.reactContext ?: throw IllegalStateException("React context is not available")
+    Log.d("Test", "Creating whep client")
+    val options =
+      WhepConfigurationOptions(
+        stunServerUrl = configurationOptions?.get("stunServerUrl") as? String,
+        audioEnabled = configurationOptions?.get("audioEnabled") as? Boolean ?: true,
+        videoEnabled = configurationOptions?.get("videoEnabled") as? Boolean ?: true,
+        preferredAudioCodecs = preferredAudioCodecs ?: listOf(),
+        preferredVideoCodecs = preferredVideoCodecs ?: listOf()
+      )
+    whepClient = WhepClient(context, options)
+
+    whepClient?.addTrackListener(object :
+      ClientBaseListener {
+      override fun onTrackAdded(track: VideoTrack) {
+        Log.d("Test", "Track added, calling update track in view")
+        onTrackUpdate(track)
+      }
+    })
+  }
+
+  suspend fun connect(options: ConnectOptions)  {
+    if (whepClient == null) {
+      throw IllegalStateException("Connect called before whep client was created")
+    }
+    withContext(Dispatchers.IO) {
+      whepClient?.connect(ClientConnectOptions(serverUrl = options.serverUrl, authToken = options.authToken))
     }
   }
 
-  fun setCleanupListener(listener: ReactNativeMobileWhepClientViewModule.OnCleanupListener) {
-    this.cleanupListener = listener
+  fun disconnect()  {
+    whepClient?.disconnect()
+  }
+
+  fun pause()  {
+    whepClient?.pause()
+  }
+
+  fun unpause()  {
+    whepClient?.unpause()
+  }
+
+  fun setReconnectionListener(listener: ReconnectionManagerListener) {
+    whepClient?.addReconnectionListener(listener)
+  }
+
+  fun setConnectionStateChangeListener(listener: ReactNativeMobileWhepClientViewModule.OnConnectionStateChangeListener) {
+    whepClient?.onConnectionStateChanged = { newState ->
+      CoroutineScope(Dispatchers.Main).launch {
+        listener.onConnectionStateChange(newState)
+      }
+    }
   }
 
   private fun setupTrack(videoTrack: VideoTrack) {
@@ -124,9 +171,7 @@ class ReactNativeMobileWhepClientView(
     super.onDetachedFromWindow()
 
     cleanup()
-    CoroutineScope(Dispatchers.Main).launch {
-      cleanupListener?.onCleanup()
-    }
+
     (currentActivity as? FragmentActivity)?.let {
       val fragment = it.supportFragmentManager.findFragmentByTag(pictureInPictureHelperTag ?: "")
         ?: return
@@ -142,6 +187,12 @@ class ReactNativeMobileWhepClientView(
       Log.d("Test", "Removing sink in whepClient: $whepClient")
       whepClient?.videoTrack?.removeSink(view)
       removeView(view)
+    }
+    whepClient?.let { client ->
+      client.disconnect()
+      client.removeReconnectionListeners()
+      client.removeTrackListeners()
+      client.eglBase?.release()
     }
     videoView = null
     whepClient = null
@@ -173,7 +224,7 @@ class ReactNativeMobileWhepClientView(
     }
   }
 
-  override fun onTrackUpdate(track: VideoTrack) {
+  fun onTrackUpdate(track: VideoTrack) {
     Log.d("Test", "onTrackUpdate called in view")
     update(track)
   }

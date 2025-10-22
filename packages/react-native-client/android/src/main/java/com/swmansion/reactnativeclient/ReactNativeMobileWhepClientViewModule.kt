@@ -16,6 +16,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.webrtc.PeerConnection
 import org.webrtc.VideoTrack
 
 class PipSize : Record {
@@ -35,17 +36,10 @@ class ConnectOptions: Record {
 }
 
 class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListener {
-  interface OnTrackUpdateListener {
-    fun onTrackUpdate(track: VideoTrack)
-  }
 
-  interface OnCleanupListener {
-    suspend fun onCleanup()
+  interface OnConnectionStateChangeListener {
+    suspend fun onConnectionStateChange(newState: PeerConnection.PeerConnectionState)
   }
-
-  private var whepClient: WhepClient? = null
-  private var onWhepTrackUpdateListeners: MutableList<OnTrackUpdateListener> = mutableListOf()
-  private var onCleanupListener: OnCleanupListener? = null
 
   fun emit(event: EmitableEvent) {
     sendEvent(event.name, event.data)
@@ -95,79 +89,31 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
         }
 
         AsyncFunction("createWhepClient") { view: ReactNativeMobileWhepClientView, configurationOptions: Map<String, Any>?, preferredVideoCodecs: List<String>?, preferredAudioCodecs: List<String>? ->
-          val context: Context =
-            appContext.reactContext ?: throw IllegalStateException("React context is not available")
-          Log.d("Test", "Creating whep client")
-          val options =
-            WhepConfigurationOptions(
-              stunServerUrl = configurationOptions?.get("stunServerUrl") as? String,
-              audioEnabled = configurationOptions?.get("audioEnabled") as? Boolean ?: true,
-              videoEnabled = configurationOptions?.get("videoEnabled") as? Boolean ?: true,
-              preferredAudioCodecs = preferredAudioCodecs ?: listOf(),
-              preferredVideoCodecs = preferredVideoCodecs ?: listOf()
-            )
-          onWhepTrackUpdateListeners.add(view)
-          whepClient = WhepClient(context, options)
-          whepClient?.addReconnectionListener(this@ReactNativeMobileWhepClientViewModule)
-          whepClient?.addTrackListener(object :
-            ClientBaseListener {
-            override fun onTrackAdded(track: VideoTrack) {
-              Log.d("Test", "Track added, calling listeners: $onWhepTrackUpdateListeners")
-              onWhepTrackUpdateListeners.forEach { it.onTrackUpdate(track) }
+          view.createWhepClient(configurationOptions, preferredVideoCodecs, preferredAudioCodecs)
+          view.setReconnectionListener(this@ReactNativeMobileWhepClientViewModule)
+          view.setConnectionStateChangeListener(object : OnConnectionStateChangeListener {
+            override suspend fun onConnectionStateChange(newState: PeerConnection.PeerConnectionState) {
+              Log.d("Test", "Connection state changed")
+              emit(WhepEmitableEvent.whepPeerConnectionStateChanged(newState))
             }
           })
-          whepClient?.onConnectionStateChanged = { newState ->
-            emit(WhepEmitableEvent.whepPeerConnectionStateChanged(newState))
-          }
-          view.setWhepClient(whepClient!!)
-          view.setCleanupListener(object : OnCleanupListener {
-            override suspend fun onCleanup() {
-              Log.d("Test", "Cleanup listener called from view detachment")
-              whepClient?.let { client ->
-                client.disconnect()
-                client.removeReconnectionListener(this@ReactNativeMobileWhepClientViewModule)
-                client.removeTrackListeners()
-                client.eglBase?.release()
-              }
-              onWhepTrackUpdateListeners.clear()
-              whepClient = null
-            }
-          })
-          Log.d("Test", "Finished creating client")
         }
 
-        AsyncFunction("connect") Coroutine { options: ConnectOptions ->
+        AsyncFunction("connect") Coroutine { view: ReactNativeMobileWhepClientView, options: ConnectOptions ->
           Log.d("Test", "Connecting in module")
-          if (whepClient == null) {
-            throw IllegalStateException("React context is not available")
-          }
-          withContext(Dispatchers.IO) {
-            whepClient?.connect(ClientConnectOptions(serverUrl = options.serverUrl, authToken = options.authToken))
-          }
+          view.connect(options)
         }
 
-        AsyncFunction("disconnect") Coroutine { ->
-          whepClient?.disconnect()
+        AsyncFunction("disconnect") { view: ReactNativeMobileWhepClientView ->
+          view.disconnect()
         }
 
-        AsyncFunction("cleanup") Coroutine { view: ReactNativeMobileWhepClientView ->
-          Log.d("Test", "Cleaning up whep client")
-          whepClient?.let { client ->
-            client.disconnect()
-            client.removeReconnectionListener(this@ReactNativeMobileWhepClientViewModule)
-            client.removeTrackListeners()
-            client.eglBase?.release()
-          }
-          onWhepTrackUpdateListeners.clear()
-          whepClient = null
+        AsyncFunction("pause") { view: ReactNativeMobileWhepClientView ->
+          view.pause()
         }
 
-        AsyncFunction("pause") {
-          whepClient?.pause()
-        }
-
-        AsyncFunction("unpause") {
-          whepClient?.unpause()
+        AsyncFunction("unpause") { view: ReactNativeMobileWhepClientView ->
+          view.unpause()
         }
 
         AsyncFunction("startPip") { view: ReactNativeMobileWhepClientView ->
