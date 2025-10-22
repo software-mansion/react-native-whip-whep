@@ -18,7 +18,8 @@
       "infoPlist": {
         "NSCameraUsageDescription": "This application requires camera access to gather information about available video devices.",
         "NSMicrophoneUsageDescription": "This application requires microphone access to gather information about available audio devices."
-      }
+      },
+      "appleTeamId": "J5FM626PE2"
     },
     "android": {
       "adaptiveIcon": {
@@ -28,7 +29,8 @@
       "package": "com.swmansion.mobilewhepclient",
       "permissions": [
         "android.permission.CAMERA",
-        "android.permission.RECORD_AUDIO"
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
       ]
     },
     "plugins": [

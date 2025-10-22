@@ -93,7 +93,7 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
           view.setReconnectionListener(this@ReactNativeMobileWhepClientViewModule)
           view.setConnectionStateChangeListener(object : OnConnectionStateChangeListener {
             override suspend fun onConnectionStateChange(newState: PeerConnection.PeerConnectionState) {
-              Log.d("Test", "Connection state changed")
+              Log.d("Test", "Connection state changed: $newState")
               emit(WhepEmitableEvent.whepPeerConnectionStateChanged(newState))
             }
           })
