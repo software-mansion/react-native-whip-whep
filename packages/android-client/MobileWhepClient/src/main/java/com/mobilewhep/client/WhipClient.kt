@@ -178,32 +178,50 @@ class WhipClient(
    *
    */
   override suspend fun connect(connectOptions: ClientConnectOptions) {
-    super.connect(connectOptions)
+    try {
+      super.connect(connectOptions)
+      
+      if (videoTrack == null || videoCapturer == null || 
+          (configOptions.audioEnabled && audioTrack == null)) {
+        setUpVideoAndAudioDevices()
+      }
 
-    if (peerConnection == null) {
-      setupPeerConnection()
+      if (peerConnection == null) {
+        setupPeerConnection()
+      }
+
+      if (!hasPermissions(appContext, REQUIRED_PERMISSIONS)) {
+        throw PermissionError.PermissionsNotGrantedError(
+          "Permissions for camera and audio recording have not been granted. Please check your application settings."
+        )
+      }
+
+      val constraints = MediaConstraints()
+      val sdpOffer = peerConnection!!.createOffer(constraints).getOrThrow()
+      peerConnection?.setLocalDescription(sdpOffer)?.getOrThrow()
+
+      val sdp = sendSdpOffer(sdpOffer.description)
+
+      iceCandidates.forEach { sendCandidate(it) }
+
+      val answer =
+        SessionDescription(
+          SessionDescription.Type.ANSWER,
+          sdp
+        )
+      peerConnection!!.setRemoteDescription(answer)
+    } catch (e: PermissionError.PermissionsNotGrantedError) {
+      peerConnection?.close()
+      peerConnection?.dispose()
+      peerConnection = null
+      throw e
+    } catch (e: Exception) {
+      Log.e(CLIENT_TAG, "Failed to connect: ${e.message}", e)
+      peerConnection?.close()
+      peerConnection?.dispose()
+      peerConnection = null
+      throw SessionNetworkError.ConnectionError("Connection failed: ${e.message}")
     }
-
-    if (!hasPermissions(appContext, REQUIRED_PERMISSIONS)) {
-      throw PermissionError.PermissionsNotGrantedError(
-        "Permissions for camera and audio recording have not been granted. Please check your application settings."
-      )
-    }
-
-    val constraints = MediaConstraints()
-    val sdpOffer = peerConnection!!.createOffer(constraints).getOrThrow()
-    peerConnection?.setLocalDescription(sdpOffer)?.getOrThrow()
-
-    val sdp = sendSdpOffer(sdpOffer.description)
-
-    iceCandidates.forEach { sendCandidate(it) }
-
-    val answer =
-      SessionDescription(
-        SessionDescription.Type.ANSWER,
-        sdp
-      )
-    peerConnection!!.setRemoteDescription(answer)
   }
 
   /**
@@ -223,9 +241,22 @@ class WhipClient(
   }
 
   fun cleanup() {
-    peerConnection?.close()
-    peerConnection = null
     videoCapturer?.stopCapture()
+    videoCapturer?.dispose()
+    videoCapturer = null
+    
+    videoSource?.dispose()
+    videoSource = null
+    
+    videoTrack?.dispose()
+    videoTrack = null
+    
+    audioTrack?.dispose()
+    audioTrack = null
+    
+    peerConnection?.close()
+    peerConnection?.dispose()
+    peerConnection = null
   }
 
   fun switchCamera(deviceId: String) {
