@@ -95,9 +95,6 @@ export function WhepClientView(
     unpause: async () => {
       await nativeRef.current?.unpause();
     },
-    cleanup: async () => {
-      await nativeRef.current?.cleanup();
-    },
     getSupportedReceiverVideoCodecsNames: async () => {
       return (
         (await nativeRef.current?.getSupportedReceiverVideoCodecsNames()) ?? []

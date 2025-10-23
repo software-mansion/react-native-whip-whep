@@ -85,9 +85,6 @@ export function WhipClientView(
     flipCamera: async () => {
       await nativeRef.current?.flipCamera();
     },
-    cleanup: async () => {
-      await nativeRef.current?.cleanup();
-    },
     setPreferredSenderVideoCodecs: async (preferredCodecs) => {
       await nativeRef.current?.setPreferredSenderVideoCodecs(preferredCodecs);
     },
