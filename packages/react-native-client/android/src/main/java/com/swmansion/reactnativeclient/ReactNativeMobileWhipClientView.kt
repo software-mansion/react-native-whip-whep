@@ -1,14 +1,12 @@
 package com.swmansion.reactnativeclient
 
 import android.content.Context
-import android.util.Log
 import com.mobilewhep.client.ClientBaseListener
 import com.mobilewhep.client.ClientConnectOptions
 import com.mobilewhep.client.VideoView
 import com.mobilewhep.client.WhipClient
 import com.mobilewhep.client.WhipConfigurationOptions
 import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
-import com.swmansion.reactnativeclient.ReactNativeMobileWhipClientViewModule.Companion.onWhipTrackUpdateListeners
 import com.swmansion.reactnativeclient.ReactNativeMobileWhipClientViewModule.ConnectionOptions
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
@@ -23,8 +21,7 @@ import org.webrtc.VideoTrack
 class ReactNativeMobileWhipClientView(
   context: Context,
   appContext: AppContext,
-) : ExpoView(context, appContext),
-  ReactNativeMobileWhipClientViewModule.OnTrackUpdateListener {
+) : ExpoView(context, appContext) {
   private var videoView: VideoView? = null
 
   private var whipClient: WhipClient? = null
@@ -152,7 +149,7 @@ class ReactNativeMobileWhipClientView(
     }
   }
 
-  override fun onTrackUpdate(track: VideoTrack) {
+  private fun onTrackUpdate(track: VideoTrack) {
     update(track)
   }
 

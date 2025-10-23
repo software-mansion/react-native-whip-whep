@@ -36,7 +36,6 @@ class ReactNativeMobileWhepClientView(
   fun createWhepClient(configurationOptions: Map<String, Any>?, preferredVideoCodecs: List<String>?, preferredAudioCodecs: List<String>?) {
     val context: Context =
       appContext.reactContext ?: throw IllegalStateException("React context is not available")
-    Log.d("Test", "Creating whep client")
     val options =
       WhepConfigurationOptions(
         stunServerUrl = configurationOptions?.get("stunServerUrl") as? String,
@@ -50,7 +49,6 @@ class ReactNativeMobileWhepClientView(
     whepClient?.addTrackListener(object :
       ClientBaseListener {
       override fun onTrackAdded(track: VideoTrack) {
-        Log.d("Test", "Track added, calling update track in view")
         onTrackUpdate(track)
       }
     })
@@ -91,12 +89,10 @@ class ReactNativeMobileWhepClientView(
 
   private fun setupTrack(videoTrack: VideoTrack) {
     if (whepClient == null) {
-      Log.e("Test", "Setup track called without WHEP client.")
       return
     }
 
     if (videoView == null) {
-      Log.d("Test", "Creating video view with base: ${whepClient!!.eglBase}")
       videoView = VideoView(context, whepClient!!.eglBase)
       videoView!!.player = whepClient
 
@@ -155,7 +151,6 @@ class ReactNativeMobileWhepClientView(
   }
 
   override fun onAttachedToWindow() {
-    Log.d("Test", "On attached to window")
     super.onAttachedToWindow()
 
     (currentActivity as? FragmentActivity)?.let {
@@ -182,9 +177,7 @@ class ReactNativeMobileWhepClientView(
   }
 
   private fun cleanup() {
-    Log.d("Test", "Cleanup in view")
     videoView?.let { view ->
-      Log.d("Test", "Removing sink in whepClient: $whepClient")
       whepClient?.videoTrack?.removeSink(view)
       removeView(view)
     }
@@ -225,7 +218,6 @@ class ReactNativeMobileWhepClientView(
   }
 
   fun onTrackUpdate(track: VideoTrack) {
-    Log.d("Test", "onTrackUpdate called in view")
     update(track)
   }
 }

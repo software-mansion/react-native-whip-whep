@@ -20,13 +20,6 @@ import org.webrtc.MediaStreamTrack
 import org.webrtc.VideoTrack
 
 class ReactNativeMobileWhipClientViewModule : Module() {
-  interface OnTrackUpdateListener {
-    fun onTrackUpdate(track: VideoTrack)
-  }
-
-  companion object {
-    var onWhipTrackUpdateListeners: MutableList<ReactNativeMobileWhipClientViewModule.OnTrackUpdateListener> = mutableListOf()
-  }
 
   class ConfigurationOptions : Record {
     @Field

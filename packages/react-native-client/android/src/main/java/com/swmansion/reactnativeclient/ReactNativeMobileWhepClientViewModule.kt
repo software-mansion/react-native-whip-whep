@@ -93,14 +93,12 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
           view.setReconnectionListener(this@ReactNativeMobileWhepClientViewModule)
           view.setConnectionStateChangeListener(object : OnConnectionStateChangeListener {
             override suspend fun onConnectionStateChange(newState: PeerConnection.PeerConnectionState) {
-              Log.d("Test", "Connection state changed: $newState")
               emit(WhepEmitableEvent.whepPeerConnectionStateChanged(newState))
             }
           })
         }
 
         AsyncFunction("connect") Coroutine { view: ReactNativeMobileWhepClientView, options: ConnectOptions ->
-          Log.d("Test", "Connecting in module")
           view.connect(options)
         }
 
