@@ -27,8 +27,6 @@ public class ReactNativeMobileWhipClientViewModule: Module {
         var authToken: String?
     }
 
-    
-
     private func emit(event: WhipEmitableEvent) {
         DispatchQueue.main.async {
             self.sendEvent(event.event.name, event.data)
@@ -52,7 +50,6 @@ public class ReactNativeMobileWhipClientViewModule: Module {
         }
     }
 
-    
     public func definition() -> ModuleDefinition {
         Name("ReactNativeMobileWhipClientViewModule")
 
@@ -63,7 +60,8 @@ public class ReactNativeMobileWhipClientViewModule: Module {
         }
 
         View(ReactNativeMobileWhipClientView.self) {
-            AsyncFunction("initializeCamera") { (view: ReactNativeMobileWhipClientView, options: ConfigurationOptions) in
+            AsyncFunction("initializeCamera") {
+                (view: ReactNativeMobileWhipClientView, options: ConfigurationOptions) in
                 guard await PermissionUtils.requestCameraPermission() else {
                     self.emit(event: .warning(message: "Camera permission not granted."))
                     return
@@ -72,7 +70,7 @@ public class ReactNativeMobileWhipClientViewModule: Module {
                     self.emit(event: .warning(message: "Microphone permission not granted."))
                     return
                 }
-                
+
                 try await view.createWhipClient(options: options) { [weak self] newState in
                     self?.emit(event: .whipPeerConnectionStateChanged(status: newState))
                 }
@@ -94,11 +92,13 @@ public class ReactNativeMobileWhipClientViewModule: Module {
                 try await view.disconnect()
             }
 
-            AsyncFunction("setPreferredSenderVideoCodecs") { (view: ReactNativeMobileWhipClientView, preferredCodecs: [String]?) in
+            AsyncFunction("setPreferredSenderVideoCodecs") {
+                (view: ReactNativeMobileWhipClientView, preferredCodecs: [String]?) in
                 view.setPreferredVideoCodecs(preferredCodecs: preferredCodecs)
             }
 
-            AsyncFunction("setPreferredSenderAudioCodecs") { (view: ReactNativeMobileWhipClientView, preferredCodecs: [String]?) in
+            AsyncFunction("setPreferredSenderAudioCodecs") {
+                (view: ReactNativeMobileWhipClientView, preferredCodecs: [String]?) in
                 view.setPreferredAudioCodecs(preferredCodecs: preferredCodecs)
             }
 

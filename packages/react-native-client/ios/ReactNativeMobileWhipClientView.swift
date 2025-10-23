@@ -12,7 +12,7 @@ public class ReactNativeMobileWhipClientView: ExpoView {
         whipClient?.onConnectionStateChanged = nil
         whipClient = nil
     }
-    
+
     private var whipClient: WhipClient? {
         didSet {
             setupPlayer()
@@ -47,8 +47,11 @@ public class ReactNativeMobileWhipClientView: ExpoView {
     private func removeOldPlayer() {
         hostingController?.view.removeFromSuperview()
     }
-    
-    internal func createWhipClient(options: ReactNativeMobileWhipClientViewModule.ConfigurationOptions, onConnectionStateChanged: @escaping (RTCPeerConnectionState) -> Void) throws {
+
+    internal func createWhipClient(
+        options: ReactNativeMobileWhipClientViewModule.ConfigurationOptions,
+        onConnectionStateChanged: @escaping (RTCPeerConnectionState) -> Void
+    ) throws {
         guard let videoDeviceId = options.videoDeviceId,
             let avCaptureDevice = AVCaptureDevice(uniqueID: videoDeviceId)
         else {
@@ -81,7 +84,7 @@ public class ReactNativeMobileWhipClientView: ExpoView {
         whipClient = WhipClient(configOptions: options)
         whipClient?.onConnectionStateChanged = onConnectionStateChanged
     }
-    
+
     internal func connect(options: ReactNativeMobileWhipClientViewModule.ConnectionOptions) async throws {
         guard let client = self.whipClient else {
             throw Exception(
@@ -95,10 +98,10 @@ public class ReactNativeMobileWhipClientView: ExpoView {
                 name: "E_INVALID_SERVER_URL",
                 description: "Invalid server URL. Make sure the address is correct.")
         }
-        
+
         try await client.connect(.init(serverUrl: url, authToken: options.authToken))
     }
-    
+
     internal func flipCamera() throws {
         guard let client = self.whipClient else {
             throw Exception(
@@ -131,7 +134,7 @@ public class ReactNativeMobileWhipClientView: ExpoView {
 
         client.switchCamera(deviceId: oppositeCamera.uniqueID)
     }
-    
+
     internal func switchCamera(deviceId: String) throws {
         guard let client = self.whipClient else {
             throw Exception(
@@ -141,23 +144,23 @@ public class ReactNativeMobileWhipClientView: ExpoView {
         }
         client.switchCamera(deviceId: deviceId)
     }
-    
+
     internal func disconnect() async throws {
         try await self.whipClient?.disconnect()
     }
-    
+
     internal func setPreferredVideoCodecs(preferredCodecs: [String]?) {
         self.whipClient?.setPreferredVideoCodecs(preferredCodecs: preferredCodecs)
     }
-    
+
     internal func setPreferredAudioCodecs(preferredCodecs: [String]?) {
         self.whipClient?.setPreferredAudioCodecs(preferredCodecs: preferredCodecs)
     }
-    
+
     internal func getCurrentCameraDeviceId() -> String? {
         self.whipClient?.currentCameraDeviceId
     }
-    
+
     private func getVideoParametersFromOptions(createOptions: String) throws -> VideoParameters {
         let preset: VideoParameters = {
             switch createOptions {

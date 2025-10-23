@@ -180,9 +180,10 @@ class WhipClient(
   override suspend fun connect(connectOptions: ClientConnectOptions) {
     try {
       super.connect(connectOptions)
-      
-      if (videoTrack == null || videoCapturer == null || 
-          (configOptions.audioEnabled && audioTrack == null)) {
+
+      if (videoTrack == null || videoCapturer == null ||
+        (configOptions.audioEnabled && audioTrack == null)
+      ) {
         setUpVideoAndAudioDevices()
       }
 
@@ -244,16 +245,16 @@ class WhipClient(
     videoCapturer?.stopCapture()
     videoCapturer?.dispose()
     videoCapturer = null
-    
+
     videoSource?.dispose()
     videoSource = null
-    
+
     videoTrack?.dispose()
     videoTrack = null
-    
+
     audioTrack?.dispose()
     audioTrack = null
-    
+
     peerConnection?.close()
     peerConnection?.dispose()
     peerConnection = null

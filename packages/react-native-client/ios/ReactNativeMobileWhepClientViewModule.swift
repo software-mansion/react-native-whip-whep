@@ -60,14 +60,17 @@ public class ReactNativeMobileWhepClientViewModule: Module,
                 view.pipSize = size
             }
 
-            AsyncFunction("createWhepClient") { (
+            AsyncFunction("createWhepClient") {
+                (
                     view: ReactNativeMobileWhepClientView,
                     configurationOptions: [String: AnyObject]?,
                     preferredVideoCodecs: [String]?,
                     preferredAudioCodecs: [String]?
                 ) in
                 do {
-                    try view.createWhepClient(configurationOptions: configurationOptions, preferredVideoCodecs: preferredVideoCodecs, preferredAudioCodecs: preferredAudioCodecs)
+                    try view.createWhepClient(
+                        configurationOptions: configurationOptions, preferredVideoCodecs: preferredVideoCodecs,
+                        preferredAudioCodecs: preferredAudioCodecs)
                     view.setReconnectionListener(self)
                     view.setConnectionStateChangeCallback { [weak self] newState in
                         self?.emit(event: .whepPeerConnectionStateChanged(status: newState))

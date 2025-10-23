@@ -36,7 +36,7 @@ public class ReactNativeMobileWhepClientView: ExpoView, PlayerListener {
             }
         }
     }
-    
+
     private var whepClient: WhepClient? = nil {
         didSet {
             setupPlayer()
@@ -51,13 +51,13 @@ public class ReactNativeMobileWhepClientView: ExpoView, PlayerListener {
     required init(appContext: AppContext? = nil) {
         super.init(appContext: appContext)
     }
-    
+
     deinit {
         print("Deinit in whep view. Clening up")
         whepClient?.cleanup()
         whepClient = nil
     }
-    
+
     public func createWhepClient(
         configurationOptions: [String: AnyObject]?,
         preferredVideoCodecs: [String]?,
@@ -72,15 +72,15 @@ public class ReactNativeMobileWhepClientView: ExpoView, PlayerListener {
         self.whepClient = try WhepClient(configOptions: options)
         self.whepClient?.delegate = self
     }
-    
+
     public func setReconnectionListener(_ listener: ReconnectionManagerListener?) {
         self.whepClient?.reconnectionListener = listener
     }
-    
+
     public func setConnectionStateChangeCallback(onConnectionStateChanged: @escaping (RTCPeerConnectionState) -> Void) {
         self.whepClient?.onConnectionStateChanged = onConnectionStateChanged
     }
-    
+
     public func connect(serverUrl: URL, authToken: String?) async throws {
         guard let client = self.whepClient else {
             throw Exception(
@@ -92,7 +92,7 @@ public class ReactNativeMobileWhepClientView: ExpoView, PlayerListener {
 
         try await client.connect(.init(serverUrl: serverUrl, authToken: authToken))
     }
-    
+
     public func disconnect() {
         whepClient?.disconnect()
     }
@@ -104,23 +104,23 @@ public class ReactNativeMobileWhepClientView: ExpoView, PlayerListener {
     public func unpause() {
         whepClient?.unpause()
     }
-    
+
     public func setPreferredVideoCodecs(preferredCodecs: [String]?) {
         self.whepClient?.setPreferredVideoCodecs(
             preferredCodecs: preferredCodecs
         )
-    }    
+    }
     public func setPreferredAudioCodecs(preferredCodecs: [String]?) {
         self.whepClient?.setPreferredAudioCodecs(
             preferredCodecs: preferredCodecs
         )
     }
-    
+
     public func onTrackAdded(track: RTCVideoTrack) {
         setupPlayer()
     }
 
-    public func onTrackRemoved(track: RTCVideoTrack) { }
+    public func onTrackRemoved(track: RTCVideoTrack) {}
 
     private func setupPlayer() {
         removeOldPlayer()
