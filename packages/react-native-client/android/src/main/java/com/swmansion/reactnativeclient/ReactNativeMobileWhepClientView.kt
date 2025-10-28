@@ -29,7 +29,7 @@ import kotlin.text.get
 class ReactNativeMobileWhepClientView(
   context: Context,
   appContext: AppContext,
-) : ExpoView(context, appContext) {
+) : ExpoView(context, appContext), ClientBaseListener {
   private var videoView: VideoView? = null
   private var whepClient: WhepClient? = null
 
@@ -46,12 +46,7 @@ class ReactNativeMobileWhepClientView(
       )
     whepClient = WhepClient(context, options)
 
-    whepClient?.addTrackListener(object :
-      ClientBaseListener {
-      override fun onTrackAdded(track: VideoTrack) {
-        onTrackUpdate(track)
-      }
-    })
+    whepClient?.addTrackListener(this)
   }
 
   suspend fun connect(options: ConnectOptions)  {
@@ -217,7 +212,7 @@ class ReactNativeMobileWhepClientView(
     }
   }
 
-  fun onTrackUpdate(track: VideoTrack) {
+  override fun onTrackAdded(track: VideoTrack) {
     update(track)
   }
 }

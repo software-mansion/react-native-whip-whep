@@ -21,18 +21,14 @@ import org.webrtc.VideoTrack
 class ReactNativeMobileWhipClientView(
   context: Context,
   appContext: AppContext,
-) : ExpoView(context, appContext) {
+) : ExpoView(context, appContext), ClientBaseListener {
   private var videoView: VideoView? = null
 
   private var whipClient: WhipClient? = null
 
   fun createWhipClient(appContext: Context, configurationOptions: WhipConfigurationOptions, onConnectionStatusChange: (PeerConnection.PeerConnectionState) -> Unit) {
     whipClient = WhipClient(context, configurationOptions)
-    whipClient?.addTrackListener(object : ClientBaseListener {
-      override fun onTrackAdded(track: VideoTrack) {
-        onTrackUpdate(track)
-      }
-    })
+    whipClient?.addTrackListener(this)
     whipClient?.onConnectionStateChanged = onConnectionStatusChange
   }
 
@@ -149,7 +145,7 @@ class ReactNativeMobileWhipClientView(
     }
   }
 
-  private fun onTrackUpdate(track: VideoTrack) {
+  override fun onTrackAdded(track: VideoTrack) {
     update(track)
   }
 

@@ -198,29 +198,29 @@ class WhipClient(
       }
 
       val constraints = MediaConstraints()
-      val sdpOffer = peerConnection!!.createOffer(constraints).getOrThrow()
-      peerConnection?.setLocalDescription(sdpOffer)?.getOrThrow()
+      if (peerConnection != null) {
+        val sdpOffer = peerConnection!!.createOffer(constraints).getOrThrow()
+        peerConnection!!.setLocalDescription(sdpOffer).getOrThrow()
 
-      val sdp = sendSdpOffer(sdpOffer.description)
+        val sdp = sendSdpOffer(sdpOffer.description)
 
-      iceCandidates.forEach { sendCandidate(it) }
+        iceCandidates.forEach { sendCandidate(it) }
 
-      val answer =
-        SessionDescription(
-          SessionDescription.Type.ANSWER,
-          sdp
-        )
-      peerConnection!!.setRemoteDescription(answer)
+        val answer =
+          SessionDescription(
+            SessionDescription.Type.ANSWER,
+            sdp
+          )
+        peerConnection!!.setRemoteDescription(answer)
+      } else {
+        throw SessionNetworkError.ConfigurationError("Failed to connect: no peer connection")
+      }
     } catch (e: PermissionError.PermissionsNotGrantedError) {
-      peerConnection?.close()
-      peerConnection?.dispose()
-      peerConnection = null
+      cleanupPeerConnection()
       throw e
     } catch (e: Exception) {
       Log.e(CLIENT_TAG, "Failed to connect: ${e.message}", e)
-      peerConnection?.close()
-      peerConnection?.dispose()
-      peerConnection = null
+      cleanupPeerConnection()
       throw SessionNetworkError.ConnectionError("Connection failed: ${e.message}")
     }
   }
@@ -234,11 +234,14 @@ class WhipClient(
    *
    */
   suspend fun disconnect() {
+    cleanupPeerConnection()
+    disconnectResource()
+  }
+
+  private fun cleanupPeerConnection() {
     peerConnection?.close()
     peerConnection?.dispose()
     peerConnection = null
-
-    disconnectResource()
   }
 
   fun cleanup() {
@@ -255,9 +258,7 @@ class WhipClient(
     audioTrack?.dispose()
     audioTrack = null
 
-    peerConnection?.close()
-    peerConnection?.dispose()
-    peerConnection = null
+    cleanupPeerConnection()
   }
 
   fun switchCamera(deviceId: String) {

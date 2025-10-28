@@ -53,7 +53,6 @@ public class ReactNativeMobileWhepClientView: ExpoView, PlayerListener {
     }
 
     deinit {
-        print("Deinit in whep view. Clening up")
         whepClient?.cleanup()
         whepClient = nil
     }
