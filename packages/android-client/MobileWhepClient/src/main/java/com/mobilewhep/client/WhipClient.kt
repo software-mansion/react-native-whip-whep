@@ -198,9 +198,9 @@ class WhipClient(
       }
 
       val constraints = MediaConstraints()
-      if (peerConnection != null) {
-        val sdpOffer = peerConnection!!.createOffer(constraints).getOrThrow()
-        peerConnection!!.setLocalDescription(sdpOffer).getOrThrow()
+      peerConnection?.let {
+        val sdpOffer = it.createOffer(constraints).getOrThrow()
+        it.setLocalDescription(sdpOffer).getOrThrow()
 
         val sdp = sendSdpOffer(sdpOffer.description)
 
@@ -211,8 +211,8 @@ class WhipClient(
             SessionDescription.Type.ANSWER,
             sdp
           )
-        peerConnection!!.setRemoteDescription(answer)
-      } else {
+        it.setRemoteDescription(answer)
+      } ?: {
         throw SessionNetworkError.ConfigurationError("Failed to connect: no peer connection")
       }
     } catch (e: PermissionError.PermissionsNotGrantedError) {
