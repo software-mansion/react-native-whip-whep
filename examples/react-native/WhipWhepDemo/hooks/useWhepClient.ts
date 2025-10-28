@@ -74,7 +74,6 @@ export const useWhepClient = (serverUrl: string) => {
     const ref = whepViewRef.current;
     return () => {
       ref?.disconnect();
-      ref?.cleanup();
     };
   }, []);
 

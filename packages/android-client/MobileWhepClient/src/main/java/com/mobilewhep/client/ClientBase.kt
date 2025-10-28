@@ -439,4 +439,8 @@ open class ClientBase(
     listeners.add(listener)
     videoTrack?.let { listener.onTrackAdded(it) }
   }
+
+  fun removeTrackListeners() {
+    listeners.clear()
+  }
 }

@@ -58,10 +58,6 @@ export type WhepClientViewRef = {
    */
   unpause: () => Promise<void>;
   /**
-   * Cleanups WHEP client
-   */
-  cleanup: () => Promise<void>;
-  /**
    * Gets supported receiver video codec names.
    */
   getSupportedReceiverVideoCodecsNames: () => Promise<ReceiverVideoCodecName[]>;
@@ -166,7 +162,6 @@ export type WhipClientViewRef = {
   disconnect: () => Promise<void>;
   switchCamera: (deviceId: string) => Promise<void>;
   flipCamera: () => Promise<void>;
-  cleanup: () => Promise<void>;
   setPreferredSenderVideoCodecs: (
     preferredCodecs?: SenderVideoCodecName[],
   ) => Promise<void>;

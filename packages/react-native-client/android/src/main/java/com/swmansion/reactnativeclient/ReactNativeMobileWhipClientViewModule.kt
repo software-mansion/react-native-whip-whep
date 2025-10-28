@@ -20,14 +20,6 @@ import org.webrtc.MediaStreamTrack
 import org.webrtc.VideoTrack
 
 class ReactNativeMobileWhipClientViewModule : Module() {
-  interface OnTrackUpdateListener {
-    fun onTrackUpdate(track: VideoTrack)
-  }
-
-  companion object {
-    var onWhipTrackUpdateListeners: MutableList<ReactNativeMobileWhipClientViewModule.OnTrackUpdateListener> = mutableListOf()
-    var whipClient: WhipClient? = null
-  }
 
   class ConfigurationOptions : Record {
     @Field
@@ -110,7 +102,7 @@ class ReactNativeMobileWhipClientViewModule : Module() {
       }
 
       View(ReactNativeMobileWhipClientView::class) {
-        AsyncFunction("initializeCamera") { view: ReactNativeMobileWhipClientView , configurationOptions: ConfigurationOptions? ->
+        AsyncFunction("initializeCamera") { view: ReactNativeMobileWhipClientView, configurationOptions: ConfigurationOptions? ->
           val context: Context =
             appContext.reactContext ?: throw IllegalStateException("React context is not available")
 
@@ -145,93 +137,39 @@ class ReactNativeMobileWhipClientViewModule : Module() {
             return@AsyncFunction
           }
 
-          whipClient = WhipClient(context, options)
-          view.player = whipClient
-          whipClient?.addTrackListener(object : ClientBaseListener {
-            override fun onTrackAdded(track: VideoTrack) {
-              onWhipTrackUpdateListeners.forEach { it.onTrackUpdate(track) }
-            }
-          })
-          whipClient?.onConnectionStateChanged = { newState ->
-            emit(WhipEmitableEvent.whipPeerConnectionStateChanged(newState))
+          view.createWhipClient(context, options) {
+            emit(WhipEmitableEvent.whipPeerConnectionStateChanged(it))
           }
         }
 
-        AsyncFunction("connect") Coroutine { options: ConnectionOptions ->
+        AsyncFunction("connect") Coroutine { view: ReactNativeMobileWhipClientView, options: ConnectionOptions ->
           withContext(Dispatchers.IO) {
-            if (whipClient == null) {
-              throw IllegalStateException("WHIP client not found. Make sure it was initialized properly.")
-            }
-            whipClient?.connect(ClientConnectOptions(serverUrl = options.serverUrl, authToken = options.authToken))
+            view.connect(options)
           }
         }
 
-        AsyncFunction("disconnect") Coroutine { ->
-          whipClient?.disconnect()
+        AsyncFunction("disconnect") Coroutine { view: ReactNativeMobileWhipClientView ->
+          view.disconnect()
         }
 
-        AsyncFunction("flipCamera") {
-          if (whipClient == null) {
-            throw IllegalStateException("WHIP client not found. Make sure it was initialized properly.")
-          }
-
-          val currentCameraId = whipClient?.currentCameraDeviceId
-            ?: throw IllegalStateException("No camera found.")
-
-          val devices = WhipClient.getCaptureDevices(appContext.reactContext!!)
-          val currentCamera = devices.find { it.deviceName == currentCameraId }
-
-          val oppositeCamera = devices.find { device ->
-            when {
-              currentCamera?.isFrontFacing == true -> device.isBackFacing
-              currentCamera?.isBackFacing == true -> device.isFrontFacing
-              else -> false
-            }
-          }
-
-          if (oppositeCamera == null) {
-            throw IllegalStateException("No camera found.")
-          }
-
-          whipClient?.switchCamera(oppositeCamera.deviceName)
+        AsyncFunction("flipCamera") { view: ReactNativeMobileWhipClientView ->
+          view.flipCamera()
         }
 
-        AsyncFunction("switchCamera") { deviceId: String ->
-          whipClient?.switchCamera(deviceId)
+        AsyncFunction("switchCamera") { view: ReactNativeMobileWhipClientView, deviceId: String ->
+          view.switchCamera(deviceId)
         }
 
-        AsyncFunction("cleanup") {
-          whipClient?.cleanup()
-          return@AsyncFunction Unit
+        AsyncFunction("getSupportedSenderVideoCodecsNames") { view: ReactNativeMobileWhipClientView ->
+          return@AsyncFunction view.getSupportedSenderVideoCodecsNames()
         }
 
-        AsyncFunction("getSupportedSenderVideoCodecsNames") {
-          val context: Context =
-            appContext.reactContext ?: throw IllegalStateException("React context is not available")
-
-          val eglBase: EglBase =
-            whipClient?.eglBase ?: throw IllegalStateException("Whip client is not available")
-
-          val capabilities = PeerConnectionFactoryHelper.getFactory(context, eglBase).getRtpSenderCapabilities(
-            MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)
-
-          return@AsyncFunction capabilities.codecs.map { it.name }
+        AsyncFunction("getSupportedSenderAudioCodecsNames") { view: ReactNativeMobileWhipClientView ->
+          return@AsyncFunction view.getSupportedSenderAudioCodecsNames()
         }
 
-        AsyncFunction("getSupportedSenderAudioCodecsNames") {
-          val context: Context =
-            appContext.reactContext ?: throw IllegalStateException("React context is not available")
-          val eglBase: EglBase =
-            whipClient?.eglBase ?: throw IllegalStateException("Whip client is not available")
-
-          val capabilities = PeerConnectionFactoryHelper.getFactory(context, eglBase).getRtpSenderCapabilities(
-            MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)
-
-          return@AsyncFunction capabilities.codecs.map { it.name }
-        }
-
-        AsyncFunction("currentCameraDeviceId") {
-          return@AsyncFunction whipClient?.currentCameraDeviceId
+        AsyncFunction("currentCameraDeviceId") { view: ReactNativeMobileWhipClientView ->
+          return@AsyncFunction view.getCurrentCameraDeviceId()
         }
       }
     }

@@ -1,8 +1,7 @@
 import ExpoModulesCore
 import MobileWhipWhepClient
-import WebRTC
 
-public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
+public class ReactNativeMobileWhepClientViewModule: Module,
     ReconnectionManagerListener
 {
     public func onReconnectionStarted() {
@@ -25,18 +24,6 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
         )
     }
 
-    public func onTrackAdded(track: RTCVideoTrack) {
-        onTrackUpdateListeners.forEach {
-            $0.onTrackUpdate()
-        }
-    }
-
-    public func onTrackRemoved(track: RTCVideoTrack) {
-
-    }
-    private var whepClient: WhepClient? = nil
-    private var onTrackUpdateListeners: [OnTrackUpdateListener] = []
-
     private func emit(event: WhepEmitableEvent) {
         DispatchQueue.main.async {
             self.sendEvent(event.event.name, event.data)
@@ -55,10 +42,6 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
         Name("ReactNativeMobileWhepClientViewModule")
 
         Events(WhepEmitableEvent.allEvents)
-
-        Property("whepPeerConnectionState") {
-            self.whepClient?.peerConnectionState?.stringValue
-        }
 
         View(ReactNativeMobileWhepClientView.self) {
             Prop("pipEnabled") {
@@ -84,40 +67,25 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
                     preferredVideoCodecs: [String]?,
                     preferredAudioCodecs: [String]?
                 ) in
-                guard self.whepClient == nil else {
-                    self.emit(
-                        event: .warning(
-                            message:
-                                "WHEP client already exists. You must disconnect before creating a new one."
-                        )
+                do {
+                    try view.createWhepClient(
+                        configurationOptions: configurationOptions, preferredVideoCodecs: preferredVideoCodecs,
+                        preferredAudioCodecs: preferredAudioCodecs)
+                    view.setReconnectionListener(self)
+                    view.setConnectionStateChangeCallback { [weak self] newState in
+                        self?.emit(event: .whepPeerConnectionStateChanged(status: newState))
+                    }
+                } catch {
+                    throw Exception(
+                        name: "E_WHEP_CLIENT_NOT_CREATED",
+                        description:
+                            "Creating whep client failed."
                     )
-                    return
                 }
-
-                let options = WhepConfigurationOptions(
-                    audioEnabled: configurationOptions?["audioEnabled"] as? Bool ?? true,
-                    videoEnabled: configurationOptions?["videoEnabled"] as? Bool ?? true,
-                    stunServerUrl: configurationOptions?["stunServerUrl"] as? String
-                )
-
-                self.whepClient = try WhepClient(configOptions: options)
-                self.whepClient?.delegate = self
-                self.whepClient?.reconnectionListener = self
-                self.whepClient?.onConnectionStateChanged = { [weak self] newState in
-                    self?.emit(event: .whepPeerConnectionStateChanged(status: newState))
-                }
-                view.player = self.whepClient
-                self.onTrackUpdateListeners.append(view)
             }
 
-            AsyncFunction("connect") { (connectOptions: ConnectOptions) in
-                guard let client = self.whepClient else {
-                    throw Exception(
-                        name: "E_WHEP_CLIENT_NOT_FOUND",
-                        description:
-                            "WHEP client not found. Make sure it was initialized properly."
-                    )
-                }
+            AsyncFunction("connect") { (view: ReactNativeMobileWhepClientView, connectOptions: ConnectOptions) in
+
                 guard let url = URL(string: connectOptions.serverUrl) else {
                     throw Exception(
                         name: "E_INVALID_SERVER_URL",
@@ -125,7 +93,7 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
                     )
                 }
 
-                try await client.connect(.init(serverUrl: url, authToken: connectOptions.authToken))
+                try await view.connect(serverUrl: url, authToken: connectOptions.authToken)
             }
 
             AsyncFunction("startPip") { (view: ReactNativeMobileWhepClientView) in
@@ -140,39 +108,16 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
                 view.pipController?.togglePictureInPicture()
             }
 
-            AsyncFunction("disconnect") {
-                self.whepClient?.disconnect()
+            AsyncFunction("disconnect") { (view: ReactNativeMobileWhepClientView) in
+                view.disconnect()
             }
 
-            AsyncFunction("cleanup") { (view: ReactNativeMobileWhepClientView) in
-                self.whepClient?.cleanup()
-
-                view.player = nil
-                self.onTrackUpdateListeners = []
-
-                self.whepClient = nil
+            AsyncFunction("pause") { (view: ReactNativeMobileWhepClientView) in
+                view.pause()
             }
 
-            AsyncFunction("pause") {
-                guard let client = self.whepClient else {
-                    throw Exception(
-                        name: "E_WHEP_CLIENT_NOT_FOUND",
-                        description:
-                            "WHEP client not found. Make sure it was initialized properly."
-                    )
-                }
-                client.pause()
-            }
-
-            AsyncFunction("unpause") {
-                guard let client = self.whepClient else {
-                    throw Exception(
-                        name: "E_WHEP_CLIENT_NOT_FOUND",
-                        description:
-                            "WHEP client not found. Make sure it was initialized properly."
-                    )
-                }
-                client.unpause()
+            AsyncFunction("unpause") { (view: ReactNativeMobileWhepClientView) in
+                view.unpause()
             }
 
             AsyncFunction("getSupportedReceiverVideoCodecsNames") {
@@ -184,15 +129,15 @@ public class ReactNativeMobileWhepClientViewModule: Module, PlayerListener,
             }
 
             AsyncFunction("setPreferredReceiverVideoCodecs") {
-                (preferredCodecs: [String]?) in
-                self.whepClient?.setPreferredVideoCodecs(
+                (view: ReactNativeMobileWhepClientView, preferredCodecs: [String]?) in
+                view.setPreferredVideoCodecs(
                     preferredCodecs: preferredCodecs
                 )
             }
 
             AsyncFunction("setPreferredReceiverAudioCodecs") {
-                (preferredCodecs: [String]?) in
-                self.whepClient?.setPreferredAudioCodecs(
+                (view: ReactNativeMobileWhepClientView, preferredCodecs: [String]?) in
+                view.setPreferredAudioCodecs(
                     preferredCodecs: preferredCodecs
                 )
             }

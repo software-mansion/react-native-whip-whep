@@ -2,6 +2,7 @@ package com.swmansion.reactnativeclient
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.util.Rational
 import com.mobilewhep.client.ClientBaseListener
 import com.mobilewhep.client.ClientConnectOptions
@@ -15,6 +16,7 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.webrtc.PeerConnection
 import org.webrtc.VideoTrack
 
 class PipSize : Record {
@@ -34,13 +36,9 @@ class ConnectOptions: Record {
 }
 
 class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListener {
-  interface OnTrackUpdateListener {
-    fun onTrackUpdate(track: VideoTrack)
-  }
 
-  companion object {
-    var onWhepTrackUpdateListeners: MutableList<OnTrackUpdateListener> = mutableListOf()
-    var whepClient: WhepClient? = null
+  interface OnConnectionStateChangeListener {
+    suspend fun onConnectionStateChange(newState: PeerConnection.PeerConnectionState)
   }
 
   fun emit(event: EmitableEvent) {
@@ -90,53 +88,30 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
           }
         }
 
-        AsyncFunction("createWhepClient") { configurationOptions: Map<String, Any>?, preferredVideoCodecs: List<String>?, preferredAudioCodecs: List<String>? ->
-          val context: Context =
-            appContext.reactContext ?: throw IllegalStateException("React context is not available")
-          val options =
-            WhepConfigurationOptions(
-              stunServerUrl = configurationOptions?.get("stunServerUrl") as? String,
-              audioEnabled = configurationOptions?.get("audioEnabled") as? Boolean ?: true,
-              videoEnabled = configurationOptions?.get("videoEnabled") as? Boolean ?: true,
-              preferredAudioCodecs = preferredAudioCodecs ?: listOf(),
-              preferredVideoCodecs = preferredVideoCodecs ?: listOf()
-            )
-          whepClient = WhepClient(context, options)
-          whepClient?.addReconnectionListener(this@ReactNativeMobileWhepClientViewModule)
-          whepClient?.addTrackListener(object :
-            ClientBaseListener {
-            override fun onTrackAdded(track: VideoTrack) {
-              onWhepTrackUpdateListeners.forEach { it.onTrackUpdate(track) }
+        AsyncFunction("createWhepClient") { view: ReactNativeMobileWhepClientView, configurationOptions: Map<String, Any>?, preferredVideoCodecs: List<String>?, preferredAudioCodecs: List<String>? ->
+          view.createWhepClient(configurationOptions, preferredVideoCodecs, preferredAudioCodecs)
+          view.setReconnectionListener(this@ReactNativeMobileWhepClientViewModule)
+          view.setConnectionStateChangeListener(object : OnConnectionStateChangeListener {
+            override suspend fun onConnectionStateChange(newState: PeerConnection.PeerConnectionState) {
+              emit(WhepEmitableEvent.whepPeerConnectionStateChanged(newState))
             }
           })
-          whepClient?.onConnectionStateChanged = { newState ->
-            emit(WhepEmitableEvent.whepPeerConnectionStateChanged(newState))
-          }
         }
 
-        AsyncFunction("connect") Coroutine { options: ConnectOptions ->
-          if (whepClient == null) {
-            throw IllegalStateException("React context is not available")
-          }
-          withContext(Dispatchers.IO) {
-            whepClient?.connect(ClientConnectOptions(serverUrl = options.serverUrl, authToken = options.authToken))
-          }
+        AsyncFunction("connect") Coroutine { view: ReactNativeMobileWhepClientView, options: ConnectOptions ->
+          view.connect(options)
         }
 
-        AsyncFunction("disconnect") Coroutine { ->
-          whepClient?.disconnect()
+        AsyncFunction("disconnect") { view: ReactNativeMobileWhepClientView ->
+          view.disconnect()
         }
 
-        AsyncFunction("cleanup") Coroutine { ->
-          whepClient = null
+        AsyncFunction("pause") { view: ReactNativeMobileWhepClientView ->
+          view.pause()
         }
 
-        AsyncFunction("pause") {
-          whepClient?.pause()
-        }
-
-        AsyncFunction("unpause") {
-          whepClient?.unpause()
+        AsyncFunction("unpause") { view: ReactNativeMobileWhepClientView ->
+          view.unpause()
         }
 
         AsyncFunction("startPip") { view: ReactNativeMobileWhepClientView ->
