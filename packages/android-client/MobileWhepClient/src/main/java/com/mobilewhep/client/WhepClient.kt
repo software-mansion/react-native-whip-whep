@@ -123,6 +123,8 @@ class WhepClient(
     iceCandidates.clear()
     videoTrack = null
     audioTrack = null
+    cleanupFactory()
+    cleanupEglBase()
   }
 
   public fun pause() {

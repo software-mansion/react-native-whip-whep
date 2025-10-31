@@ -259,6 +259,8 @@ class WhipClient(
     audioTrack = null
 
     cleanupPeerConnection()
+    cleanupFactory()
+    cleanupEglBase()
   }
 
   fun switchCamera(deviceId: String) {

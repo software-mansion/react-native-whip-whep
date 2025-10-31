@@ -443,4 +443,12 @@ open class ClientBase(
   fun removeTrackListeners() {
     listeners.clear()
   }
+
+  protected fun cleanupEglBase() {
+    eglBase.release()
+  }
+
+  protected fun cleanupFactory() {
+    peerConnectionFactory.dispose()
+  }
 }
