@@ -11,16 +11,37 @@ import org.webrtc.audio.AudioDeviceModule
 
 class PeerConnectionFactoryHelper private constructor() {
   companion object {
-    private var peerConnectionFactory: PeerConnectionFactory? = null
+    private var whipPeerConnectionFactory: PeerConnectionFactory? = null
+    private var whepPeerConnectionFactory: PeerConnectionFactory? = null
 
-    fun getFactory(
+    fun getWhipFactory(
       appContext: Context,
       eglBase: EglBase
     ): PeerConnectionFactory {
-      if (peerConnectionFactory == null) {
-        peerConnectionFactory = create(appContext, eglBase)
+      if (whipPeerConnectionFactory == null) {
+        whipPeerConnectionFactory = create(appContext, eglBase)
       }
-      return peerConnectionFactory!!
+      return whipPeerConnectionFactory!!
+    }
+
+    fun clearWhipFactory() {
+      whipPeerConnectionFactory?.dispose()
+      whipPeerConnectionFactory = null
+    }
+
+    fun getWhepFactory(
+      appContext: Context,
+      eglBase: EglBase
+    ): PeerConnectionFactory {
+      if (whepPeerConnectionFactory == null) {
+        whepPeerConnectionFactory = create(appContext, eglBase)
+      }
+      return whepPeerConnectionFactory!!
+    }
+
+    fun clearWhepFactory() {
+      whepPeerConnectionFactory?.dispose()
+      whepPeerConnectionFactory = null
     }
 
     private fun create(

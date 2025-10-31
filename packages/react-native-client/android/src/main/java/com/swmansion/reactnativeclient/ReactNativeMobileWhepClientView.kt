@@ -176,12 +176,7 @@ class ReactNativeMobileWhepClientView(
       whepClient?.videoTrack?.removeSink(view)
       removeView(view)
     }
-    whepClient?.let { client ->
-      client.disconnect()
-      client.removeReconnectionListeners()
-      client.removeTrackListeners()
-      client.eglBase?.release()
-    }
+    whepClient?.cleanup()
     videoView = null
     whepClient = null
   }

@@ -6,14 +6,12 @@ import com.mobilewhep.client.ClientConnectOptions
 import com.mobilewhep.client.VideoView
 import com.mobilewhep.client.WhipClient
 import com.mobilewhep.client.WhipConfigurationOptions
-import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
 import com.swmansion.reactnativeclient.ReactNativeMobileWhipClientViewModule.ConnectionOptions
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import org.webrtc.EglBase
 import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
 import org.webrtc.VideoTrack
@@ -74,26 +72,15 @@ class ReactNativeMobileWhipClientView(
   }
 
   fun getSupportedSenderVideoCodecsNames(): List<String> {
-    val context: Context =
-      appContext.reactContext ?: throw IllegalStateException("React context is not available")
-
-    val eglBase: EglBase =
-      whipClient?.eglBase ?: throw IllegalStateException("Whip client is not available")
-
-    val capabilities = PeerConnectionFactoryHelper.getFactory(context, eglBase).getRtpSenderCapabilities(
-      MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO)
+    val capabilities = whipClient?.getPeerConnectionFactory()?.getRtpSenderCapabilities(
+      MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO) ?: throw IllegalStateException("Whip client is not available")
 
     return capabilities.codecs.map { it.name }
   }
 
   fun getSupportedSenderAudioCodecsNames(): List<String> {
-    val context: Context =
-      appContext.reactContext ?: throw IllegalStateException("React context is not available")
-    val eglBase: EglBase =
-      whipClient?.eglBase ?: throw IllegalStateException("Whip client is not available")
-
-    val capabilities = PeerConnectionFactoryHelper.getFactory(context, eglBase).getRtpSenderCapabilities(
-      MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO)
+    val capabilities = whipClient?.getPeerConnectionFactory()?.getRtpSenderCapabilities(
+      MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO) ?: throw IllegalStateException("Whip client is not available")
 
     return capabilities.codecs.map { it.name }
   }
