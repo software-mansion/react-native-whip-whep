@@ -62,9 +62,7 @@ class WhipClient(
     setUpVideoAndAudioDevices()
   }
 
-  fun getPeerConnectionFactory(): PeerConnectionFactory {
-    return peerConnectionFactory
-  }
+  fun getPeerConnectionFactory(): PeerConnectionFactory = peerConnectionFactory
 
   fun setupPeerConnection() {
     super.setupPeerConnection(peerConnectionFactory)

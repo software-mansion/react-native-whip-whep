@@ -149,7 +149,8 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
             let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
             throw SessionNetworkError.ConnectionError(
                 description:
-                    "Network error. Status code: \(statusCode). Check if the server is up and running and the token and the server url is correct.")
+                    "Network error. Status code: \(statusCode). Check if the server is up and running and the token and the server url is correct."
+            )
         }
 
         let responseString = String(data: data!, encoding: .utf8)
