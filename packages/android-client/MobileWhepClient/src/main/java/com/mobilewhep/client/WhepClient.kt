@@ -5,12 +5,14 @@ import android.util.Log
 import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
 import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
+import org.webrtc.VideoTrack
 
 data class WhepConfigurationOptions(
   val audioEnabled: Boolean? = true,
@@ -121,13 +123,17 @@ class WhepClient(
    *
    */
   fun disconnect() {
-    peerConnection?.close()
-    peerConnection?.dispose()
-    peerConnection = null
-    patchEndpoint = null
-    iceCandidates.clear()
-    videoTrack = null
-    audioTrack = null
+    pause()
+    CoroutineScope(Dispatchers.Main).launch {
+      delay(100) // we need to give RTC time to process setting isEnabled to false
+      peerConnection?.close()
+      peerConnection?.dispose()
+      peerConnection = null
+      patchEndpoint = null
+      iceCandidates.clear()
+      videoTrack = null
+      audioTrack = null
+    }
   }
 
   public fun pause() {

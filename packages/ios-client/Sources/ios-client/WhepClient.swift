@@ -122,6 +122,7 @@ public class WhepClient: ClientBase {
     */
     public func disconnect() {
         pause()
+        // we need to give RTC time to process setting isEnabled to false
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
             self?.videoTrack = nil
             self?.audioTrack = nil
