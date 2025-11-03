@@ -152,6 +152,8 @@ class ReactNativeMobileWhipClientView(
 
   override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
-    whipClient?.cleanup()
+    CoroutineScope(Dispatchers.IO).launch {
+      whipClient?.cleanup()
+    }
   }
 }

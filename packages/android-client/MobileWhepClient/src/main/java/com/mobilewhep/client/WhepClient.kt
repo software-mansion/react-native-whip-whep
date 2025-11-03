@@ -124,7 +124,7 @@ class WhepClient(
    */
   fun disconnect() {
     pause()
-    CoroutineScope(Dispatchers.Main).launch {
+    CoroutineScope(Dispatchers.IO).launch {
       delay(100) // we need to give RTC time to process setting isEnabled to false
       peerConnection?.close()
       peerConnection?.dispose()
