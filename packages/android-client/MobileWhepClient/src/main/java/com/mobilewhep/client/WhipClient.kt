@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.util.Log
 import androidx.core.content.ContextCompat
+import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
 import kotlinx.coroutines.suspendCancellableCoroutine
 import okhttp3.Call
 import okhttp3.Callback
@@ -18,6 +19,7 @@ import org.webrtc.CameraVideoCapturer
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
+import org.webrtc.PeerConnectionFactory
 import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
 import org.webrtc.Size
@@ -54,13 +56,16 @@ class WhipClient(
   private var videoSource: VideoSource? = null
 
   public var currentCameraDeviceId: String? = null
+  private val peerConnectionFactory = PeerConnectionFactoryHelper.getWhipFactory(appContext, eglBase)
 
   init {
     setUpVideoAndAudioDevices()
   }
 
-  override fun setupPeerConnection() {
-    super.setupPeerConnection()
+  fun getPeerConnectionFactory(): PeerConnectionFactory = peerConnectionFactory
+
+  fun setupPeerConnection() {
+    super.setupPeerConnection(peerConnectionFactory)
 
     val audioEnabled = configOptions.audioEnabled
     val videoEnabled = configOptions.videoEnabled
@@ -72,7 +77,8 @@ class WhipClient(
       setCodecPreferencesIfAvailable(
         transceiver,
         configOptions.preferredVideoCodecs,
-        MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO
+        MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
+        factory = peerConnectionFactory
       )
     }
 
@@ -82,7 +88,8 @@ class WhipClient(
       setCodecPreferencesIfAvailable(
         transceiver,
         configOptions.preferredAudioCodecs,
-        MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO
+        MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
+        factory = peerConnectionFactory
       )
     }
   }
@@ -259,6 +266,8 @@ class WhipClient(
     audioTrack = null
 
     cleanupPeerConnection()
+    cleanupFactory()
+    cleanupEglBase()
   }
 
   fun switchCamera(deviceId: String) {
@@ -288,6 +297,10 @@ class WhipClient(
     } catch (e: Exception) {
       Log.e(CLIENT_TAG, "Failed to switch camera to $deviceId: ${e.message}")
     }
+  }
+
+  protected fun cleanupFactory() {
+    PeerConnectionFactoryHelper.clearWhipFactory()
   }
 
   private suspend fun disconnectResource() {

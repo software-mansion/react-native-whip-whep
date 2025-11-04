@@ -36,13 +36,6 @@ public protocol PlayerListener: AnyObject {
     func onTrackRemoved(track: RTCVideoTrack)
 }
 
-protocol Player {
-    var delegate: PlayerListener? { get set }
-
-    func connect() async throws
-    func disconnect()
-}
-
 public class ClientBase: NSObject, RTCPeerConnectionDelegate {
     private let stunServerUrl: String
     var patchEndpoint: String?
@@ -102,7 +95,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
             constraints: constraints,
             delegate: self)
 
-        if self.peerConnection! == nil {
+        if self.peerConnection == nil {
             print("Failed to establish RTCPeerConnection. Check initial configuration")
         }
 
@@ -156,7 +149,8 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
             let statusCode = (response as? HTTPURLResponse)?.statusCode ?? 0
             throw SessionNetworkError.ConnectionError(
                 description:
-                    "Network error. Check if the server is up and running and the token and the server url is correct.")
+                    "Network error. Status code: \(statusCode). Check if the server is up and running and the token and the server url is correct."
+            )
         }
 
         let responseString = String(data: data!, encoding: .utf8)
@@ -240,7 +234,6 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
         DispatchQueue.main.async {
             if let track = stream.videoTracks.first {
                 self.videoTrack = track
-                self.delegate?.onTrackAdded(track: track)
             }
         }
         logger.debug("RTC media stream added: \(stream.description).")

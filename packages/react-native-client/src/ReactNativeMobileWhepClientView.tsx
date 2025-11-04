@@ -32,7 +32,7 @@ const NativeView = NativeViewBase as React.ComponentType<
  */
 export function WhepClientView(
   props: ReactNativeMobileWhepClientViewProps & {
-    ref?: React.Ref<WhepClientViewRef>;
+    ref: React.Ref<WhepClientViewRef>;
   },
 ) {
   const { ref, ...rest } = props;

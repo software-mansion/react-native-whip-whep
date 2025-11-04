@@ -21,6 +21,7 @@ import org.webrtc.IceCandidate
 import org.webrtc.MediaStream
 import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
+import org.webrtc.PeerConnectionFactory
 import org.webrtc.RtpCapabilities
 import org.webrtc.RtpReceiver
 import org.webrtc.RtpTransceiver
@@ -45,8 +46,6 @@ open class ClientBase(
   val stunServerUrl: String?
 ) : PeerConnection.Observer {
   public val eglBase = EglBase.create()
-  protected val peerConnectionFactory = PeerConnectionFactoryHelper.getFactory(appContext, eglBase)
-
   protected var peerConnection: PeerConnection? = null
   var connectOptions: ClientConnectOptions? = null
 
@@ -74,7 +73,7 @@ open class ClientBase(
   var onTrackAdded: (() -> Unit)? = null
   var onConnectionStateChanged: ((PeerConnection.PeerConnectionState) -> Unit)? = null
 
-  open fun setupPeerConnection() {
+  open fun setupPeerConnection(factory: PeerConnectionFactory) {
     val iceServers =
       listOf(
         PeerConnection.IceServer
@@ -90,7 +89,7 @@ open class ClientBase(
     config.tcpCandidatePolicy = PeerConnection.TcpCandidatePolicy.DISABLED
 
     try {
-      peerConnection = peerConnectionFactory.createPeerConnection(config, this)!!
+      peerConnection = factory.createPeerConnection(config, this)!!
     } catch (e: NullPointerException) {
       throw SessionNetworkError.ConfigurationError("Failed to establish RTCPeerConnection. Check initial configuration")
     }
@@ -276,7 +275,8 @@ open class ClientBase(
   protected fun getMatchedCodecs(
     preferredCodecs: List<String>,
     mediaType: MediaStreamTrack.MediaType,
-    useReceiver: Boolean = false
+    useReceiver: Boolean = false,
+    factory: PeerConnectionFactory
   ): List<RtpCapabilities.CodecCapability> {
     if (preferredCodecs.isEmpty()) {
       return emptyList()
@@ -284,9 +284,9 @@ open class ClientBase(
 
     val availableCodecs =
       if (useReceiver) {
-        peerConnectionFactory.getRtpReceiverCapabilities(mediaType).codecs
+        factory.getRtpReceiverCapabilities(mediaType).codecs
       } else {
-        peerConnectionFactory.getRtpSenderCapabilities(mediaType).codecs
+        factory.getRtpSenderCapabilities(mediaType).codecs
       }
     return preferredCodecs.mapNotNull { preferredCodec ->
       availableCodecs.firstOrNull { it.name.equals(preferredCodec, ignoreCase = true) }
@@ -297,9 +297,10 @@ open class ClientBase(
     transceiver: RtpTransceiver?,
     preferredCodecs: List<String>,
     mediaType: MediaStreamTrack.MediaType,
-    useReceiver: Boolean = false
+    useReceiver: Boolean = false,
+    factory: PeerConnectionFactory
   ) {
-    val matchedCodecs = getMatchedCodecs(preferredCodecs, mediaType, useReceiver)
+    val matchedCodecs = getMatchedCodecs(preferredCodecs, mediaType, useReceiver, factory)
     if (matchedCodecs.isNotEmpty()) {
       transceiver?.setCodecPreferences(matchedCodecs)
     }
@@ -442,5 +443,9 @@ open class ClientBase(
 
   fun removeTrackListeners() {
     listeners.clear()
+  }
+
+  protected fun cleanupEglBase() {
+    eglBase.release()
   }
 }

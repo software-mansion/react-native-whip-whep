@@ -121,11 +121,14 @@ public class WhepClient: ClientBase {
     of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
     public func disconnect() {
-        DispatchQueue.main.async { [weak self] in
+        pause()
+        // we need to give RTC time to process setting isEnabled to false
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.videoTrack = nil
+            self?.audioTrack = nil
             self?.peerConnection?.close()
             self?.peerConnection = nil
             self?.isConnectionSetUp = false
-            self?.videoTrack = nil
         }
     }
 
@@ -137,7 +140,8 @@ public class WhepClient: ClientBase {
     }
 
     private func getAudioTrack() -> RTCAudioTrack? {
-        for transceiver in peerConnection!.transceivers {
+        guard let peerConnection else { return nil }
+        for transceiver in peerConnection.transceivers {
             if let track = transceiver.receiver.track as? RTCAudioTrack {
                 return track
             }
@@ -146,9 +150,9 @@ public class WhepClient: ClientBase {
     }
 
     public func pause() {
+        self.videoTrack?.isEnabled = false
         let audioTrack = getAudioTrack()
         audioTrack?.isEnabled = false
-        self.videoTrack?.isEnabled = false
     }
 
     public func unpause() {

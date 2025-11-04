@@ -2,14 +2,17 @@ package com.mobilewhep.client
 
 import android.content.Context
 import android.util.Log
+import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
 import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
+import org.webrtc.VideoTrack
 
 data class WhepConfigurationOptions(
   val audioEnabled: Boolean? = true,
@@ -40,6 +43,8 @@ class WhepClient(
       }
   }
 
+  private val peerConnectionFactory = PeerConnectionFactoryHelper.getWhepFactory(appContext, eglBase)
+
   /**
    * Connects the client to the WHEP server using WebRTC Peer Connection.
    *
@@ -51,7 +56,7 @@ class WhepClient(
     super.connect(connectOptions)
 
     if (peerConnection == null) {
-      setupPeerConnection()
+      setupPeerConnection(peerConnectionFactory)
     }
 
     var audioEnabled = configurationOptions?.audioEnabled ?: true
@@ -73,7 +78,8 @@ class WhepClient(
         transceiver,
         configurationOptions.preferredVideoCodecs,
         MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
-        useReceiver = true
+        useReceiver = true,
+        factory = peerConnectionFactory
       )
     }
 
@@ -85,7 +91,8 @@ class WhepClient(
         transceiver,
         configurationOptions.preferredAudioCodecs,
         MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
-        useReceiver = true
+        useReceiver = true,
+        factory = peerConnectionFactory
       )
     }
 
@@ -116,13 +123,17 @@ class WhepClient(
    *
    */
   fun disconnect() {
-    peerConnection?.close()
-    peerConnection?.dispose()
-    peerConnection = null
-    patchEndpoint = null
-    iceCandidates.clear()
-    videoTrack = null
-    audioTrack = null
+    pause()
+    CoroutineScope(Dispatchers.IO).launch {
+      delay(100) // we need to give RTC time to process setting isEnabled to false
+      peerConnection?.close()
+      peerConnection?.dispose()
+      peerConnection = null
+      patchEndpoint = null
+      iceCandidates.clear()
+      videoTrack = null
+      audioTrack = null
+    }
   }
 
   public fun pause() {
@@ -133,6 +144,18 @@ class WhepClient(
   public fun unpause() {
     audioTrack?.setEnabled(true)
     this.videoTrack?.setEnabled(true)
+  }
+
+  public fun cleanup() {
+    disconnect()
+    removeReconnectionListeners()
+    removeTrackListeners()
+    cleanupEglBase()
+    cleanupFactory()
+  }
+
+  protected fun cleanupFactory() {
+    PeerConnectionFactoryHelper.clearWhepFactory()
   }
 
   override fun onIceConnectionChange(connectionState: PeerConnection.IceConnectionState?) {

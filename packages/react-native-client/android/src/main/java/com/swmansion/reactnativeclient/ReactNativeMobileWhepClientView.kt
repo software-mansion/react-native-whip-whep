@@ -160,7 +160,17 @@ class ReactNativeMobileWhepClientView(
   override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
 
-    cleanup()
+    videoView?.let { view ->
+      whepClient?.videoTrack?.removeSink(view)
+      removeView(view)
+    }
+    videoView = null
+
+    val client = whepClient
+    whepClient = null
+    CoroutineScope(Dispatchers.IO).launch {
+      client?.cleanup()
+    }
 
     (currentActivity as? FragmentActivity)?.let {
       val fragment = it.supportFragmentManager.findFragmentByTag(pictureInPictureHelperTag ?: "")
@@ -169,21 +179,6 @@ class ReactNativeMobileWhepClientView(
         .remove(fragment)
         .commitAllowingStateLoss()
     }
-  }
-
-  private fun cleanup() {
-    videoView?.let { view ->
-      whepClient?.videoTrack?.removeSink(view)
-      removeView(view)
-    }
-    whepClient?.let { client ->
-      client.disconnect()
-      client.removeReconnectionListeners()
-      client.removeTrackListeners()
-      client.eglBase?.release()
-    }
-    videoView = null
-    whepClient = null
   }
 
   fun layoutForPiPEnter() {

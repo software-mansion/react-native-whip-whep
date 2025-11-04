@@ -15,7 +15,7 @@ const NativeViewBase: React.ComponentType<
 const NativeView = NativeViewBase as React.ComponentType<
   ReactNativeMobileWhipClientViewProps & {
     playerType: PlayerType;
-    ref?: React.Ref<WhipClientViewRef>;
+    ref: React.Ref<WhipClientViewRef>;
   }
 >;
 
