@@ -255,7 +255,7 @@ open class ClientBase(
             response: Response
           ) {
             response.use {
-              if (!it.isSuccessful) {
+              if (!it.isSuccessful && it.code != 501 && it.code != 405 && it.code != 400) {
                 continuation.resumeWithException(
                   SessionNetworkError.CandidateSendingError("Candidate sending error - response was not successful.")
                 )
