@@ -62,13 +62,27 @@ public class ReactNativeMobileWhipClientViewModule: Module {
         View(ReactNativeMobileWhipClientView.self) {
             AsyncFunction("initializeCamera") {
                 (view: ReactNativeMobileWhipClientView, options: ConfigurationOptions) in
-                guard await PermissionUtils.requestCameraPermission() else {
-                    self.emit(event: .warning(message: "Camera permission not granted."))
-                    return
+                let audioEnabled = options.audioEnabled ?? true
+                let videoEnabled = options.videoEnabled ?? true
+
+                guard audioEnabled || videoEnabled else {
+                    throw Exception(
+                        name: "Video and audio disabled",
+                        description: "You need to enable either video or audio to start streaming.")
                 }
-                guard await PermissionUtils.requestMicrophonePermission() else {
-                    self.emit(event: .warning(message: "Microphone permission not granted."))
-                    return
+
+                if videoEnabled {
+                    guard await PermissionUtils.requestCameraPermission() else {
+                        self.emit(event: .warning(message: "Camera permission not granted."))
+                        return
+                    }
+                }
+
+                if audioEnabled {
+                    guard await PermissionUtils.requestMicrophonePermission() else {
+                        self.emit(event: .warning(message: "Microphone permission not granted."))
+                        return
+                    }
                 }
 
                 try await view.createWhipClient(options: options) { [weak self] newState in
