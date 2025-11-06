@@ -37,7 +37,15 @@
       [
         "react-native-whip-whep",
         {
-          "supportsPictureInPicture": true
+          "ios": {
+            "enableScreensharing": true,
+            "supportsPictureInPicture": true,
+            "appGroupContainerId": "group.com.example.myapp",
+            "iphoneDeploymentTarget": "15.1"
+          },
+          "android": {
+            "supportsPictureInPicture": true
+          }
         }
       ],
       "expo-font",

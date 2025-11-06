@@ -37,9 +37,11 @@
   "license": "MIT",
   "homepage": "https://github.com/software-mansion/react-native-whip-whep",
   "dependencies": {
+    "promise-fs": "^2.1.1",
     "zod": "^3.25.71"
   },
   "devDependencies": {
+    "@types/promise-fs": "^2.1.2",
     "@types/react": "~19.1.10",
     "expo-module-scripts": "~4.0.5",
     "typedoc": "^0.28.2",
@@ -52,6 +54,7 @@
   },
   "files": [
     "build/**",
+    "plugin/**",
     "android/build.gradle",
     "android/src/**",
     "ios/**/*.swift",
