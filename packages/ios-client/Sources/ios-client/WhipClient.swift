@@ -29,6 +29,9 @@ public class WhipClient: ClientBase {
     private var configOptions: WhipConfigurationOptions
     private var videoCapturer: RTCCameraVideoCapturer?
     private var videoSource: RTCVideoSource?
+    
+    private var broadcastScreenShareReceiver: BroadcastScreenShareReceiver?
+    private var broadcastScreenShareCapturer: BroadcastScreenShareCapturer?
 
     public var currentCameraDeviceId: String?
 
@@ -229,6 +232,11 @@ public class WhipClient: ClientBase {
         if videoEnabled {
             let videoSource = WhipClient.peerConnectionFactory.videoSource()
             self.videoSource = videoSource
+            broadcastScreenShareCapturer = BroadcastScreenShareCapturer(
+                videoSource,
+                appGroup: "group.com.swmansion.mobilewhepclient",
+                videoParameters: .presetFHD169
+            )
             let videoCapturer = RTCCameraVideoCapturer(delegate: videoSource, captureSession: AVCaptureSession())
             self.videoCapturer = videoCapturer
             let videoTrackId = UUID().uuidString
