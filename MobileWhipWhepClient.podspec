@@ -17,5 +17,6 @@ Pod::Spec.new do |s|
 
   s.dependency 'WebRTC-SDK', '=125.6422.06'
   s.dependency 'SwiftLogJellyfish', '1.5.2'
+  s.dependency 'SwiftProtobuf', '~> 1.18.0'
 
 end
