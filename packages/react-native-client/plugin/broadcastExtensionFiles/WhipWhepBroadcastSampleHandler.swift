@@ -2,6 +2,7 @@ import Foundation
 import ReplayKit
 import WebRTC
 import os.log
+import MobileWhipWhepClient
 
 /// App Group used by the extension to exchange buffers with the target application
 let appGroup = "{{GROUP_IDENTIFIER}}"

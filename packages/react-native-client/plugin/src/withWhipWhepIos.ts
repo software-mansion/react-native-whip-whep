@@ -27,8 +27,8 @@ function getSbeTargetName(props: WhipWhepPluginOptions) {
  */
 export function getSbePodfileSnippet(props: WhipWhepPluginOptions) {
   const targetName = getSbeTargetName(props);
-  // The extension needs access to WebRTC for handling video frames
-  return `\ntarget '${targetName}' do\n  pod 'react-native-whip-whep/Broadcast', :path => '../node_modules/react-native-whip-whep'\nend`;
+  // The extension needs access to WebRTC for handling video frames via the MobileWhipWhepClient/Broadcast subspec
+  return `\ntarget '${targetName}' do\n  pod 'MobileWhipWhepClient/Broadcast', :path => '../../../../'\nend`;
 }
 
 const TARGETED_DEVICE_FAMILY = `"1,2"`; // 1=iPhone, 2=iPad
