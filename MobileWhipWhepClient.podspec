@@ -19,4 +19,16 @@ Pod::Spec.new do |s|
   s.dependency 'SwiftLogJellyfish', '1.5.2'
   s.dependency 'SwiftProtobuf', '~> 1.18.0'
 
+  # Broadcast subspec for screen sharing extension
+  s.subspec 'Broadcast' do |broadcast|
+    broadcast.source_files = [
+      'packages/ios-client/Sources/ios-client/Media/BroadcastSampleSource.swift',
+      'packages/ios-client/Sources/ios-client/ipc/**/*',
+      'packages/ios-client/Sources/ios-client/proto/**/*',
+      'packages/ios-client/Sources/ios-client/utils/**/*'
+    ]
+    broadcast.dependency 'WebRTC-SDK', '=125.6422.06'
+    broadcast.dependency 'SwiftProtobuf', '~> 1.18.0'
+  end
+
 end
