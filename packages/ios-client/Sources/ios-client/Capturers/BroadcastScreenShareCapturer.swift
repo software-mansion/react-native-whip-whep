@@ -1,5 +1,8 @@
 import Foundation
 import WebRTC
+import Logging
+
+internal var sdkLogger = Logger(label: "com.mobilewhipwhep.client")
 
 internal func downscaleResolution(from: Dimensions, to: Dimensions) -> Dimensions {
     if from.height > to.height {
@@ -148,7 +151,7 @@ class BroadcastScreenShareCapturer: RTCVideoCapturer {
             else {
                 return
             }
-
+            
             switch sample.type {
             case .notification(let notification):
                 switch notification {
