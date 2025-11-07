@@ -161,6 +161,20 @@ public class ReactNativeMobileWhipClientView: ExpoView {
         self.whipClient?.currentCameraDeviceId
     }
 
+    internal func toggleScreenShare() throws {
+        guard let client = self.whipClient else {
+            throw Exception(
+                name: "E_WHIP_CLIENT_NOT_FOUND",
+                description: "WHIP client not found. Make sure it was initialized properly."
+            )
+        }
+        try client.toggleScreenShare()
+    }
+
+    internal func isScreenShareOn() -> Bool {
+        return self.whipClient?.isScreenShareOn ?? false
+    }
+
     private func getVideoParametersFromOptions(createOptions: String) throws -> VideoParameters {
         let preset: VideoParameters = {
             switch createOptions {

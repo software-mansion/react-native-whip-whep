@@ -23,6 +23,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 export default function WhipScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
+  const [isScreenShareOn, setIsScreenShareOn] = useState(false);
 
   const whipClient = useRef<WhipClientViewRef | null>(null);
 
@@ -148,6 +149,19 @@ export default function WhipScreen() {
     }
   }, []);
 
+  const handleToggleScreenShare = useCallback(async () => {
+    if (whipClient.current) {
+      try {
+        await whipClient.current.toggleScreenShare();
+        const screenShareState = await whipClient.current.isScreenShareOn();
+        setIsScreenShareOn(screenShareState);
+        console.log('Screen share toggled:', screenShareState);
+      } catch (error) {
+        console.error('Failed to toggle screen share:', error);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     initializeCamera();
 
@@ -187,6 +201,11 @@ export default function WhipScreen() {
           <Button title="Flip Camera" onPress={handleFlipCamera} />
           {Platform.OS === 'ios' && (
             <>
+              <Button
+                title={isScreenShareOn ? 'Stop Screen Share' : 'Share Screen'}
+                onPress={handleToggleScreenShare}
+                color={isScreenShareOn ? '#EF4444' : tint}
+              />
               <Button
                 title="Set H264 Video"
                 onPress={handleSetH264VideoCodec}

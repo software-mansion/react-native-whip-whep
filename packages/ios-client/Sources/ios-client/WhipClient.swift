@@ -1,4 +1,5 @@
 import WebRTC
+import ReplayKit
 import os
 
 public struct WhipConfigurationOptions {
@@ -34,6 +35,7 @@ public class WhipClient: ClientBase {
     private var broadcastScreenShareCapturer: BroadcastScreenShareCapturer?
 
     public var currentCameraDeviceId: String?
+    public var isScreenShareOn: Bool = false
 
     /**
     Initializes a `WhipClient` object.
@@ -232,11 +234,6 @@ public class WhipClient: ClientBase {
         if videoEnabled {
             let videoSource = WhipClient.peerConnectionFactory.videoSource()
             self.videoSource = videoSource
-            broadcastScreenShareCapturer = BroadcastScreenShareCapturer(
-                videoSource,
-                appGroup: "group.com.swmansion.mobilewhepclient",
-                videoParameters: .presetFHD169
-            )
             let videoCapturer = RTCCameraVideoCapturer(delegate: videoSource, captureSession: AVCaptureSession())
             self.videoCapturer = videoCapturer
             let videoTrackId = UUID().uuidString
@@ -397,6 +394,79 @@ public class WhipClient: ClientBase {
                     mediaType: kRTCMediaStreamTrackKindAudio
                 )
             }
+        }
+    }
+
+    // MARK: - Screen Sharing
+
+    /**
+     Toggles screen sharing on or off.
+     
+     When screen sharing starts:
+     - Camera capture is stopped
+     - IPC server starts listening for frames from the broadcast extension
+     - Video track switches to screen share source
+     
+     When screen sharing stops:
+     - IPC server stops listening
+     - Camera capture resumes
+     - Video track switches back to camera source
+     */
+    public func toggleScreenShare() throws {
+        guard let screenShareExtensionBundleId = Bundle.main.infoDictionary?["ScreenShareExtensionBundleId"] as? String else {
+            throw ScreenSharingError.NoExtension(description: "No screen share extension bundle id set. Please set ScreenShareExtensionBundleId in Info.plist")
+        }
+        
+        let appGroup = Bundle.main.object(forInfoDictionaryKey: "AppGroupName") as? String
+            ?? "group.com.swmansion.mobilewhepclient"
+        
+        
+        if isScreenShareOn {
+            // Stop screen sharing
+            broadcastScreenShareCapturer?.stopListening()
+            isScreenShareOn = false
+            
+            // Resume camera capture
+            startCapture()
+            
+            logger.info("Screen sharing stopped, camera resumed")
+        } else {
+            videoCapturer?.stopCapture()
+            let videoSource = WhipClient.peerConnectionFactory.videoSource(forScreenCast: true)
+            
+            broadcastScreenShareReceiver = BroadcastScreenShareReceiver(
+                onStart: { [weak self] in
+                    guard let self, let videoSource = broadcastScreenShareCapturer?.source else { return }
+                    
+                    let webrtcTrack = WhipClient.peerConnectionFactory.videoTrack(with: videoSource, trackId: UUID().uuidString)
+                    delegate?.onTrackAdded(track: webrtcTrack)
+                },
+                onStop: { [weak self] in
+                    // handle stop
+                    print("Stopped ??")
+                }
+            )
+            
+            broadcastScreenShareCapturer = BroadcastScreenShareCapturer(
+                videoSource,
+                appGroup: appGroup,
+                videoParameters: .presetFHD169
+            )
+            broadcastScreenShareCapturer?.capturerDelegate = broadcastScreenShareReceiver
+            broadcastScreenShareCapturer?.startListening()
+            isScreenShareOn = true
+            
+            logger.info("Screen sharing started, camera stopped")
+            // Note: The actual screen frames will come from the broadcast extension
+            // via IPC once the user starts screen recording from the system picker
+            
+            DispatchQueue.main.async {
+                RPSystemBroadcastPickerView.show(for: screenShareExtensionBundleId)
+            }
+        }
+        
+        DispatchQueue.main.async {
+            RPSystemBroadcastPickerView.show(for: screenShareExtensionBundleId)
         }
     }
 }
