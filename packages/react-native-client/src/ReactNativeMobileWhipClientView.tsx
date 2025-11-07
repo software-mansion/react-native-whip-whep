@@ -104,6 +104,12 @@ export function WhipClientView(
     currentCameraDeviceId: async () => {
       return (await nativeRef.current?.currentCameraDeviceId()) ?? "";
     },
+    toggleScreenShare: async () => {
+      await nativeRef.current?.toggleScreenShare();
+    },
+    isScreenShareOn: async () => {
+      return (await nativeRef.current?.isScreenShareOn()) ?? false;
+    },
   }));
 
   return <NativeView {...rest} playerType={PlayerType.WHIP} ref={nativeRef} />;

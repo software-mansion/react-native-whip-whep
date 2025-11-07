@@ -127,6 +127,14 @@ public class ReactNativeMobileWhipClientViewModule: Module {
             AsyncFunction("currentCameraDeviceId") { (view: ReactNativeMobileWhipClientView) in
                 view.getCurrentCameraDeviceId()
             }
+
+            AsyncFunction("toggleScreenShare") { (view: ReactNativeMobileWhipClientView) in
+                try view.toggleScreenShare()
+            }
+
+            AsyncFunction("isScreenShareOn") { (view: ReactNativeMobileWhipClientView) in
+                view.isScreenShareOn()
+            }
         }
     }
 }
