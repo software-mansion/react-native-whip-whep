@@ -70,6 +70,20 @@ export function WhipClientView(
         }, 0);
       });
     },
+    initializeScreenShare: async (options: Omit<WhipConfigurationOptions, 'videoDeviceId' | 'videoParameters'>) => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          nativeRef.current
+            ?.initializeScreenShare(options)
+            .then(() => {
+              resolve();
+            })
+            .catch((error) => {
+              reject(error);
+            });
+        }, 0);
+      });
+    },
     connect: async (options: {
       serverUrl: string;
       authToken?: string | undefined;
@@ -103,12 +117,6 @@ export function WhipClientView(
     },
     currentCameraDeviceId: async () => {
       return (await nativeRef.current?.currentCameraDeviceId()) ?? "";
-    },
-    toggleScreenShare: async () => {
-      await nativeRef.current?.toggleScreenShare();
-    },
-    isScreenShareOn: async () => {
-      return (await nativeRef.current?.isScreenShareOn()) ?? false;
     },
   }));
 
