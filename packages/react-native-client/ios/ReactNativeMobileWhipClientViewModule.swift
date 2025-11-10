@@ -90,6 +90,22 @@ public class ReactNativeMobileWhipClientViewModule: Module {
                 }
             }
 
+            AsyncFunction("initializeScreenShare") {
+                (view: ReactNativeMobileWhipClientView, options: ConfigurationOptions) in
+                let audioEnabled = options.audioEnabled ?? true
+
+                if audioEnabled {
+                    guard await PermissionUtils.requestMicrophonePermission() else {
+                        self.emit(event: .warning(message: "Microphone permission not granted."))
+                        return
+                    }
+                }
+
+                try await view.createWhipClientForScreenShare(options: options) { [weak self] newState in
+                    self?.emit(event: .whipPeerConnectionStateChanged(status: newState))
+                }
+            }
+
             AsyncFunction("connect") { (view: ReactNativeMobileWhipClientView, options: ConnectionOptions) in
                 try await view.connect(options: options)
             }
@@ -126,14 +142,6 @@ public class ReactNativeMobileWhipClientViewModule: Module {
 
             AsyncFunction("currentCameraDeviceId") { (view: ReactNativeMobileWhipClientView) in
                 view.getCurrentCameraDeviceId()
-            }
-
-            AsyncFunction("toggleScreenShare") { (view: ReactNativeMobileWhipClientView) in
-                try view.toggleScreenShare()
-            }
-
-            AsyncFunction("isScreenShareOn") { (view: ReactNativeMobileWhipClientView) in
-                view.isScreenShareOn()
             }
         }
     }

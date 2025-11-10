@@ -20,10 +20,12 @@ import {
 } from 'react-native-whip-whep';
 import { useThemeColor } from '@/hooks/useThemeColor';
 
+type StreamMode = 'selection' | 'camera' | 'screenShare';
+
 export default function WhipScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
-  const [isScreenShareOn, setIsScreenShareOn] = useState(false);
+  const [streamMode, setStreamMode] = useState<StreamMode>('selection');
 
   const whipClient = useRef<WhipClientViewRef | null>(null);
 
@@ -65,10 +67,30 @@ export default function WhipScreen() {
         videoParameters: VideoParameters.presetHD169,
       });
 
+      setStreamMode('camera');
       setIsLoading(false);
     } catch (error) {
       console.error('Failed to initialize camera', error);
       setIsLoading(false);
+      setStreamMode('selection');
+    }
+  }, []);
+
+  const initializeScreenShare = useCallback(async () => {
+    try {
+      setIsLoading(true);
+
+      await whipClient.current?.initializeScreenShare({
+        audioEnabled: true,
+        videoEnabled: true,
+      });
+
+      setStreamMode('screenShare');
+      setIsLoading(false);
+    } catch (error) {
+      console.error('Failed to initialize screen share', error);
+      setIsLoading(false);
+      setStreamMode('selection');
     }
   }, []);
 
@@ -149,27 +171,12 @@ export default function WhipScreen() {
     }
   }, []);
 
-  const handleToggleScreenShare = useCallback(async () => {
-    if (whipClient.current) {
-      try {
-        await whipClient.current.toggleScreenShare();
-        const screenShareState = await whipClient.current.isScreenShareOn();
-        setIsScreenShareOn(screenShareState);
-        console.log('Screen share toggled:', screenShareState);
-      } catch (error) {
-        console.error('Failed to toggle screen share:', error);
-      }
-    }
-  }, []);
-
   useEffect(() => {
-    initializeCamera();
-
     const client = whipClient.current;
     return () => {
       client?.disconnect();
     };
-  }, [initializeCamera]);
+  }, []);
 
   return (
     <ScrollView>
@@ -179,57 +186,86 @@ export default function WhipScreen() {
             <WhipClientView style={styles.clientView} ref={whipClient} />
           </View>
 
-          <View style={styles.statusContainer}>
-            <Text style={styles.statusLabel}>Connection Status:</Text>
-            <Text
-              style={[
-                styles.statusText,
-                {
-                  color: getConnectionStatusDisplay(
-                    peerConnectionState ?? 'unknown',
-                  ).color,
-                },
-              ]}>
-              {
-                getConnectionStatusDisplay(peerConnectionState ?? 'unknown')
-                  .text
-              }
-            </Text>
-          </View>
+          {streamMode === 'selection' && (
+            <View style={styles.selectionContainer}>
+              <Text style={styles.selectionTitle}>Select Stream Mode</Text>
+              <View style={styles.selectionButtonRow}>
+                <Button
+                  title="Camera"
+                  onPress={initializeCamera}
+                  color={tint}
+                  disabled={isLoading}
+                />
+                {Platform.OS === 'ios' && (
+                  <Button
+                    title="Screen Share"
+                    onPress={initializeScreenShare}
+                    color={tint}
+                    disabled={isLoading}
+                  />
+                )}
+              </View>
+            </View>
+          )}
 
-          <Button title="Switch Camera" onPress={handleSwitchCamera} />
-          <Button title="Flip Camera" onPress={handleFlipCamera} />
-          {Platform.OS === 'ios' && (
+          {streamMode !== 'selection' && (
             <>
-              <Button
-                title={isScreenShareOn ? 'Stop Screen Share' : 'Share Screen'}
-                onPress={handleToggleScreenShare}
-                color={isScreenShareOn ? '#EF4444' : tint}
-              />
-              <Button
-                title="Set H264 Video"
-                onPress={handleSetH264VideoCodec}
-              />
-              <Button
-                title="Set OPUS Audio"
-                onPress={handleSetOpusAudioCodec}
-              />
+              <View style={styles.statusContainer}>
+                <Text style={styles.statusLabel}>
+                  {streamMode === 'screenShare' ? 'Screen Share' : 'Camera'} Status:
+                </Text>
+                <Text
+                  style={[
+                    styles.statusText,
+                    {
+                      color: getConnectionStatusDisplay(
+                        peerConnectionState ?? 'unknown',
+                      ).color,
+                    },
+                  ]}>
+                  {
+                    getConnectionStatusDisplay(peerConnectionState ?? 'unknown')
+                      .text
+                  }
+                </Text>
+              </View>
+
+              {streamMode === 'camera' && (
+                <>
+                  <Button title="Switch Camera" onPress={handleSwitchCamera} />
+                  <Button title="Flip Camera" onPress={handleFlipCamera} />
+                </>
+              )}
+              
+              {Platform.OS === 'ios' && (
+                <>
+                  <Button
+                    title="Set H264 Video"
+                    onPress={handleSetH264VideoCodec}
+                  />
+                  <Button
+                    title="Set OPUS Audio"
+                    onPress={handleSetOpusAudioCodec}
+                  />
+                </>
+              )}
+              {shouldShowStreamBtn && (
+                <Button
+                  title="Stream"
+                  onPress={handleStreamBtnClick}
+                  color={tint}
+                />
+              )}
+              {!shouldShowStreamBtn && !isLoading && (
+                <Button
+                  title="Disconnect"
+                  onPress={handleDisconnectBtnClick}
+                  color={tint}
+                />
+              )}
             </>
           )}
-          {shouldShowStreamBtn && (
-            <Button
-              title="Stream"
-              onPress={handleStreamBtnClick}
-              color={tint}
-            />
-          )}
-          {!shouldShowStreamBtn && !isLoading && (
-            <Button
-              title="Disconnect"
-              onPress={handleDisconnectBtnClick}
-              color={tint}
-            />
-          )}
+          
           {isLoading && <ActivityIndicator size="large" color={tint} />}
         </View>
       </View>
@@ -276,5 +312,21 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 16,
     fontWeight: '500',
+  },
+  selectionContainer: {
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    alignItems: 'center',
+  },
+  selectionTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginBottom: 16,
+  },
+  selectionButtonRow: {
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'center',
   },
 });

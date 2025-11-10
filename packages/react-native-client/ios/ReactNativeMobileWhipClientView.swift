@@ -85,6 +85,37 @@ public class ReactNativeMobileWhipClientView: ExpoView {
         whipClient?.onConnectionStateChanged = onConnectionStateChanged
     }
 
+    internal func createWhipClientForScreenShare(
+        options: ReactNativeMobileWhipClientViewModule.ConfigurationOptions,
+        onConnectionStateChanged: @escaping (RTCPeerConnectionState) -> Void
+    ) throws {
+        // For screen sharing, we don't need a camera device
+        // Use a dummy device (first available) since WhipClient requires one,
+        // but we'll immediately switch to screen share mode.
+        // This will be removed after whip client refactor.
+        let devices = RTCCameraVideoCapturer.captureDevices()
+        guard let dummyDevice = devices.first else {
+            throw Exception(
+                name: "E_NO_CAMERA_DEVICE",
+                description: "No camera device found. At least one camera is required.")
+        }
+
+        let options = WhipConfigurationOptions(
+            audioEnabled: options.audioEnabled ?? true,
+            videoEnabled: options.videoEnabled ?? true,
+            videoDevice: dummyDevice,
+            videoParameters: VideoParameters.presetFHD169,
+            stunServerUrl: options.stunServerUrl,
+            preferredVideoCodecs: options.preferredVideoCodecs ?? [],
+            preferredAudioCodecs: options.preferredAudioCodecs ?? []
+        )
+
+        whipClient = WhipClient(configOptions: options)
+        whipClient?.onConnectionStateChanged = onConnectionStateChanged
+        
+        try whipClient?.startScreenShare()
+    }
+
     internal func connect(options: ReactNativeMobileWhipClientViewModule.ConnectionOptions) async throws {
         guard let client = self.whipClient else {
             throw Exception(
@@ -159,20 +190,6 @@ public class ReactNativeMobileWhipClientView: ExpoView {
 
     internal func getCurrentCameraDeviceId() -> String? {
         self.whipClient?.currentCameraDeviceId
-    }
-
-    internal func toggleScreenShare() throws {
-        guard let client = self.whipClient else {
-            throw Exception(
-                name: "E_WHIP_CLIENT_NOT_FOUND",
-                description: "WHIP client not found. Make sure it was initialized properly."
-            )
-        }
-        try client.toggleScreenShare()
-    }
-
-    internal func isScreenShareOn() -> Bool {
-        return self.whipClient?.isScreenShareOn ?? false
     }
 
     private func getVideoParametersFromOptions(createOptions: String) throws -> VideoParameters {

@@ -400,19 +400,17 @@ public class WhipClient: ClientBase {
     // MARK: - Screen Sharing
 
     /**
-     Toggles screen sharing on or off.
+     Starts screen sharing mode.
      
-     When screen sharing starts:
-     - Camera capture is stopped
-     - IPC server starts listening for frames from the broadcast extension
-     - Video track switches to screen share source
+     This method:
+     - Stops camera capture
+     - Creates a new video source for screen sharing
+     - Starts IPC server listening for frames from the broadcast extension
+     - Shows the system broadcast picker for the user to select the extension
      
-     When screen sharing stops:
-     - IPC server stops listening
-     - Camera capture resumes
-     - Video track switches back to camera source
+     This should be called during initialization, not during an active stream.
      */
-    public func toggleScreenShare() throws {
+    public func startScreenShare() throws {
         guard let screenShareExtensionBundleId = Bundle.main.infoDictionary?["ScreenShareExtensionBundleId"] as? String else {
             throw ScreenSharingError.NoExtension(description: "No screen share extension bundle id set. Please set ScreenShareExtensionBundleId in Info.plist")
         }
@@ -420,50 +418,36 @@ public class WhipClient: ClientBase {
         let appGroup = Bundle.main.object(forInfoDictionaryKey: "AppGroupName") as? String
             ?? "group.com.swmansion.mobilewhepclient"
         
+        videoCapturer?.stopCapture()
         
-        if isScreenShareOn {
-            // Stop screen sharing
-            broadcastScreenShareCapturer?.stopListening()
-            isScreenShareOn = false
-            
-            // Resume camera capture
-            startCapture()
-            
-            logger.info("Screen sharing stopped, camera resumed")
-        } else {
-            videoCapturer?.stopCapture()
-            let videoSource = WhipClient.peerConnectionFactory.videoSource(forScreenCast: true)
-            
-            broadcastScreenShareReceiver = BroadcastScreenShareReceiver(
-                onStart: { [weak self] in
-                    guard let self, let videoSource = broadcastScreenShareCapturer?.source else { return }
-                    
-                    let webrtcTrack = WhipClient.peerConnectionFactory.videoTrack(with: videoSource, trackId: UUID().uuidString)
-                    delegate?.onTrackAdded(track: webrtcTrack)
-                },
-                onStop: { [weak self] in
-                    // handle stop
-                    print("Stopped ??")
-                }
-            )
-            
-            broadcastScreenShareCapturer = BroadcastScreenShareCapturer(
-                videoSource,
-                appGroup: appGroup,
-                videoParameters: .presetFHD169
-            )
-            broadcastScreenShareCapturer?.capturerDelegate = broadcastScreenShareReceiver
-            broadcastScreenShareCapturer?.startListening()
-            isScreenShareOn = true
-            
-            logger.info("Screen sharing started, camera stopped")
-            // Note: The actual screen frames will come from the broadcast extension
-            // via IPC once the user starts screen recording from the system picker
-            
-            DispatchQueue.main.async {
-                RPSystemBroadcastPickerView.show(for: screenShareExtensionBundleId)
+        let videoSource = WhipClient.peerConnectionFactory.videoSource(forScreenCast: true)
+        self.videoSource = videoSource
+        
+        broadcastScreenShareReceiver = BroadcastScreenShareReceiver(
+            onStart: { [weak self] in
+                self?.logger.info("Screen broadcast started")
+            },
+            onStop: { [weak self] in
+                self?.logger.info("Screen broadcast stopped")
             }
-        }
+        )
+        
+        broadcastScreenShareCapturer = BroadcastScreenShareCapturer(
+            videoSource,
+            appGroup: appGroup,
+            videoParameters: .presetFHD169,
+            delegate: broadcastScreenShareReceiver
+        )
+        
+        broadcastScreenShareCapturer?.startListening()
+        isScreenShareOn = true
+        
+        let videoTrackId = UUID().uuidString
+        let videoTrack = WhipClient.peerConnectionFactory.videoTrack(with: videoSource, trackId: videoTrackId)
+        videoTrack.isEnabled = true
+        self.videoTrack = videoTrack
+        
+        logger.info("Screen sharing initialized, showing broadcast picker")
         
         DispatchQueue.main.async {
             RPSystemBroadcastPickerView.show(for: screenShareExtensionBundleId)

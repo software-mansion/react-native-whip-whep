@@ -154,7 +154,17 @@ export type WhipConfigurationOptions = {
 };
 
 export type WhipClientViewRef = {
+  /**
+   * Initializes the WHIP client with camera as the video source.
+   * This should be called before connecting to the server.
+   */
   initializeCamera: (options: WhipConfigurationOptions) => Promise<void>;
+  /**
+   * Initializes the WHIP client with screen sharing as the video source (iOS only).
+   * This will start the IPC server and show the broadcast picker to the user.
+   * The user must select the broadcast extension to start screen recording.
+   */
+  initializeScreenShare: (options: Omit<WhipConfigurationOptions, 'videoDeviceId' | 'videoParameters'>) => Promise<void>;
   connect: (options: {
     serverUrl: string;
     authToken?: string;
@@ -171,16 +181,6 @@ export type WhipClientViewRef = {
   getSupportedSenderVideoCodecsNames: () => Promise<SenderVideoCodecName[]>;
   getSupportedSenderAudioCodecsNames: () => Promise<SenderAudioCodecName[]>;
   currentCameraDeviceId: () => Promise<string>;
-  /**
-   * Toggles screen sharing on or off (iOS only).
-   * When enabled, the camera feed is replaced with screen sharing.
-   * The user must use iOS's system screen picker to start broadcasting.
-   */
-  toggleScreenShare: () => Promise<void>;
-  /**
-   * Returns whether screen sharing is currently active (iOS only).
-   */
-  isScreenShareOn: () => Promise<boolean>;
 };
 
 /** Internal enum telling native views whether the stream will come from the server or device camera*/
