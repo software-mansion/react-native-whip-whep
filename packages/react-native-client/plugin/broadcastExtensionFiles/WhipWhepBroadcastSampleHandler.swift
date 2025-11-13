@@ -36,21 +36,17 @@ class WhipWhepBroadcastSampleHandler: RPBroadcastSampleHandler {
             return
         }
 
-        // Notify main app that broadcasting started
         broadcastSource.started()
     }
 
-    /// Called when the user pauses screen broadcasting.
     override func broadcastPaused() {
         broadcastSource.paused()
     }
 
-    /// Called when the user resumes screen broadcasting.
     override func broadcastResumed() {
         broadcastSource.resumed()
     }
 
-    /// Called when the user stops screen broadcasting.
     override func broadcastFinished() {
         broadcastSource.finished()
     }
