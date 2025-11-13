@@ -33,6 +33,9 @@ export default function WhipScreen() {
 
   useEffect(() => {
     console.log('WHIP Peer Connection State Changed:', peerConnectionState);
+    if (peerConnectionState === 'closed') {
+      setShouldShowStreamBtn(true);
+    }
   }, [peerConnectionState]);
 
   const { tint } = useThemeColor();
@@ -63,9 +66,8 @@ export default function WhipScreen() {
       await whipClient.current?.initializeCamera({
         audioEnabled: true,
         videoEnabled: true,
-        videoDeviceId: cameras[0].id,
         videoParameters: VideoParameters.presetHD169,
-      });
+      }, cameras[0].id);
 
       setStreamMode('camera');
       setIsLoading(false);
@@ -82,7 +84,6 @@ export default function WhipScreen() {
 
       await whipClient.current?.initializeScreenShare({
         audioEnabled: true,
-        videoEnabled: true,
       });
 
       setStreamMode('screenShare');
