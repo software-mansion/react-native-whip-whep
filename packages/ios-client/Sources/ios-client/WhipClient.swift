@@ -5,20 +5,18 @@ import os
 public struct WhipConfigurationOptions {
     public let audioEnabled: Bool
     public let videoEnabled: Bool
-    public var videoDevice: AVCaptureDevice
     public let videoParameters: VideoParameters
     public let stunServerUrl: String?
     public let preferredVideoCodecs: [String]
     public let preferredAudioCodecs: [String]
 
     public init(
-        audioEnabled: Bool = true, videoEnabled: Bool = true, videoDevice: AVCaptureDevice,
+        audioEnabled: Bool = true, videoEnabled: Bool = true,
         videoParameters: VideoParameters, stunServerUrl: String?, preferredVideoCodecs: [String] = [],
         preferredAudioCodecs: [String] = []
     ) {
         self.audioEnabled = audioEnabled
         self.videoEnabled = videoEnabled
-        self.videoDevice = videoDevice
         self.videoParameters = videoParameters
         self.stunServerUrl = stunServerUrl
         self.preferredVideoCodecs = preferredVideoCodecs
@@ -39,10 +37,7 @@ public class WhipClient: ClientBase {
 
     /**
     Initializes a `WhipClient` object.
-    
-    - Parameter serverUrl: A URL of the WHIP server.
     - Parameter configurationOptions: Additional configuration options, such as a STUN server URL or authorization token.
-    - Parameter videoDevice: A device that will be used to stream video.
     
     - Returns: A `WhipClient` object.
     */
@@ -212,13 +207,11 @@ public class WhipClient: ClientBase {
         let devices = RTCCameraVideoCapturer.captureDevices()
 
         if let device = devices.first(where: { $0.uniqueID == deviceId }) {
-            configOptions.videoDevice = device
+            startCapture(device)
         } else {
             print("Device with ID \(deviceId) not found")
             return
         }
-
-        startCapture()
     }
 
     private func setUpVideoAndAudioDevices() throws {
@@ -241,24 +234,20 @@ public class WhipClient: ClientBase {
             let videoTrack = WhipClient.peerConnectionFactory.videoTrack(with: videoSource, trackId: videoTrackId)
             videoTrack.isEnabled = true
 
-            startCapture()
-
             self.videoTrack = videoTrack
         }
-
+        
         if audioEnabled {
             let audioTrackId = UUID().uuidString
             let audioSource = WhipClient.peerConnectionFactory.audioSource(with: nil)
             let audioTrack = WhipClient.peerConnectionFactory.audioTrack(with: audioSource, trackId: audioTrackId)
 
             self.audioTrack = audioTrack
-
         }
 
     }
 
-    private func startCapture() {
-        let videoDevice = configOptions.videoDevice
+    public func startCapture(_ videoDevice: AVCaptureDevice) {
         let videoParameters = configOptions.videoParameters
 
         let (format, fps) = setVideoSize(

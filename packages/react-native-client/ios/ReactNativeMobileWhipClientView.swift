@@ -52,14 +52,6 @@ public class ReactNativeMobileWhipClientView: ExpoView {
         options: ReactNativeMobileWhipClientViewModule.ConfigurationOptions,
         onConnectionStateChanged: @escaping (RTCPeerConnectionState) -> Void
     ) throws {
-        guard let videoDeviceId = options.videoDeviceId,
-            let avCaptureDevice = AVCaptureDevice(uniqueID: videoDeviceId)
-        else {
-            throw Exception(
-                name: "E_INVALID_VIDEO_DEVICE_ID",
-                description: "Invalid video device ID. Make sure the device ID is correct.")
-        }
-
         let parsedVideoParameters: VideoParameters
 
         if let optionsVideoParameters = options.videoParameters,
@@ -74,7 +66,6 @@ public class ReactNativeMobileWhipClientView: ExpoView {
         let options = WhipConfigurationOptions(
             audioEnabled: options.audioEnabled ?? true,
             videoEnabled: options.videoEnabled ?? true,
-            videoDevice: avCaptureDevice,
             videoParameters: parsedVideoParameters,
             stunServerUrl: options.stunServerUrl,
             preferredVideoCodecs: options.preferredVideoCodecs ?? [],
@@ -84,36 +75,41 @@ public class ReactNativeMobileWhipClientView: ExpoView {
         whipClient = WhipClient(configOptions: options)
         whipClient?.onConnectionStateChanged = onConnectionStateChanged
     }
-
-    internal func createWhipClientForScreenShare(
-        options: ReactNativeMobileWhipClientViewModule.ConfigurationOptions,
-        onConnectionStateChanged: @escaping (RTCPeerConnectionState) -> Void
-    ) throws {
-        // For screen sharing, we don't need a camera device
-        // Use a dummy device (first available) since WhipClient requires one,
-        // but we'll immediately switch to screen share mode.
-        // This will be removed after whip client refactor.
-        let devices = RTCCameraVideoCapturer.captureDevices()
-        guard let dummyDevice = devices.first else {
+    
+    internal func startCapture(videoDeviceId: String?) throws {
+        guard let videoDeviceId = videoDeviceId,
+            let avCaptureDevice = AVCaptureDevice(uniqueID: videoDeviceId) else {
             throw Exception(
-                name: "E_NO_CAMERA_DEVICE",
-                description: "No camera device found. At least one camera is required.")
+                name: "E_INVALID_VIDEO_DEVICE_ID",
+                description: "Invalid video device ID. Make sure the ID is correct."
+            )
         }
-
-        let options = WhipConfigurationOptions(
-            audioEnabled: options.audioEnabled ?? true,
-            videoEnabled: options.videoEnabled ?? true,
-            videoDevice: dummyDevice,
-            videoParameters: VideoParameters.presetFHD169,
-            stunServerUrl: options.stunServerUrl,
-            preferredVideoCodecs: options.preferredVideoCodecs ?? [],
-            preferredAudioCodecs: options.preferredAudioCodecs ?? []
-        )
-
-        whipClient = WhipClient(configOptions: options)
-        whipClient?.onConnectionStateChanged = onConnectionStateChanged
         
-        try whipClient?.startScreenShare()
+        guard let client = self.whipClient else {
+            throw Exception(
+                name: "E_WHIP_CLIENT_NOT_FOUND",
+                description: "WHIP client not found. Make sure it was initialized properly."
+            )
+        }
+        client.startCapture(avCaptureDevice)
+    }
+
+    internal func startScreenShare() throws {
+        guard let client = self.whipClient else {
+            throw Exception(
+                name: "E_WHIP_CLIENT_NOT_FOUND",
+                description: "WHIP client not found. Make sure it was initialized properly."
+            )
+        }
+        
+        do {
+            try client.startScreenShare()
+        } catch {
+            throw Exception(
+                name: "E_START_SCREEN_SHARE_FAILED",
+                description: "Failed to start screen share. Error: \(error)"
+            )
+        }
     }
 
     internal func connect(options: ReactNativeMobileWhipClientViewModule.ConnectionOptions) async throws {

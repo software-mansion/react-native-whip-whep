@@ -6,6 +6,7 @@ import {
   ReactNativeMobileWhipClientViewProps,
   WhipClientViewRef,
   WhipConfigurationOptions,
+  CameraId,
 } from "./ReactNativeMobileWhepClient.types";
 
 const NativeViewBase: React.ComponentType<
@@ -56,11 +57,11 @@ export function WhipClientView(
    * This might get fixed in the future and setTimeout won't be needed anymore.
    */
   React.useImperativeHandle(ref, () => ({
-    initializeCamera: async (options: WhipConfigurationOptions) => {
+    initializeCamera: async (options: WhipConfigurationOptions, videoDeviceId: CameraId) => {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           nativeRef.current
-            ?.initializeCamera(options)
+            ?.initializeCamera(options, videoDeviceId)
             .then(() => {
               resolve();
             })
