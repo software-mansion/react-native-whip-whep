@@ -1,4 +1,3 @@
-// iOS-related code was adapted from Fishjam expo plugin
 import {
   ConfigPlugin,
   withEntitlementsPlist,
@@ -96,12 +95,6 @@ async function updatePodfile(iosPath: string, props: WhipWhepPluginOptions) {
 /**
  * Adds "App Group" permission to the main app.
  * 
- * App Groups enable inter-process communication (IPC) between your app and the
- * Broadcast Upload Extension. This is essential because:
- * - The extension runs in a separate process
- * - It needs to send video frames to your main app via shared memory
- * - App Groups provide a secure way to share data between processes
- * 
  * The app group identifier is typically in the format: group.{bundle.identifier}
  */
 const withAppGroupPermissions: ConfigPlugin<WhipWhepPluginOptions> = (
@@ -124,7 +117,6 @@ const withAppGroupPermissions: ConfigPlugin<WhipWhepPluginOptions> = (
     entitlementsArray.push(groupIdentifier);
   }
 
-  // Add to the actual entitlements plist file
   config = withEntitlementsPlist(config, (newConfig) => {
     const modResultsArray =
       (newConfig.modResults[APP_GROUP_KEY] as string[]) || [];
@@ -135,7 +127,6 @@ const withAppGroupPermissions: ConfigPlugin<WhipWhepPluginOptions> = (
     return newConfig;
   });
 
-  // Update Xcode project to enable the App Groups capability
   config = withXcodeProject(config, (props) => {
     const xcodeProject = props.modResults;
     const targets = xcodeProject.getFirstTarget();
@@ -156,14 +147,12 @@ const withAppGroupPermissions: ConfigPlugin<WhipWhepPluginOptions> = (
     projectObj.attributes.TargetAttributes[targetUuid].SystemCapabilities ??=
       {};
 
-    // Enable App Groups system capability for the main target
     projectObj.attributes.TargetAttributes[targetUuid].SystemCapabilities[
       'com.apple.ApplicationGroups.iOS'
     ] = {
       enabled: 1,
     };
 
-    // Set the entitlements file path for the main target
     const mainTargetName = mainTarget || props.modRequest.projectName;
     const entitlementsFilePath = `${mainTargetName}/${mainTargetName}.entitlements`;
     const configurations = xcodeProject.pbxXCBuildConfigurationSection();
@@ -183,15 +172,6 @@ const withAppGroupPermissions: ConfigPlugin<WhipWhepPluginOptions> = (
   return config;
 };
 
-/**
- * Adds constants to Info.plist for runtime access.
- * 
- * These constants allow your app to:
- * - Know the bundle ID of the extension (needed to start screen sharing)
- * - Know the app group name (needed for IPC communication)
- * 
- * Without these, your app wouldn't be able to properly initialize screen sharing.
- */
 const withInfoPlistConstants: ConfigPlugin<WhipWhepPluginOptions> = (
   config,
   props,
@@ -206,22 +186,7 @@ const withInfoPlistConstants: ConfigPlugin<WhipWhepPluginOptions> = (
     return configuration;
   });
 
-/**
- * Main function that sets up the Broadcast Upload Extension.
- * 
- * This is the heart of the screen sharing feature. It:
- * 1. Creates the extension directory in your iOS project
- * 2. Copies the Swift handler and configuration files
- * 3. Updates template placeholders with actual values
- * 4. Adds the extension as a new target in Xcode
- * 5. Configures build settings for the extension
- * 6. Links necessary frameworks (ReplayKit)
- * 
- * The Broadcast Upload Extension is an iOS app extension that:
- * - Captures screen frames using ReplayKit
- * - Sends them to your main app via IPC
- * - Runs in a separate process for security
- */
+
 const withWhipWhepSBE: ConfigPlugin<WhipWhepPluginOptions> = (config, options) =>
   withXcodeProject(config, async (props) => {
     const appName = props.modRequest.projectName || '';
@@ -232,7 +197,6 @@ const withWhipWhepSBE: ConfigPlugin<WhipWhepPluginOptions> = (config, options) =
     const xcodeProject = props.modResults;
     const targetName = getSbeTargetName(options);
 
-    // Locate the plugin directory containing extension template files
     const pluginDir = require.resolve(
       'react-native-whip-whep/package.json',
     );
@@ -246,14 +210,12 @@ const withWhipWhepSBE: ConfigPlugin<WhipWhepPluginOptions> = (config, options) =
     const projPath = `${iosPath}/${appName}.xcodeproj/project.pbxproj`;
     const templateTargetName = 'WhipWhepScreenBroadcastExtension';
 
-    // Files to copy from the plugin to your iOS project
     const extFiles = [
       'WhipWhepBroadcastSampleHandler.swift',
       `${templateTargetName}.entitlements`,
       `Info.plist`,
     ];
 
-    // Renamed files in the destination (to match custom target name)
     const destFiles = [
       'WhipWhepBroadcastSampleHandler.swift',
       `${targetName}.entitlements`,
@@ -270,7 +232,6 @@ const withWhipWhepSBE: ConfigPlugin<WhipWhepPluginOptions> = (config, options) =
         return;
       }
       try {
-        // Create extension directory and copy files
         await fs.mkdir(`${iosPath}/${targetName}`, { recursive: true });
         for (let i = 0; i < extFiles.length; i++) {
           const srcFile = `${extensionSourceDir}${extFiles[i]}`;
@@ -281,7 +242,6 @@ const withWhipWhepSBE: ConfigPlugin<WhipWhepPluginOptions> = (config, options) =
         console.error('Error copying extension files: ', e);
       }
 
-      // Replace template placeholders with actual values
       await updateFileWithRegex(
         iosPath,
         `${targetName}.entitlements`,
@@ -304,14 +264,12 @@ const withWhipWhepSBE: ConfigPlugin<WhipWhepPluginOptions> = (config, options) =
         options,
       );
 
-      // Create new PBXGroup for the extension (folder in Xcode)
       const extGroup = xcodeProject.addPbxGroup(
         extFiles,
         targetName,
         targetName,
       );
 
-      // Add the new PBXGroup to the top level group (makes it visible in Xcode)
       const groups = xcodeProject.hash.project.objects['PBXGroup'];
       Object.keys(groups).forEach(function (key) {
         if (groups[key].name === undefined) {
@@ -327,8 +285,6 @@ const withWhipWhepSBE: ConfigPlugin<WhipWhepPluginOptions> = (config, options) =
       projObjects['PBXContainerItemProxy'] =
         projObjects['PBXTargetDependency'] || {};
 
-      // Add the Broadcast Upload Extension target to Xcode
-      // 'app_extension' type creates a proper extension bundle
       const sbeTarget = xcodeProject.addTarget(
         targetName,
         'app_extension',
@@ -336,7 +292,6 @@ const withWhipWhepSBE: ConfigPlugin<WhipWhepPluginOptions> = (config, options) =
         `${bundleIdentifier}.${targetName}`,
       );
 
-      // Add build phases (compile sources, link frameworks, copy resources)
       xcodeProject.addBuildPhase(
         ['WhipWhepBroadcastSampleHandler.swift'],
         'PBXSourcesBuildPhase',
@@ -357,12 +312,10 @@ const withWhipWhepSBE: ConfigPlugin<WhipWhepPluginOptions> = (config, options) =
         sbeTarget.uuid,
       );
 
-      // Link ReplayKit framework (required for screen capturing)
       xcodeProject.addFramework('ReplayKit.framework', {
         target: sbeTarget.uuid,
       });
 
-      // Configure build settings for the extension target
       const configurations = xcodeProject.pbxXCBuildConfigurationSection();
       for (const key in configurations) {
         if (
@@ -383,7 +336,6 @@ const withWhipWhepSBE: ConfigPlugin<WhipWhepPluginOptions> = (config, options) =
         }
       }
 
-      // Save the updated project file
       await fs.writeFile(projPath, xcodeProject.writeSync());
     });
 
@@ -420,21 +372,18 @@ const withWhipWhepPictureInPicture: ConfigPlugin<WhipWhepPluginOptions> = (
  * - Picture-in-Picture support
  */
 const withWhipWhepIos: ConfigPlugin<WhipWhepPluginOptions> = (config, props) => {
-  // Only set up screen sharing if explicitly enabled
   if (props?.ios?.enableScreensharing) {
     config = withAppGroupPermissions(config, props);
     config = withInfoPlistConstants(config, props);
     config = withWhipWhepSBE(config, props);
   }
   
-  // Set iOS deployment target
   config = withPodfileProperties(config, (configuration) => {
     configuration.modResults['ios.deploymentTarget'] =
       props?.ios?.iphoneDeploymentTarget ?? IPHONEOS_DEPLOYMENT_TARGET;
     return configuration;
   });
   
-  // Add Picture-in-Picture support if enabled
   config = withWhipWhepPictureInPicture(config, props);
 
   return config;

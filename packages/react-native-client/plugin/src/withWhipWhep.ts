@@ -36,10 +36,8 @@ const withWhipWhep: ConfigPlugin<WhipWhepPluginOptions> = (
   config,
   options,
 ) => {
-  // Apply iOS-specific configurations
   config = withWhipWhepIos(config, options);
 
-  // Apply Android-specific configurations
   config = withAndroidManifest(config, (configuration) => {
     const activity = AndroidConfig.Manifest.getMainActivityOrThrow(
       configuration.modResults,
