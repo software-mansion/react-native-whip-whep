@@ -57,7 +57,10 @@ export function WhipClientView(
    * This might get fixed in the future and setTimeout won't be needed anymore.
    */
   React.useImperativeHandle(ref, () => ({
-    initializeCamera: async (options: WhipConfigurationOptions, videoDeviceId: CameraId) => {
+    initializeCamera: async (
+      options: WhipConfigurationOptions,
+      videoDeviceId: CameraId,
+    ) => {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           nativeRef.current
@@ -71,7 +74,12 @@ export function WhipClientView(
         }, 0);
       });
     },
-    initializeScreenShare: async (options: Omit<WhipConfigurationOptions, 'videoDeviceId' | 'videoParameters'>) => {
+    initializeScreenShare: async (
+      options: Omit<
+        WhipConfigurationOptions,
+        "videoDeviceId" | "videoParameters"
+      >,
+    ) => {
       return new Promise((resolve, reject) => {
         setTimeout(() => {
           nativeRef.current

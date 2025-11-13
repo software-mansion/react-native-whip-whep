@@ -1,5 +1,5 @@
-import WebRTC
 import ReplayKit
+import WebRTC
 import os
 
 public struct WhipConfigurationOptions {
@@ -28,7 +28,7 @@ public class WhipClient: ClientBase {
     private var configOptions: WhipConfigurationOptions
     private var videoCapturer: RTCCameraVideoCapturer?
     private var videoSource: RTCVideoSource?
-    
+
     private var broadcastScreenShareReceiver: BroadcastScreenShareReceiver?
     private var broadcastScreenShareCapturer: BroadcastScreenShareCapturer?
 
@@ -236,7 +236,7 @@ public class WhipClient: ClientBase {
 
             self.videoTrack = videoTrack
         }
-        
+
         if audioEnabled {
             let audioTrackId = UUID().uuidString
             let audioSource = WhipClient.peerConnectionFactory.audioSource(with: nil)
@@ -390,28 +390,32 @@ public class WhipClient: ClientBase {
 
     /**
      Starts screen sharing mode.
-     
+    
      This method:
      - Stops camera capture
      - Creates a new video source for screen sharing
      - Starts IPC server listening for frames from the broadcast extension
      - Shows the system broadcast picker for the user to select the extension
-     
+    
      This should be called during initialization, not during an active stream.
      */
     public func startScreenShare() throws {
-        guard let screenShareExtensionBundleId = Bundle.main.infoDictionary?["ScreenShareExtensionBundleId"] as? String else {
-            throw ScreenSharingError.NoExtension(description: "No screen share extension bundle id set. Please set ScreenShareExtensionBundleId in Info.plist")
+        guard let screenShareExtensionBundleId = Bundle.main.infoDictionary?["ScreenShareExtensionBundleId"] as? String
+        else {
+            throw ScreenSharingError.NoExtension(
+                description:
+                    "No screen share extension bundle id set. Please set ScreenShareExtensionBundleId in Info.plist")
         }
-        
-        let appGroup = Bundle.main.object(forInfoDictionaryKey: "AppGroupName") as? String
+
+        let appGroup =
+            Bundle.main.object(forInfoDictionaryKey: "AppGroupName") as? String
             ?? "group.com.swmansion.mobilewhepclient"
-        
+
         videoCapturer?.stopCapture()
-        
+
         let videoSource = WhipClient.peerConnectionFactory.videoSource(forScreenCast: true)
         self.videoSource = videoSource
-        
+
         broadcastScreenShareReceiver = BroadcastScreenShareReceiver(
             onStart: { [weak self] in
                 self?.logger.info("Screen broadcast started")
@@ -420,24 +424,24 @@ public class WhipClient: ClientBase {
                 self?.logger.info("Screen broadcast stopped")
             }
         )
-        
+
         broadcastScreenShareCapturer = BroadcastScreenShareCapturer(
             videoSource,
             appGroup: appGroup,
             videoParameters: .presetFHD169,
             delegate: broadcastScreenShareReceiver
         )
-        
+
         broadcastScreenShareCapturer?.startListening()
         isScreenShareOn = true
-        
+
         let videoTrackId = UUID().uuidString
         let videoTrack = WhipClient.peerConnectionFactory.videoTrack(with: videoSource, trackId: videoTrackId)
         videoTrack.isEnabled = true
         self.videoTrack = videoTrack
-        
+
         logger.info("Screen sharing initialized, showing broadcast picker")
-        
+
         DispatchQueue.main.async {
             RPSystemBroadcastPickerView.show(for: screenShareExtensionBundleId)
         }

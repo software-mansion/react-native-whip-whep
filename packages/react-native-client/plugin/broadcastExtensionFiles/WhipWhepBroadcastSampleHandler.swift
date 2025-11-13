@@ -1,15 +1,15 @@
 import Foundation
+import MobileWhipWhepClient
 import ReplayKit
 import WebRTC
 import os.log
-import MobileWhipWhepClient
 
 /// App Group used by the extension to exchange buffers with the target application
 let appGroup = "{{GROUP_IDENTIFIER}}"
 
 let logger = OSLog(subsystem: "{{BUNDLE_IDENTIFIER}}.WhipWhepBroadcastSampleHandler", category: "Broadcaster")
 
-/// An example `SampleHandler` utilizing `BroadcastSampleSource` sending broadcast samples 
+/// An example `SampleHandler` utilizing `BroadcastSampleSource` sending broadcast samples
 /// and necessary notifications enabling device's screen share.
 ///
 /// This class is the entry point for the Broadcast Upload Extension.
@@ -68,4 +68,3 @@ class WhipWhepBroadcastSampleHandler: RPBroadcastSampleHandler {
         broadcastSource.processFrame(sampleBuffer: sampleBuffer, ofType: sampleBufferType)
     }
 }
-
