@@ -156,13 +156,21 @@ export type WhipClientViewRef = {
    * Initializes the WHIP client with camera as the video source.
    * This should be called before connecting to the server.
    */
-  initializeCamera: (options: WhipConfigurationOptions, videoDeviceId: CameraId) => Promise<void>;
+  initializeCamera: (
+    options: WhipConfigurationOptions,
+    videoDeviceId: CameraId,
+  ) => Promise<void>;
   /**
    * Initializes the WHIP client with screen sharing as the video source (iOS only).
    * This will start the IPC server and show the broadcast picker to the user.
    * The user must select the broadcast extension to start screen recording.
    */
-  initializeScreenShare: (options: Omit<WhipConfigurationOptions, 'videoDeviceId' | 'videoParameters'>) => Promise<void>;
+  initializeScreenShare: (
+    options: Omit<
+      WhipConfigurationOptions,
+      "videoDeviceId" | "videoParameters"
+    >,
+  ) => Promise<void>;
   connect: (options: {
     serverUrl: string;
     authToken?: string;

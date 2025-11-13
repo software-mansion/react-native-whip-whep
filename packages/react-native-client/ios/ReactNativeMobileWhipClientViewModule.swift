@@ -86,7 +86,7 @@ public class ReactNativeMobileWhipClientViewModule: Module {
                 try await view.createWhipClient(options: options) { [weak self] newState in
                     self?.emit(event: .whipPeerConnectionStateChanged(status: newState))
                 }
-                
+
                 if videoEnabled {
                     try await view.startCapture(videoDeviceId: videoDeviceId)
                 }
@@ -106,7 +106,7 @@ public class ReactNativeMobileWhipClientViewModule: Module {
                 try await view.createWhipClient(options: options) { [weak self] newState in
                     self?.emit(event: .whipPeerConnectionStateChanged(status: newState))
                 }
-                
+
                 try await view.startScreenShare()
             }
 

@@ -75,16 +75,17 @@ public class ReactNativeMobileWhipClientView: ExpoView {
         whipClient = WhipClient(configOptions: options)
         whipClient?.onConnectionStateChanged = onConnectionStateChanged
     }
-    
+
     internal func startCapture(videoDeviceId: String?) throws {
         guard let videoDeviceId = videoDeviceId,
-            let avCaptureDevice = AVCaptureDevice(uniqueID: videoDeviceId) else {
+            let avCaptureDevice = AVCaptureDevice(uniqueID: videoDeviceId)
+        else {
             throw Exception(
                 name: "E_INVALID_VIDEO_DEVICE_ID",
                 description: "Invalid video device ID. Make sure the ID is correct."
             )
         }
-        
+
         guard let client = self.whipClient else {
             throw Exception(
                 name: "E_WHIP_CLIENT_NOT_FOUND",
@@ -101,7 +102,7 @@ public class ReactNativeMobileWhipClientView: ExpoView {
                 description: "WHIP client not found. Make sure it was initialized properly."
             )
         }
-        
+
         do {
             try client.startScreenShare()
         } catch {

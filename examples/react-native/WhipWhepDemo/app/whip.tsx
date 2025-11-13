@@ -63,11 +63,14 @@ export default function WhipScreen() {
     try {
       setIsLoading(true);
 
-      await whipClient.current?.initializeCamera({
-        audioEnabled: true,
-        videoEnabled: true,
-        videoParameters: VideoParameters.presetHD169,
-      }, cameras[0].id);
+      await whipClient.current?.initializeCamera(
+        {
+          audioEnabled: true,
+          videoEnabled: true,
+          videoParameters: VideoParameters.presetHD169,
+        },
+        cameras[0].id,
+      );
 
       setStreamMode('camera');
       setIsLoading(false);
@@ -213,7 +216,8 @@ export default function WhipScreen() {
             <>
               <View style={styles.statusContainer}>
                 <Text style={styles.statusLabel}>
-                  {streamMode === 'screenShare' ? 'Screen Share' : 'Camera'} Status:
+                  {streamMode === 'screenShare' ? 'Screen Share' : 'Camera'}{' '}
+                  Status:
                 </Text>
                 <Text
                   style={[
@@ -237,7 +241,7 @@ export default function WhipScreen() {
                   <Button title="Flip Camera" onPress={handleFlipCamera} />
                 </>
               )}
-              
+
               {Platform.OS === 'ios' && (
                 <>
                   <Button
@@ -266,7 +270,7 @@ export default function WhipScreen() {
               )}
             </>
           )}
-          
+
           {isLoading && <ActivityIndicator size="large" color={tint} />}
         </View>
       </View>

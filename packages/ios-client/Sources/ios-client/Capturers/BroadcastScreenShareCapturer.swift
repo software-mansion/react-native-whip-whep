@@ -1,6 +1,6 @@
 import Foundation
-import WebRTC
 import Logging
+import WebRTC
 
 internal var sdkLogger = Logger(label: "com.mobilewhipwhep.client")
 
@@ -151,7 +151,7 @@ class BroadcastScreenShareCapturer: RTCVideoCapturer {
             else {
                 return
             }
-            
+
             switch sample.type {
             case .notification(let notification):
                 switch notification {
