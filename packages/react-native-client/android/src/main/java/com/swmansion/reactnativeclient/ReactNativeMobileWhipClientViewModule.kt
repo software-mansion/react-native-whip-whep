@@ -102,7 +102,7 @@ class ReactNativeMobileWhipClientViewModule : Module() {
       }
 
       View(ReactNativeMobileWhipClientView::class) {
-        AsyncFunction("initializeCamera") { view: ReactNativeMobileWhipClientView, configurationOptions: ConfigurationOptions? ->
+        AsyncFunction("initializeCamera") { view: ReactNativeMobileWhipClientView, configurationOptions: ConfigurationOptions?, videoDeviceId: String? ->
           val context: Context =
             appContext.reactContext ?: throw IllegalStateException("React context is not available")
 
@@ -113,16 +113,13 @@ class ReactNativeMobileWhipClientViewModule : Module() {
               VideoParameters.presetHD169
             }
 
-          // Get default camera device if none provided
-          val videoDeviceId = configurationOptions?.videoDeviceId ?: getDefaultCameraDevice()
-
           val options =
             WhipConfigurationOptions(
               stunServerUrl = configurationOptions?.stunServerUrl,
               audioEnabled = configurationOptions?.audioEnabled ?: true,
               videoEnabled = configurationOptions?.videoEnabled ?: true,
               videoParameters = parsedVideoParameters,
-              videoDevice = videoDeviceId,
+              videoDevice = videoDeviceId ?: getDefaultCameraDevice(),
               preferredAudioCodecs = configurationOptions?.preferredAudioCodecs ?: listOf(),
               preferredVideoCodecs = configurationOptions?.preferredVideoCodecs ?: listOf()
             )

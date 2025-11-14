@@ -9,8 +9,6 @@ public class ReactNativeMobileWhipClientViewModule: Module {
         @Field
         var videoEnabled: Bool?
         @Field
-        var videoDeviceId: String?
-        @Field
         var videoParameters: String?
         @Field
         var stunServerUrl: String?
@@ -61,7 +59,7 @@ public class ReactNativeMobileWhipClientViewModule: Module {
 
         View(ReactNativeMobileWhipClientView.self) {
             AsyncFunction("initializeCamera") {
-                (view: ReactNativeMobileWhipClientView, options: ConfigurationOptions) in
+                (view: ReactNativeMobileWhipClientView, options: ConfigurationOptions, videoDeviceId: String?) in
                 let audioEnabled = options.audioEnabled ?? true
                 let videoEnabled = options.videoEnabled ?? true
 
@@ -88,6 +86,28 @@ public class ReactNativeMobileWhipClientViewModule: Module {
                 try await view.createWhipClient(options: options) { [weak self] newState in
                     self?.emit(event: .whipPeerConnectionStateChanged(status: newState))
                 }
+
+                if videoEnabled {
+                    try await view.startCapture(videoDeviceId: videoDeviceId)
+                }
+            }
+
+            AsyncFunction("initializeScreenShare") {
+                (view: ReactNativeMobileWhipClientView, options: ConfigurationOptions) in
+                let audioEnabled = options.audioEnabled ?? true
+
+                if audioEnabled {
+                    guard await PermissionUtils.requestMicrophonePermission() else {
+                        self.emit(event: .warning(message: "Microphone permission not granted."))
+                        return
+                    }
+                }
+
+                try await view.createWhipClient(options: options) { [weak self] newState in
+                    self?.emit(event: .whipPeerConnectionStateChanged(status: newState))
+                }
+
+                try await view.startScreenShare()
             }
 
             AsyncFunction("connect") { (view: ReactNativeMobileWhipClientView, options: ConnectionOptions) in

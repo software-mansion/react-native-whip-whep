@@ -3656,6 +3656,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@octetstream/promisify@npm:2.0.2":
+  version: 2.0.2
+  resolution: "@octetstream/promisify@npm:2.0.2"
+  checksum: 10c0/02c2bf8cf0350a8ca99c6efbc2f9dc0c72bbb6ddb36d2b4d84e384a61c027b44016da2a54dd41b6e574097a8911a9026544ed6fefb328ae66044d24d95a7013c
+  languageName: node
+  linkType: hard
+
 "@pkgjs/parseargs@npm:^0.11.0":
   version: 0.11.0
   resolution: "@pkgjs/parseargs@npm:0.11.0"
@@ -4746,6 +4753,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~6.19.2"
   checksum: 10c0/b445daa7eecd761ad4d778b882d6ff7bcc3b4baad2086ea9804db7c5d4a4ab0298b00d7f5315fc640a73b5a1d52bbf9628e09c9fec0cf44dbf9b4df674a8717d
+  languageName: node
+  linkType: hard
+
+"@types/promise-fs@npm:^2.1.2":
+  version: 2.1.5
+  resolution: "@types/promise-fs@npm:2.1.5"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/0109bbd666fb91d5679517e439155a3815f4ff747b43f5817880ebe1dbfc50013588ba01ce8a54da486c67978a392d5a34824b21d0598ae0dfa73f9f9708bd08
   languageName: node
   linkType: hard
 
@@ -12247,6 +12263,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"promise-fs@npm:^2.1.1":
+  version: 2.1.1
+  resolution: "promise-fs@npm:2.1.1"
+  dependencies:
+    "@octetstream/promisify": "npm:2.0.2"
+  checksum: 10c0/0f9394a6deb9bb57ee860c81ab98bd3a4a52168b91b2dade872f303f8866024749aaaea03ad5ab438ab9fe5f5b3771f6d88c263c1682275e6536e06625de2292
+  languageName: node
+  linkType: hard
+
 "promise-retry@npm:^2.0.1":
   version: 2.0.1
   resolution: "promise-retry@npm:2.0.1"
@@ -12543,8 +12568,10 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "react-native-whip-whep@workspace:packages/react-native-client"
   dependencies:
+    "@types/promise-fs": "npm:^2.1.2"
     "@types/react": "npm:~19.1.10"
     expo-module-scripts: "npm:~4.0.5"
+    promise-fs: "npm:^2.1.1"
     typedoc: "npm:^0.28.2"
     typescript: "npm:^5.8.3"
     zod: "npm:^3.25.71"

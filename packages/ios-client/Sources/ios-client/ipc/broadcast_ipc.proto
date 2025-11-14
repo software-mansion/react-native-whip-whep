@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+// BroadcastMessage used for communication between
+// screen broadcast extension and the current application
+// to allow for recapturing of screensharing samples.
+
+// A message can either contain:
+// * notificaiton - allowing for notifying about stream status, it is necessary
+//   as the IPC connection is stateless and we can't know when
+//   the sender started or finished broadcasting
+// * video - indicates that the carried buffer is a video sample, the `Video` message
+//   also carries information about the sample format
+// * audio - indicates that the carried buffer is an audio sample, currently there
+//   is no additional information about the carried audio
+
+// Additional each message can carry a buffer payload and a timestamp
+// associated with give sample. In case of a notification both buffer and
+// timestamp will be nulls.
+
+message BroadcastMessage {
+    oneof type {
+        Notification notification = 1;
+        Video video = 2;
+        Audio audio = 3;
+    }
+    
+    bytes buffer = 4;
+    int64 timestamp = 5;
+    
+    enum Notification {
+        STARTED = 0;
+        FINISHED = 1;
+        PAUSED = 2;
+        RESUMED = 3;
+    }
+    
+    message Video {
+        uint32 format = 1;
+        uint32 rotation = 2;
+        uint32 width = 3;
+        uint32 height = 4;
+    }
+    
+    message Audio {}
+}

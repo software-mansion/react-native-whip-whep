@@ -17,6 +17,9 @@ let package = Package(
     dependencies: [
         .package(name: "WebRTC", url: "https://github.com/webrtc-sdk/Specs.git", .exact("125.6422.06")),
         .package(url: "https://github.com/apple/swift-log.git", .upToNextMajor(from: "1.4.2")),
+        .package(
+            name: "SwiftProtobuf", url: "https://github.com/apple/swift-protobuf.git",
+            .upToNextMajor(from: "1.18.0")),
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -25,6 +28,7 @@ let package = Package(
             name: "MobileWhipWhepClient",
             dependencies: [
                 "WebRTC",
+                "SwiftProtobuf",
                 .product(name: "Logging", package: "swift-log"),
             ]
         ),

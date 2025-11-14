@@ -1,5 +1,6 @@
 import ExpoModulesCore
 import Foundation
+import Logging
 import MobileWhipWhepClient
 import SwiftUI
 import UIKit
@@ -7,6 +8,8 @@ import WebRTC
 
 @objc(ReactNativeMobileWhipClientView)
 public class ReactNativeMobileWhipClientView: ExpoView {
+    let logger = Logger(label: "com.swmansion.whipwhepclient")
+
     deinit {
         whipClient?.delegate = nil
         whipClient?.onConnectionStateChanged = nil
@@ -52,12 +55,9 @@ public class ReactNativeMobileWhipClientView: ExpoView {
         options: ReactNativeMobileWhipClientViewModule.ConfigurationOptions,
         onConnectionStateChanged: @escaping (RTCPeerConnectionState) -> Void
     ) throws {
-        guard let videoDeviceId = options.videoDeviceId,
-            let avCaptureDevice = AVCaptureDevice(uniqueID: videoDeviceId)
-        else {
-            throw Exception(
-                name: "E_INVALID_VIDEO_DEVICE_ID",
-                description: "Invalid video device ID. Make sure the device ID is correct.")
+        guard whipClient == nil else {
+            logger.warning("Tried to create a new WhipClient while one already exists.")
+            return
         }
 
         let parsedVideoParameters: VideoParameters
@@ -74,7 +74,6 @@ public class ReactNativeMobileWhipClientView: ExpoView {
         let options = WhipConfigurationOptions(
             audioEnabled: options.audioEnabled ?? true,
             videoEnabled: options.videoEnabled ?? true,
-            videoDevice: avCaptureDevice,
             videoParameters: parsedVideoParameters,
             stunServerUrl: options.stunServerUrl,
             preferredVideoCodecs: options.preferredVideoCodecs ?? [],
@@ -83,6 +82,43 @@ public class ReactNativeMobileWhipClientView: ExpoView {
 
         whipClient = WhipClient(configOptions: options)
         whipClient?.onConnectionStateChanged = onConnectionStateChanged
+    }
+
+    internal func startCapture(videoDeviceId: String?) throws {
+        guard let videoDeviceId,
+            let avCaptureDevice = AVCaptureDevice(uniqueID: videoDeviceId)
+        else {
+            throw Exception(
+                name: "E_INVALID_VIDEO_DEVICE_ID",
+                description: "Invalid video device ID. Make sure the ID is correct."
+            )
+        }
+
+        guard let client = self.whipClient else {
+            throw Exception(
+                name: "E_WHIP_CLIENT_NOT_FOUND",
+                description: "WHIP client not found. Make sure it was initialized properly."
+            )
+        }
+        client.startCapture(avCaptureDevice)
+    }
+
+    internal func startScreenShare() throws {
+        guard let client = self.whipClient else {
+            throw Exception(
+                name: "E_WHIP_CLIENT_NOT_FOUND",
+                description: "WHIP client not found. Make sure it was initialized properly."
+            )
+        }
+
+        do {
+            try client.startScreenShare()
+        } catch {
+            throw Exception(
+                name: "E_START_SCREEN_SHARE_FAILED",
+                description: "Failed to start screen share. Error: \(error)"
+            )
+        }
     }
 
     internal func connect(options: ReactNativeMobileWhipClientViewModule.ConnectionOptions) async throws {
