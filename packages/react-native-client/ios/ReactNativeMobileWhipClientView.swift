@@ -1,5 +1,6 @@
 import ExpoModulesCore
 import Foundation
+import Logging
 import MobileWhipWhepClient
 import SwiftUI
 import UIKit
@@ -7,6 +8,8 @@ import WebRTC
 
 @objc(ReactNativeMobileWhipClientView)
 public class ReactNativeMobileWhipClientView: ExpoView {
+    let logger = Logger(label: "com.swmansion.whipwhepclient")
+
     deinit {
         whipClient?.delegate = nil
         whipClient?.onConnectionStateChanged = nil
@@ -52,6 +55,11 @@ public class ReactNativeMobileWhipClientView: ExpoView {
         options: ReactNativeMobileWhipClientViewModule.ConfigurationOptions,
         onConnectionStateChanged: @escaping (RTCPeerConnectionState) -> Void
     ) throws {
+        guard whipClient == nil else {
+            logger.warning("Tried to create a new WhipClient while one already exists.")
+            return
+        }
+
         let parsedVideoParameters: VideoParameters
 
         if let optionsVideoParameters = options.videoParameters,
@@ -77,7 +85,7 @@ public class ReactNativeMobileWhipClientView: ExpoView {
     }
 
     internal func startCapture(videoDeviceId: String?) throws {
-        guard let videoDeviceId = videoDeviceId,
+        guard let videoDeviceId,
             let avCaptureDevice = AVCaptureDevice(uniqueID: videoDeviceId)
         else {
             throw Exception(
