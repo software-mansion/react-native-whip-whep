@@ -447,6 +447,16 @@ open class ClientBase(
     listeners.clear()
   }
 
+  protected fun notifyTrackListeners() {
+    coroutineScope.launch(Dispatchers.Main) {
+      videoTrack?.let { track ->
+        listeners.forEach { listener ->
+          listener.onTrackAdded(track)
+        }
+      }
+    }
+  }
+
   protected fun cleanupEglBase() {
     eglBase.release()
   }

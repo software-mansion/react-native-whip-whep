@@ -2,11 +2,9 @@ package com.mobilewhep.client
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.projection.MediaProjection
-import android.media.projection.MediaProjectionManager
 import android.util.Log
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -58,9 +56,11 @@ class WhipClient(
   override var videoTrack: VideoTrack? = null
   private var videoCapturer: CameraVideoCapturer? = null
   private var videoSource: VideoSource? = null
+  private var screenCapturer: ScreenCapturerAndroid? = null
 
   public var currentCameraDeviceId: String? = null
   private val peerConnectionFactory = PeerConnectionFactoryHelper.getWhipFactory(appContext, eglBase)
+  private var isScreenSharing: Boolean = false
 
   init {
     setUpVideoAndAudioDevices()
@@ -261,6 +261,10 @@ class WhipClient(
     videoCapturer?.dispose()
     videoCapturer = null
 
+    screenCapturer?.stopCapture()
+    screenCapturer?.dispose()
+    screenCapturer = null
+
     videoSource?.dispose()
     videoSource = null
 
@@ -276,6 +280,11 @@ class WhipClient(
   }
 
   fun switchCamera(deviceId: String) {
+    if (isScreenSharing) {
+      Log.w(CLIENT_TAG, "Cannot switch camera while screen sharing")
+      return
+    }
+    
     val enumerator: CameraEnumerator =
       if (Camera2Enumerator.isSupported(appContext)) Camera2Enumerator(appContext) else Camera1Enumerator(false)
 
@@ -304,8 +313,70 @@ class WhipClient(
     }
   }
 
-  fun startScreenShare() {
-    Log.d("Test screen share", "Start screen share called")
+  /**
+   * Starts screen sharing using MediaProjection.
+   * Note: MediaProjection permission must be obtained at the Activity level before calling this.
+   * 
+   * @param mediaProjectionIntent The intent received from MediaProjection permission dialog
+   */
+  fun startScreenShare(mediaProjectionIntent: Intent) {
+    Log.d(CLIENT_TAG, "Starting screen share with MediaProjection")
+    
+    isScreenSharing = true
+    
+    videoCapturer?.stopCapture()
+    videoCapturer?.dispose()
+    videoCapturer = null
+    
+    videoSource?.dispose()
+    videoSource = null
+    
+    videoTrack?.dispose()
+    videoTrack = null
+    
+    val screenCapturer = ScreenCapturerAndroid(
+      mediaProjectionIntent,
+      object : android.media.projection.MediaProjection.Callback() {
+        override fun onStop() {
+          super.onStop()
+          Log.d(CLIENT_TAG, "Screen capture stopped")
+          isScreenSharing = false
+        }
+      }
+    )
+    
+    val videoSource: VideoSource = peerConnectionFactory.createVideoSource(true)
+    val surfaceTextureHelper = SurfaceTextureHelper.create("ScreenCaptureThread", eglBase.eglBaseContext)
+    
+    screenCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
+    
+    try {
+      screenCapturer.startCapture(
+        configOptions.videoParameters.dimensions.width,
+        configOptions.videoParameters.dimensions.height,
+        configOptions.videoParameters.maxFps
+      )
+      Log.d(CLIENT_TAG, "Screen capture started: ${configOptions.videoParameters.dimensions.width}x${configOptions.videoParameters.dimensions.height} @ ${configOptions.videoParameters.maxFps}fps")
+    } catch (e: Exception) {
+      Log.e(CLIENT_TAG, "Failed to start screen capture: ${e.message}", e)
+      throw CaptureDeviceError.VideoSizeNotSupported(
+        "Failed to start screen capture: ${e.message}"
+      )
+    }
+    
+    val videoTrackId = UUID.randomUUID().toString()
+    val videoTrack: VideoTrack = peerConnectionFactory.createVideoTrack(videoTrackId, videoSource)
+    
+    this.videoSource = videoSource
+    this.screenCapturer = screenCapturer
+    this.currentCameraDeviceId = null // Not using camera
+    
+    videoTrack.setEnabled(true)
+    this.videoTrack = videoTrack
+    
+    notifyTrackListeners()
+    
+    Log.d(CLIENT_TAG, "Screen share setup complete")
   }
 
   protected fun cleanupFactory() {

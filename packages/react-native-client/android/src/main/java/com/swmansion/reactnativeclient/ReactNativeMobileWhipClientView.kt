@@ -1,6 +1,7 @@
 package com.swmansion.reactnativeclient
 
 import android.content.Context
+import android.content.Intent
 import com.mobilewhep.client.ClientBaseListener
 import com.mobilewhep.client.ClientConnectOptions
 import com.mobilewhep.client.VideoView
@@ -23,6 +24,7 @@ class ReactNativeMobileWhipClientView(
   private var videoView: VideoView? = null
 
   private var whipClient: WhipClient? = null
+  var mediaProjectionIntent: Intent? = null
 
   fun createWhipClient(appContext: Context, configurationOptions: WhipConfigurationOptions, onConnectionStatusChange: (PeerConnection.PeerConnectionState) -> Unit) {
     whipClient = WhipClient(context, configurationOptions)
@@ -34,7 +36,12 @@ class ReactNativeMobileWhipClientView(
     if (whipClient == null) {
       throw IllegalStateException("WHIP client not found. Make sure it was initialized properly.")
     }
-    whipClient?.startScreenShare()
+    
+    if (mediaProjectionIntent == null) {
+      throw IllegalStateException("MediaProjection intent not available. Request permission first.")
+    }
+    
+    whipClient?.startScreenShare(mediaProjectionIntent!!)
   }
 
   suspend fun connect(options: ConnectionOptions) {

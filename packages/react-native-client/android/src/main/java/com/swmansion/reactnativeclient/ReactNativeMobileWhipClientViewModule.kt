@@ -1,19 +1,31 @@
 package com.swmansion.reactnativeclient
 
+import android.app.Activity
 import android.content.Context
+import android.media.projection.MediaProjectionManager
+import androidx.appcompat.app.AppCompatActivity
 import com.mobilewhep.client.VideoParameters
 import com.mobilewhep.client.WhipClient
 import com.mobilewhep.client.WhipConfigurationOptions
+import com.swmansion.reactnativeclient.foregroundService.ForegroundServiceManager
 import com.swmansion.reactnativeclient.helpers.PermissionUtils
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class ReactNativeMobileWhipClientViewModule : Module() {
+  companion object {
+    private const val SCREENSHARE_REQUEST_CODE = 1001
+  }
+  
+  private var pendingScreenShareView: ReactNativeMobileWhipClientView? = null
+  private lateinit var foregroundServiceManager: ForegroundServiceManager
 
   class ConfigurationOptions : Record {
     @Field
@@ -88,6 +100,42 @@ class ReactNativeMobileWhipClientViewModule : Module() {
   override fun definition() =
     ModuleDefinition {
       Name("ReactNativeMobileWhipClientViewModule")
+
+      OnCreate {
+        foregroundServiceManager = ForegroundServiceManager(appContext)
+      }
+
+      OnDestroy {
+        foregroundServiceManager.stop()
+      }
+
+      OnActivityResult { _, result ->
+        if (result.requestCode == SCREENSHARE_REQUEST_CODE) {
+          val view = pendingScreenShareView
+          if (view != null && result.resultCode == Activity.RESULT_OK && result.data != null) {
+            // Store the MediaProjection intent in the view
+            view.mediaProjectionIntent = result.data
+            
+            // Start foreground service, then start screen share
+            CoroutineScope(Dispatchers.Main).launch {
+              try {
+                foregroundServiceManager.updateService { screenSharingEnabled = true }
+                foregroundServiceManager.start()
+                
+                // Start screen share after service is running
+                view.startScreenShare()
+                pendingScreenShareView = null
+              } catch (e: Exception) {
+                android.util.Log.e("WhipWhepModule", "Failed to start screen share", e)
+                pendingScreenShareView = null
+              }
+            }
+          } else {
+            // Permission denied or canceled
+            pendingScreenShareView = null
+          }
+        }
+      }
 
       Events(WhipEmitableEvent.allEvents)
 
@@ -164,7 +212,14 @@ class ReactNativeMobileWhipClientViewModule : Module() {
             emit(WhipEmitableEvent.whipPeerConnectionStateChanged(it))
           }
 
-          view.startScreenShare()
+          // Store view reference for later use in OnActivityResult
+          pendingScreenShareView = view
+
+          // Request MediaProjection permission
+          val currentActivity = appContext.currentActivity ?: throw IllegalStateException("Activity not available")
+          val mediaProjectionManager = context.getSystemService(AppCompatActivity.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+          val intent = mediaProjectionManager.createScreenCaptureIntent()
+          currentActivity.startActivityForResult(intent, SCREENSHARE_REQUEST_CODE)
         }
 
         AsyncFunction("connect") Coroutine { view: ReactNativeMobileWhipClientView, options: ConnectionOptions ->
