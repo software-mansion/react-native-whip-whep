@@ -7,6 +7,46 @@ import { getMainApplicationOrThrow } from '@expo/config-plugins/build/android/Ma
 import { WhipWhepPluginOptions } from './types';
 
 /**
+ * Adds the FOREGROUND_SERVICE permission required for screen sharing.
+ * 
+ * This permission is required on Android 9+ (API 28+) to start a foreground service.
+ */
+const withWhipWhepForegroundServicePermission: ConfigPlugin<WhipWhepPluginOptions> = (
+  config,
+  props,
+) =>
+  withAndroidManifest(config, (configuration) => {
+    if (!props?.android?.enableScreensharing) {
+      return configuration;
+    }
+
+    const mainApplication = configuration.modResults;
+    if (!mainApplication.manifest) {
+      return configuration;
+    }
+
+    if (!mainApplication.manifest['uses-permission']) {
+      mainApplication.manifest['uses-permission'] = [];
+    }
+
+    const permissions = mainApplication.manifest['uses-permission'];
+
+    const hasForegroundServicePermission = permissions.some(
+      (perm) => perm.$?.['android:name'] === 'android.permission.FOREGROUND_SERVICE',
+    );
+
+    if (!hasForegroundServicePermission) {
+      permissions.push({
+        $: {
+          'android:name': 'android.permission.FOREGROUND_SERVICE',
+        },
+      });
+    }
+
+    return configuration;
+  });
+
+/**
  * Adds foreground service configuration for screen sharing on Android.
  * 
  * Android requires a foreground service with mediaProjection type to capture the screen.
@@ -32,7 +72,7 @@ const withWhipWhepForegroundService: ConfigPlugin<WhipWhepPluginOptions> = (
     const newService = {
       $: {
         'android:name':
-          'com.swmansion.whipwhep.ScreenCaptureService',
+          'com.swmansion.reactnativeclient.foregroundService.ScreenCaptureService',
         'android:foregroundServiceType': 'mediaProjection',
       },
     };
@@ -77,6 +117,7 @@ const withWhipWhepPictureInPicture: ConfigPlugin<WhipWhepPluginOptions> = (
  * Applies all Android-specific configurations based on options.
  * 
  * This orchestrates:
+ * - Foreground service permission (if screen sharing enabled)
  * - Foreground service setup (if screen sharing enabled)
  * - Picture-in-Picture support
  */
@@ -84,6 +125,7 @@ export const withWhipWhepAndroid: ConfigPlugin<WhipWhepPluginOptions> = (
   config,
   props,
 ) => {
+  config = withWhipWhepForegroundServicePermission(config, props);
   config = withWhipWhepForegroundService(config, props);
   config = withWhipWhepPictureInPicture(config, props);
   return config;
