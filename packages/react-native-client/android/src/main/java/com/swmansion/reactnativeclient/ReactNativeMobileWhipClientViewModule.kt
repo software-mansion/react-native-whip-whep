@@ -1,12 +1,9 @@
 package com.swmansion.reactnativeclient
 
 import android.content.Context
-import com.mobilewhep.client.ClientBaseListener
-import com.mobilewhep.client.ClientConnectOptions
 import com.mobilewhep.client.VideoParameters
 import com.mobilewhep.client.WhipClient
 import com.mobilewhep.client.WhipConfigurationOptions
-import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
 import com.swmansion.reactnativeclient.helpers.PermissionUtils
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
@@ -15,9 +12,6 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.webrtc.EglBase
-import org.webrtc.MediaStreamTrack
-import org.webrtc.VideoTrack
 
 class ReactNativeMobileWhipClientViewModule : Module() {
 
