@@ -30,6 +30,13 @@ class ReactNativeMobileWhipClientView(
     whipClient?.onConnectionStateChanged = onConnectionStatusChange
   }
 
+  fun startScreenShare() {
+    if (whipClient == null) {
+      throw IllegalStateException("WHIP client not found. Make sure it was initialized properly.")
+    }
+    whipClient?.startScreenShare()
+  }
+
   suspend fun connect(options: ConnectionOptions) {
     if (whipClient == null) {
       throw IllegalStateException("WHIP client not found. Make sure it was initialized properly.")

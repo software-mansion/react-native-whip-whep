@@ -3,7 +3,10 @@ package com.mobilewhep.client
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
+import android.media.projection.MediaProjection
+import android.media.projection.MediaProjectionManager
 import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -21,6 +24,7 @@ import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
 import org.webrtc.PeerConnectionFactory
 import org.webrtc.RtpTransceiver
+import org.webrtc.ScreenCapturerAndroid
 import org.webrtc.SessionDescription
 import org.webrtc.Size
 import org.webrtc.SurfaceTextureHelper
@@ -100,12 +104,12 @@ class WhipClient(
    * @throws CaptureDeviceError.VideoDeviceNotAvailable if there is no video device.
    */
   private fun setUpVideoAndAudioDevices() {
-    if (configOptions.videoDevice == null) {
-      throw CaptureDeviceError.VideoDeviceNotAvailable("Video device not found. Check if it can be accessed and passed to the constructor.")
-    }
-
     val audioEnabled = configOptions.audioEnabled
     val videoEnabled = configOptions.videoEnabled
+
+    if (videoEnabled && configOptions.videoDevice == null) {
+      throw CaptureDeviceError.VideoDeviceNotAvailable("Video device not found. Check if it can be accessed and passed to the constructor.")
+    }
 
     if (!audioEnabled && !videoEnabled) {
       Log.d(
@@ -298,6 +302,10 @@ class WhipClient(
     } catch (e: Exception) {
       Log.e(CLIENT_TAG, "Failed to switch camera to $deviceId: ${e.message}")
     }
+  }
+
+  fun startScreenShare() {
+    Log.d("Test screen share", "Start screen share called")
   }
 
   protected fun cleanupFactory() {

@@ -133,6 +133,40 @@ class ReactNativeMobileWhipClientViewModule : Module() {
           }
         }
 
+        AsyncFunction("initializeScreenShare") { view: ReactNativeMobileWhipClientView, configurationOptions: ConfigurationOptions? ->
+          val context: Context =
+            appContext.reactContext ?: throw IllegalStateException("React context is not available")
+
+          val parsedVideoParameters: VideoParameters =
+            if (configurationOptions?.videoParameters != null) {
+              getVideoParametersFromOptions(configurationOptions.videoParameters)
+            } else {
+              VideoParameters.presetHD169
+            }
+
+          val options =
+            WhipConfigurationOptions(
+              stunServerUrl = configurationOptions?.stunServerUrl,
+              audioEnabled = configurationOptions?.audioEnabled ?: true,
+              videoEnabled = false,
+              videoParameters = parsedVideoParameters,
+              videoDevice = null,
+              preferredAudioCodecs = configurationOptions?.preferredAudioCodecs ?: listOf(),
+              preferredVideoCodecs = configurationOptions?.preferredVideoCodecs ?: listOf()
+            )
+
+          if (options.audioEnabled && !PermissionUtils.hasMicrophonePermission(appContext)) {
+            emit(WhipEmitableEvent.warning("Microphone permission not granted. Cannot initialize WhipClient."))
+            return@AsyncFunction
+          }
+
+          view.createWhipClient(context, options) {
+            emit(WhipEmitableEvent.whipPeerConnectionStateChanged(it))
+          }
+
+          view.startScreenShare()
+        }
+
         AsyncFunction("connect") Coroutine { view: ReactNativeMobileWhipClientView, options: ConnectionOptions ->
           withContext(Dispatchers.IO) {
             view.connect(options)
