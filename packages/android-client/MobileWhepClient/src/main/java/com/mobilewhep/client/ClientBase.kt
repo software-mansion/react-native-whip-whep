@@ -254,6 +254,9 @@ open class ClientBase(
             response: Response
           ) {
             response.use {
+              // Accept successful responses or error codes indicating the server
+              // doesn't support Trickle ICE (501, 405) or rejects the candidate format (400),
+              // as the connection can still work without Trickle ICE support.
               if (!it.isSuccessful && it.code != 501 && it.code != 405 && it.code != 400) {
                 continuation.resumeWithException(
                   SessionNetworkError.CandidateSendingError("Candidate sending error - response was not successful.")
