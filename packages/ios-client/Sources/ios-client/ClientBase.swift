@@ -220,6 +220,9 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
 
         let (_, response) = try await URLSession.shared.data(for: request)
 
+		// Accept successful responses or error codes indicating the server
+		// doesn't support Trickle ICE (501, 405) or rejects the candidate format (400),
+		// as the connection can still work without Trickle ICE support.
         guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
             (200...299).contains(statusCode) || statusCode == 501 || statusCode == 405 || statusCode == 400
         else {
