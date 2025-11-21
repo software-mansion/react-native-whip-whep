@@ -221,7 +221,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
         let (_, response) = try await URLSession.shared.data(for: request)
 
         guard let statusCode = (response as? HTTPURLResponse)?.statusCode,
-            statusCode == 204 || statusCode == 501 || statusCode == 405 || statusCode == 400
+            (200...299).contains(statusCode) || statusCode == 501 || statusCode == 405 || statusCode == 400
         else {
             throw SessionNetworkError.CandidateSendingError(
                 description: "Candidate sending error - response was not successful.")
