@@ -43,7 +43,8 @@ data class WhipConfigurationOptions(
   val videoParameters: VideoParameters = VideoParameters.presetHD169,
   val videoDevice: String? = null,
   val preferredVideoCodecs: List<String>,
-  val preferredAudioCodecs: List<String>
+  val preferredAudioCodecs: List<String>,
+  val skipInitialSetup: Boolean = false
 )
 
 class WhipClient(
@@ -63,7 +64,9 @@ class WhipClient(
   private var isScreenSharing: Boolean = false
 
   init {
-    setUpVideoAndAudioDevices()
+    if (!configOptions.skipInitialSetup) {
+      setUpVideoAndAudioDevices()
+    }
   }
 
   fun getPeerConnectionFactory(): PeerConnectionFactory = peerConnectionFactory
@@ -75,26 +78,34 @@ class WhipClient(
     val videoEnabled = configOptions.videoEnabled
     val direction = RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
 
-    if (videoEnabled) {
+    Log.d(CLIENT_TAG, "Setting up peer connection - videoTrack: ${videoTrack != null}, audioTrack: ${audioTrack != null}, isScreenSharing: $isScreenSharing")
+
+    if (videoEnabled && videoTrack != null) {
       val transceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
       val transceiver = peerConnection?.addTransceiver(videoTrack, transceiverInit)
+      Log.d(CLIENT_TAG, "Added video transceiver for ${if (isScreenSharing) "screen share" else "camera"}")
       setCodecPreferencesIfAvailable(
         transceiver,
         configOptions.preferredVideoCodecs,
         MediaStreamTrack.MediaType.MEDIA_TYPE_VIDEO,
         factory = peerConnectionFactory
       )
+    } else if (videoEnabled) {
+      Log.e(CLIENT_TAG, "Video enabled but videoTrack is null!")
     }
 
-    if (audioEnabled) {
+    if (audioEnabled && audioTrack != null) {
       val audioTransceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
       val transceiver = peerConnection?.addTransceiver(audioTrack, audioTransceiverInit)
+      Log.d(CLIENT_TAG, "Added audio transceiver")
       setCodecPreferencesIfAvailable(
         transceiver,
         configOptions.preferredAudioCodecs,
         MediaStreamTrack.MediaType.MEDIA_TYPE_AUDIO,
         factory = peerConnectionFactory
       )
+    } else if (audioEnabled) {
+      Log.e(CLIENT_TAG, "Audio enabled but audioTrack is null!")
     }
   }
 
@@ -192,29 +203,47 @@ class WhipClient(
     try {
       super.connect(connectOptions)
 
-      if (videoTrack == null ||
-        videoCapturer == null ||
-        (configOptions.audioEnabled && audioTrack == null)
+      if (videoTrack == null || 
+        (configOptions.audioEnabled && audioTrack == null) ||
+        (!isScreenSharing && videoCapturer == null)
       ) {
-        setUpVideoAndAudioDevices()
+        if (isScreenSharing) {
+          Log.w(CLIENT_TAG, "Screen sharing setup incomplete during connect")
+        } else {
+          setUpVideoAndAudioDevices()
+        }
       }
 
       if (peerConnection == null) {
         setupPeerConnection()
       }
-
-      if (!hasPermissions(appContext, REQUIRED_PERMISSIONS)) {
+      val requiredPermissions = if (isScreenSharing) {
+        if (configOptions.audioEnabled) {
+          arrayOf(Manifest.permission.RECORD_AUDIO)
+        } else {
+          emptyArray()
+        }
+      } else {
+        REQUIRED_PERMISSIONS
+      }
+      
+      if (requiredPermissions.isNotEmpty() && !hasPermissions(appContext, requiredPermissions)) {
+        val permissionType = if (isScreenSharing) "audio recording" else "camera and audio recording"
         throw PermissionError.PermissionsNotGrantedError(
-          "Permissions for camera and audio recording have not been granted. Please check your application settings."
+          "Permissions for $permissionType have not been granted. Please check your application settings."
         )
       }
 
       val constraints = MediaConstraints()
       peerConnection?.let {
+        Log.d(CLIENT_TAG, "Creating SDP offer for ${if (isScreenSharing) "screen share" else "camera"}")
         val sdpOffer = it.createOffer(constraints).getOrThrow()
+        Log.d(CLIENT_TAG, "SDP Offer:\n${sdpOffer.description}")
         it.setLocalDescription(sdpOffer).getOrThrow()
+        Log.d(CLIENT_TAG, "Local description set, sending SDP offer to server")
 
         val sdp = sendSdpOffer(sdpOffer.description)
+        Log.d(CLIENT_TAG, "Received SDP answer from server:\n$sdp")
 
         iceCandidates.forEach { sendCandidate(it) }
 
@@ -237,6 +266,29 @@ class WhipClient(
     }
   }
 
+  fun stopScreenShare() {
+    if (!isScreenSharing) {
+      Log.w(CLIENT_TAG, "Screen sharing is not active")
+      return
+    }
+    
+    Log.d(CLIENT_TAG, "Stopping screen share")
+    
+    screenCapturer?.stopCapture()
+    screenCapturer?.dispose()
+    screenCapturer = null
+    
+    videoSource?.dispose()
+    videoSource = null
+    
+    videoTrack?.dispose()
+    videoTrack = null
+    
+    isScreenSharing = false
+    
+    Log.d(CLIENT_TAG, "Screen share stopped")
+  }
+
   /**
    * Closes the established Peer Connection.
    *
@@ -246,6 +298,9 @@ class WhipClient(
    *
    */
   suspend fun disconnect() {
+    if (isScreenSharing) {
+      stopScreenShare()
+    }
     cleanupPeerConnection()
     disconnectResource()
   }
@@ -373,6 +428,16 @@ class WhipClient(
     
     videoTrack.setEnabled(true)
     this.videoTrack = videoTrack
+    
+    // Set up audio track if enabled
+    if (configOptions.audioEnabled && audioTrack == null) {
+      val audioTrackId = UUID.randomUUID().toString()
+      val audioSource = peerConnectionFactory.createAudioSource(MediaConstraints())
+      val audioTrack = peerConnectionFactory.createAudioTrack(audioTrackId, audioSource)
+      audioTrack.setEnabled(true)
+      this.audioTrack = audioTrack
+      Log.d(CLIENT_TAG, "Audio track created for screen share")
+    }
     
     notifyTrackListeners()
     

@@ -196,11 +196,12 @@ class ReactNativeMobileWhipClientViewModule : Module() {
             WhipConfigurationOptions(
               stunServerUrl = configurationOptions?.stunServerUrl,
               audioEnabled = configurationOptions?.audioEnabled ?: true,
-              videoEnabled = false,
+              videoEnabled = true,
               videoParameters = parsedVideoParameters,
               videoDevice = null,
               preferredAudioCodecs = configurationOptions?.preferredAudioCodecs ?: listOf(),
-              preferredVideoCodecs = configurationOptions?.preferredVideoCodecs ?: listOf()
+              preferredVideoCodecs = configurationOptions?.preferredVideoCodecs ?: listOf(),
+              skipInitialSetup = true
             )
 
           if (options.audioEnabled && !PermissionUtils.hasMicrophonePermission(appContext)) {
