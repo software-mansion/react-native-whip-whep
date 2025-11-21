@@ -188,7 +188,8 @@ class WhipClient(
     try {
       super.connect(connectOptions)
 
-      if (videoTrack == null || videoCapturer == null ||
+      if (videoTrack == null ||
+        videoCapturer == null ||
         (configOptions.audioEnabled && audioTrack == null)
       ) {
         setUpVideoAndAudioDevices()

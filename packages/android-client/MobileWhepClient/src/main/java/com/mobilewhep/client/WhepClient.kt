@@ -12,7 +12,6 @@ import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
 import org.webrtc.RtpTransceiver
 import org.webrtc.SessionDescription
-import org.webrtc.VideoTrack
 
 data class WhepConfigurationOptions(
   val audioEnabled: Boolean? = true,
