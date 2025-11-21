@@ -3,7 +3,6 @@ package com.mobilewhep.client
 import android.content.Context
 import android.media.AudioAttributes
 import android.util.Log
-import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
