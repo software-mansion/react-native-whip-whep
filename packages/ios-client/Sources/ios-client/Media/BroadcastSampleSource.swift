@@ -61,7 +61,7 @@ public class BroadcastSampleSource {
 
     /// Processes provided sample buffer by serializing it and passing via `IPC` mechanism.
     ///
-    /// Currently supports  only`video` frames.
+    /// Currently supports only `video` frames.
     public func processFrame(sampleBuffer: CMSampleBuffer, ofType type: RPSampleBufferType) {
         guard connected else {
             return
