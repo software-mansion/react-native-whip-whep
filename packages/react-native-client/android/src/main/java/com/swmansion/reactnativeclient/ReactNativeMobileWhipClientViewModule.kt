@@ -129,6 +129,7 @@ class ReactNativeMobileWhipClientViewModule : Module() {
             }
           } else {
             pendingScreenShareView = null
+            emit(WhipEmitableEvent.screenSharingPermissionDenied())
           }
         }
       }

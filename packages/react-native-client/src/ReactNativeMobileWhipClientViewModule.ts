@@ -23,6 +23,7 @@ type RNMobileWhipClientViewModule = {
 export const ReceivableEvents = {
   WhipPeerConnectionStateChanged: "WhipPeerConnectionStateChanged",
   Warning: "Warning",
+  ScreenSharingPermissionDenied: "ScreenSharingPermissionDenied",
 } as const;
 
 export type PeerConnectionState =
@@ -37,6 +38,7 @@ export type PeerConnectionState =
 export type ReceivableEventPayloads = {
   [ReceivableEvents.WhipPeerConnectionStateChanged]: PeerConnectionState;
   [ReceivableEvents.Warning]: string;
+  [ReceivableEvents.ScreenSharingPermissionDenied]: string;
 };
 
 const nativeViewModule = requireNativeModule(
