@@ -5,7 +5,7 @@ syntax = "proto3";
 // to allow for recapturing of screensharing samples.
 
 // A message can either contain:
-// * notificaiton - allowing for notifying about stream status, it is necessary
+// * notification - allowing for notifying about stream status, it is necessary
 //   as the IPC connection is stateless and we can't know when
 //   the sender started or finished broadcasting
 // * video - indicates that the carried buffer is a video sample, the `Video` message
