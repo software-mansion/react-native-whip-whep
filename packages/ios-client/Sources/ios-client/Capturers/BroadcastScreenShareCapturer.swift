@@ -224,7 +224,7 @@ class BroadcastScreenShareCapturer: RTCVideoCapturer {
                     break
                 }
 
-                // NOTEe: somehow local Metal renderer for RTCVPixelBuffer does not render the video
+                // NOTE: somehow local Metal renderer for RTCVPixelBuffer does not render the video
                 // the I420 somehow does so keep it in that format as long as it works
                 let buffer = rtcBuffer.toI420()
                 let videoFrame = RTCVideoFrame(
