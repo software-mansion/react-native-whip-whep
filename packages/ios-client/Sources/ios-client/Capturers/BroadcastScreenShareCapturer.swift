@@ -102,7 +102,7 @@ class BroadcastScreenShareCapturer: RTCVideoCapturer {
         - source: `RTCVideoSource` that will receive incoming video buffers
         - appGroup: App Group that will be used for starting an `IPCServer` on
         - videoParameters: The parameters used for limiting the screen capture resolution and target framerate
-        - delegate: A delegate that will receive notifications about the sceeen capture events such as started/stopped or paused
+        - delegate: A delegate that will receive notifications about the screen capture events such as started/stopped or paused
      */
     init(
         _ source: RTCVideoSource,
