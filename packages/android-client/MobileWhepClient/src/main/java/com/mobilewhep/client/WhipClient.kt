@@ -203,7 +203,7 @@ class WhipClient(
     try {
       super.connect(connectOptions)
 
-      if (videoTrack == null || 
+      if (videoTrack == null ||
         (configOptions.audioEnabled && audioTrack == null) ||
         (!isScreenSharing && videoCapturer == null)
       ) {
@@ -226,7 +226,7 @@ class WhipClient(
       } else {
         REQUIRED_PERMISSIONS
       }
-      
+
       if (requiredPermissions.isNotEmpty() && !hasPermissions(appContext, requiredPermissions)) {
         val permissionType = if (isScreenSharing) "audio recording" else "camera and audio recording"
         throw PermissionError.PermissionsNotGrantedError(
@@ -238,13 +238,8 @@ class WhipClient(
       peerConnection?.let {
         Log.d(CLIENT_TAG, "Creating SDP offer for ${if (isScreenSharing) "screen share" else "camera"}")
         val sdpOffer = it.createOffer(constraints).getOrThrow()
-        Log.d(CLIENT_TAG, "SDP Offer:\n${sdpOffer.description}")
         it.setLocalDescription(sdpOffer).getOrThrow()
-        Log.d(CLIENT_TAG, "Local description set, sending SDP offer to server")
-
         val sdp = sendSdpOffer(sdpOffer.description)
-        Log.d(CLIENT_TAG, "Received SDP answer from server:\n$sdp")
-
         iceCandidates.forEach { sendCandidate(it) }
 
         val answer =
@@ -271,21 +266,14 @@ class WhipClient(
       Log.w(CLIENT_TAG, "Screen sharing is not active")
       return
     }
-    
+
     Log.d(CLIENT_TAG, "Stopping screen share")
-    
-    screenCapturer?.stopCapture()
-    screenCapturer?.dispose()
-    screenCapturer = null
-    
-    videoSource?.dispose()
-    videoSource = null
-    
-    videoTrack?.dispose()
-    videoTrack = null
-    
+
+    cleanupScreenCapturer()
+    cleanupVideoTrack()
+
     isScreenSharing = false
-    
+
     Log.d(CLIENT_TAG, "Screen share stopped")
   }
 
@@ -311,24 +299,36 @@ class WhipClient(
     peerConnection = null
   }
 
-  fun cleanup() {
+  private fun cleanupVideoCapturer() {
     videoCapturer?.stopCapture()
     videoCapturer?.dispose()
     videoCapturer = null
+  }
 
+  private fun cleanupScreenCapturer() {
     screenCapturer?.stopCapture()
     screenCapturer?.dispose()
     screenCapturer = null
+  }
 
+  private fun cleanupVideoTrack() {
     videoSource?.dispose()
     videoSource = null
 
     videoTrack?.dispose()
     videoTrack = null
+  }
 
+  private fun cleanupAudioTrack() {
     audioTrack?.dispose()
     audioTrack = null
+  }
 
+  fun cleanup() {
+    cleanupVideoCapturer()
+    cleanupScreenCapturer()
+    cleanupVideoTrack()
+    cleanupAudioTrack()
     cleanupPeerConnection()
     cleanupFactory()
     cleanupEglBase()
@@ -339,7 +339,7 @@ class WhipClient(
       Log.w(CLIENT_TAG, "Cannot switch camera while screen sharing")
       return
     }
-    
+
     val enumerator: CameraEnumerator =
       if (Camera2Enumerator.isSupported(appContext)) Camera2Enumerator(appContext) else Camera1Enumerator(false)
 
@@ -371,24 +371,17 @@ class WhipClient(
   /**
    * Starts screen sharing using MediaProjection.
    * Note: MediaProjection permission must be obtained at the Activity level before calling this.
-   * 
+   *
    * @param mediaProjectionIntent The intent received from MediaProjection permission dialog
    */
   fun startScreenShare(mediaProjectionIntent: Intent) {
     Log.d(CLIENT_TAG, "Starting screen share with MediaProjection")
-    
+
     isScreenSharing = true
-    
-    videoCapturer?.stopCapture()
-    videoCapturer?.dispose()
-    videoCapturer = null
-    
-    videoSource?.dispose()
-    videoSource = null
-    
-    videoTrack?.dispose()
-    videoTrack = null
-    
+
+    cleanupVideoCapturer()
+    cleanupVideoTrack()
+
     val screenCapturer = ScreenCapturerAndroid(
       mediaProjectionIntent,
       object : android.media.projection.MediaProjection.Callback() {
@@ -399,37 +392,36 @@ class WhipClient(
         }
       }
     )
-    
+
     val videoSource: VideoSource = peerConnectionFactory.createVideoSource(true)
     val surfaceTextureHelper = SurfaceTextureHelper.create("ScreenCaptureThread", eglBase.eglBaseContext)
-    
+
     screenCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
-    
+
     try {
       screenCapturer.startCapture(
         configOptions.videoParameters.dimensions.width,
         configOptions.videoParameters.dimensions.height,
         configOptions.videoParameters.maxFps
       )
-      Log.d(CLIENT_TAG, "Screen capture started: ${configOptions.videoParameters.dimensions.width}x${configOptions.videoParameters.dimensions.height} @ ${configOptions.videoParameters.maxFps}fps")
+      Log.d(CLIENT_TAG, "Screen capture started")
     } catch (e: Exception) {
       Log.e(CLIENT_TAG, "Failed to start screen capture: ${e.message}", e)
       throw CaptureDeviceError.VideoSizeNotSupported(
         "Failed to start screen capture: ${e.message}"
       )
     }
-    
+
     val videoTrackId = UUID.randomUUID().toString()
     val videoTrack: VideoTrack = peerConnectionFactory.createVideoTrack(videoTrackId, videoSource)
-    
+
     this.videoSource = videoSource
     this.screenCapturer = screenCapturer
-    this.currentCameraDeviceId = null // Not using camera
-    
+    this.currentCameraDeviceId = null
+
     videoTrack.setEnabled(true)
     this.videoTrack = videoTrack
-    
-    // Set up audio track if enabled
+
     if (configOptions.audioEnabled && audioTrack == null) {
       val audioTrackId = UUID.randomUUID().toString()
       val audioSource = peerConnectionFactory.createAudioSource(MediaConstraints())
@@ -438,9 +430,9 @@ class WhipClient(
       this.audioTrack = audioTrack
       Log.d(CLIENT_TAG, "Audio track created for screen share")
     }
-    
+
     notifyTrackListeners()
-    
+
     Log.d(CLIENT_TAG, "Screen share setup complete")
   }
 

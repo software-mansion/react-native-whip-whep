@@ -23,7 +23,7 @@ class ReactNativeMobileWhipClientViewModule : Module() {
   companion object {
     private const val SCREENSHARE_REQUEST_CODE = 1001
   }
-  
+
   private var pendingScreenShareView: ReactNativeMobileWhipClientView? = null
   private lateinit var foregroundServiceManager: ForegroundServiceManager
 
@@ -113,16 +113,13 @@ class ReactNativeMobileWhipClientViewModule : Module() {
         if (result.requestCode == SCREENSHARE_REQUEST_CODE) {
           val view = pendingScreenShareView
           if (view != null && result.resultCode == Activity.RESULT_OK && result.data != null) {
-            // Store the MediaProjection intent in the view
             view.mediaProjectionIntent = result.data
-            
-            // Start foreground service, then start screen share
+
             CoroutineScope(Dispatchers.Main).launch {
               try {
                 foregroundServiceManager.updateService { screenSharingEnabled = true }
                 foregroundServiceManager.start()
-                
-                // Start screen share after service is running
+
                 view.startScreenShare()
                 pendingScreenShareView = null
               } catch (e: Exception) {
@@ -131,7 +128,6 @@ class ReactNativeMobileWhipClientViewModule : Module() {
               }
             }
           } else {
-            // Permission denied or canceled
             pendingScreenShareView = null
           }
         }
@@ -216,7 +212,6 @@ class ReactNativeMobileWhipClientViewModule : Module() {
           // Store view reference for later use in OnActivityResult
           pendingScreenShareView = view
 
-          // Request MediaProjection permission
           val currentActivity = appContext.currentActivity ?: throw IllegalStateException("Activity not available")
           val mediaProjectionManager = context.getSystemService(AppCompatActivity.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
           val intent = mediaProjectionManager.createScreenCaptureIntent()
