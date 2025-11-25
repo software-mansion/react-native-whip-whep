@@ -67,13 +67,16 @@ class ForegroundServiceManager(
       putExtra("foregroundServiceTypes", foregroundServiceTypes.toIntArray())
     }
 
+    android.util.Log.d("ForegroundServiceManager", "Starting foreground service")
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       reactContext.startForegroundService(serviceIntent)
     } else {
       reactContext.startService(serviceIntent)
     }
 
+    android.util.Log.d("ForegroundServiceManager", "Service started, now binding")
     bindServiceIfNeededAndAwait()
+    android.util.Log.d("ForegroundServiceManager", "Service bound successfully")
   }
 
   fun stop() {
@@ -89,17 +92,34 @@ class ForegroundServiceManager(
   private suspend fun bindServiceIfNeededAndAwait() =
     suspendCancellableCoroutine { continuation ->
       if (serviceInstance == null) {
+        val activity = appContext.currentActivity
+        if (activity == null) {
+          android.util.Log.e("ForegroundServiceManager", "Current activity is null, cannot bind service")
+          continuation.cancel(CodedException("Current activity is null"))
+          return@suspendCancellableCoroutine
+        }
+        
         serviceConnectedContinuation = continuation
         runCatching {
-          appContext.currentActivity?.bindService(
+          android.util.Log.d("ForegroundServiceManager", "Binding service")
+          val bound = activity.bindService(
             serviceIntent,
             connection,
             Context.BIND_AUTO_CREATE
           )
+          android.util.Log.d("ForegroundServiceManager", "Bind service result: $bound")
+          if (!bound) {
+            android.util.Log.e("ForegroundServiceManager", "Failed to bind service - bindService returned false")
+            continuation.cancel(CodedException("Failed to bind service"))
+            serviceConnectedContinuation = null
+          }
         }.onFailure { error ->
+          android.util.Log.e("ForegroundServiceManager", "Failed to bind service", error)
           continuation.cancel(CodedException("Failed to bind service: ${error.message}"))
+          serviceConnectedContinuation = null
         }
       } else {
+        android.util.Log.d("ForegroundServiceManager", "Service already bound, restarting")
         serviceInstance?.restartService(serviceIntent)
         continuation.resume(Unit)
         serviceConnectedContinuation = null
