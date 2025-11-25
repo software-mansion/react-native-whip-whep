@@ -78,7 +78,10 @@ class WhipClient(
     val videoEnabled = configOptions.videoEnabled
     val direction = RtpTransceiver.RtpTransceiverDirection.SEND_ONLY
 
-    Log.d(CLIENT_TAG, "Setting up peer connection - videoTrack: ${videoTrack != null}, audioTrack: ${audioTrack != null}, isScreenSharing: $isScreenSharing")
+    Log.d(
+      CLIENT_TAG,
+      "Setting up peer connection - videoTrack: ${videoTrack != null}, audioTrack: ${audioTrack != null}, isScreenSharing: $isScreenSharing"
+    )
 
     if (videoEnabled && videoTrack != null) {
       val transceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
@@ -217,15 +220,16 @@ class WhipClient(
       if (peerConnection == null) {
         setupPeerConnection()
       }
-      val requiredPermissions = if (isScreenSharing) {
-        if (configOptions.audioEnabled) {
-          arrayOf(Manifest.permission.RECORD_AUDIO)
+      val requiredPermissions =
+        if (isScreenSharing) {
+          if (configOptions.audioEnabled) {
+            arrayOf(Manifest.permission.RECORD_AUDIO)
+          } else {
+            emptyArray()
+          }
         } else {
-          emptyArray()
+          REQUIRED_PERMISSIONS
         }
-      } else {
-        REQUIRED_PERMISSIONS
-      }
 
       if (requiredPermissions.isNotEmpty() && !hasPermissions(appContext, requiredPermissions)) {
         val permissionType = if (isScreenSharing) "audio recording" else "camera and audio recording"
@@ -382,16 +386,17 @@ class WhipClient(
     cleanupVideoCapturer()
     cleanupVideoTrack()
 
-    val screenCapturer = ScreenCapturerAndroid(
-      mediaProjectionIntent,
-      object : android.media.projection.MediaProjection.Callback() {
-        override fun onStop() {
-          super.onStop()
-          Log.d(CLIENT_TAG, "Screen capture stopped")
-          isScreenSharing = false
+    val screenCapturer =
+      ScreenCapturerAndroid(
+        mediaProjectionIntent,
+        object : android.media.projection.MediaProjection.Callback() {
+          override fun onStop() {
+            super.onStop()
+            Log.d(CLIENT_TAG, "Screen capture stopped")
+            isScreenSharing = false
+          }
         }
-      }
-    )
+      )
 
     val videoSource: VideoSource = peerConnectionFactory.createVideoSource(true)
     val surfaceTextureHelper = SurfaceTextureHelper.create("ScreenCaptureThread", eglBase.eglBaseContext)

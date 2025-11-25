@@ -162,11 +162,11 @@ export type WhipClientViewRef = {
   ) => Promise<void>;
   /**
    * Initializes the WHIP client with screen sharing as the video source.
-   * 
+   *
    * iOS: Starts the IPC server and shows the broadcast picker to the user.
    *      The user must select the broadcast extension to start screen recording.
-   * 
-   * Android: Creates the WHIP client, requests MediaProjection permission, and starts 
+   *
+   * Android: Creates the WHIP client, requests MediaProjection permission, and starts
    *          the foreground service. The user must grant permission via system dialog.
    */
   initializeScreenShare: (

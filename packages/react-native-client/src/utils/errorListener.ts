@@ -43,7 +43,10 @@ export const initializeWarningListener = () => {
     ReactNativeMobileWhipClientViewModule.addListener(
       WhipReceivableEvents.ScreenSharingPermissionDenied,
       (event) => {
-        console.warn("[WHIP]", event[WhipReceivableEvents.ScreenSharingPermissionDenied]);
+        console.warn(
+          "[WHIP]",
+          event[WhipReceivableEvents.ScreenSharingPermissionDenied],
+        );
       },
     );
   } catch (error: unknown) {
