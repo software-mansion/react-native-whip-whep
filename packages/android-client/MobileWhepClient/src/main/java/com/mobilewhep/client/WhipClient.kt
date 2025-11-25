@@ -12,6 +12,7 @@ import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Request
 import okhttp3.Response
+import org.webrtc.AudioSource
 import org.webrtc.Camera1Enumerator
 import org.webrtc.Camera2Enumerator
 import org.webrtc.CameraEnumerationAndroid
@@ -57,7 +58,10 @@ class WhipClient(
   override var videoTrack: VideoTrack? = null
   private var videoCapturer: CameraVideoCapturer? = null
   private var videoSource: VideoSource? = null
+  private var audioSource: AudioSource? = null
   private var screenCapturer: ScreenCapturerAndroid? = null
+  private var cameraSurfaceTextureHelper: SurfaceTextureHelper? = null
+  private var screenSurfaceTextureHelper: SurfaceTextureHelper? = null
 
   public var currentCameraDeviceId: String? = null
   private val peerConnectionFactory = PeerConnectionFactoryHelper.getWhipFactory(appContext, eglBase)
@@ -151,6 +155,7 @@ class WhipClient(
       val videoSource: VideoSource =
         peerConnectionFactory.createVideoSource(videoCapturer!!.isScreencast)
       val surfaceTextureHelper = SurfaceTextureHelper.create("CaptureThread", eglBase.eglBaseContext)
+      cameraSurfaceTextureHelper = surfaceTextureHelper
       videoCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
       val videoSize =
         setVideoSize(
@@ -185,6 +190,7 @@ class WhipClient(
       val audioSource = this.peerConnectionFactory.createAudioSource(MediaConstraints())
       val audioTrack = this.peerConnectionFactory.createAudioTrack(audioTrackId, audioSource)
 
+      this.audioSource = audioSource
       this.audioTrack = audioTrack
     }
 
@@ -307,12 +313,18 @@ class WhipClient(
     videoCapturer?.stopCapture()
     videoCapturer?.dispose()
     videoCapturer = null
+
+    cameraSurfaceTextureHelper?.dispose()
+    cameraSurfaceTextureHelper = null
   }
 
   private fun cleanupScreenCapturer() {
     screenCapturer?.stopCapture()
     screenCapturer?.dispose()
     screenCapturer = null
+
+    screenSurfaceTextureHelper?.dispose()
+    screenSurfaceTextureHelper = null
   }
 
   private fun cleanupVideoTrack() {
@@ -324,6 +336,9 @@ class WhipClient(
   }
 
   private fun cleanupAudioTrack() {
+    audioSource?.dispose()
+    audioSource = null
+
     audioTrack?.dispose()
     audioTrack = null
   }
@@ -400,6 +415,7 @@ class WhipClient(
 
     val videoSource: VideoSource = peerConnectionFactory.createVideoSource(true)
     val surfaceTextureHelper = SurfaceTextureHelper.create("ScreenCaptureThread", eglBase.eglBaseContext)
+    screenSurfaceTextureHelper = surfaceTextureHelper
 
     screenCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
 
@@ -432,6 +448,7 @@ class WhipClient(
       val audioSource = peerConnectionFactory.createAudioSource(MediaConstraints())
       val audioTrack = peerConnectionFactory.createAudioTrack(audioTrackId, audioSource)
       audioTrack.setEnabled(true)
+      this.audioSource = audioSource
       this.audioTrack = audioTrack
       Log.d(CLIENT_TAG, "Audio track created for screen share")
     }
