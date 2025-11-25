@@ -86,7 +86,7 @@ async function updatePodfile(iosPath: string, props: WhipWhepPluginOptions) {
     return;
   }
   try {
-    fs.appendFile(`${iosPath}/Podfile`, podfileSnippet);
+    await fs.appendFile(`${iosPath}/Podfile`, podfileSnippet);
   } catch (e) {
     console.error('Error writing to Podfile: ', e);
   }
@@ -283,7 +283,7 @@ const withWhipWhepSBE: ConfigPlugin<WhipWhepPluginOptions> = (config, options) =
       projObjects['PBXTargetDependency'] =
         projObjects['PBXTargetDependency'] || {};
       projObjects['PBXContainerItemProxy'] =
-        projObjects['PBXTargetDependency'] || {};
+        projObjects['PBXContainerItemProxy'] || {};
 
       const sbeTarget = xcodeProject.addTarget(
         targetName,

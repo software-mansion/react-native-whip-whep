@@ -33,7 +33,8 @@ public enum ScreenSharingError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .NoExtension(let description):
-            return "No screen share extension bundle id set. Please set ScreenShareExtensionBundleId in Info.plist"
+            return
+                "No screen share extension bundle id set (\(description)). Please set ScreenShareExtensionBundleId in Info.plist"
         }
     }
 }
