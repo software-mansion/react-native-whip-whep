@@ -26,3 +26,15 @@ public enum SessionNetworkError: LocalizedError {
         }
     }
 }
+
+public enum ScreenSharingError: LocalizedError {
+    case NoExtension(description: String)
+
+    public var errorDescription: String? {
+        switch self {
+        case .NoExtension(let description):
+            return
+                "No screen share extension bundle id set (\(description)). Please set ScreenShareExtensionBundleId in Info.plist"
+        }
+    }
+}

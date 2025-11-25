@@ -1,23 +1,22 @@
+import ReplayKit
 import WebRTC
 import os
 
 public struct WhipConfigurationOptions {
     public let audioEnabled: Bool
     public let videoEnabled: Bool
-    public var videoDevice: AVCaptureDevice
     public let videoParameters: VideoParameters
     public let stunServerUrl: String?
     public let preferredVideoCodecs: [String]
     public let preferredAudioCodecs: [String]
 
     public init(
-        audioEnabled: Bool = true, videoEnabled: Bool = true, videoDevice: AVCaptureDevice,
+        audioEnabled: Bool = true, videoEnabled: Bool = true,
         videoParameters: VideoParameters, stunServerUrl: String?, preferredVideoCodecs: [String] = [],
         preferredAudioCodecs: [String] = []
     ) {
         self.audioEnabled = audioEnabled
         self.videoEnabled = videoEnabled
-        self.videoDevice = videoDevice
         self.videoParameters = videoParameters
         self.stunServerUrl = stunServerUrl
         self.preferredVideoCodecs = preferredVideoCodecs
@@ -30,14 +29,15 @@ public class WhipClient: ClientBase {
     private var videoCapturer: RTCCameraVideoCapturer?
     private var videoSource: RTCVideoSource?
 
+    private var broadcastScreenShareReceiver: BroadcastScreenShareReceiver?
+    private var broadcastScreenShareCapturer: BroadcastScreenShareCapturer?
+
     public var currentCameraDeviceId: String?
+    public var isScreenShareOn: Bool = false
 
     /**
     Initializes a `WhipClient` object.
-    
-    - Parameter serverUrl: A URL of the WHIP server.
     - Parameter configurationOptions: Additional configuration options, such as a STUN server URL or authorization token.
-    - Parameter videoDevice: A device that will be used to stream video.
     
     - Returns: A `WhipClient` object.
     */
@@ -207,13 +207,11 @@ public class WhipClient: ClientBase {
         let devices = RTCCameraVideoCapturer.captureDevices()
 
         if let device = devices.first(where: { $0.uniqueID == deviceId }) {
-            configOptions.videoDevice = device
+            startCapture(device)
         } else {
             print("Device with ID \(deviceId) not found")
             return
         }
-
-        startCapture()
     }
 
     private func setUpVideoAndAudioDevices() throws {
@@ -236,8 +234,6 @@ public class WhipClient: ClientBase {
             let videoTrack = WhipClient.peerConnectionFactory.videoTrack(with: videoSource, trackId: videoTrackId)
             videoTrack.isEnabled = true
 
-            startCapture()
-
             self.videoTrack = videoTrack
         }
 
@@ -247,13 +243,11 @@ public class WhipClient: ClientBase {
             let audioTrack = WhipClient.peerConnectionFactory.audioTrack(with: audioSource, trackId: audioTrackId)
 
             self.audioTrack = audioTrack
-
         }
 
     }
 
-    private func startCapture() {
-        let videoDevice = configOptions.videoDevice
+    public func startCapture(_ videoDevice: AVCaptureDevice) {
         let videoParameters = configOptions.videoParameters
 
         let (format, fps) = setVideoSize(
@@ -391,4 +385,85 @@ public class WhipClient: ClientBase {
             }
         }
     }
+
+    // MARK: - Screen Sharing
+
+    /**
+     Starts screen sharing mode.
+    
+     This method:
+     - Stops camera capture
+     - Creates a new video source for screen sharing
+     - Starts IPC server listening for frames from the broadcast extension
+     - Shows the system broadcast picker for the user to select the extension
+    
+     This should be called during initialization, not during an active stream.
+     */
+    public func startScreenShare() throws {
+        guard let screenShareExtensionBundleId = Bundle.main.infoDictionary?["ScreenShareExtensionBundleId"] as? String
+        else {
+            throw ScreenSharingError.NoExtension(
+                description:
+                    "No screen share extension bundle id set. Please set ScreenShareExtensionBundleId in Info.plist")
+        }
+
+        let appGroup =
+            Bundle.main.object(forInfoDictionaryKey: "AppGroupName") as? String
+            ?? "group.com.swmansion.mobilewhepclient"
+
+        videoCapturer?.stopCapture()
+
+        let videoSource = WhipClient.peerConnectionFactory.videoSource(forScreenCast: true)
+        self.videoSource = videoSource
+
+        broadcastScreenShareReceiver = BroadcastScreenShareReceiver(
+            onStart: { [weak self] in
+                self?.logger.info("Screen broadcast started")
+            },
+            onStop: { [weak self] in
+                self?.logger.info("Screen broadcast stopped")
+            }
+        )
+
+        broadcastScreenShareCapturer = BroadcastScreenShareCapturer(
+            videoSource,
+            appGroup: appGroup,
+            videoParameters: .presetFHD169,
+            delegate: broadcastScreenShareReceiver
+        )
+
+        broadcastScreenShareCapturer?.startListening()
+        isScreenShareOn = true
+
+        let videoTrackId = UUID().uuidString
+        let videoTrack = WhipClient.peerConnectionFactory.videoTrack(with: videoSource, trackId: videoTrackId)
+        videoTrack.isEnabled = true
+        self.videoTrack = videoTrack
+
+        logger.info("Screen sharing initialized, showing broadcast picker")
+
+        DispatchQueue.main.async {
+            RPSystemBroadcastPickerView.show(for: screenShareExtensionBundleId)
+        }
+    }
 }
+
+let log = OSLog(subsystem: "com.mobilewhpwhep.client", category: "ErrorHandling")
+
+#if os(iOS)
+    @available(iOS 12, *)
+    extension RPSystemBroadcastPickerView {
+        public static func show(
+            for preferredExtension: String? = nil, showsMicrophoneButton: Bool = false
+        ) {
+            let view = RPSystemBroadcastPickerView()
+            view.preferredExtension = preferredExtension
+            view.showsMicrophoneButton = showsMicrophoneButton
+
+            let selector = NSSelectorFromString("buttonPressed:")
+            if view.responds(to: selector) {
+                view.perform(selector, with: nil)
+            }
+        }
+    }
+#endif
