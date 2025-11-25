@@ -24,7 +24,6 @@ class ReactNativeMobileWhipClientViewModule : Module() {
     private const val SCREENSHARE_REQUEST_CODE = 1001
   }
 
-  private var pendingScreenShareView: ReactNativeMobileWhipClientView? = null
   private lateinit var foregroundServiceManager: ForegroundServiceManager
 
   class ConfigurationOptions : Record {
@@ -111,24 +110,21 @@ class ReactNativeMobileWhipClientViewModule : Module() {
 
       OnActivityResult { _, result ->
         if (result.requestCode == SCREENSHARE_REQUEST_CODE) {
-          val view = pendingScreenShareView
-          if (view != null && result.resultCode == Activity.RESULT_OK && result.data != null) {
-            view.mediaProjectionIntent = result.data
-
+          if (result.resultCode == Activity.RESULT_OK && result.data != null) {
             CoroutineScope(Dispatchers.Main).launch {
               try {
                 foregroundServiceManager.updateService { screenSharingEnabled = true }
                 foregroundServiceManager.start()
-
-                view.startScreenShare()
-                pendingScreenShareView = null
+                ReactNativeMobileWhipClientView.handleScreenPermissionGranted(
+                  result.data!!
+                )
               } catch (e: Exception) {
                 android.util.Log.e("WhipWhepModule", "Failed to start screen share", e)
-                pendingScreenShareView = null
+                e.printStackTrace()
               }
             }
           } else {
-            pendingScreenShareView = null
+            android.util.Log.d("WhipWhepModule", "Permission denied or no data. resultCode: ${result.resultCode}, data: ${result.data}")
             emit(WhipEmitableEvent.screenSharingPermissionDenied())
           }
         }
@@ -210,8 +206,7 @@ class ReactNativeMobileWhipClientViewModule : Module() {
             emit(WhipEmitableEvent.whipPeerConnectionStateChanged(it))
           }
 
-          // Store view reference for later use in OnActivityResult
-          pendingScreenShareView = view
+          view.prepareForScreenSharePermissionRequest()
 
           val currentActivity = appContext.currentActivity ?: throw IllegalStateException("Activity not available")
           val mediaProjectionManager = context.getSystemService(AppCompatActivity.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
