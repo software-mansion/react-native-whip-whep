@@ -170,10 +170,7 @@ export type WhipClientViewRef = {
    *          the foreground service. The user must grant permission via system dialog.
    */
   initializeScreenShare: (
-    options: Omit<
-      WhipConfigurationOptions,
-      "videoDeviceId" | "videoParameters"
-    >,
+    options: WhipConfigurationOptions
   ) => Promise<void>;
   connect: (options: {
     serverUrl: string;
