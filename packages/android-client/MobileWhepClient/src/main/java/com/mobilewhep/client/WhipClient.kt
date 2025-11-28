@@ -219,7 +219,7 @@ class WhipClient(
           screenCapturer == null ||
           (configOptions.audioEnabled && audioTrack == null)
         ) {
-          Log.w(CLIENT_TAG, "Screen sharing setup incomplete during connect./nAudio track: $audioTrack,/nVideo track: $videoTrack")
+          Log.w(CLIENT_TAG, "Screen sharing setup incomplete during connect.\nAudio track: $audioTrack,\nVideo track: $videoTrack")
           throw SessionNetworkError.ConfigurationError(
             "Failed to connect: screen sharing setup not complete. Check if permissions were granted."
           )
