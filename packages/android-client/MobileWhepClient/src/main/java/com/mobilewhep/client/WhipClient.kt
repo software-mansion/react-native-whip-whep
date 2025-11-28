@@ -4,7 +4,10 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.res.Configuration
+import android.util.DisplayMetrics
 import android.util.Log
+import android.view.WindowManager
 import androidx.core.content.ContextCompat
 import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -36,6 +39,7 @@ import java.net.URL
 import java.util.UUID
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+import kotlin.math.roundToInt
 
 data class WhipConfigurationOptions(
   val audioEnabled: Boolean = true,
@@ -429,13 +433,16 @@ class WhipClient(
 
     screenCapturer.initialize(surfaceTextureHelper, appContext, videoSource.capturerObserver)
 
+    val screenDimensions = getScreenDimensions()
+    val targetDimensions = downscaleResolution(screenDimensions, configOptions.videoParameters.dimensions)
+
     try {
       screenCapturer.startCapture(
-        configOptions.videoParameters.dimensions.width,
-        configOptions.videoParameters.dimensions.height,
+        targetDimensions.width,
+        targetDimensions.height,
         configOptions.videoParameters.maxFps
       )
-      Log.d(CLIENT_TAG, "Screen capture started")
+      Log.d(CLIENT_TAG, "Screen capture started with dimensions ${targetDimensions.width}x${targetDimensions.height}")
     } catch (e: Exception) {
       Log.e(CLIENT_TAG, "Failed to start screen capture: ${e.message}", e)
       throw CaptureDeviceError.VideoSizeNotSupported(
@@ -572,6 +579,32 @@ class WhipClient(
       )
 
     return size
+  }
+
+  private fun getScreenDimensions(): Dimensions {
+    val windowManager = appContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    val displayMetrics = DisplayMetrics()
+    windowManager.defaultDisplay.getRealMetrics(displayMetrics)
+    
+    return Dimensions(width = displayMetrics.widthPixels, height = displayMetrics.heightPixels)
+  }
+
+  private fun downscaleResolution(from: Dimensions, to: Dimensions): Dimensions {
+    return when {
+      from.height > to.height -> {
+        val ratio = from.height.toFloat() / from.width.toFloat()
+        val newHeight = to.height
+        val newWidth = (newHeight.toFloat() / ratio).roundToInt()
+        Dimensions(width = newWidth, height = newHeight)
+      }
+      from.width > to.width -> {
+        val ratio = from.height.toFloat() / from.width.toFloat()
+        val newWidth = to.width
+        val newHeight = (newWidth.toFloat() * ratio).roundToInt()
+        Dimensions(width = newWidth, height = newHeight)
+      }
+      else -> from
+    }
   }
 
   private fun hasPermissions(
