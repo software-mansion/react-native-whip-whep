@@ -585,12 +585,15 @@ class WhipClient(
     val windowManager = appContext.getSystemService(Context.WINDOW_SERVICE) as WindowManager
     val displayMetrics = DisplayMetrics()
     windowManager.defaultDisplay.getRealMetrics(displayMetrics)
-    
+
     return Dimensions(width = displayMetrics.widthPixels, height = displayMetrics.heightPixels)
   }
 
-  private fun downscaleResolution(from: Dimensions, to: Dimensions): Dimensions {
-    return when {
+  private fun downscaleResolution(
+    from: Dimensions,
+    to: Dimensions
+  ): Dimensions =
+    when {
       from.height > to.height -> {
         val ratio = from.height.toFloat() / from.width.toFloat()
         val newHeight = to.height
@@ -605,7 +608,6 @@ class WhipClient(
       }
       else -> from
     }
-  }
 
   private fun hasPermissions(
     context: Context,
