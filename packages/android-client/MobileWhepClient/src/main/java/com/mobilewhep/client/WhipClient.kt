@@ -45,7 +45,7 @@ data class WhipConfigurationOptions(
   val videoDevice: String? = null,
   val preferredVideoCodecs: List<String>,
   val preferredAudioCodecs: List<String>,
-  val skipInitialSetup: Boolean = false
+  val isScreenSharingMode: Boolean = false
 )
 
 class WhipClient(
@@ -65,10 +65,12 @@ class WhipClient(
 
   public var currentCameraDeviceId: String? = null
   private val peerConnectionFactory = PeerConnectionFactoryHelper.getWhipFactory(appContext, eglBase)
-  private var isScreenSharing: Boolean = false
+  private var isSharingScreen: Boolean = false
+  private val isScreenSharingMode: Boolean
 
   init {
-    if (!configOptions.skipInitialSetup) {
+    isScreenSharingMode = configOptions.isScreenSharingMode
+    if (!isScreenSharingMode) {
       setUpVideoAndAudioDevices()
     }
   }
@@ -84,13 +86,13 @@ class WhipClient(
 
     Log.d(
       CLIENT_TAG,
-      "Setting up peer connection - videoTrack: ${videoTrack != null}, audioTrack: ${audioTrack != null}, isScreenSharing: $isScreenSharing"
+      "Setting up peer connection - videoTrack: ${videoTrack != null}, audioTrack: ${audioTrack != null}, isSharingScreen: $isSharingScreen"
     )
 
     if (videoEnabled && videoTrack != null) {
       val transceiverInit = RtpTransceiver.RtpTransceiverInit(direction)
       val transceiver = peerConnection?.addTransceiver(videoTrack, transceiverInit)
-      Log.d(CLIENT_TAG, "Added video transceiver for ${if (isScreenSharing) "screen share" else "camera"}")
+      Log.d(CLIENT_TAG, "Added video transceiver for ${if (isScreenSharingMode) "screen share" else "camera"}")
       setCodecPreferencesIfAvailable(
         transceiver,
         configOptions.preferredVideoCodecs,
@@ -212,13 +214,18 @@ class WhipClient(
     try {
       super.connect(connectOptions)
 
-      if (videoTrack == null ||
-        (configOptions.audioEnabled && audioTrack == null) ||
-        (!isScreenSharing && videoCapturer == null)
-      ) {
-        if (isScreenSharing) {
-          Log.w(CLIENT_TAG, "Screen sharing setup incomplete during connect")
-        } else {
+      if (isScreenSharingMode) {
+        if (videoTrack == null ||
+          screenCapturer == null ||
+          (configOptions.audioEnabled && audioTrack == null)) {
+          Log.w(CLIENT_TAG, "Screen sharing setup incomplete during connect./nAudio track: $audioTrack,/nVideo track: $videoTrack")
+          throw SessionNetworkError.ConfigurationError("Failed to connect: screen sharing setup not complete. Check if permissions were granted.")
+        }
+      } else {
+        if (videoTrack == null ||
+          videoCapturer == null ||
+          (configOptions.audioEnabled && audioTrack == null)
+        ) {
           setUpVideoAndAudioDevices()
         }
       }
@@ -227,7 +234,7 @@ class WhipClient(
         setupPeerConnection()
       }
       val requiredPermissions =
-        if (isScreenSharing) {
+        if (isScreenSharingMode) {
           if (configOptions.audioEnabled) {
             arrayOf(Manifest.permission.RECORD_AUDIO)
           } else {
@@ -238,7 +245,7 @@ class WhipClient(
         }
 
       if (requiredPermissions.isNotEmpty() && !hasPermissions(appContext, requiredPermissions)) {
-        val permissionType = if (isScreenSharing) "audio recording" else "camera and audio recording"
+        val permissionType = if (isScreenSharingMode) "audio recording" else "camera and audio recording"
         throw PermissionError.PermissionsNotGrantedError(
           "Permissions for $permissionType have not been granted. Please check your application settings."
         )
@@ -246,7 +253,7 @@ class WhipClient(
 
       val constraints = MediaConstraints()
       peerConnection?.let {
-        Log.d(CLIENT_TAG, "Creating SDP offer for ${if (isScreenSharing) "screen share" else "camera"}")
+        Log.d(CLIENT_TAG, "Creating SDP offer for ${if (isScreenSharingMode) "screen share" else "camera"}")
         val sdpOffer = it.createOffer(constraints).getOrThrow()
         it.setLocalDescription(sdpOffer).getOrThrow()
         val sdp = sendSdpOffer(sdpOffer.description)
@@ -272,7 +279,7 @@ class WhipClient(
   }
 
   fun stopScreenShare() {
-    if (!isScreenSharing) {
+    if (!isSharingScreen) {
       Log.w(CLIENT_TAG, "Screen sharing is not active")
       return
     }
@@ -282,7 +289,7 @@ class WhipClient(
     cleanupScreenCapturer()
     cleanupVideoTrack()
 
-    isScreenSharing = false
+    isSharingScreen = false
 
     Log.d(CLIENT_TAG, "Screen share stopped")
   }
@@ -296,7 +303,7 @@ class WhipClient(
    *
    */
   suspend fun disconnect() {
-    if (isScreenSharing) {
+    if (isSharingScreen) {
       stopScreenShare()
     }
     cleanupPeerConnection()
@@ -354,7 +361,7 @@ class WhipClient(
   }
 
   fun switchCamera(deviceId: String) {
-    if (isScreenSharing) {
+    if (isSharingScreen) {
       Log.w(CLIENT_TAG, "Cannot switch camera while screen sharing")
       return
     }
@@ -396,7 +403,7 @@ class WhipClient(
   fun startScreenShare(mediaProjectionIntent: Intent) {
     Log.d(CLIENT_TAG, "Starting screen share with MediaProjection")
 
-    isScreenSharing = true
+    isSharingScreen = true
 
     cleanupVideoCapturer()
     cleanupVideoTrack()
@@ -408,7 +415,7 @@ class WhipClient(
           override fun onStop() {
             super.onStop()
             Log.d(CLIENT_TAG, "Screen capture stopped")
-            isScreenSharing = false
+            isSharingScreen = false
           }
         }
       )

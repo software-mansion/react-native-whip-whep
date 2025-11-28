@@ -194,7 +194,7 @@ class ReactNativeMobileWhipClientViewModule : Module() {
               videoDevice = null,
               preferredAudioCodecs = configurationOptions?.preferredAudioCodecs ?: listOf(),
               preferredVideoCodecs = configurationOptions?.preferredVideoCodecs ?: listOf(),
-              skipInitialSetup = true
+              isScreenSharingMode = true
             )
 
           if (options.audioEnabled && !PermissionUtils.hasMicrophonePermission(appContext)) {
