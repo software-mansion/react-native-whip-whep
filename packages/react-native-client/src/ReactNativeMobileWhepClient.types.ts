@@ -169,9 +169,7 @@ export type WhipClientViewRef = {
    * Android: Creates the WHIP client, requests MediaProjection permission, and starts
    *          the foreground service. The user must grant permission via system dialog.
    */
-  initializeScreenShare: (
-    options: WhipConfigurationOptions
-  ) => Promise<void>;
+  initializeScreenShare: (options: WhipConfigurationOptions) => Promise<void>;
   connect: (options: {
     serverUrl: string;
     authToken?: string;
