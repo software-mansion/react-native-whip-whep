@@ -459,14 +459,10 @@ open class ClientBase(
         val videoTrack = receiver?.track() as? VideoTrack?
         this@ClientBase.videoTrack = videoTrack
         listeners.forEach { listener -> videoTrack?.let { listener.onTrackAdded(it) } }
+        onTrackAdded?.let { it() }
       } catch (e: Exception) {
         Log.e(CLIENT_TAG, "Error in onAddTrack: ${e.message}", e)
       }
-    }
-    try {
-      onTrackAdded?.let { it() }
-    } catch (e: Exception) {
-      Log.e(CLIENT_TAG, "Error in onTrackAdded callback: ${e.message}", e)
     }
   }
 
