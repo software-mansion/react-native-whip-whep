@@ -349,18 +349,19 @@ class WhipClient(
             call: Call,
             e: IOException
           ) {
-            val errorMessage = when {
-              e is ConnectException -> {
-                "DELETE Failed, network error. Check if the server is up and running and the token and the server url is correct."
+            val errorMessage =
+              when {
+                e is ConnectException -> {
+                  "DELETE Failed, network error. Check if the server is up and running and the token and the server url is correct."
+                }
+                e is java.io.EOFException || e.message?.contains("unexpected end of stream") == true -> {
+                  "Server closed connection unexpectedly during disconnect. The WHIP server may have already terminated the session or crashed."
+                }
+                else -> {
+                  "Failed to disconnect: ${e.message}"
+                }
               }
-              e is java.io.EOFException || e.message?.contains("unexpected end of stream") == true -> {
-                "Server closed connection unexpectedly during disconnect. The WHIP server may have already terminated the session or crashed."
-              }
-              else -> {
-                "Failed to disconnect: ${e.message}"
-              }
-            }
-            
+
             Log.e(CLIENT_TAG, "Disconnect failed: $errorMessage", e)
             continuation.resumeWithException(
               SessionNetworkError.ConnectionError(errorMessage)

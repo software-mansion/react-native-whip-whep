@@ -141,18 +141,19 @@ open class ClientBase(
             call: Call,
             e: IOException
           ) {
-            val errorMessage = when {
-              e is ConnectException -> {
-                "Network error. Check if the server is up and running and the token and the server url is correct."
+            val errorMessage =
+              when {
+                e is ConnectException -> {
+                  "Network error. Check if the server is up and running and the token and the server url is correct."
+                }
+                e is java.io.EOFException || e.message?.contains("unexpected end of stream") == true -> {
+                  "Server closed connection unexpectedly. The WHIP/WHEP server at ${connectOptions!!.serverUrl} may be down, crashed, or not responding correctly. Please check server logs and ensure it's running properly."
+                }
+                else -> {
+                  "Failed to send SDP offer: ${e.message}. Check server connectivity and configuration."
+                }
               }
-              e is java.io.EOFException || e.message?.contains("unexpected end of stream") == true -> {
-                "Server closed connection unexpectedly. The WHIP/WHEP server at ${connectOptions!!.serverUrl} may be down, crashed, or not responding correctly. Please check server logs and ensure it's running properly."
-              }
-              else -> {
-                "Failed to send SDP offer: ${e.message}. Check server connectivity and configuration."
-              }
-            }
-            
+
             Log.e(CLIENT_TAG, "SDP Offer failed: $errorMessage", e)
             continuation.resumeWithException(
               SessionNetworkError.ConnectionError(errorMessage)
@@ -250,15 +251,16 @@ open class ClientBase(
             call: Call,
             e: IOException
           ) {
-            val errorMessage = when {
-              e is java.io.EOFException || e.message?.contains("unexpected end of stream") == true -> {
-                "Server closed connection unexpectedly while sending ICE candidate. The WHIP/WHEP server may have crashed or is not responding correctly."
+            val errorMessage =
+              when {
+                e is java.io.EOFException || e.message?.contains("unexpected end of stream") == true -> {
+                  "Server closed connection unexpectedly while sending ICE candidate. The WHIP/WHEP server may have crashed or is not responding correctly."
+                }
+                else -> {
+                  "Failed to send ICE candidate: ${e.message}"
+                }
               }
-              else -> {
-                "Failed to send ICE candidate: ${e.message}"
-              }
-            }
-            
+
             Log.e(CLIENT_TAG, "ICE Candidate sending failed: $errorMessage", e)
             continuation.resumeWithException(
               SessionNetworkError.CandidateSendingError(errorMessage)
@@ -275,7 +277,9 @@ open class ClientBase(
               // as the connection can still work without Trickle ICE support.
               if (!it.isSuccessful && it.code != 501 && it.code != 405 && it.code != 400) {
                 continuation.resumeWithException(
-                  SessionNetworkError.CandidateSendingError("Candidate sending error - response was not successful. Status code: ${it.code}")
+                  SessionNetworkError.CandidateSendingError(
+                    "Candidate sending error - response was not successful. Status code: ${it.code}"
+                  )
                 )
                 return
               }
