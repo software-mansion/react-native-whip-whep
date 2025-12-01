@@ -428,7 +428,7 @@ public class WhipClient: ClientBase {
         broadcastScreenShareCapturer = BroadcastScreenShareCapturer(
             videoSource,
             appGroup: appGroup,
-            videoParameters: .presetFHD169,
+            videoParameters: configOptions.videoParameters,
             delegate: broadcastScreenShareReceiver
         )
 

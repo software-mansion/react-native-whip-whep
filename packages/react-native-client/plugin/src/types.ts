@@ -1,6 +1,7 @@
 export type WhipWhepPluginOptions =
   | {
       android?: {
+        enableScreensharing?: boolean;
         supportsPictureInPicture?: boolean;
       };
       ios?: {

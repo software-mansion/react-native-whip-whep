@@ -200,14 +200,12 @@ export default function WhipScreen() {
                   color={tint}
                   disabled={isLoading}
                 />
-                {Platform.OS === 'ios' && (
-                  <Button
-                    title="Screen Share"
-                    onPress={initializeScreenShare}
-                    color={tint}
-                    disabled={isLoading}
-                  />
-                )}
+                <Button
+                  title="Screen Share"
+                  onPress={initializeScreenShare}
+                  color={tint}
+                  disabled={isLoading}
+                />
               </View>
             </View>
           )}
