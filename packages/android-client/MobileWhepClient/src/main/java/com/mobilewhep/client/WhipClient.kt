@@ -226,10 +226,16 @@ class WhipClient(
     } catch (e: PermissionError.PermissionsNotGrantedError) {
       cleanupPeerConnection()
       throw e
+    } catch (e: SessionNetworkError) {
+      cleanupPeerConnection()
+      throw e
+    } catch (e: AttributeNotFoundError) {
+      cleanupPeerConnection()
+      throw e
     } catch (e: Exception) {
       Log.e(CLIENT_TAG, "Failed to connect: ${e.message}", e)
       cleanupPeerConnection()
-      throw SessionNetworkError.ConnectionError("Connection failed: ${e.message}")
+      throw SessionNetworkError.ConnectionError("Connection failed: ${e.message ?: "Unknown error"}")
     }
   }
 
@@ -343,17 +349,22 @@ class WhipClient(
             call: Call,
             e: IOException
           ) {
-            if (e is ConnectException) {
-              continuation.resumeWithException(
-                SessionNetworkError.ConnectionError(
-                  "DELETE Failed, network error. Check if the server is up and running and the token and the server url is correct."
-                )
-              )
-            } else {
-              Log.e(CLIENT_TAG, e.toString())
-              continuation.resumeWithException(e)
-              e.printStackTrace()
+            val errorMessage = when {
+              e is ConnectException -> {
+                "DELETE Failed, network error. Check if the server is up and running and the token and the server url is correct."
+              }
+              e is java.io.EOFException || e.message?.contains("unexpected end of stream") == true -> {
+                "Server closed connection unexpectedly during disconnect. The WHIP server may have already terminated the session or crashed."
+              }
+              else -> {
+                "Failed to disconnect: ${e.message}"
+              }
             }
+            
+            Log.e(CLIENT_TAG, "Disconnect failed: $errorMessage", e)
+            continuation.resumeWithException(
+              SessionNetworkError.ConnectionError(errorMessage)
+            )
           }
 
           override fun onResponse(
@@ -364,7 +375,7 @@ class WhipClient(
               if (!response.isSuccessful) {
                 val exception =
                   AttributeNotFoundError.ResponseNotFound(
-                    "DELETE Failed, invalid response. Check if the server is up and running and the token and the server url is correct."
+                    "DELETE Failed, invalid response. Status code: ${response.code}. Check if the server is up and running and the token and the server url is correct."
                   )
                 continuation.resumeWithException(exception)
               } else {
