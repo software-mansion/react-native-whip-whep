@@ -44,6 +44,7 @@
             "iphoneDeploymentTarget": "15.1"
           },
           "android": {
+            "enableScreensharing": true,
             "supportsPictureInPicture": true
           }
         }

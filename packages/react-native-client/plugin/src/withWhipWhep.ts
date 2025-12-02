@@ -1,16 +1,13 @@
-import {
-  AndroidConfig,
-  ConfigPlugin,
-  withAndroidManifest,
-} from "@expo/config-plugins";
+import { ConfigPlugin } from "@expo/config-plugins";
 import { WhipWhepPluginOptions } from './types';
 import withWhipWhepIos from './withWhipWhepIos';
+import { withWhipWhepAndroid } from './withWhipWhepAndroid';
 
 /**
  * Main WHIP/WHEP Expo config plugin.
  * 
  * This plugin configures both iOS and Android platforms for:
- * - Screen sharing (iOS only for now)
+ * - Screen sharing (iOS and Android)
  * - Picture-in-Picture support
  * 
  * Usage in app.json/app.config.js:
@@ -25,6 +22,7 @@ import withWhipWhepIos from './withWhipWhepIos';
  *           "appGroupContainerId": "group.com.example.myapp" // optional
  *         },
  *         "android": {
+ *           "enableScreensharing": true,
  *           "supportsPictureInPicture": true
  *         }
  *       }
@@ -37,19 +35,8 @@ const withWhipWhep: ConfigPlugin<WhipWhepPluginOptions> = (
   options,
 ) => {
   config = withWhipWhepIos(config, options);
-
-  config = withAndroidManifest(config, (configuration) => {
-    const activity = AndroidConfig.Manifest.getMainActivityOrThrow(
-      configuration.modResults,
-    );
-
-    if (options?.android?.supportsPictureInPicture) {
-      activity.$["android:supportsPictureInPicture"] = "true";
-    } else {
-      delete activity.$["android:supportsPictureInPicture"];
-    }
-    return configuration;
-  });
+  
+  config = withWhipWhepAndroid(config, options);
 
   return config;
 };

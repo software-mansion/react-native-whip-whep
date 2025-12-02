@@ -1,6 +1,7 @@
 package com.swmansion.reactnativeclient
 
 import android.content.Context
+import android.content.Intent
 import com.mobilewhep.client.ClientBaseListener
 import com.mobilewhep.client.ClientConnectOptions
 import com.mobilewhep.client.VideoView
@@ -23,11 +24,53 @@ class ReactNativeMobileWhipClientView(
   private var videoView: VideoView? = null
 
   private var whipClient: WhipClient? = null
+  var mediaProjectionIntent: Intent? = null
+
+  companion object {
+    private var screenSharingPermissionHandler: (suspend (Intent) -> Unit)? = null
+
+    suspend fun handleScreenPermissionGranted(
+      intent: Intent
+    ) {
+      if (screenSharingPermissionHandler == null) {
+        android.util.Log.e("WhipView", "ERROR: screenSharingPermissionHandler is null!")
+      } else {
+        screenSharingPermissionHandler?.invoke(intent)
+      }
+      screenSharingPermissionHandler = null
+    }
+  }
+
+  private suspend fun handleScreenPermissionGranted(
+      intent: Intent
+    ) {
+      startScreenShare(intent)
+    }
 
   fun createWhipClient(appContext: Context, configurationOptions: WhipConfigurationOptions, onConnectionStatusChange: (PeerConnection.PeerConnectionState) -> Unit) {
     whipClient = WhipClient(context, configurationOptions)
     whipClient?.addTrackListener(this)
     whipClient?.onConnectionStateChanged = onConnectionStatusChange
+  }
+
+  fun prepareForScreenSharePermissionRequest() {
+    if (whipClient == null) {
+      android.util.Log.e("WhipView", "WHIP client is null in prepareForScreenSharePermissionRequest!")
+      throw IllegalStateException("WHIP client not found. Make sure it was initialized properly.")
+    }
+
+    ReactNativeMobileWhipClientView.screenSharingPermissionHandler = { intent ->
+      handleScreenPermissionGranted(intent)
+    }
+  }
+
+  private fun startScreenShare(mediaProjectionIntent: Intent) {
+    if (whipClient == null) {
+      android.util.Log.e("WhipView", "WHIP client is null!")
+      throw IllegalStateException("WHIP client not found. Make sure it was initialized properly.")
+    }
+
+    whipClient?.startScreenShare(mediaProjectionIntent)
   }
 
   suspend fun connect(options: ConnectionOptions) {

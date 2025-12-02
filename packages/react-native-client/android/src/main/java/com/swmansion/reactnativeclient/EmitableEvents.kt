@@ -64,6 +64,7 @@ class WhipEmitableEvent private constructor(
 ) {
   enum class EventName {
     Warning,
+    ScreenSharingPermissionDenied,
     WhipPeerConnectionStateChanged,
   }
 
@@ -75,7 +76,7 @@ class WhipEmitableEvent private constructor(
 
   companion object {
     fun warning(message: String) = WhipEmitableEvent(EventName.Warning, message).toEmitableEvent()
-
+    fun screenSharingPermissionDenied() = WhipEmitableEvent(EventName.ScreenSharingPermissionDenied, "User denied screen sharing permissions").toEmitableEvent()
     fun whipPeerConnectionStateChanged(status: PeerConnection.PeerConnectionState) = WhipEmitableEvent(EventName.WhipPeerConnectionStateChanged, status.stringValue()).toEmitableEvent()
 
     val allEvents: Array<String>

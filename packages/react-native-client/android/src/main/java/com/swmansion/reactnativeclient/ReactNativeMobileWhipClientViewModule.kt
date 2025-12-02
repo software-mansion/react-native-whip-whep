@@ -1,25 +1,30 @@
 package com.swmansion.reactnativeclient
 
+import android.app.Activity
 import android.content.Context
-import com.mobilewhep.client.ClientBaseListener
-import com.mobilewhep.client.ClientConnectOptions
+import android.media.projection.MediaProjectionManager
+import androidx.appcompat.app.AppCompatActivity
 import com.mobilewhep.client.VideoParameters
 import com.mobilewhep.client.WhipClient
 import com.mobilewhep.client.WhipConfigurationOptions
-import com.mobilewhep.client.utils.PeerConnectionFactoryHelper
+import com.swmansion.reactnativeclient.foregroundService.ForegroundServiceManager
 import com.swmansion.reactnativeclient.helpers.PermissionUtils
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.webrtc.EglBase
-import org.webrtc.MediaStreamTrack
-import org.webrtc.VideoTrack
 
 class ReactNativeMobileWhipClientViewModule : Module() {
+  companion object {
+    private const val SCREENSHARE_REQUEST_CODE = 1001
+  }
+
+  private lateinit var foregroundServiceManager: ForegroundServiceManager
 
   class ConfigurationOptions : Record {
     @Field
@@ -95,6 +100,36 @@ class ReactNativeMobileWhipClientViewModule : Module() {
     ModuleDefinition {
       Name("ReactNativeMobileWhipClientViewModule")
 
+      OnCreate {
+        foregroundServiceManager = ForegroundServiceManager(appContext)
+      }
+
+      OnDestroy {
+        foregroundServiceManager.stop()
+      }
+
+      OnActivityResult { _, result ->
+        if (result.requestCode == SCREENSHARE_REQUEST_CODE) {
+          if (result.resultCode == Activity.RESULT_OK && result.data != null) {
+            CoroutineScope(Dispatchers.Main).launch {
+              try {
+                foregroundServiceManager.updateService { screenSharingEnabled = true }
+                foregroundServiceManager.start()
+                ReactNativeMobileWhipClientView.handleScreenPermissionGranted(
+                  result.data!!
+                )
+              } catch (e: Exception) {
+                android.util.Log.e("WhipWhepModule", "Failed to start screen share", e)
+                e.printStackTrace()
+              }
+            }
+          } else {
+            android.util.Log.d("WhipWhepModule", "Permission denied or no data. resultCode: ${result.resultCode}, data: ${result.data}")
+            emit(WhipEmitableEvent.screenSharingPermissionDenied())
+          }
+        }
+      }
+
       Events(WhipEmitableEvent.allEvents)
 
       Property("cameras") {
@@ -137,6 +172,46 @@ class ReactNativeMobileWhipClientViewModule : Module() {
           view.createWhipClient(context, options) {
             emit(WhipEmitableEvent.whipPeerConnectionStateChanged(it))
           }
+        }
+
+        AsyncFunction("initializeScreenShare") { view: ReactNativeMobileWhipClientView, configurationOptions: ConfigurationOptions? ->
+          val context: Context =
+            appContext.reactContext ?: throw IllegalStateException("React context is not available")
+
+          val parsedVideoParameters: VideoParameters =
+            if (configurationOptions?.videoParameters != null) {
+              getVideoParametersFromOptions(configurationOptions.videoParameters)
+            } else {
+              VideoParameters.presetHD169
+            }
+
+          val options =
+            WhipConfigurationOptions(
+              stunServerUrl = configurationOptions?.stunServerUrl,
+              audioEnabled = configurationOptions?.audioEnabled ?: true,
+              videoEnabled = true,
+              videoParameters = parsedVideoParameters,
+              videoDevice = null,
+              preferredAudioCodecs = configurationOptions?.preferredAudioCodecs ?: listOf(),
+              preferredVideoCodecs = configurationOptions?.preferredVideoCodecs ?: listOf(),
+              isScreenSharingMode = true
+            )
+
+          if (options.audioEnabled && !PermissionUtils.hasMicrophonePermission(appContext)) {
+            emit(WhipEmitableEvent.warning("Microphone permission not granted. Cannot initialize WhipClient."))
+            return@AsyncFunction
+          }
+
+          view.createWhipClient(context, options) {
+            emit(WhipEmitableEvent.whipPeerConnectionStateChanged(it))
+          }
+
+          view.prepareForScreenSharePermissionRequest()
+
+          val currentActivity = appContext.currentActivity ?: throw IllegalStateException("Activity not available")
+          val mediaProjectionManager = context.getSystemService(AppCompatActivity.MEDIA_PROJECTION_SERVICE) as MediaProjectionManager
+          val intent = mediaProjectionManager.createScreenCaptureIntent()
+          currentActivity.startActivityForResult(intent, SCREENSHARE_REQUEST_CODE)
         }
 
         AsyncFunction("connect") Coroutine { view: ReactNativeMobileWhipClientView, options: ConnectionOptions ->
