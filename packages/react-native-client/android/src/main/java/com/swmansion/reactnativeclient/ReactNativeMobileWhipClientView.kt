@@ -2,6 +2,7 @@ package com.swmansion.reactnativeclient
 
 import android.content.Context
 import android.content.Intent
+import android.view.View
 import com.mobilewhep.client.ClientBaseListener
 import com.mobilewhep.client.ClientConnectOptions
 import com.mobilewhep.client.VideoView
@@ -152,10 +153,12 @@ class ReactNativeMobileWhipClientView(
     videoView!!.post {
       // If VideoView has no dimensions, use parent dimensions
       if (videoView!!.width == 0 || videoView!!.height == 0) {
-        val parentWidth = this@ReactNativeMobileWhipClientView.width
-        val parentHeight = this@ReactNativeMobileWhipClientView.height
-        if (parentWidth > 0 && parentHeight > 0) {
-          videoView!!.layout(0, 0, parentWidth, parentHeight)
+        if (width > 0 && height > 0) {
+          videoView!!.measure(
+            View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY)
+          )
+          videoView!!.layout(0, 0, width, height)
         }
       }
 
@@ -197,6 +200,8 @@ class ReactNativeMobileWhipClientView(
     super.onDetachedFromWindow()
     CoroutineScope(Dispatchers.IO).launch {
       whipClient?.cleanup()
+      videoView?.release()
+      videoView = null
     }
   }
 }
