@@ -100,10 +100,9 @@ class ReactNativeMobileWhepClientView(
     videoView!!.post {
       // If VideoView has no dimensions, use parent dimensions
       if (videoView!!.width == 0 || videoView!!.height == 0) {
-        val parentWidth = this@ReactNativeMobileWhepClientView.width
-        val parentHeight = this@ReactNativeMobileWhepClientView.height
-        if (parentWidth > 0 && parentHeight > 0) {
-          videoView!!.layout(0, 0, parentWidth, parentHeight)
+        if (width > 0 && height > 0) {
+          videoView!!.measure(measuredWidth, measuredHeight)
+          videoView!!.layout(0, 0, width, height)
         }
       }
 
