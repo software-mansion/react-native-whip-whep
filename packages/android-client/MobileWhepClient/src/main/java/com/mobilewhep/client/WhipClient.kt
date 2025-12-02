@@ -32,6 +32,7 @@ import org.webrtc.Size
 import org.webrtc.SurfaceTextureHelper
 import org.webrtc.VideoSource
 import org.webrtc.VideoTrack
+import java.io.EOFException
 import java.io.IOException
 import java.net.ConnectException
 import java.net.URI
@@ -529,7 +530,7 @@ class WhipClient(
                 e is ConnectException -> {
                   "DELETE Failed, network error. Check if the server is up and running and the token and the server url is correct."
                 }
-                e is java.io.EOFException || e.message?.contains("unexpected end of stream") == true -> {
+                e is EOFException || e.message?.contains("unexpected end of stream") == true -> {
                   "Server closed connection unexpectedly during disconnect. The WHIP server may have already terminated the session or crashed."
                 }
                 else -> {
