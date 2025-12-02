@@ -2,6 +2,7 @@ package com.swmansion.reactnativeclient
 
 import android.content.Context
 import android.content.Intent
+import android.view.View
 import com.mobilewhep.client.ClientBaseListener
 import com.mobilewhep.client.ClientConnectOptions
 import com.mobilewhep.client.VideoView
@@ -153,7 +154,10 @@ class ReactNativeMobileWhipClientView(
       // If VideoView has no dimensions, use parent dimensions
       if (videoView!!.width == 0 || videoView!!.height == 0) {
         if (width > 0 && height > 0) {
-          videoView!!.measure(measuredWidth, measuredHeight)
+          videoView!!.measure(
+            View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY)
+          )
           videoView!!.layout(0, 0, width, height)
         }
       }

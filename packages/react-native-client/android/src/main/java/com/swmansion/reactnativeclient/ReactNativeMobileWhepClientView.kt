@@ -101,7 +101,10 @@ class ReactNativeMobileWhepClientView(
       // If VideoView has no dimensions, use parent dimensions
       if (videoView!!.width == 0 || videoView!!.height == 0) {
         if (width > 0 && height > 0) {
-          videoView!!.measure(measuredWidth, measuredHeight)
+          videoView!!.measure(
+            View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY),
+            View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY)
+          )
           videoView!!.layout(0, 0, width, height)
         }
       }
@@ -167,17 +170,11 @@ class ReactNativeMobileWhepClientView(
   override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
 
-    videoView?.let { view ->
-      whepClient?.videoTrack?.removeSink(view)
-      removeView(view)
-      view.release()
-    }
-    videoView = null
-
-    val client = whepClient
-    whepClient = null
     CoroutineScope(Dispatchers.IO).launch {
-      client?.cleanup()
+      whepClient?.cleanup()
+      videoView?.release()
+      videoView = null
+      whepClient = null
     }
 
     (currentActivity as? FragmentActivity)?.let {
