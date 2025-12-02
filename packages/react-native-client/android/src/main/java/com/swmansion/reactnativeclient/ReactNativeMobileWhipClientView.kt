@@ -196,6 +196,8 @@ class ReactNativeMobileWhipClientView(
     super.onDetachedFromWindow()
     CoroutineScope(Dispatchers.IO).launch {
       whipClient?.cleanup()
+      videoView?.release()
+      videoView = null
     }
   }
 }

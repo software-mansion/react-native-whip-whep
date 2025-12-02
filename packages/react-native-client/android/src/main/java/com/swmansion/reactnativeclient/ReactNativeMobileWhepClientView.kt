@@ -170,6 +170,7 @@ class ReactNativeMobileWhepClientView(
     videoView?.let { view ->
       whepClient?.videoTrack?.removeSink(view)
       removeView(view)
+      view.release()
     }
     videoView = null
 
