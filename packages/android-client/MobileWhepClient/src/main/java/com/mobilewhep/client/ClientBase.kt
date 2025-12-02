@@ -26,6 +26,7 @@ import org.webrtc.RtpReceiver
 import org.webrtc.RtpTransceiver
 import org.webrtc.VideoTrack
 import org.webrtc.audio.AudioDeviceModule
+import java.io.EOFException
 import java.io.IOException
 import java.net.ConnectException
 import java.net.URI
@@ -146,7 +147,7 @@ open class ClientBase(
                 e is ConnectException -> {
                   "Network error. Check if the server is up and running and the token and the server url is correct."
                 }
-                e is java.io.EOFException || e.message?.contains("unexpected end of stream") == true -> {
+                e is EOFException || e.message?.contains("unexpected end of stream") == true -> {
                   "Server closed connection unexpectedly. The WHIP/WHEP server at ${connectOptions!!.serverUrl} may be down, crashed, or not responding correctly. Please check server logs and ensure it's running properly."
                 }
                 else -> {
@@ -253,7 +254,7 @@ open class ClientBase(
           ) {
             val errorMessage =
               when {
-                e is java.io.EOFException || e.message?.contains("unexpected end of stream") == true -> {
+                e is EOFException || e.message?.contains("unexpected end of stream") == true -> {
                   "Server closed connection unexpectedly while sending ICE candidate. The WHIP/WHEP server may have crashed or is not responding correctly."
                 }
                 else -> {
