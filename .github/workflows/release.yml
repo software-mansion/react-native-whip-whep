@@ -12,8 +12,10 @@ jobs:
       - name: Deploy to Cocoapods
         run: |
           set -eo pipefail
-          pod lib lint --allow-warnings
-          pod trunk push --allow-warnings
+          pod lib lint MobileWhipWhepClient.podspec --allow-warnings
+          pod lib lint MobileWhipWhepBroadcastClient.podspec --allow-warnings
+          pod trunk push MobileWhipWhepClient.podspec --allow-warnings
+          pod trunk push MobileWhipWhepBroadcastClient.podspec --allow-warnings
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
   publish-react-native-client:

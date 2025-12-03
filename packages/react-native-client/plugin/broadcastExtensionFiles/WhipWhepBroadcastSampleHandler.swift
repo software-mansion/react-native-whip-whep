@@ -1,5 +1,5 @@
 import Foundation
-import MobileWhipWhepClient
+import MobileWhipWhepBroadcastClient
 import ReplayKit
 import WebRTC
 import os.log

@@ -26,8 +26,8 @@ function getSbeTargetName(props: WhipWhepPluginOptions) {
  */
 export function getSbePodfileSnippet(props: WhipWhepPluginOptions) {
   const targetName = getSbeTargetName(props);
-  // The extension needs access to WebRTC for handling video frames via the MobileWhipWhepClient/Broadcast subspec
-  return `\ntarget '${targetName}' do\n  pod 'MobileWhipWhepClient/Broadcast', :path => '../../../../'\nend`;
+  // The extension needs access to WebRTC for handling video frames via the MobileWhipWhepBroadcastClient
+  return `\ntarget '${targetName}' do\n  pod 'MobileWhipWhepBroadcastClient', :path => '../../../../'\nend`;
 }
 
 const TARGETED_DEVICE_FAMILY = `"1,2"`; // 1=iPhone, 2=iPad
