@@ -9,7 +9,6 @@ base_config = {
   deployment_target: base_content[/s\.ios\.deployment_target\s*=\s*['"]([^'"]+)['"]/, 1],
   swift_version: base_content[/s\.swift_version\s*=\s*['"]([^'"]+)['"]/, 1],
   version: base_content[/s\.version\s*=\s*['"]([^'"]+)['"]/, 1],
-  resources: base_content[/s\.resources\s*=\s*['"]([^'"]+)['"]/, 1],
   xcconfig_key: base_content[/s\.pod_target_xcconfig\s*=\s*\{\s*['"]([^'"]+)['"]/, 1],
   xcconfig_value: base_content[/s\.pod_target_xcconfig\s*=\s*\{[^}]*['"][^'"]*['"]\s*=>\s*['"]([^'"]+)['"]/, 1],
   webrtc_version: base_content[/s\.dependency\s+['"]WebRTC-SDK['"]\s*,\s*['"]([^'"]+)['"]/, 1],
@@ -33,7 +32,6 @@ Pod::Spec.new do |s|
     'packages/ios-client/Sources/ios-client/Media/BroadcastSampleSource.swift',
     'packages/ios-client/Sources/ios-client/ipc/**/*'
   ]
-  s.resources = base_config[:resources]
 
   s.pod_target_xcconfig = { base_config[:xcconfig_key] => base_config[:xcconfig_value] }
 
