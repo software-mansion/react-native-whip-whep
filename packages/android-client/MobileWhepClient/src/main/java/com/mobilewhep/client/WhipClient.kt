@@ -288,7 +288,7 @@ class WhipClient(
     } catch (e: Exception) {
       Log.e(CLIENT_TAG, "Failed to connect: ${e.message}", e)
       cleanupPeerConnection()
-      throw SessionNetworkError.ConnectionError("Connection failed: ${e.message ?: "Unknown error"}")
+      throw SessionNetworkError.ConnectionError("Connection failed: ${e.message ?: e.javaClass.simpleName}")
     }
   }
 

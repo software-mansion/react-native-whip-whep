@@ -148,7 +148,7 @@ open class ClientBase(
                   "Network error. Check if the server is up and running and the token and the server url is correct."
                 }
                 e is EOFException || e.message?.contains("unexpected end of stream") == true -> {
-                  "Server closed connection unexpectedly. The WHIP/WHEP server at ${connectOptions!!.serverUrl} may be down, crashed, or not responding correctly. Please check server logs and ensure it's running properly."
+                  "Server closed connection unexpectedly. The WHIP/WHEP server at ${connectOptions?.serverUrl ?: "unknown URL"} may be down, crashed, or not responding correctly. Please check server logs and ensure it's running properly."
                 }
                 else -> {
                   "Failed to send SDP offer: ${e.message}. Check server connectivity and configuration."
@@ -400,7 +400,7 @@ open class ClientBase(
         try {
           sendCandidate(candidate)
         } catch (e: Exception) {
-          Log.w(CLIENT_TAG, "Failed to send ICE candidate: ${e.message}. Connection may still work.", e)
+          Log.w(CLIENT_TAG, "Failed to send ICE candidate: ${e.message ?: e.javaClass.simpleName}. Connection may still work.", e)
         }
       }
     }
@@ -462,7 +462,7 @@ open class ClientBase(
         listeners.forEach { listener -> videoTrack?.let { listener.onTrackAdded(it) } }
         onTrackAdded?.let { it() }
       } catch (e: Exception) {
-        Log.e(CLIENT_TAG, "Error in onAddTrack: ${e.message}", e)
+        Log.e(CLIENT_TAG, "Error in onAddTrack: ${e.message ?: e.javaClass.simpleName}", e)
       }
     }
   }
