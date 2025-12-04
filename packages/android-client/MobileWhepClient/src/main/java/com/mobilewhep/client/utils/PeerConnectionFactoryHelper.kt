@@ -49,7 +49,10 @@ class PeerConnectionFactoryHelper private constructor() {
       eglBase: EglBase
     ): PeerConnectionFactory {
       PeerConnectionFactory.initialize(
-        PeerConnectionFactory.InitializationOptions.builder(appContext).createInitializationOptions()
+        PeerConnectionFactory.InitializationOptions.builder(appContext)
+          .setFieldTrials("WebRTC-Network-UseNWPathMonitor/Disabled/")
+          .setEnableInternalTracer(false)
+          .createInitializationOptions()
       )
 
       val audioAttributes: AudioAttributes =
