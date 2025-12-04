@@ -68,6 +68,10 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
       Events(WhepEmitableEvent.allEvents)
 
       View(ReactNativeMobileWhepClientView::class) {
+        OnViewDestroys { view: ReactNativeMobileWhepClientView ->
+          view.cleanup()
+        }
+
         Prop("pipEnabled") { view: ReactNativeMobileWhepClientView, pipEnabled: Boolean ->
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             view.setPictureInPictureEnabled(pipEnabled)

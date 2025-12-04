@@ -169,21 +169,32 @@ class ReactNativeMobileWhepClientView(
 
   override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
-
-    CoroutineScope(Dispatchers.IO).launch {
-      whepClient?.cleanup()
-      videoView?.release()
-      videoView = null
-      whepClient = null
-    }
+    Log.d("ReactNativeMobileWhepClientView", "onDetachedFromWindow called for whep view")
 
     (currentActivity as? FragmentActivity)?.let {
       val fragment = it.supportFragmentManager.findFragmentByTag(pictureInPictureHelperTag ?: "")
-        ?: return
+        ?: return@let
       it.supportFragmentManager.beginTransaction()
         .remove(fragment)
         .commitAllowingStateLoss()
     }
+  }
+
+  fun cleanup() {
+    Log.d("ReactNativeMobileWhepClientView", "cleanup called")
+
+    whepClient?.videoTrack?.let { track ->
+      videoView?.let { view ->
+        track.removeSink(view)
+      }
+    }
+
+    whepClient?.cleanup()
+    videoView?.release()
+    videoView = null
+    whepClient = null
+
+    Log.d("ReactNativeMobileWhepClientView", "cleanup completed")
   }
 
   fun layoutForPiPEnter() {

@@ -325,6 +325,10 @@ class WhipClient(
 
   private fun cleanupPeerConnection() {
     peerConnection?.close()
+
+    // Wait for all WebRTC threads to fully stop
+    Thread.sleep(250)
+
     peerConnection?.dispose()
     peerConnection = null
   }

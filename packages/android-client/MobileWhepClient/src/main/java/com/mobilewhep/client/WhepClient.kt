@@ -123,16 +123,21 @@ class WhepClient(
    */
   fun disconnect() {
     pause()
-    CoroutineScope(Dispatchers.IO).launch {
-      delay(100) // we need to give RTC time to process setting isEnabled to false
-      peerConnection?.close()
-      peerConnection?.dispose()
-      peerConnection = null
-      patchEndpoint = null
-      iceCandidates.clear()
-      videoTrack = null
-      audioTrack = null
-    }
+
+    // Give RTC time to process setting isEnabled to false
+    Thread.sleep(100)
+
+    peerConnection?.close()
+
+    // Wait for all WebRTC threads to fully stop
+    Thread.sleep(250)
+
+    peerConnection?.dispose()
+    peerConnection = null
+    patchEndpoint = null
+    iceCandidates.clear()
+    videoTrack = null
+    audioTrack = null
   }
 
   public fun pause() {
