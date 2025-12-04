@@ -49,7 +49,8 @@ class PeerConnectionFactoryHelper private constructor() {
       eglBase: EglBase
     ): PeerConnectionFactory {
       PeerConnectionFactory.initialize(
-        PeerConnectionFactory.InitializationOptions.builder(appContext)
+        PeerConnectionFactory.InitializationOptions
+          .builder(appContext)
           .setFieldTrials("WebRTC-Network-UseNWPathMonitor/Disabled/")
           .setEnableInternalTracer(false)
           .createInitializationOptions()
