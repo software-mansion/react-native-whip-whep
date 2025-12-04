@@ -79,12 +79,34 @@ const withLocalPathsForNativePackages = (config) => {
       return `${match}\n${podToAdd}`;
     });
 
+    podfile = replaceCloudClientForExtension(podfile, 'WhipWhepScreenBroadcastExtension');
+
     config.modResults.contents = podfile;
     console.log('\x1b[32m✔\x1b[0m MobileWhipWhepClient added.');
     return config;
   });
 
   return config;
+};
+
+const replaceCloudClientForExtension = (
+  podfileContent,
+  extensionTargetName
+) => {
+  const extTargetName =
+    extensionTargetName || 'WhipWhepScreenBroadcastExtension';
+  const podToReplace = "pod 'MobileWhipWhepBroadcastClient'";
+  const replacementPod = `pod 'MobileWhipWhepBroadcastClient', :path => '../../../../'`;
+
+  const targetRegex = new RegExp(
+    `target '${extTargetName}' do[\\s\\S]*?${podToReplace}[\\s\\S]*?end`,
+    'g',
+  );
+
+  podfileContent = podfileContent.replace(targetRegex, (match) =>
+    match.replace(podToReplace, replacementPod),
+  );
+  return podfileContent;
 };
 
 module.exports = createRunOncePlugin(
