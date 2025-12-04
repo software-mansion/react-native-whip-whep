@@ -137,6 +137,10 @@ class ReactNativeMobileWhipClientViewModule : Module() {
       }
 
       View(ReactNativeMobileWhipClientView::class) {
+        OnViewDestroys { view: ReactNativeMobileWhipClientView ->
+          view.cleanup()
+        }
+
         AsyncFunction("initializeCamera") { view: ReactNativeMobileWhipClientView, configurationOptions: ConfigurationOptions?, videoDeviceId: String? ->
           val context: Context =
             appContext.reactContext ?: throw IllegalStateException("React context is not available")

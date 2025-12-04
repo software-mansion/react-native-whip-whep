@@ -198,10 +198,21 @@ class ReactNativeMobileWhipClientView(
 
   override fun onDetachedFromWindow() {
     super.onDetachedFromWindow()
-    CoroutineScope(Dispatchers.IO).launch {
-      whipClient?.cleanup()
-      videoView?.release()
-      videoView = null
+    android.util.Log.d("ReactNativeMobileWhipClientView", "onDetachedFromWindow called")
+  }
+  fun cleanup() {
+    android.util.Log.d("ReactNativeMobileWhipClientView", "cleanup called")
+    whipClient?.videoTrack?.let { track ->
+      videoView?.let { view ->
+        track.removeSink(view)
+      }
     }
+
+    whipClient?.cleanup()
+    videoView?.release()
+    videoView = null
+    whipClient = null
+
+    android.util.Log.d("ReactNativeMobileWhipClientView", "cleanup completed")
   }
 }
