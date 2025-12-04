@@ -96,8 +96,7 @@ const replaceCloudClientForExtension = (
   podfileContent,
   extensionTargetName,
 ) => {
-  const extTargetName =
-    extensionTargetName || 'WhipWhepScreenBroadcastExtension';
+  const extTargetName = extensionTargetName;
   const podToReplace = "pod 'MobileWhipWhepBroadcastClient'";
   const replacementPod = `pod 'MobileWhipWhepBroadcastClient', :path => '../../../../'`;
 
