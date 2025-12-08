@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.webrtc.MediaConstraints
 import org.webrtc.MediaStreamTrack
 import org.webrtc.PeerConnection
@@ -121,17 +122,11 @@ class WhepClient(
    *  or in any other case where there has been an error in creating the peerConnection
    *
    */
-  fun disconnect() {
-    pause()
-    CoroutineScope(Dispatchers.IO).launch {
+  suspend fun disconnect() {
+    withContext(Dispatchers.IO) {
+      pause()
       delay(100) // we need to give RTC time to process setting isEnabled to false
       peerConnection?.close()
-      peerConnection?.dispose()
-      peerConnection = null
-      patchEndpoint = null
-      iceCandidates.clear()
-      videoTrack = null
-      audioTrack = null
     }
   }
 
@@ -145,12 +140,21 @@ class WhepClient(
     this.videoTrack?.setEnabled(true)
   }
 
-  public fun cleanup() {
+  public suspend fun cleanup() {
     disconnect()
     removeReconnectionListeners()
     removeTrackListeners()
+    peerConnection?.dispose()
+
+    iceCandidates.clear()
+
     cleanupEglBase()
     cleanupFactory()
+
+    peerConnection = null
+    patchEndpoint = null
+    videoTrack = null
+    audioTrack = null
   }
 
   protected fun cleanupFactory() {
