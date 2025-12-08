@@ -15,6 +15,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.webrtc.PeerConnection
 import org.webrtc.VideoTrack
@@ -68,6 +69,12 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
       Events(WhepEmitableEvent.allEvents)
 
       View(ReactNativeMobileWhepClientView::class) {
+        OnViewDestroys { view: ReactNativeMobileWhepClientView ->
+          runBlocking {
+            view.cleanup()
+          }
+        }
+
         Prop("pipEnabled") { view: ReactNativeMobileWhepClientView, pipEnabled: Boolean ->
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             view.setPictureInPictureEnabled(pipEnabled)
@@ -102,7 +109,7 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
           view.connect(options)
         }
 
-        AsyncFunction("disconnect") { view: ReactNativeMobileWhepClientView ->
+        AsyncFunction("disconnect") Coroutine { view: ReactNativeMobileWhepClientView ->
           view.disconnect()
         }
 

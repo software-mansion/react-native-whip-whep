@@ -58,7 +58,7 @@ class ReactNativeMobileWhepClientView(
     }
   }
 
-  fun disconnect()  {
+  suspend fun disconnect()  {
     whepClient?.disconnect()
   }
 
@@ -167,16 +167,15 @@ class ReactNativeMobileWhepClientView(
     }
   }
 
-  override fun onDetachedFromWindow() {
-    super.onDetachedFromWindow()
-
-    CoroutineScope(Dispatchers.IO).launch {
+  suspend fun cleanup() {
       whepClient?.cleanup()
       videoView?.release()
       videoView = null
       whepClient = null
-    }
+  }
 
+  override fun onDetachedFromWindow() {
+    super.onDetachedFromWindow()
     (currentActivity as? FragmentActivity)?.let {
       val fragment = it.supportFragmentManager.findFragmentByTag(pictureInPictureHelperTag ?: "")
         ?: return
