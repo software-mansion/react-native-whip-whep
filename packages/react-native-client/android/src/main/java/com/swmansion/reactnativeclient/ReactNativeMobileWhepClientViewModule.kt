@@ -17,6 +17,7 @@ import expo.modules.kotlin.records.Record
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import org.webrtc.PeerConnection
 import org.webrtc.VideoTrack
@@ -71,7 +72,7 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
 
       View(ReactNativeMobileWhepClientView::class) {
         OnViewDestroys  { view: ReactNativeMobileWhepClientView ->
-          CoroutineScope(Dispatchers.IO).launch {
+          runBlocking {
             view.cleanup()
           }
         }
