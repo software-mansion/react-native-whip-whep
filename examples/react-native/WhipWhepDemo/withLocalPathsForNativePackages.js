@@ -96,12 +96,11 @@ const replacePodWithLocalPathForExtension = (
   podfileContent,
   extensionTargetName,
 ) => {
-  const extTargetName = extensionTargetName;
   const podToReplace = "pod 'MobileWhipWhepBroadcastClient'";
   const replacementPod = `pod 'MobileWhipWhepBroadcastClient', :path => '../../../../'`;
 
   const targetRegex = new RegExp(
-    `target '${extTargetName}' do[\\s\\S]*?${podToReplace}[\\s\\S]*?end`,
+    `target '${extensionTargetName}' do[\\s\\S]*?${podToReplace}[\\s\\S]*?end`,
     'g',
   );
 
