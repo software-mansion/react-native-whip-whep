@@ -127,6 +127,7 @@ class WhepClient(
       pause()
       delay(100) // we need to give RTC time to process setting isEnabled to false
       peerConnection?.close()
+      peerConnection = null
     }
   }
 
