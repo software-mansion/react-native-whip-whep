@@ -79,7 +79,7 @@ const withLocalPathsForNativePackages = (config) => {
       return `${match}\n${podToAdd}`;
     });
 
-    podfile = replaceCloudClientForExtension(
+    podfile = replacePodWithLocalPathForExtension(
       podfile,
       'WhipWhepScreenBroadcastExtension',
     );
@@ -92,12 +92,11 @@ const withLocalPathsForNativePackages = (config) => {
   return config;
 };
 
-const replaceCloudClientForExtension = (
+const replacePodWithLocalPathForExtension = (
   podfileContent,
   extensionTargetName,
 ) => {
-  const extTargetName =
-    extensionTargetName || 'WhipWhepScreenBroadcastExtension';
+  const extTargetName = extensionTargetName;
   const podToReplace = "pod 'MobileWhipWhepBroadcastClient'";
   const replacementPod = `pod 'MobileWhipWhepBroadcastClient', :path => '../../../../'`;
 
