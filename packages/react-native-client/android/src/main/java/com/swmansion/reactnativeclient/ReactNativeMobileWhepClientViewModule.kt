@@ -71,7 +71,7 @@ class ReactNativeMobileWhepClientViewModule : Module(), ReconnectionManagerListe
       Events(WhepEmitableEvent.allEvents)
 
       View(ReactNativeMobileWhepClientView::class) {
-        OnViewDestroys  { view: ReactNativeMobileWhepClientView ->
+        OnViewDestroys { view: ReactNativeMobileWhepClientView ->
           runBlocking {
             view.cleanup()
           }
