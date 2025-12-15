@@ -2,6 +2,11 @@ name: Publish Package to CocoaPods
 on:
   release:
     types: [published]
+
+permissions:
+  id-token: write  # Required for OIDC
+  contents: read
+
 jobs:
   publish-pod:
     runs-on: macOS-latest
@@ -33,5 +38,3 @@ jobs:
       - run: yarn prepare:package
       - run: yarn npm publish --access public
         working-directory: packages/react-native-client
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
