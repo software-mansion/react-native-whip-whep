@@ -52,6 +52,9 @@
     "react": "*",
     "react-native": "*"
   },
+  "publishConfig": {
+    "provenance": true
+  },
   "files": [
     "build/**",
     "plugin/**",
