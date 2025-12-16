@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'MobileWhipWhepClient'
-  s.version          = '0.7.0'
+  s.version          = '0.7.1'
   s.summary          = 'WHIP/WHEP SDK for iOS.'
 
   s.homepage         = 'https://github.com/software-mansion/react-native-whip-whep/'
