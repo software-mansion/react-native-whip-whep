@@ -12,7 +12,8 @@ base_config = {
   xcconfig_key: base_content[/s\.pod_target_xcconfig\s*=\s*\{\s*['"]([^'"]+)['"]/, 1],
   xcconfig_value: base_content[/s\.pod_target_xcconfig\s*=\s*\{[^}]*['"][^'"]*['"]\s*=>\s*['"]([^'"]+)['"]/, 1],
   webrtc_version: base_content[/s\.dependency\s+['"]WebRTC-SDK['"]\s*,\s*['"]([^'"]+)['"]/, 1],
-  swift_protobuf_version: base_content[/s\.dependency\s+['"]SwiftProtobuf['"]\s*,\s*['"]([^'"]+)['"]/, 1]
+  swift_protobuf_version: base_content[/s\.dependency\s+['"]SwiftProtobuf['"]\s*,\s*['"]([^'"]+)['"]/, 1],
+  source: base_content[/s\.source\s*=\s*\{[^}]*:git\s*=>\s*['"]([^'"]+)['"]/, 1]
 }
 
 Pod::Spec.new do |s|
@@ -23,7 +24,7 @@ Pod::Spec.new do |s|
   s.homepage         = base_config[:homepage]
   s.license          = { :type => base_config[:license_type], :file => base_config[:license_file] }
   s.author           = { base_config[:author_name] => base_config[:author_url] }
-  s.source           = { :git => base_config[:homepage] + '.git', :tag => s.version.to_s }
+  s.source           = { :git => base_config[:source], :tag => s.version.to_s }
 
   s.ios.deployment_target = base_config[:deployment_target]
   s.swift_version = base_config[:swift_version]
