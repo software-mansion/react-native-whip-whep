@@ -43,9 +43,9 @@
   "devDependencies": {
     "@types/promise-fs": "^2.1.2",
     "@types/react": "~19.1.10",
-    "expo-module-scripts": "~4.0.5",
-    "typedoc": "^0.28.2",
-    "typescript": "^5.8.3"
+    "expo-module-scripts": "~5.0.8",
+    "typedoc": "^0.28.15",
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "expo": "*",
