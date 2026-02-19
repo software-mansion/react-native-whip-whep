@@ -14,7 +14,7 @@
     "expo-module": "expo-module",
     "open:ios": "xed example/ios",
     "open:android": "open -a \"Android Studio\" example/android",
-    "docs": "typedoc"
+    "docs": "typedoc && node scripts/inject-gtm.js"
   },
   "keywords": [
     "react-native",
