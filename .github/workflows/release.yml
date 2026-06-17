@@ -35,6 +35,5 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - run: yarn
       - run: yarn prepare:package
-      - run: npm -v
-      - run: npm publish --access public --provenance
+      - run: yarn npm publish --access public --provenance
         working-directory: packages/react-native-client
