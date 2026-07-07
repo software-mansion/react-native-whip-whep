@@ -23,7 +23,7 @@
     "expo-camera": "~17.0.8",
     "expo-constants": "~18.0.9",
     "expo-font": "~14.0.9",
-    "expo-keep-awake": "~15.0.7",
+    "expo-keep-awake": "~57.0.0",
     "expo-linking": "~8.0.11",
     "expo-router": "~6.0.12",
     "expo-splash-screen": "~31.0.10",

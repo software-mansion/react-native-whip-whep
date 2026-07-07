@@ -8148,6 +8148,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"expo-keep-awake@npm:~57.0.0":
+  version: 57.0.0
+  resolution: "expo-keep-awake@npm:57.0.0"
+  peerDependencies:
+    expo: "*"
+    react: "*"
+  checksum: 10c0/d02bd9f75b74dde9a4ed42b2ecc5b3947f54135bb1f01461d442e9fc06dc96d995b4ae74bcab1fbe21931ee9d0ec2f9b364bc4a045ebbf729ade0b88c3f6bf5f
+  languageName: node
+  linkType: hard
+
 "expo-linking@npm:~8.0.11":
   version: 8.0.11
   resolution: "expo-linking@npm:8.0.11"
@@ -15190,7 +15200,7 @@ __metadata:
     expo-camera: "npm:~17.0.8"
     expo-constants: "npm:~18.0.9"
     expo-font: "npm:~14.0.9"
-    expo-keep-awake: "npm:~15.0.7"
+    expo-keep-awake: "npm:~57.0.0"
     expo-linking: "npm:~8.0.11"
     expo-router: "npm:~6.0.12"
     expo-splash-screen: "npm:~31.0.10"
