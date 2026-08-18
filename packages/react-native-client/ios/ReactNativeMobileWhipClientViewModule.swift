@@ -126,6 +126,14 @@ public class ReactNativeMobileWhipClientViewModule: Module {
                 try await view.disconnect()
             }
 
+            AsyncFunction("setAudioEnabled") { (view: ReactNativeMobileWhipClientView, enabled: Bool) in
+                try view.setAudioEnabled(enabled)
+            }
+
+            AsyncFunction("setVideoEnabled") { (view: ReactNativeMobileWhipClientView, enabled: Bool) in
+                try view.setVideoEnabled(enabled)
+            }
+
             AsyncFunction("setPreferredSenderVideoCodecs") {
                 (view: ReactNativeMobileWhipClientView, preferredCodecs: [String]?) in
                 view.setPreferredVideoCodecs(preferredCodecs: preferredCodecs)

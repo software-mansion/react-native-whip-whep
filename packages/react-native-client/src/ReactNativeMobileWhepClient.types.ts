@@ -175,6 +175,8 @@ export type WhipClientViewRef = {
     authToken?: string;
   }) => Promise<void>;
   disconnect: () => Promise<void>;
+  setAudioEnabled: (enabled: boolean) => Promise<void>;
+  setVideoEnabled: (enabled: boolean) => Promise<void>;
   switchCamera: (deviceId: string) => Promise<void>;
   flipCamera: () => Promise<void>;
   setPreferredSenderVideoCodecs: (

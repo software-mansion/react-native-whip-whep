@@ -224,6 +224,14 @@ class ReactNativeMobileWhipClientViewModule : Module() {
           view.disconnect()
         }
 
+        AsyncFunction("setAudioEnabled") { view: ReactNativeMobileWhipClientView, enabled: Boolean ->
+          view.setAudioEnabled(enabled)
+        }
+
+        AsyncFunction("setVideoEnabled") { view: ReactNativeMobileWhipClientView, enabled: Boolean ->
+          view.setVideoEnabled(enabled)
+        }
+
         AsyncFunction("flipCamera") { view: ReactNativeMobileWhipClientView ->
           view.flipCamera()
         }

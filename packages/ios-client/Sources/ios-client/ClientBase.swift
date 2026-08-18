@@ -63,6 +63,24 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
 
     public var audioTrack: RTCAudioTrack?
 
+    private var audioTrackDesiredEnabled = true
+    private var videoTrackDesiredEnabled = true
+
+    public func setAudioEnabled(_ enabled: Bool) {
+        audioTrackDesiredEnabled = enabled
+        audioTrack?.isEnabled = enabled
+    }
+
+    public func setVideoEnabled(_ enabled: Bool) {
+        videoTrackDesiredEnabled = enabled
+        videoTrack?.isEnabled = enabled
+    }
+
+    func applyDesiredTrackEnabled() {
+        audioTrack?.isEnabled = audioTrackDesiredEnabled
+        videoTrack?.isEnabled = videoTrackDesiredEnabled
+    }
+
     public weak var delegate: PlayerListener?
     public var onConnectionStateChanged: ((RTCPeerConnectionState) -> Void)?
 

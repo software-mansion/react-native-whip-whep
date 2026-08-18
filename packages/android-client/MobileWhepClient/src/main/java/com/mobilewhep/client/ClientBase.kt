@@ -69,6 +69,9 @@ open class ClientBase(
 
   open var videoTrack: VideoTrack? = null
   open var audioTrack: AudioTrack? = null
+
+  private var audioTrackDesiredEnabled: Boolean = true
+  private var videoTrackDesiredEnabled: Boolean = true
   private var listeners = mutableListOf<ClientBaseListener>()
   var onTrackAdded: (() -> Unit)? = null
   var onConnectionStateChanged: ((PeerConnection.PeerConnectionState) -> Unit)? = null
@@ -465,6 +468,21 @@ open class ClientBase(
         Log.e(CLIENT_TAG, "Error in onAddTrack: ${e.message ?: e.javaClass.simpleName}", e)
       }
     }
+  }
+
+  fun setAudioEnabled(enabled: Boolean) {
+    audioTrackDesiredEnabled = enabled
+    audioTrack?.setEnabled(enabled)
+  }
+
+  fun setVideoEnabled(enabled: Boolean) {
+    videoTrackDesiredEnabled = enabled
+    videoTrack?.setEnabled(enabled)
+  }
+
+  protected fun applyDesiredTrackEnabled() {
+    audioTrack?.setEnabled(audioTrackDesiredEnabled)
+    videoTrack?.setEnabled(videoTrackDesiredEnabled)
   }
 
   fun addTrackListener(listener: ClientBaseListener) {

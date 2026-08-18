@@ -245,6 +245,7 @@ public class WhipClient: ClientBase {
             self.audioTrack = audioTrack
         }
 
+        applyDesiredTrackEnabled()
     }
 
     public func startCapture(_ videoDevice: AVCaptureDevice) {
@@ -439,6 +440,8 @@ public class WhipClient: ClientBase {
         let videoTrack = WhipClient.peerConnectionFactory.videoTrack(with: videoSource, trackId: videoTrackId)
         videoTrack.isEnabled = true
         self.videoTrack = videoTrack
+
+        applyDesiredTrackEnabled()
 
         logger.info("Screen sharing initialized, showing broadcast picker")
 

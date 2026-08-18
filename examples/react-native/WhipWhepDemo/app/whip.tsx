@@ -26,6 +26,8 @@ export default function WhipScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
   const [streamMode, setStreamMode] = useState<StreamMode>('selection');
+  const [audioEnabled, setAudioEnabled] = useState(true);
+  const [videoEnabled, setVideoEnabled] = useState(true);
 
   const whipClient = useRef<WhipClientViewRef | null>(null);
 
@@ -149,6 +151,24 @@ export default function WhipScreen() {
     }
   }, []);
 
+  const handleToggleAudio = useCallback(async () => {
+    try {
+      await whipClient.current?.setAudioEnabled(!audioEnabled);
+      setAudioEnabled(!audioEnabled);
+    } catch (error) {
+      console.error('Failed to toggle audio:', error);
+    }
+  }, [audioEnabled]);
+
+  const handleToggleVideo = useCallback(async () => {
+    try {
+      await whipClient.current?.setVideoEnabled(!videoEnabled);
+      setVideoEnabled(!videoEnabled);
+    } catch (error) {
+      console.error('Failed to toggle video:', error);
+    }
+  }, [videoEnabled]);
+
   const handleSetH264VideoCodec = useCallback(async () => {
     if (whipClient.current) {
       try {
@@ -239,6 +259,15 @@ export default function WhipScreen() {
                   <Button title="Flip Camera" onPress={handleFlipCamera} />
                 </>
               )}
+
+              <Button
+                title={audioEnabled ? 'Mute Audio' : 'Unmute Audio'}
+                onPress={handleToggleAudio}
+              />
+              <Button
+                title={videoEnabled ? 'Mute Video' : 'Unmute Video'}
+                onPress={handleToggleVideo}
+              />
 
               {Platform.OS === 'ios' && (
                 <>

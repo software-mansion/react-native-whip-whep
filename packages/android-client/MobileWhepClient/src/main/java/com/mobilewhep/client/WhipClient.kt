@@ -200,6 +200,8 @@ class WhipClient(
       this.audioTrack = audioTrack
     }
 
+    applyDesiredTrackEnabled()
+
     peerConnection?.enforceSendOnlyDirection()
   }
 
@@ -475,6 +477,8 @@ class WhipClient(
       this.audioTrack = audioTrack
       Log.d(CLIENT_TAG, "Audio track created for screen share")
     }
+
+    applyDesiredTrackEnabled()
 
     notifyTrackListeners()
 
