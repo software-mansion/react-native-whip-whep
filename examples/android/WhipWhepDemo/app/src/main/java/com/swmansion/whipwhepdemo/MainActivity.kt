@@ -27,7 +27,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -104,27 +103,9 @@ fun PlayerView(
   modifier: Modifier = Modifier,
   viewModel: MainActivityViewModel
 ) {
-  var whepView: VideoView? =
-    remember {
-      null
-    }
-
-  var whepServerView: VideoView? =
-    remember {
-      null
-    }
-
-  var whipView: VideoView? =
-    remember {
-      null
-    }
-
   DisposableEffect(Unit) {
     onDispose {
       viewModel.disconnect()
-      whepView?.release()
-      whepServerView?.release()
-      whipView?.release()
     }
   }
 
@@ -133,17 +114,21 @@ fun PlayerView(
     val shouldShowPlayBtn by viewModel.shouldShowPlayBtn
     val isLoading by viewModel.isLoading
     Box {
-      AndroidView(
-        factory = { ctx ->
-          VideoView(ctx).apply {
-            player = viewModel.whepBroadcaster
-          }
-        },
-        modifier =
-          Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-      )
+      val client = viewModel.whepBroadcaster
+      if (client != null) {
+        AndroidView(
+          factory = { ctx ->
+            VideoView(ctx, client.eglBase).apply {
+              player = client
+            }
+          },
+          onRelease = { view -> view.release() },
+          modifier =
+            Modifier
+              .fillMaxWidth()
+              .height(200.dp)
+        )
+      }
 
       if (shouldShowPlayBtn) {
         Button(onClick = { viewModel.onBroadcasterPlay() }, modifier = Modifier.align(Alignment.Center)) {
@@ -172,17 +157,21 @@ fun PlayerView(
     val shouldShowPlayBtn by viewModel.shouldShowPlayBtn
     val isLoading by viewModel.isLoading
     Box {
-      AndroidView(
-        factory = { ctx ->
-          VideoView(ctx).apply {
-            player = viewModel.whepClient
-          }
-        },
-        modifier =
-          Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-      )
+      val client = viewModel.whepClient
+      if (client != null) {
+        AndroidView(
+          factory = { ctx ->
+            VideoView(ctx, client.eglBase).apply {
+              player = client
+            }
+          },
+          onRelease = { view -> view.release() },
+          modifier =
+            Modifier
+              .fillMaxWidth()
+              .height(200.dp)
+        )
+      }
 
       if (shouldShowPlayBtn) {
         Button(onClick = { viewModel.onPlay() }, modifier = Modifier.align(Alignment.Center)) {
@@ -215,17 +204,21 @@ fun PlayerView(
       horizontalAlignment = Alignment.CenterHorizontally
     ) {
       val shouldShowStreamBtn by viewModel.shouldShowStreamBtn
-      AndroidView(
-        factory = { ctx ->
-          VideoView(ctx).apply {
-            player = viewModel.whipClient
-          }
-        },
-        modifier =
-          Modifier
-            .fillMaxWidth()
-            .height(200.dp)
-      )
+      val client = viewModel.whipClient
+      if (client != null) {
+        AndroidView(
+          factory = { ctx ->
+            VideoView(ctx, client.eglBase).apply {
+              player = client
+            }
+          },
+          onRelease = { view -> view.release() },
+          modifier =
+            Modifier
+              .fillMaxWidth()
+              .height(200.dp)
+        )
+      }
 
       if (shouldShowStreamBtn) {
         Box(
