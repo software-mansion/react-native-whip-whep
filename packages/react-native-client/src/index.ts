@@ -3,8 +3,8 @@ import { WhipClientView } from "./ReactNativeMobileWhipClientView";
 import { initializeWarningListener } from "./utils/errorListener";
 
 export { WhipClientView, WhepClientView };
-export {
-  VideoParameters,
+export { VideoParameters } from "./ReactNativeMobileWhepClient.types";
+export type {
   ReactNativeMobileWhepClientViewProps,
   ReactNativeMobileWhipClientViewProps,
   WhepClientViewRef,
@@ -21,9 +21,11 @@ export {
 
 export {
   cameras,
+  ReceivableEvents as WhipReceivableEvents,
+} from "./ReactNativeMobileWhipClientViewModule";
+export type {
   Camera,
   CameraFacingDirection,
-  ReceivableEvents as WhipReceivableEvents,
 } from "./ReactNativeMobileWhipClientViewModule";
 
 export { ReceivableEvents as WhepReceivableEvents } from "./ReactNativeMobileWhepClientViewModule";

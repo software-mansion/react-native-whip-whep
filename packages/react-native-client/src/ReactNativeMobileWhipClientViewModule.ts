@@ -1,7 +1,7 @@
 import { requireNativeModule } from "expo-modules-core";
 import type { NativeModule } from "expo-modules-core/types";
 
-import { CameraId } from "./ReactNativeMobileWhepClient.types";
+import type { CameraId } from "./ReactNativeMobileWhepClient.types";
 
 /** Describes whether the camera is front-facing or back-facing. */
 export type CameraFacingDirection = "front" | "back" | "unspecified";
@@ -18,6 +18,7 @@ export type Camera = {
 
 type RNMobileWhipClientViewModule = {
   cameras: readonly Camera[];
+  whipPeerConnectionState: PeerConnectionState | null;
 };
 
 export const ReceivableEvents = {

@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
 
 import ReactNativeMobileWhepClientViewModule, {
-  PeerConnectionState,
+  type PeerConnectionState,
   ReceivableEvents,
 } from "../ReactNativeMobileWhepClientViewModule";
 import ReactNativeMobileWhipClientViewModule, {
   ReceivableEvents as WhipReceivableEvents,
-  PeerConnectionState as WhipPeerConnectionState,
+  type PeerConnectionState as WhipPeerConnectionState,
 } from "../ReactNativeMobileWhipClientViewModule";
 
 /**

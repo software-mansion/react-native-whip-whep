@@ -3,10 +3,10 @@ import * as React from "react";
 
 import {
   PlayerType,
-  ReactNativeMobileWhipClientViewProps,
-  WhipClientViewRef,
-  WhipConfigurationOptions,
-  CameraId,
+  type ReactNativeMobileWhipClientViewProps,
+  type WhipClientViewRef,
+  type WhipConfigurationOptions,
+  type CameraId,
 } from "./ReactNativeMobileWhepClient.types";
 
 const NativeViewBase: React.ComponentType<

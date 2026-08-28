@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { ZodError } from "zod";
 
 import nativeModule, {
-  ReceivableEventPayloads,
+  type ReceivableEventPayloads,
   ReceivableEvents,
 } from "../ReactNativeMobileWhepClientViewModule";
 import { validateNativeEventPayload } from "./eventPayloadValidator";

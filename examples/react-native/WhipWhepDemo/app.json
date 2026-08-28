@@ -47,8 +47,7 @@
           "ios": {
             "enableScreensharing": true,
             "supportsPictureInPicture": true,
-            "appGroupContainerId": "group.com.swmansion.mobilewhepclient",
-            "iphoneDeploymentTarget": "15.1"
+            "appGroupContainerId": "group.com.swmansion.mobilewhepclient"
           },
           "android": {
             "enableScreensharing": true,
@@ -58,7 +57,9 @@
       ],
       "expo-font",
       "expo-web-browser",
-      "expo-audio"
+      "expo-audio",
+      "expo-splash-screen",
+      "expo-status-bar"
     ],
     "experiments": {
       "typedRoutes": true
