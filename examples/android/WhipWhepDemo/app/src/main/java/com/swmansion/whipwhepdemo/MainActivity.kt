@@ -26,6 +26,7 @@ import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -103,9 +104,16 @@ fun PlayerView(
   modifier: Modifier = Modifier,
   viewModel: MainActivityViewModel
 ) {
+  // Clients are owned by the composition: built when a tab becomes visible, released when the
+  // composition goes away. The ViewModel survives a configuration change, the clients do not, so
+  // keying on the tab also rebuilds them after a rotation.
+  LaunchedEffect(viewModel.selectedTabIndex.value) {
+    viewModel.prepareClientForSelectedTab()
+  }
+
   DisposableEffect(Unit) {
     onDispose {
-      viewModel.disconnect()
+      viewModel.releaseClients()
     }
   }
 
@@ -118,11 +126,14 @@ fun PlayerView(
       if (client != null) {
         AndroidView(
           factory = { ctx ->
-            VideoView(ctx, client.eglBase).apply {
-              player = client
-            }
+            VideoView(ctx, client.eglBase)
+              .apply { player = client }
+              .also { viewModel.onVideoViewCreated(it) }
           },
-          onRelease = { view -> view.release() },
+          onRelease = { view ->
+            view.release()
+            viewModel.onVideoViewReleased(view)
+          },
           modifier =
             Modifier
               .fillMaxWidth()
@@ -161,11 +172,14 @@ fun PlayerView(
       if (client != null) {
         AndroidView(
           factory = { ctx ->
-            VideoView(ctx, client.eglBase).apply {
-              player = client
-            }
+            VideoView(ctx, client.eglBase)
+              .apply { player = client }
+              .also { viewModel.onVideoViewCreated(it) }
           },
-          onRelease = { view -> view.release() },
+          onRelease = { view ->
+            view.release()
+            viewModel.onVideoViewReleased(view)
+          },
           modifier =
             Modifier
               .fillMaxWidth()
@@ -208,11 +222,14 @@ fun PlayerView(
       if (client != null) {
         AndroidView(
           factory = { ctx ->
-            VideoView(ctx, client.eglBase).apply {
-              player = client
-            }
+            VideoView(ctx, client.eglBase)
+              .apply { player = client }
+              .also { viewModel.onVideoViewCreated(it) }
           },
-          onRelease = { view -> view.release() },
+          onRelease = { view ->
+            view.release()
+            viewModel.onVideoViewReleased(view)
+          },
           modifier =
             Modifier
               .fillMaxWidth()

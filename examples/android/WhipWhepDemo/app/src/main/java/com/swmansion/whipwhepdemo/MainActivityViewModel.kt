@@ -8,6 +8,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.mobilewhep.client.ClientConnectOptions
+import com.mobilewhep.client.VideoView
 import com.mobilewhep.client.WhepClient
 import com.mobilewhep.client.WhepConfigurationOptions
 import com.mobilewhep.client.WhipClient
@@ -54,21 +55,35 @@ class MainActivityViewModel(
   private var whipConnectOptions: ClientConnectOptions? = null
 
   /**
-   * Tab switches tear down the current client before creating the next one. Serializing them
-   * keeps two rapid taps from interleaving, which could otherwise null out the client that the
-   * finally selected tab needs.
+   * Every create and every teardown goes through this one job chain. Serializing them keeps two
+   * rapid tab taps - or a teardown racing the recreation that follows a configuration change -
+   * from interleaving and nulling out the client the finally selected tab needs.
    */
-  private var tabSwitchJob: Job? = null
+  private var clientJob: Job? = null
 
   /**
-   * Teardown has to outlive [viewModelScope]: the composition is disposed and the ViewModel
+   * The chain has to outlive [viewModelScope]: the composition is disposed and the ViewModel
    * cleared in the same breath when the Activity goes away, so work launched on
    * [viewModelScope] would be cancelled before it released anything.
    */
-  private val teardownScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+  private val clientScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
 
-  init {
-    createWhepBroadcasterClient()
+  /**
+   * The renderer currently attached to the live client. Compose only disposes the `AndroidView`
+   * on a later frame, so [tearDownClients] releases it by hand: `cleanup()` releases the shared
+   * `EglBase`, and a still-attached `SurfaceEglRenderer` would then be holding an EGL surface on
+   * a released context.
+   */
+  private var videoView: VideoView? = null
+
+  fun onVideoViewCreated(view: VideoView) {
+    videoView = view
+  }
+
+  fun onVideoViewReleased(view: VideoView) {
+    if (videoView === view) {
+      videoView = null
+    }
   }
 
   private fun createWhepBroadcasterClient() {
@@ -169,6 +184,10 @@ class MainActivityViewModel(
    * the reference after a bare `disconnect()` leaks all of them and leaves the camera running.
    */
   private suspend fun tearDownClients() {
+    // Idempotent - Compose calls it again from `onRelease` once it gets around to disposing.
+    videoView?.release()
+    videoView = null
+
     whepBroadcaster?.let { client ->
       runCatchingClient("clean up the WHEP broadcaster") { client.cleanup() }
     }
@@ -188,17 +207,28 @@ class MainActivityViewModel(
   }
 
   fun switchTab(tab: Tabs) {
-    // Applied up front so the tab bar follows the tap instead of waiting for the teardown
-    // round-trips (the resource DELETE can 404 or hang, depending on the server).
+    if (selectedTabIndex.value == tab) return
+
+    // Only the tab state is flipped here, so the tab bar follows the tap instead of waiting for
+    // the teardown round-trips (the resource DELETE can 404 or hang, depending on the server).
+    // Swapping the client is left to [prepareClientForSelectedTab], driven by the composition.
     selectedTabIndex.value = tab
     shouldShowPlayBtn.value = true
     shouldShowStreamBtn.value = true
     isLoading.value = false
+  }
 
-    val previousSwitch = tabSwitchJob
-    tabSwitchJob =
-      viewModelScope.launch {
-        previousSwitch?.join()
+  /**
+   * Creating the client is driven by the composition rather than by [switchTab] alone: this
+   * ViewModel outlives the Activity, so after a configuration change the composition comes back
+   * with every client already released and has to ask for a fresh one.
+   */
+  fun prepareClientForSelectedTab() {
+    val tab = selectedTabIndex.value
+    val previous = clientJob
+    clientJob =
+      clientScope.launch {
+        previous?.join()
         tearDownClients()
 
         when (tab) {
@@ -209,12 +239,13 @@ class MainActivityViewModel(
       }
   }
 
-  fun disconnect() {
-    val previousSwitch = tabSwitchJob
-    teardownScope.launch {
-      previousSwitch?.join()
-      tearDownClients()
-    }
+  fun releaseClients() {
+    val previous = clientJob
+    clientJob =
+      clientScope.launch {
+        previous?.join()
+        tearDownClients()
+      }
   }
 
   fun onBroadcasterPlay() {

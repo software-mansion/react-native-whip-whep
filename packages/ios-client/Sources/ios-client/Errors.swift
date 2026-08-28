@@ -1,3 +1,5 @@
+import Foundation
+
 public enum CaptureDeviceError: Error {
     case VideoDeviceNotAvailable(description: String)
     case VideoSizeNotSupported(description: String)
