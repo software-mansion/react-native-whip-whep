@@ -8398,7 +8398,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"expo@npm:^57.0.0":
+"expo@npm:^57.0.18":
   version: 57.0.18
   resolution: "expo@npm:57.0.18"
   dependencies:
@@ -15449,7 +15449,7 @@ __metadata:
     "@types/react": "npm:~19.2.4"
     "@types/react-test-renderer": "npm:^19.1.0"
     babel-preset-expo: "npm:~57.0.0"
-    expo: "npm:^57.0.0"
+    expo: "npm:^57.0.18"
     expo-audio: "npm:~57.0.4"
     expo-camera: "npm:~57.0.4"
     expo-constants: "npm:~57.0.16"

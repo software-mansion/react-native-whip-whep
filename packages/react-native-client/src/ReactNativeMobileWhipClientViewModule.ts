@@ -18,7 +18,10 @@ export type Camera = {
 
 type RNMobileWhipClientViewModule = {
   cameras: readonly Camera[];
-  whipPeerConnectionState: PeerConnectionState | null;
+  // Optional because no native `Property` backs it on either platform yet - the modules only
+  // declare `cameras` - so it reads back as `undefined` at runtime. `useWhipConnectionState`
+  // falls back to "unknown" and then tracks the change events.
+  whipPeerConnectionState?: PeerConnectionState | null;
 };
 
 export const ReceivableEvents = {
