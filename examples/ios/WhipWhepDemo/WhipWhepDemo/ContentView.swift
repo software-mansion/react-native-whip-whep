@@ -92,6 +92,9 @@ final class PlayerModel: ObservableObject {
         isConnecting = true
         message = nil
         connectTask = Task { [weak self] in
+            // Cleared on every path, cancellation included, so the spinner and the disabled
+            // Connect button can never outlive the attempt.
+            defer { self?.isConnecting = false }
             do {
                 try await client.connect(connectOptions)
                 guard !Task.isCancelled else { return }
@@ -100,7 +103,6 @@ final class PlayerModel: ObservableObject {
                 guard !Task.isCancelled else { return }
                 self?.message = "Connection failed: \(error.localizedDescription)"
             }
-            self?.isConnecting = false
         }
     }
 

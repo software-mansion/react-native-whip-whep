@@ -18,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 const val TAG = "WHEP_EXAMPLE"
@@ -246,6 +247,18 @@ class MainActivityViewModel(
         previous?.join()
         tearDownClients()
       }
+  }
+
+  /**
+   * [clientScope] cannot be cancelled outright here - the release it is running is the whole
+   * reason it does not live on [viewModelScope]. Instead make sure a release is queued (the
+   * ViewModel can be cleared without the composition having been disposed first) and let the
+   * scope die once the chain has drained.
+   */
+  override fun onCleared() {
+    super.onCleared()
+    releaseClients()
+    clientJob?.invokeOnCompletion { clientScope.cancel() }
   }
 
   fun onBroadcasterPlay() {
