@@ -1,7 +1,7 @@
 import { requireNativeModule } from "expo-modules-core";
 import type { NativeModule } from "expo-modules-core/types";
 
-import { CameraId } from "./ReactNativeMobileWhepClient.types";
+import type { CameraId } from "./ReactNativeMobileWhepClient.types";
 
 /** Describes whether the camera is front-facing or back-facing. */
 export type CameraFacingDirection = "front" | "back" | "unspecified";
@@ -18,6 +18,10 @@ export type Camera = {
 
 type RNMobileWhipClientViewModule = {
   cameras: readonly Camera[];
+  // Optional because no native `Property` backs it on either platform yet - the modules only
+  // declare `cameras` - so it reads back as `undefined` at runtime. `useWhipConnectionState`
+  // falls back to "unknown" and then tracks the change events.
+  whipPeerConnectionState?: PeerConnectionState | null;
 };
 
 export const ReceivableEvents = {

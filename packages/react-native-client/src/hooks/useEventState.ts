@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
 import {
-  ReceivableEventPayloads,
+  type ReceivableEventPayloads,
   ReceivableEvents,
 } from "../ReactNativeMobileWhepClientViewModule";
 import { useEvent } from "./useEvent";

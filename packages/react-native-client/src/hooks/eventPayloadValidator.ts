@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 import {
-  ReceivableEventPayloads,
+  type ReceivableEventPayloads,
   ReceivableEvents,
 } from "../ReactNativeMobileWhepClientViewModule";
 

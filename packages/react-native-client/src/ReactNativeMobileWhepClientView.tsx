@@ -3,11 +3,11 @@ import * as React from "react";
 
 import {
   PlayerType,
-  ReactNativeMobileWhepClientViewProps,
-  WhepClientViewRef,
-  WhepConfigurationOptions,
-  ReceiverVideoCodecName,
-  ReceiverAudioCodecName,
+  type ReactNativeMobileWhepClientViewProps,
+  type WhepClientViewRef,
+  type WhepConfigurationOptions,
+  type ReceiverVideoCodecName,
+  type ReceiverAudioCodecName,
 } from "./ReactNativeMobileWhepClient.types";
 
 const NativeViewBase: React.ComponentType<

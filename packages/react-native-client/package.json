@@ -42,8 +42,8 @@
   },
   "devDependencies": {
     "@types/promise-fs": "^2.1.2",
-    "@types/react": "~19.1.10",
-    "expo-module-scripts": "~4.0.5",
+    "@types/react": "~19.2.4",
+    "expo-module-scripts": "~56.0.3",
     "typedoc": "^0.28.20",
     "typescript": "^5.8.3"
   },

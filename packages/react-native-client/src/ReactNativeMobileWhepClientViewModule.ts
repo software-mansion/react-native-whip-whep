@@ -27,7 +27,10 @@ export type ReceivableEventPayloads = {
 };
 
 type RNMobileWhepClientViewModule = {
-  whepPeerConnectionState: PeerConnectionState | null;
+  // Optional because no native `Property` backs it on either platform yet, so it reads back as
+  // `undefined` at runtime. `useWhepConnectionState` falls back to "unknown" and then tracks the
+  // change events.
+  whepPeerConnectionState?: PeerConnectionState | null;
 };
 
 const nativeViewModule = requireNativeModule(

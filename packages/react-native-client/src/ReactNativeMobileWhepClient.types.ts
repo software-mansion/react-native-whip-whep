@@ -44,7 +44,7 @@ export type WhepClientViewRef = {
   /**
    * Connects to the WHEP server.
    */
-  connect: (ConnectOptions) => Promise<void>;
+  connect: (options: ConnectOptions) => Promise<void>;
   /**
    * Disconnects from the WHEP server.
    */

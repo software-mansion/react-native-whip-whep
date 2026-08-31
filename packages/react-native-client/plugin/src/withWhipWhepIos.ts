@@ -32,6 +32,22 @@ export function getSbePodfileSnippet(props: WhipWhepPluginOptions) {
 
 const TARGETED_DEVICE_FAMILY = `"1,2"`; // 1=iPhone, 2=iPad
 const IPHONEOS_DEPLOYMENT_TARGET = '15.1'; // Minimum iOS version
+
+/**
+ * Compares two `MAJOR.MINOR[.PATCH]` deployment targets numerically, so that e.g. '16.4' is
+ * correctly ordered above '15.10' (a plain string compare gets that backwards).
+ */
+const isDeploymentTargetLower = (a: string, b: string): boolean => {
+  const parse = (value: string) => value.split('.').map((part) => Number(part) || 0);
+  const [left, right] = [parse(a), parse(b)];
+  for (let i = 0; i < Math.max(left.length, right.length); i++) {
+    const diff = (left[i] ?? 0) - (right[i] ?? 0);
+    if (diff !== 0) {
+      return diff < 0;
+    }
+  }
+  return false;
+};
 const GROUP_IDENTIFIER_TEMPLATE_REGEX = /{{GROUP_IDENTIFIER}}/gm; // Template placeholder for app group
 const BUNDLE_IDENTIFIER_TEMPLATE_REGEX = /{{BUNDLE_IDENTIFIER}}/gm; // Template placeholder for bundle ID
 
@@ -379,8 +395,27 @@ const withWhipWhepIos: ConfigPlugin<WhipWhepPluginOptions> = (config, props) => 
   }
   
   config = withPodfileProperties(config, (configuration) => {
-    configuration.modResults['ios.deploymentTarget'] =
-      props?.ios?.iphoneDeploymentTarget ?? IPHONEOS_DEPLOYMENT_TARGET;
+    const explicit = props?.ios?.iphoneDeploymentTarget;
+    if (explicit) {
+      configuration.modResults['ios.deploymentTarget'] = explicit;
+      return configuration;
+    }
+
+    // `IPHONEOS_DEPLOYMENT_TARGET` is the minimum this SDK needs, not the target the app should
+    // use. When the property is absent the Expo Podfile template supplies its own default (16.4
+    // on SDK 57), which already clears our minimum - writing ours in would downgrade the app and
+    // leave `pod install` unable to resolve the Expo pod. So only step an existing, lower value
+    // up.
+    const currentRaw = configuration.modResults['ios.deploymentTarget'];
+    const current =
+      typeof currentRaw === 'string'
+        ? currentRaw
+        : typeof currentRaw === 'number'
+          ? String(currentRaw)
+          : undefined;
+    if (current && isDeploymentTargetLower(current, IPHONEOS_DEPLOYMENT_TARGET)) {
+      configuration.modResults['ios.deploymentTarget'] = IPHONEOS_DEPLOYMENT_TARGET;
+    }
     return configuration;
   });
   
