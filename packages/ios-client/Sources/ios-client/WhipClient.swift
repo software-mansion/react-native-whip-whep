@@ -38,7 +38,7 @@ public class WhipClient: ClientBase {
     /**
     Initializes a `WhipClient` object.
     - Parameter configurationOptions: Additional configuration options, such as a STUN server URL or authorization token.
-    
+
     - Returns: A `WhipClient` object.
     */
     public init(
@@ -117,7 +117,7 @@ public class WhipClient: ClientBase {
 
     /**
     Connects the client to the WHIP server using WebRTC Peer Connection.
-    
+
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
         of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
@@ -145,7 +145,7 @@ public class WhipClient: ClientBase {
 
     /**
     Closes the established Peer Connection.
-    
+
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
     of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
@@ -314,7 +314,7 @@ public class WhipClient: ClientBase {
 
     /**
      Gets the names of supported sender video codecs.
-    
+
      - Returns: Array of supported video codec names
      */
     public static func getSupportedSenderVideoCodecsNames() -> [String] {
@@ -326,7 +326,7 @@ public class WhipClient: ClientBase {
 
     /**
      Gets the names of supported sender audio codecs.
-    
+
      - Returns: Array of supported audio codec names
      */
     public static func getSupportedSenderAudioCodecsNames() -> [String] {
@@ -338,7 +338,7 @@ public class WhipClient: ClientBase {
 
     /**
      Sets preferred video codecs for sending.
-    
+
      - Parameter preferredCodecs: Array of preferred video codec names, or nil to skip setting
      */
     public func setPreferredVideoCodecs(preferredCodecs: [String]?) {
@@ -363,7 +363,7 @@ public class WhipClient: ClientBase {
 
     /**
      Sets preferred audio codecs for sending.
-    
+
      - Parameter preferredCodecs: Array of preferred audio codec names, or nil to skip setting
      */
     public func setPreferredAudioCodecs(preferredCodecs: [String]?) {
@@ -390,13 +390,13 @@ public class WhipClient: ClientBase {
 
     /**
      Starts screen sharing mode.
-    
+
      This method:
      - Stops camera capture
      - Creates a new video source for screen sharing
      - Starts IPC server listening for frames from the broadcast extension
      - Shows the system broadcast picker for the user to select the extension
-    
+
      This should be called during initialization, not during an active stream.
      */
     public func startScreenShare() throws {

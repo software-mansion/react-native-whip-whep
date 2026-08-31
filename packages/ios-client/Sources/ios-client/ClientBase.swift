@@ -108,14 +108,14 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
 
     /**
     Sends an SDP offer to the WHIP/WHEP server.
-    
+
     - Parameter sdpOffer: The offer to send to the server.
-    
+
     - Throws: `AttributeNotFoundError.ResponseNotFound` if there is no response to the offer or
      `AttributeNotFoundError.LocationNotFound` if the response does not contain the location parameter or
      `SessionNetworkError.ConnectionError` if the  connection could not be established or the response code is incorrect,
       for example due to server being down, wrong server URL or token.
-    
+
     - Returns: A SDP response.
     */
     func send(sdpOffer: String) async throws -> String {
@@ -170,9 +170,9 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
 
     /**
     Sends an ICE candidate to WHIP/WHEP server in order to provide a streaming device.
-    
+
     - Parameter candidate: Represents a single ICE candidate.
-    
+
     - Throws: `AttributeNotFoundError.PatchEndpointNotFound` if the patch endpoint has not been properly set up,
       `AttributeNotFoundError.UFragNotFound` if the SDP of the candidate does not contain the ufrag,
       `SessionNetworkError.CandidateSendingError` if the candidate could not be sent and
@@ -331,11 +331,11 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
 
     /**
      Gets matched codecs from the preferred codec list that are available in the peer connection factory.
-    
+
      - Parameter preferredCodecs: List of preferred codec names
      - Parameter mediaType: The media type (audio or video)
      - Parameter useReceiver: Whether to use receiver capabilities instead of sender capabilities
-    
+
      - Returns: Array of matched codec capabilities
      */
     func getMatchedCodecs(preferredCodecs: [String], mediaType: String, useReceiver: Bool = false)
@@ -360,7 +360,7 @@ public class ClientBase: NSObject, RTCPeerConnectionDelegate {
 
     /**
      Sets codec preferences for a transceiver if matched codecs are available.
-    
+
      - Parameter transceiver: The RTP transceiver to set preferences for
      - Parameter preferredCodecs: List of preferred codec names
      - Parameter mediaType: The media type (audio or video)
