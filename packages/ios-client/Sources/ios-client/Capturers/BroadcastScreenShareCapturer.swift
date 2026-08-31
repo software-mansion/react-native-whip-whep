@@ -97,7 +97,7 @@ class BroadcastScreenShareCapturer: RTCVideoCapturer {
 
     /**
      Creates a  broadcast screen capturer.
-    
+
      - Parameters:
         - source: `RTCVideoSource` that will receive incoming video buffers
         - appGroup: App Group that will be used for starting an `IPCServer` on

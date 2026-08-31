@@ -21,10 +21,10 @@ public class WhepClient: ClientBase {
 
     /**
     Initializes a `WhepClient` object.
-    
+
     - Parameter serverUrl: A URL of the WHEP server.
     - Parameter configurationOptions: Additional configuration options, such as a STUN server URL or authorization token.
-    
+
     - Returns: A `WhepClient` object.
     */
     public init(configOptions: WhepConfigurationOptions) throws {
@@ -54,7 +54,7 @@ public class WhepClient: ClientBase {
 
     /**
     Connects the client to the WHEP server using WebRTC Peer Connection.
-    
+
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
         of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
      */
@@ -116,7 +116,7 @@ public class WhepClient: ClientBase {
 
     /**
     Closes the established Peer Connection.
-    
+
     - Throws: `SessionNetworkError.ConfigurationError` if the `stunServerUrl` parameter
     of the initial configuration is incorrect, which leads to `peerConnection` being nil or in any other case where there has been an error in creating the `peerConnection`
     */
@@ -165,7 +165,7 @@ public class WhepClient: ClientBase {
 
     /**
      Gets the names of supported receiver video codecs.
-    
+
      - Returns: Array of supported video codec names
      */
     public static func getSupportedReceiverVideoCodecsNames() -> [String] {
@@ -177,7 +177,7 @@ public class WhepClient: ClientBase {
 
     /**
      Gets the names of supported receiver audio codecs.
-    
+
      - Returns: Array of supported audio codec names
      */
     public static func getSupportedReceiverAudioCodecsNames() -> [String] {
@@ -189,7 +189,7 @@ public class WhepClient: ClientBase {
 
     /**
      Sets preferred video codecs for receiving.
-    
+
      - Parameter preferredCodecs: Array of preferred video codec names, or nil to skip setting
      */
     public func setPreferredVideoCodecs(preferredCodecs: [String]?) {
@@ -215,7 +215,7 @@ public class WhepClient: ClientBase {
 
     /**
      Sets preferred audio codecs for receiving.
-    
+
      - Parameter preferredCodecs: Array of preferred audio codec names, or nil to skip setting
      */
     public func setPreferredAudioCodecs(preferredCodecs: [String]?) {
