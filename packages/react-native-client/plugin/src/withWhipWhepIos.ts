@@ -406,7 +406,13 @@ const withWhipWhepIos: ConfigPlugin<WhipWhepPluginOptions> = (config, props) => 
     // on SDK 57), which already clears our minimum - writing ours in would downgrade the app and
     // leave `pod install` unable to resolve the Expo pod. So only step an existing, lower value
     // up.
-    const current = configuration.modResults['ios.deploymentTarget'];
+    const currentRaw = configuration.modResults['ios.deploymentTarget'];
+    const current =
+      typeof currentRaw === 'string'
+        ? currentRaw
+        : typeof currentRaw === 'number'
+          ? String(currentRaw)
+          : undefined;
     if (current && isDeploymentTargetLower(current, IPHONEOS_DEPLOYMENT_TARGET)) {
       configuration.modResults['ios.deploymentTarget'] = IPHONEOS_DEPLOYMENT_TARGET;
     }
