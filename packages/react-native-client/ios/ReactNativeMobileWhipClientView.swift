@@ -185,24 +185,24 @@ public class ReactNativeMobileWhipClientView: ExpoView {
         try await self.whipClient?.disconnect()
     }
 
-    internal func setAudioEnabled(_ enabled: Bool) throws {
+    internal func setAudioPaused(_ paused: Bool) throws {
         guard let client = self.whipClient else {
             throw Exception(
                 name: "E_WHIP_CLIENT_NOT_FOUND",
                 description: "WHIP client not found. Make sure it was initialized properly."
             )
         }
-        client.setAudioEnabled(enabled)
+        client.setAudioPaused(paused)
     }
 
-    internal func setVideoEnabled(_ enabled: Bool) throws {
+    internal func setVideoPaused(_ paused: Bool) throws {
         guard let client = self.whipClient else {
             throw Exception(
                 name: "E_WHIP_CLIENT_NOT_FOUND",
                 description: "WHIP client not found. Make sure it was initialized properly."
             )
         }
-        client.setVideoEnabled(enabled)
+        client.setVideoPaused(paused)
     }
 
     internal func setPreferredVideoCodecs(preferredCodecs: [String]?) {

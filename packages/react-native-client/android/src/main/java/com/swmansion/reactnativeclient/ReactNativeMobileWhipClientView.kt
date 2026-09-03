@@ -85,18 +85,18 @@ class ReactNativeMobileWhipClientView(
     whipClient?.disconnect()
   }
 
-  fun setAudioEnabled(enabled: Boolean) {
+  fun setAudioPaused(paused: Boolean) {
     if (whipClient == null) {
       throw IllegalStateException("WHIP client not found. Make sure it was initialized properly.")
     }
-    whipClient?.setAudioEnabled(enabled)
+    whipClient?.setAudioPaused(paused)
   }
 
-  fun setVideoEnabled(enabled: Boolean) {
+  fun setVideoPaused(paused: Boolean) {
     if (whipClient == null) {
       throw IllegalStateException("WHIP client not found. Make sure it was initialized properly.")
     }
-    whipClient?.setVideoEnabled(enabled)
+    whipClient?.setVideoPaused(paused)
   }
 
   fun flipCamera() {

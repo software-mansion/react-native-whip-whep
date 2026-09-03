@@ -72,6 +72,9 @@ class WhipClient(
   private var isSharingScreen: Boolean = false
   private val isScreenSharingMode: Boolean
 
+  private var isAudioPaused: Boolean = false
+  private var isVideoPaused: Boolean = false
+
   init {
     isScreenSharingMode = configOptions.isScreenSharingMode
     if (!isScreenSharingMode) {
@@ -200,7 +203,7 @@ class WhipClient(
       this.audioTrack = audioTrack
     }
 
-    applyDesiredTrackEnabled()
+    applyPauseState()
 
     peerConnection?.enforceSendOnlyDirection()
   }
@@ -410,6 +413,34 @@ class WhipClient(
   }
 
   /**
+   * Pauses or resumes the audio sent to the server.
+   *
+   * @param paused `true` to pause the audio, `false` to resume it.
+   */
+  fun setAudioPaused(paused: Boolean) {
+    isAudioPaused = paused
+    audioTrack?.setEnabled(!paused)
+  }
+
+  /**
+   * Pauses or resumes the video sent to the server.
+   *
+   * @param paused `true` to pause the video, `false` to resume it.
+   */
+  fun setVideoPaused(paused: Boolean) {
+    isVideoPaused = paused
+    videoTrack?.setEnabled(!paused)
+  }
+
+  /**
+   * Reapplies the stored pause state to the current tracks.
+   */
+  private fun applyPauseState() {
+    audioTrack?.setEnabled(!isAudioPaused)
+    videoTrack?.setEnabled(!isVideoPaused)
+  }
+
+  /**
    * Starts screen sharing using MediaProjection.
    * Note: MediaProjection permission must be obtained at the Activity level before calling this.
    *
@@ -478,7 +509,7 @@ class WhipClient(
       Log.d(CLIENT_TAG, "Audio track created for screen share")
     }
 
-    applyDesiredTrackEnabled()
+    applyPauseState()
 
     notifyTrackListeners()
 

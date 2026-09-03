@@ -35,6 +35,9 @@ public class WhipClient: ClientBase {
     public var currentCameraDeviceId: String?
     public var isScreenShareOn: Bool = false
 
+    private var isAudioPaused = false
+    private var isVideoPaused = false
+
     /**
     Initializes a `WhipClient` object.
     - Parameter configurationOptions: Additional configuration options, such as a STUN server URL or authorization token.
@@ -245,7 +248,7 @@ public class WhipClient: ClientBase {
             self.audioTrack = audioTrack
         }
 
-        applyDesiredTrackEnabled()
+        applyPauseState()
     }
 
     public func startCapture(_ videoDevice: AVCaptureDevice) {
@@ -309,6 +312,34 @@ public class WhipClient: ClientBase {
 
     public static func getCaptureDevices() -> [AVCaptureDevice] {
         return RTCCameraVideoCapturer.captureDevices()
+    }
+
+    // MARK: - Pausing
+
+    /**
+     Pauses or resumes the audio sent to the server.
+
+     - Parameter paused: `true` to pause the audio, `false` to resume it.
+     */
+    public func setAudioPaused(_ paused: Bool) {
+        isAudioPaused = paused
+        audioTrack?.isEnabled = !paused
+    }
+
+    /**
+     Pauses or resumes the video sent to the server.
+
+     - Parameter paused: `true` to pause the video, `false` to resume it.
+     */
+    public func setVideoPaused(_ paused: Bool) {
+        isVideoPaused = paused
+        videoTrack?.isEnabled = !paused
+    }
+
+    /// Reapplies the stored pause state to the current tracks.
+    private func applyPauseState() {
+        audioTrack?.isEnabled = !isAudioPaused
+        videoTrack?.isEnabled = !isVideoPaused
     }
 
     // MARK: - Codec Management
@@ -441,7 +472,7 @@ public class WhipClient: ClientBase {
         videoTrack.isEnabled = true
         self.videoTrack = videoTrack
 
-        applyDesiredTrackEnabled()
+        applyPauseState()
 
         logger.info("Screen sharing initialized, showing broadcast picker")
 

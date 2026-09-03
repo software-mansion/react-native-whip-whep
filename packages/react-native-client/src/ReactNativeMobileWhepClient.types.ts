@@ -175,8 +175,14 @@ export type WhipClientViewRef = {
     authToken?: string;
   }) => Promise<void>;
   disconnect: () => Promise<void>;
-  setAudioEnabled: (enabled: boolean) => Promise<void>;
-  setVideoEnabled: (enabled: boolean) => Promise<void>;
+  /**
+   * Pauses or resumes the audio sent to the server.
+   */
+  setAudioPaused: (paused: boolean) => Promise<void>;
+  /**
+   * Pauses or resumes the video sent to the server.
+   */
+  setVideoPaused: (paused: boolean) => Promise<void>;
   switchCamera: (deviceId: string) => Promise<void>;
   flipCamera: () => Promise<void>;
   setPreferredSenderVideoCodecs: (
