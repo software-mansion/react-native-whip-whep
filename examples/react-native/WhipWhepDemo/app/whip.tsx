@@ -26,6 +26,9 @@ export default function WhipScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [shouldShowStreamBtn, setShouldShowStreamBtn] = useState(true);
   const [streamMode, setStreamMode] = useState<StreamMode>('selection');
+  const [isAudioPaused, setIsAudioPaused] = useState(false);
+  const [isVideoPaused, setIsVideoPaused] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const whipClient = useRef<WhipClientViewRef | null>(null);
 
@@ -118,6 +121,12 @@ export default function WhipScreen() {
   const handleDisconnectBtnClick = async () => {
     try {
       await whipClient.current?.disconnect();
+      // The client keeps its pause state across disconnects, so resume
+      // explicitly to start the next stream from a clean state.
+      await whipClient.current?.setAudioPaused(false);
+      await whipClient.current?.setVideoPaused(false);
+      setIsAudioPaused(false);
+      setIsVideoPaused(false);
       setShouldShowStreamBtn(true);
     } catch (error) {
       console.error('Failed to disconnect from WHIP Client', error);
@@ -148,6 +157,32 @@ export default function WhipScreen() {
       }
     }
   }, []);
+
+  const handleToggleAudio = useCallback(async () => {
+    const paused = !isAudioPaused;
+    try {
+      await whipClient.current?.setAudioPaused(paused);
+      setIsAudioPaused(paused);
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage(
+        `Failed to ${paused ? 'pause' : 'resume'} audio: ${error}`,
+      );
+    }
+  }, [isAudioPaused]);
+
+  const handleToggleVideo = useCallback(async () => {
+    const paused = !isVideoPaused;
+    try {
+      await whipClient.current?.setVideoPaused(paused);
+      setIsVideoPaused(paused);
+      setErrorMessage(null);
+    } catch (error) {
+      setErrorMessage(
+        `Failed to ${paused ? 'pause' : 'resume'} video: ${error}`,
+      );
+    }
+  }, [isVideoPaused]);
 
   const handleSetH264VideoCodec = useCallback(async () => {
     if (whipClient.current) {
@@ -233,12 +268,25 @@ export default function WhipScreen() {
                 </Text>
               </View>
 
+              {errorMessage && (
+                <Text style={styles.errorText}>{errorMessage}</Text>
+              )}
+
               {streamMode === 'camera' && (
                 <>
                   <Button title="Switch Camera" onPress={handleSwitchCamera} />
                   <Button title="Flip Camera" onPress={handleFlipCamera} />
                 </>
               )}
+
+              <Button
+                title={isAudioPaused ? 'Resume Audio' : 'Pause Audio'}
+                onPress={handleToggleAudio}
+              />
+              <Button
+                title={isVideoPaused ? 'Resume Video' : 'Pause Video'}
+                onPress={handleToggleVideo}
+              />
 
               {Platform.OS === 'ios' && (
                 <>
@@ -315,6 +363,12 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 16,
     fontWeight: '500',
+  },
+  errorText: {
+    color: '#EF4444',
+    textAlign: 'center',
+    paddingHorizontal: 16,
+    marginBottom: 10,
   },
   selectionContainer: {
     paddingVertical: 20,

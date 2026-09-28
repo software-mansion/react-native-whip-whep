@@ -126,6 +126,14 @@ public class ReactNativeMobileWhipClientViewModule: Module {
                 try await view.disconnect()
             }
 
+            AsyncFunction("setAudioPaused") { (view: ReactNativeMobileWhipClientView, paused: Bool) in
+                try view.setAudioPaused(paused)
+            }
+
+            AsyncFunction("setVideoPaused") { (view: ReactNativeMobileWhipClientView, paused: Bool) in
+                try view.setVideoPaused(paused)
+            }
+
             AsyncFunction("setPreferredSenderVideoCodecs") {
                 (view: ReactNativeMobileWhipClientView, preferredCodecs: [String]?) in
                 view.setPreferredVideoCodecs(preferredCodecs: preferredCodecs)

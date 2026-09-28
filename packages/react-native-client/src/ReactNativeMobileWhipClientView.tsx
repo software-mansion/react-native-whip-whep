@@ -102,6 +102,12 @@ export function WhipClientView(
     disconnect: async () => {
       await nativeRef.current?.disconnect();
     },
+    setAudioPaused: async (paused: boolean) => {
+      await nativeRef.current?.setAudioPaused(paused);
+    },
+    setVideoPaused: async (paused: boolean) => {
+      await nativeRef.current?.setVideoPaused(paused);
+    },
     switchCamera: async (deviceId: string) => {
       await nativeRef.current?.switchCamera(deviceId);
     },
