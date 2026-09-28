@@ -38,7 +38,7 @@
   "homepage": "https://github.com/software-mansion/react-native-whip-whep",
   "dependencies": {
     "promise-fs": "^2.1.1",
-    "zod": "^3.25.71"
+    "zod": "^4.5.2"
   },
   "devDependencies": {
     "@types/promise-fs": "^2.1.2",
